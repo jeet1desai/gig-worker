@@ -4,6 +4,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 
 
 const prisma = new PrismaClient();
@@ -112,12 +113,12 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.email = user.email;
-        token.role = (user as any).role || 'user';
+        token.role = user.role || 'user';
 
         const payload = {
           id: user.id,
           email: user.email,
-          role: (user as any).role || 'user',
+          role: user.role || 'user',
         };
 
         token.customAccessToken = jwt.sign(payload, process.env.NEXTAUTH_SECRET!, {
@@ -133,9 +134,9 @@ export const authOptions: NextAuthOptions = {
             const newUser = await prisma.user.create({
               data: {
                 email: user.email,
-                first_name: (user as any).first_name,
-                last_name: (user as any).last_name,
-                profile_url: (user as any).profile_url,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                profile_url: user.profile_url,
                 sign_up_type: 'google',
                 is_verified: true,
                 role: 'user',
@@ -172,9 +173,9 @@ export const authOptions: NextAuthOptions = {
     maxAge: 60 * 60 * 24,
   },
   pages: {
-    signIn: '/auth/login',
-    error: '/auth/login',
-    newUser: '/dashboard',
+    signIn: PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH,
+    error: PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH,
+    newUser: PRIVATE_ROUTE.DASHBOARD,
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
