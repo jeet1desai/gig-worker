@@ -5,7 +5,6 @@ import { setStorage } from '@/lib/local-storage';
 import { ADMIN_AUTH_TOKEN_KEY, ADMIN_PROFILE_KEY, AUTH_TOKEN_KEY } from '@/constants/local-storage-keys';
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
 import { getSession, signIn } from 'next-auth/react';
-import pageRedirection from '@/lib/pageRedirection';
 
 type LoginValues = { email: string; password: string };
 
@@ -42,7 +41,7 @@ export async function handleAdminLogin(
         setStorage(ADMIN_AUTH_TOKEN_KEY, session.accessToken);
         setStorage(ADMIN_PROFILE_KEY, session.user);
 
-        pageRedirection(PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH);
+        router.push(PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH);
       }
     }
   } catch (err: any) {

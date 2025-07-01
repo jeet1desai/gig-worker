@@ -7,14 +7,19 @@ import TextField from '@/components/TextField';
 import { verifyOtpSchema } from '../../../schemas/auth';
 import { BackArrowIconSvg } from '@/components/icons';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
-import pageRedirection from '@/lib/pageRedirection';
+import { useRouter } from 'next/navigation';
 
 export default function VerifyOtpForm() {
   const [error, setError] = useState<string | null>(null);
   const [canResend, setCanResend] = useState(false);
+  const router = useRouter();
   const [form] = Form.useForm();
   const [timer, setTimer] = useState(60);
   const { Title } = Typography;
+
+  const pageRedirection = (path: string) => {
+    router.push(path);
+  }
 
   const handleSubmit = async (values: { email: string }) => {
     try {

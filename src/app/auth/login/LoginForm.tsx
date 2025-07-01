@@ -7,13 +7,18 @@ import TextField from '@/components/TextField';
 import { loginSchema } from '../../../schemas/auth';
 import { Images } from '@/lib/images';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
-import pageRedirection from '@/lib/pageRedirection';
+import { useRouter } from 'next/navigation';
 
 const { Title } = Typography;
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [form] = Form.useForm();
+  const router = useRouter();
+
+  const pageRedirection = (path: string) => {
+    router.push(path);
+  }
 
   const handleSubmit = async (values: { email: string; password: string }) => {
     try {

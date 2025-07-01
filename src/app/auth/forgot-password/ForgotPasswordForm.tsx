@@ -7,12 +7,17 @@ import TextField from '@/components/TextField';
 import { forgotPasswordSchema } from '../../../schemas/auth';
 import { BackArrowIconSvg } from '@/components/icons';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
-import pageRedirection from '@/lib/pageRedirection';
+import { useRouter } from 'next/navigation';
 
 export default function ForgotPasswordForm() {
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const [form] = Form.useForm();
   const { Title } = Typography;
+
+  const pageRedirection = (path: string) => {
+    router.push(path);
+  }
 
   const handleSubmit = async (values: { email: string }) => {
     try {

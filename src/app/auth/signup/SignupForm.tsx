@@ -8,7 +8,7 @@ import TextField from '@/components/TextField';
 import Link from 'next/link';
 import { Images } from '@/lib/images';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
-import pageRedirection from '@/lib/pageRedirection';
+import { useRouter } from 'next/navigation';
 
 const { Title } = Typography;
 interface SignupFormValues {
@@ -22,7 +22,12 @@ interface SignupFormValues {
 
 export default function SignupForm() {
   const [form] = Form.useForm();
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+
+  const pageRedirection = (path: string) => {
+    router.push(path);
+  }
   const handleSubmit = async (values: SignupFormValues) => {
     try {
       setError(null);
