@@ -9,6 +9,8 @@ export enum PUBLIC_ROUTE {
   LANDING_PAGE = '/landingpage',
   ABOUT = '/about',
   NOT_FOUND = '*',
+  EMAIL_VERIFICATION_PATH = '/auth/verify-email',
+  API_FORGOT_PASSWORD = '/api/auth/forgot-password',
 }
 
 export enum PRIVATE_ROUTE {
