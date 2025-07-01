@@ -1,8 +1,9 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { PRIVATE_ROUTE, PUBLIC_ROUTE } from "@/constants/app-routes";
 
 const prisma = new PrismaClient();
 
@@ -72,7 +73,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.email = user.email;
-        token.role = (user as any).role || "user";
+        token.role = (user as User).role || "user";
 
         // If Google login
         if (account?.provider === "google" && user.email) {
@@ -83,27 +84,25 @@ export const authOptions: NextAuthOptions = {
             const newUser = await prisma.user.create({
               data: {
                 email: user.email,
-                first_name: (user as any).first_name,
-                last_name: (user as any).last_name,
-                profile_url: (user as any).profile_url,
+                first_name: (user as User).first_name,
+                last_name: (user as User).last_name,
+                profile_url: (user as User).profile_url,
                 sign_up_type: "google",
                 is_verified: true,
-                role: "user"
+                role: "user",
+                password: ""
               },
             });
-        
             token.id = String(newUser.id);
-            token.role = newUser.role;
+            token.role = newUser.role;            
           } else {
             token.id = String(existingUser.id);
             token.role = existingUser.role;
           }
         }
-
         token.iat = Math.floor(Date.now() / 1000);
         token.exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
       }
-
       return token;
     },
 
@@ -121,9 +120,9 @@ export const authOptions: NextAuthOptions = {
     maxAge: 60 * 60 * 24,
   },
   pages: {
-    signIn: "/auth/login",
-    error: "/auth/login",
-    newUser: "/dashboard",
+    signIn: PUBLIC_ROUTE.LOGIN,
+    error: PUBLIC_ROUTE.LOGIN,
+    newUser: PRIVATE_ROUTE.DASHBOARD,
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
