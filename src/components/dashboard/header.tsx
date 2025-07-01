@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Bell, Menu, MessageCircle, Search } from 'lucide-react';
+import { Bell, Menu, MessageCircle, Search, User, Briefcase } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Tooltip } from 'antd';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -11,6 +12,7 @@ interface SidebarProps {
 
 export function DashboardHeader({ collapsed, onToggle }: SidebarProps) {
   const isMobile = useIsMobile();
+  const [isProvider, setIsProvider] = useState(false);
 
   return (
     <header className="backdrop-blur-xl border-b border-slate-700/50 p-4 pl-6 shadow-sm">
@@ -25,10 +27,27 @@ export function DashboardHeader({ collapsed, onToggle }: SidebarProps) {
               <Menu className="w-5 h-5 text-slate-300" />
             </button>
           )}
-          {/* {!isMobile && !collapsed && <span className="ml-1 text-white font-medium text-sm hidden sm:inline">Dashboard</span>} */}
         </div>
 
         <div className="flex items-center space-x-4">
+          <div className="flex items-center bg-slate-700/50 rounded-xl p-1 gap-1">
+            <button
+              className={`cursor-pointer hover:scale-110 flex items-center justify-center p-1.5 rounded-lg transition-all duration-200 ${!isProvider ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'}`}
+              onClick={() => setIsProvider(false)}
+            >
+              <Tooltip title="User">
+                <User className="w-4 h-4" />
+              </Tooltip>
+            </button>
+            <button
+              className={`cursor-pointer hover:scale-110 flex items-center justify-center p-1.5 rounded-lg transition-all duration-200 ${isProvider ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'}`}
+              onClick={() => setIsProvider(true)}
+            >
+              <Tooltip title="Provider">
+                <Briefcase className="w-4 h-4" />
+              </Tooltip>
+            </button>
+          </div>
           <button
             className="cursor-pointer p-1.5 sm:p-2 text-slate-400 hover:text-slate-300 bg-slate-700/50 rounded-xl transition-all duration-200 hover:scale-110"
             aria-label="Search"

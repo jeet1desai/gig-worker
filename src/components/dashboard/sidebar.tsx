@@ -1,9 +1,11 @@
 'use client';
 
-import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
-import { BarChart3, LogOut, ChevronLeft, Menu } from 'lucide-react';
 import { useEffect } from 'react';
+import { BarChart3, LogOut, ChevronLeft } from 'lucide-react';
+
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Images } from '@/lib/images';
+import { cn } from '@/lib/utils';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -29,11 +31,9 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       )}
     >
       <div className="flex h-full w-full flex-col">
-        <div className="relative flex items-center justify-between p-4 border-b border-slate-700/50">
-          <div className={cn('flex items-center space-x-3', collapsed && 'justify-center')}>
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg">
-              GW
-            </div>
+        <div className="relative flex items-center justify-between px-4 py-3 border-b border-slate-700/50">
+          <div className={cn('flex items-center space-x-2', collapsed && 'justify-center')}>
+            <img src={Images.logo} alt="logo" className="relative object-contain w-12 h-12" />
             {!collapsed && (
               <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Gig Workers</span>
             )}
