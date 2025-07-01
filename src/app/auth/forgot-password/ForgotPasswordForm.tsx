@@ -34,19 +34,32 @@ export default function ForgotPasswordForm() {
 
   return (
     <>
-      <Title level={3} className="relative flex items-center justify-center text-center mb-6 !text-2xl w-full">
+      <Title
+        level={3}
+        className="relative mb-6 flex w-full items-center justify-center text-center !text-2xl"
+      >
         <button
           type="button"
           onClick={() => router.push(PUBLIC_ROUTE.LOGIN)}
-          className="absolute left-0 focus:outline-none bg-transparent border-none p-0 cursor-pointer"
+          className="absolute left-0 cursor-pointer border-none bg-transparent p-0 focus:outline-none"
           aria-label="Back to login"
         >
           <BackArrowIconSvg />
         </button>
         <span className="text-[#FFF2E3]">Forgot password</span>
       </Title>
-      <span className="text-[#9d9893] mb-6 text-center">No worries, we’ll send you an OTP to your mail id</span>
-      <Form name="email" onFinish={handleSubmit} form={form} layout="vertical" className="w-full" initialValues={{ email: '' }} requiredMark={false}>
+      <span className="mb-6 text-center text-[#9d9893]">
+        No worries, we’ll send you an OTP to your mail id
+      </span>
+      <Form
+        name="email"
+        onFinish={handleSubmit}
+        form={form}
+        layout="vertical"
+        className="w-full"
+        initialValues={{ email: '' }}
+        requiredMark={false}
+      >
         <TextField
           name="email"
           label="Email"
@@ -54,22 +67,27 @@ export default function ForgotPasswordForm() {
           type="text"
           placeholder="Enter your email"
           icon={<MailOutlined className="text-[#FFF2E3]" />}
-          className="bg-transparent text-white border border-[#444] placeholder-white"
+          className="border border-[#444] bg-transparent text-white placeholder-white"
           labelClassName="text-[#FFF2E3]"
         />
         <Form.Item>
-          <Button htmlType="submit" block size="large" className="bg-[#635d57] text-[#FFF2E3] border-none shadow-none font-large mt-2">
+          <Button
+            htmlType="submit"
+            block
+            size="large"
+            className="font-large mt-2 border-none bg-[#635d57] text-[#FFF2E3] shadow-none"
+          >
             Confirm
           </Button>
         </Form.Item>
       </Form>
 
-      <div className="text-center text-[#FFF2E3] text-sm">
+      <div className="text-center text-sm text-[#FFF2E3]">
         Don&apos;t have an account?{' '}
         <button
           type="button"
           onClick={() => router.push(PUBLIC_ROUTE.SIGNUP)}
-          className="font-medium underline text-[#FFF2E3] bg-transparent border-none p-0 cursor-pointer"
+          className="cursor-pointer border-none bg-transparent p-0 font-medium text-[#FFF2E3] underline"
         >
           Sign up
         </button>

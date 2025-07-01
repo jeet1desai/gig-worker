@@ -4,13 +4,19 @@ import Image from 'next/image';
 function HowWeDifferent() {
   return (
     <section className="w-full px-10 py-16 text-center">
-      <div className="max-w-[1920px] mx-auto">
-        <h2 className="text-2xl mb-3 font-bold">How are we Different?</h2>
-        <div className="font-[500] mb-6 text-[#C7C7C7] text-sm">
-          Why Us? Explore What Makes Our Design Platform Stand Out & Elevate Your Experience.
+      <div className="mx-auto max-w-[1920px]">
+        <h2 className="mb-3 text-2xl font-bold">How are we Different?</h2>
+        <div className="mb-6 text-sm font-[500] text-[#C7C7C7]">
+          Why Us? Explore What Makes Our Design Platform Stand Out & Elevate Your
+          Experience.
         </div>
-        <div className="relative w-full max-w-[845] mx-auto aspect-[845/774]">
-          <Image src={Images.how_it_works} alt="vein_diagram" fill className="object-contain" />
+        <div className="relative mx-auto aspect-[845/774] w-full max-w-[845]">
+          <Image
+            src={Images.how_it_works}
+            alt="vein_diagram"
+            fill
+            className="object-contain"
+          />
         </div>
       </div>
     </section>

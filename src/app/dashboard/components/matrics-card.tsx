@@ -31,34 +31,40 @@ const metrics = [
 
 export function MetricsCards() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       {metrics.map((metric, index) => (
         <div
           key={index}
-          className="group backdrop-blur-xl rounded-2xl p-6 shadow-sm border border-slate-700/50 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-1 cursor-pointer relative overflow-hidden"
+          className="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-700/50 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 to-purple-900/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 to-purple-900/30 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
 
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <div className={`p-3 rounded-2xl bg-gradient-to-br ${metric.iconBg} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                <metric.icon className="w-6 h-6 text-white" />
+          <div className="relative">
+            <div className="mb-4 flex items-center justify-between">
+              <div
+                className={`rounded-2xl bg-gradient-to-br p-3 ${metric.iconBg} shadow-lg transition-transform duration-300 group-hover:scale-110`}
+              >
+                <metric.icon className="h-6 w-6 text-white" />
               </div>
               <div
-                className={`flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium ${
+                className={`flex items-center space-x-1 rounded-full px-3 py-1 text-sm font-medium ${
                   metric.positive
-                    ? 'bg-green-900/50 text-green-400 border border-green-700/50'
-                    : 'bg-red-900/50 text-red-400 border border-red-700/50'
+                    ? 'border border-green-700/50 bg-green-900/50 text-green-400'
+                    : 'border border-red-700/50 bg-red-900/50 text-red-400'
                 }`}
               >
-                <TrendingUp className="w-3 h-3" />
+                <TrendingUp className="h-3 w-3" />
                 <span>{metric.change}</span>
               </div>
             </div>
 
             <div>
-              <p className="text-3xl font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">{metric.title}</p>
-              <p className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">{metric.subtitle}</p>
+              <p className="mb-1 text-3xl font-bold text-white transition-colors group-hover:text-blue-400">
+                {metric.title}
+              </p>
+              <p className="text-sm text-slate-400 transition-colors group-hover:text-slate-300">
+                {metric.subtitle}
+              </p>
             </div>
           </div>
         </div>

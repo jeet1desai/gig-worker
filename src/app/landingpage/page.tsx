@@ -11,7 +11,9 @@ import HowWeDifferent from './components/HowWeDifferent';
 
 function LandingPage() {
   return (
-    <main className={`bg-[#111111] text-white w-full min-h-screen font-sans overflow-x-hidden ${inter.className}`}>
+    <main
+      className={`min-h-screen w-full overflow-x-hidden bg-[#111111] font-sans text-white ${inter.className}`}
+    >
       <Header />
       <HeroSection />
       <WorkOpportunities />

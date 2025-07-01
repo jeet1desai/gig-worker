@@ -6,7 +6,7 @@ export enum PUBLIC_ROUTE {
   FORGOT_PASSWORD = '/auth/forgot-password',
   VERIFY_OTP = '/auth/verify-otp',
   RESET_PASSWORD = '/auth/reset-password',
-  LANDINGPAGE = '/landingpage',
+  LANDING_PAGE = '/landingpage',
   ABOUT = '/about',
   NOT_FOUND = '*',
 }
@@ -21,5 +21,5 @@ export enum PUBLIC_API_ROUTES {
   SIGNUP_API = '/api/auth/signup',
   VERIFY_EMAIL_API = '/api/auth/verify-email',
   FORGOT_PASSWORD_API = '/api/auth/forgot-password',
-  RESET_PASSWORD_API = '/api/auth/reset-password'
+  RESET_PASSWORD_API = '/api/auth/reset-password',
 }

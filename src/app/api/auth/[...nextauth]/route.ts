@@ -1,23 +1,23 @@
-import NextAuth, { NextAuthOptions, User } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
-import { PRIVATE_ROUTE, PUBLIC_ROUTE } from "@/constants/app-routes";
+import NextAuth, { NextAuthOptions, User } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 
 const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
     maxAge: 60 * 60 * 24,
   },
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
@@ -32,17 +32,17 @@ export const authOptions: NextAuthOptions = {
         if (!valid) return null;
 
         if (!user.is_verified) {
-          throw new Error("Email not verified");
+          throw new Error('Email not verified');
         }
 
         return {
           id: String(user.id),
           email: user.email,
-          first_name: user.first_name || "",
-          last_name: user.last_name || "",
-          profile_url: user.profile_url || "",
+          first_name: user.first_name || '',
+          last_name: user.last_name || '',
+          profile_url: user.profile_url || '',
           role: user.role,
-          sign_up_type: user.sign_up_type || "email",
+          sign_up_type: user.sign_up_type || 'email',
           is_verified: user.is_verified ?? false,
         };
       },
@@ -51,8 +51,8 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       profile(profile) {
-        const [firstName, ...rest] = (profile.name || "").split(" ");
-        const lastName = rest.join(" ") || "";
+        const [firstName, ...rest] = (profile.name || '').split(' ');
+        const lastName = rest.join(' ') || '';
 
         return {
           id: profile.sub,
@@ -60,9 +60,9 @@ export const authOptions: NextAuthOptions = {
           first_name: firstName,
           last_name: lastName,
           profile_url: profile.picture,
-          role: "user",
+          role: 'user',
           is_verified: true,
-          sign_up_type: "google",
+          sign_up_type: 'google',
         };
       },
     }),
@@ -73,10 +73,10 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.email = user.email;
-        token.role = (user as User).role || "user";
+        token.role = (user as User).role || 'user';
 
         // If Google login
-        if (account?.provider === "google" && user.email) {
+        if (account?.provider === 'google' && user.email) {
           const existingUser = await prisma.user.findUnique({
             where: { email: user.email },
           });
@@ -87,14 +87,14 @@ export const authOptions: NextAuthOptions = {
                 first_name: (user as User).first_name,
                 last_name: (user as User).last_name,
                 profile_url: (user as User).profile_url,
-                sign_up_type: "google",
+                sign_up_type: 'google',
                 is_verified: true,
-                role: "user",
-                password: ""
+                role: 'user',
+                password: '',
               },
             });
             token.id = String(newUser.id);
-            token.role = newUser.role;            
+            token.role = newUser.role;
           } else {
             token.id = String(existingUser.id);
             token.role = existingUser.role;
@@ -108,9 +108,9 @@ export const authOptions: NextAuthOptions = {
 
     async session({ session, token }) {
       if (session.user) {
-      session.user.id = token.id;
-      session.user.role = token.role;
-      session.expires = new Date(token.exp * 1000).toISOString();
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.expires = new Date(token.exp * 1000).toISOString();
       }
       return session;
     },

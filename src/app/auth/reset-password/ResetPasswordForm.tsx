@@ -36,7 +36,7 @@ export default function ResetPasswordForm() {
 
   return (
     <>
-      <Title level={3} className="text-center mb-6 !text-2xl">
+      <Title level={3} className="mb-6 text-center !text-2xl">
         <span className="text-[#FFF2E3]">Reset password</span>
       </Title>
       <Form
@@ -58,7 +58,7 @@ export default function ResetPasswordForm() {
           type="password"
           placeholder="Enter your password"
           icon={<LockOutlined className="text-[#FFF2E3]" />}
-          className="bg-transparent text-white border border-[#444] placeholder-white"
+          className="border border-[#444] bg-transparent text-white placeholder-white"
           labelClassName="text-[#FFF2E3]"
         />
         <TextField
@@ -68,11 +68,16 @@ export default function ResetPasswordForm() {
           type="password"
           placeholder="Enter your confirm password"
           icon={<LockOutlined className="text-[#FFF2E3]" />}
-          className="bg-transparent text-white border border-[#444] placeholder-white"
+          className="border border-[#444] bg-transparent text-white placeholder-white"
           labelClassName="text-[#FFF2E3]"
         />
         <Form.Item>
-          <Button htmlType="submit" block size="large" className="bg-[#635d57] mt-5 text-[#FFF2E3] border-none shadow-none font-large">
+          <Button
+            htmlType="submit"
+            block
+            size="large"
+            className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none"
+          >
             Change Password
           </Button>
         </Form.Item>

@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
-import { ApiResponse } from '@/types/shared/api-response'
+import { ApiResponse } from '@/types/shared/api-response';
 
 export function successResponse<T, S>(
   data: T,
@@ -13,11 +13,11 @@ export function successResponse<T, S>(
     data,
     message,
     ...(meta && { meta }),
-  }
+  };
 
   return NextResponse.json<ApiResponse<T, S>>(response, {
     status,
-  })
+  });
 }
 
 export function errorResponse(
@@ -25,8 +25,8 @@ export function errorResponse(
   message: string,
   statusCode = 400,
   options?: {
-    details?: string | string[]
-    fieldErrors?: Record<string, string>
+    details?: string | string[];
+    fieldErrors?: Record<string, string>;
   },
 ): NextResponse<ApiResponse<null>> {
   const response: ApiResponse<null> = {
@@ -37,9 +37,9 @@ export function errorResponse(
       details: options?.details,
       fieldErrors: options?.fieldErrors,
     },
-  }
+  };
 
   return NextResponse.json<ApiResponse<null>>(response, {
     status: statusCode,
-  })
+  });
 }

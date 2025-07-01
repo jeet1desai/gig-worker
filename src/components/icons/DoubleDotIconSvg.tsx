@@ -1,11 +1,25 @@
 import { JSX, SVGProps } from 'react';
 
-export default function DoubleDotIconSvg(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+export default function DoubleDotIconSvg(
+  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
+) {
   return (
-    <svg width={18} height={16} viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <svg
+      width={18}
+      height={16}
+      viewBox="0 0 18 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
       <rect width={18} height={16} fill="url(#pattern0_23_844)" />
       <defs>
-        <pattern id="pattern0_23_844" patternContentUnits="objectBoundingBox" width={1} height={1}>
+        <pattern
+          id="pattern0_23_844"
+          patternContentUnits="objectBoundingBox"
+          width={1}
+          height={1}
+        >
           <use xlinkHref="#image0_23_844" transform="scale(0.0138889 0.015625)" />
         </pattern>
         <image

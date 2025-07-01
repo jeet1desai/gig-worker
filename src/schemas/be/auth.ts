@@ -1,4 +1,4 @@
-import * as yup from 'yup'
+import * as yup from 'yup';
 
 export const signupSchema = yup.object({
   email: yup.string().email('Invalid email address').required('Email is required'),
@@ -13,4 +13,4 @@ export const signupSchema = yup.object({
     .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
     .matches(/\d/, 'Password must contain at least one number')
     .matches(/[@$!%*?&]/, 'Password must contain at least one special character'),
-})
+});
