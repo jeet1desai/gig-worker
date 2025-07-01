@@ -1,10 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Form, Button, Typography, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
-import { signupSchema } from '../../../schemas/auth';
+import { signupSchema } from '../../../schemas/fe/auth';
 import TextField from '@/components/TextField';
+import Link from 'next/link';
+import { Images } from '@/lib/images';
+import { useRouter } from 'next/navigation';
+import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
+import Image from 'next/image';
+import { signIn } from 'next-auth/react';
 
 const { Title } = Typography;
 interface SignupFormValues {
@@ -19,11 +25,11 @@ interface SignupFormValues {
 export default function SignupForm() {
   const [form] = Form.useForm();
   const [error, setError] = useState<string | null>(null);
-
+  const router = useRouter();
   const handleSubmit = async (values: SignupFormValues) => {
     try {
-      await signupSchema.validate(values, { abortEarly: false });
       setError(null);
+      await signupSchema.validate(values, { abortEarly: false });
     } catch (err: any) {
       if (err.name === 'ValidationError') {
         const fieldErrors = err.inner.map((e: any) => ({
@@ -36,13 +42,16 @@ export default function SignupForm() {
       }
     }
   };
+  const handleGoogleLogin = useCallback(() => {
+    signIn('google', { callbackUrl: PRIVATE_ROUTE.DASHBOARD });
+  }, []);
 
   return (
     <>
-      <Title level={3} className="text-center mb-6 !text-2xl">
+      <Title level={3} className="mb-6 text-center !text-2xl">
         <span className="text-[#FFF2E3]">Join Us</span>
       </Title>
-      <div className="w-full max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+      <div className="w-full">
         <Form
           form={form}
           name="signup"
@@ -61,23 +70,23 @@ export default function SignupForm() {
         >
           <TextField
             name="firstname"
-            label="Firstname"
+            label="First name"
             required
             type="text"
             placeholder="Enter your firstname"
             icon={<UserOutlined className="text-[#FFF2E3]" />}
-            className="bg-transparent text-white border border-[#444] placeholder-white"
+            className="border border-[#444] bg-transparent text-white placeholder-white"
             labelClassName="text-[#FFF2E3]"
           />
 
           <TextField
             name="lastname"
-            label="Lastname"
+            label="Last name"
             required
             type="text"
             placeholder="Enter your lastname"
             icon={<UserOutlined className="text-[#FFF2E3]" />}
-            className="bg-transparent text-white border border-[#444] placeholder-white"
+            className="border border-[#444] bg-transparent text-white placeholder-white"
             labelClassName="text-[#FFF2E3]"
           />
 
@@ -88,7 +97,7 @@ export default function SignupForm() {
             type="text"
             placeholder="Enter your email"
             icon={<MailOutlined className="text-[#FFF2E3]" />}
-            className="bg-transparent text-white border border-[#444] placeholder-white"
+            className="border border-[#444] bg-transparent text-white placeholder-white"
             labelClassName="text-[#FFF2E3]"
           />
 
@@ -98,8 +107,8 @@ export default function SignupForm() {
             required
             type="password"
             placeholder="Enter your password"
-            icon={<LockOutlined className="text-[#FFF2E3] !text-[#FFF2E3]" />}
-            className="bg-transparent text-white border border-[#444] placeholder-white"
+            icon={<LockOutlined className="!text-[#FFF2E3]" />}
+            className="border border-[#444] bg-transparent text-white placeholder-white"
             labelClassName="text-[#FFF2E3]"
           />
 
@@ -109,25 +118,56 @@ export default function SignupForm() {
             required
             type="password"
             placeholder="Enter Confirm password"
-            icon={<LockOutlined className="text-[#FFF2E3] !text-[#FFF2E3]" />}
-            className="bg-transparent text-white border border-[#444] placeholder-white"
+            icon={<LockOutlined className="!text-[#FFF2E3]" />}
+            className="border border-[#444] bg-transparent text-white placeholder-white"
             labelClassName="text-[#FFF2E3]"
           />
 
-          <Form.Item name="terms" valuePropName="checked" rules={[{ required: true, message: 'You must accept the terms and conditions' }]}>
+          <Form.Item
+            name="terms"
+            valuePropName="checked"
+            rules={[
+              { required: true, message: 'You must accept the terms and conditions' },
+            ]}
+          >
             <Checkbox>
-              <span className="text-[#FFF2E3] !text-[#FFF2E3]">
+              <span className="!text-[#FFF2E3]">
                 Accept{' '}
-                <a href="#" className="underline font-medium text-[#FFF2E3] !text-[#FFF2E3]">
+                <Link href="#" className="font-medium !text-[#FFF2E3] underline">
                   terms & conditions
-                </a>
+                </Link>
               </span>
             </Checkbox>
           </Form.Item>
-          <Button htmlType="submit" block size="large" className="mt-5 bg-[#635d57] text-[#FFF2E3] font-bold w-full  border-none shadow-none">
+          <Button
+            htmlType="submit"
+            block
+            size="large"
+            className="mt-5 w-full border-none bg-[#635d57] font-bold text-[#FFF2E3] shadow-none"
+          >
             Sign up
           </Button>
         </Form>
+        <div className="mt-6 mb-3 text-center text-[#fff2e3]">or sign in using</div>
+        <div className="mb-4 flex justify-center">
+          <Image
+            src={Images.googleIcon}
+            alt="Google Icon"
+            width={24}
+            height={24}
+            className="cursor-pointer"
+            onClick={handleGoogleLogin}
+          />
+        </div>
+        <div className="text-center text-[#fff2e3]">
+          Already have an account?{' '}
+          <a
+            className="cursor-pointer font-medium text-[#fff2e3] underline"
+            onClick={() => router.push(PUBLIC_ROUTE.LOGIN)}
+          >
+            Log In
+          </a>
+        </div>
       </div>
     </>
   );

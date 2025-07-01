@@ -1,4 +1,5 @@
 import AchievementIconSvg from './AchievementIconSvg';
+import BackArrowIconSvg from './BackArrowIconSvg';
 import DollarIconSvg from './DollarIconSvg';
 import DoubleDotIconSvg from './DoubleDotIconSvg';
 import FacebookIconSvg from './FacebookIconSvg';
@@ -10,6 +11,7 @@ import TwitterIconSvg from './TwitterIconSvg';
 
 export {
   AchievementIconSvg,
+  BackArrowIconSvg,
   DollarIconSvg,
   DoubleDotIconSvg,
   FacebookIconSvg,

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { workOpportunities } from '@/lib/constants/Home';
+import { workOpportunities } from '@/constants/LandingPage';
 import { Images } from '@/lib/images';
 import Image from 'next/image';
 
@@ -23,28 +23,41 @@ function WorkOpportunities() {
   }, []);
 
   return (
-    <section className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 md:px-10 py-16">
-      <h2 className="text-3xl font-[700] mb-6 text-[#FFF2E3]">Work Opportunities</h2>
-      <p className="text-xs mb-4 text-[#FFF2E3] underline text-right">View more</p>
+    <section className="mx-auto w-full max-w-[1920px] px-4 py-16 sm:px-6 md:px-10">
+      <h2 className="mb-6 text-3xl font-[700] text-[#FFF2E3]">Work Opportunities</h2>
+      <p className="mb-4 text-right text-xs text-[#FFF2E3] underline">View more</p>
       <div className="relative">
-        <div ref={scrollRef} className="flex gap-6 overflow-x-auto pb-4 no-scrollbar">
+        <div ref={scrollRef} className="no-scrollbar flex gap-6 overflow-x-auto pb-4">
           {workOpportunities.map((item, i) => (
-            <div key={i} className="min-w-[300px] sm:min-w-[320px] bg-transparent p-5 rounded-xl border border-[#3E3E3E]">
-              <h3 className="text-lg font-[600] mb-1 text-[#FFF2E3]">{item.title}</h3>
-              <p className="text-sm text-gray-400 mt-2">
-                <span className="rounded-3xl bg-[#1D1D1D] text-[#1CBAE0] px-2 py-1 mr-2">{item.price}</span>
-                <span className="rounded-3xl bg-[#1D1D1D] text-[#FFB9C7] px-2 py-1">{item.duration}</span>
+            <div
+              key={i}
+              className="min-w-[300px] rounded-xl border border-[#3E3E3E] bg-transparent p-5 sm:min-w-[320px]"
+            >
+              <h3 className="mb-1 text-lg font-[600] text-[#FFF2E3]">{item.title}</h3>
+              <p className="mt-2 text-sm text-gray-400">
+                <span className="mr-2 rounded-3xl bg-[#1D1D1D] px-2 py-1 text-[#1CBAE0]">
+                  {item.price}
+                </span>
+                <span className="rounded-3xl bg-[#1D1D1D] px-2 py-1 text-[#FFB9C7]">
+                  {item.duration}
+                </span>
               </p>
-              <p className="text-xs text-[#FFF2E3] mt-2">{item.description}</p>
-              <div className="mt-2 text-sm text-gray-300 border-t border-[#3E3E3E] py-3 flex justify-between items-center">
+              <p className="mt-2 text-xs text-[#FFF2E3]">{item.description}</p>
+              <div className="mt-2 flex items-center justify-between border-t border-[#3E3E3E] py-3 text-sm text-gray-300">
                 <div className="flex w-1/2">
-                  <Image src={Images.avatar} alt="vein_diagram" height={44} width={44} className="mr-2" />
+                  <Image
+                    src={Images.avatar}
+                    alt="vein_diagram"
+                    height={44}
+                    width={44}
+                    className="mr-2"
+                  />
                   <div>
                     <div className="text-sm text-[#FFF2E3]">{item.provider}</div>
-                    <div className="text-xs text-[#FFF2E3] mt-2">{item.place}</div>
+                    <div className="mt-2 text-xs text-[#FFF2E3]">{item.place}</div>
                   </div>
                 </div>
-                <p className="text-[#66625C] text-xs w-1/2 text-right">{item.postTime}</p>
+                <p className="w-1/2 text-right text-xs text-[#66625C]">{item.postTime}</p>
               </div>
             </div>
           ))}
