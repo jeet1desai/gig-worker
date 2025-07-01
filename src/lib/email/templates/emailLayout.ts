@@ -1,7 +1,7 @@
-import { BRAND_NAME } from '@/constants';
+import { BRAND_NAME } from '@/constants'
 
 export const emailLayout = (content: string, extraStyles = '') => {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear()
 
   return `
   <!DOCTYPE html>
@@ -120,5 +120,5 @@ export const emailLayout = (content: string, extraStyles = '') => {
       </div>
     </body>
   </html>
-  `;
+  `
 }
