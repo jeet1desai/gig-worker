@@ -3,6 +3,7 @@ import { FacebookIconSvg, InstagramIconSvg, LinkedInIconSvg, TwitterIconSvg } fr
 import Image from 'next/image';
 import { Images } from '@/lib/images';
 import { FACEBOOK_PROFILE_PATH, INSTAGRAM_PROFILE_PATH, LINKEDIN_PROFILE_PATH, TWITTER_PROFILE_PATH } from '@/constants/app-routes';
+import { PUBLIC_ROUTE } from '@/constants/app-routes';
 
 function Footer() {
   return (
@@ -76,7 +77,7 @@ function Footer() {
           <Link href="#" className="font-inter">
             Community
           </Link>
-          <Link href="#" className="font-inter">
+          <Link href={PUBLIC_ROUTE.ABOUT} className="font-inter">
             About us
           </Link>
           <Link href="#" className="font-inter">

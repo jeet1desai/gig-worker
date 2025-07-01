@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { Form, Button, Typography, Checkbox, Image } from 'antd';
+import { useCallback, useState } from 'react';
+import { Form, Button, Typography, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { signupSchema } from '../../../schemas/fe/auth';
 import TextField from '@/components/TextField';
 import Link from 'next/link';
 import { Images } from '@/lib/images';
-import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { useRouter } from 'next/navigation';
+import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
+import Image from 'next/image';
+import { signIn } from 'next-auth/react';
 
 const { Title } = Typography;
 interface SignupFormValues {
@@ -44,6 +46,9 @@ export default function SignupForm() {
       }
     }
   };
+  const handleGoogleLogin = useCallback(() => {
+    signIn("google", { callbackUrl: PRIVATE_ROUTE.DASHBOARD });
+  }, []);
 
   return (
     <>
@@ -138,7 +143,7 @@ export default function SignupForm() {
         </Form>
         <div className="text-center text-[#fff2e3] mt-6 mb-3">or sign in using</div>
         <div className="flex justify-center mb-4">
-          <Image src={Images.googleIcon} alt="Google Icon" width={24} height={24} />
+          <Image src={Images.googleIcon} alt="Google Icon" width={24} height={24} className="cursor-pointer" onClick={handleGoogleLogin} />
         </div>
         <div className="text-center text-[#fff2e3]">
           Already have an account?{' '}

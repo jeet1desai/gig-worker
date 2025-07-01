@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { Form, Button, Typography, Image } from 'antd';
+import { useCallback, useState } from 'react';
+import { Form, Button, Typography } from 'antd';
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import TextField from '@/components/TextField';
 import { loginSchema } from '../../../schemas/auth';
 import { Images } from '@/lib/images';
-import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { useRouter } from 'next/navigation';
+import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
+import { signIn } from 'next-auth/react';
+import Image from 'next/image';
 
 const { Title } = Typography;
 
@@ -24,6 +26,20 @@ export default function LoginForm() {
     try {
       setError(null);
       await loginSchema.validate(values, { abortEarly: false });
+
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: values.email,
+        password: values.password,
+      });
+
+      if (result?.error === "Email not verified") {
+        setError("Your email is not verified. Please verify your account.");
+      } else if (!result?.ok) {
+        setError("Invalid email or password.");
+      } else {
+        router.push(PRIVATE_ROUTE.DASHBOARD);
+      }
     } catch (err: any) {
       if (err.name === 'ValidationError') {
         const formErrors = err.inner.reduce((acc: any, curr: any) => {
@@ -42,6 +58,10 @@ export default function LoginForm() {
       }
     }
   };
+  
+  const handleGoogleLogin = useCallback(() => {
+    signIn("google", { callbackUrl: PRIVATE_ROUTE.DASHBOARD });
+  }, []);
 
   return (
     <>
@@ -98,7 +118,7 @@ export default function LoginForm() {
       </Form>
       <div className="text-[#FFF2E3] mt-6 mb-3 text-center text-sm">or sign in using</div>
       <div className="flex justify-center mb-4">
-        <Image src={Images.googleIcon} alt="Google Icon" width={36} height={36} className="cursor-pointer" />
+        <Image src={Images.googleIcon} alt="Google Icon" width={36} height={36} className="cursor-pointer" onClick={handleGoogleLogin} />
       </div>
       <div className="text-center text-[#FFF2E3] text-sm">
         Don&apos;t have an account?{' '}
