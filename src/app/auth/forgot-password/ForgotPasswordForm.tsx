@@ -5,12 +5,11 @@ import { Form, Button, Typography } from 'antd';
 import { MailOutlined } from '@ant-design/icons';
 import TextField from '@/components/TextField';
 import { forgotPasswordSchema } from '../../../schemas/auth';
-import { useRouter } from 'next/navigation';
 import { BackArrowIconSvg } from '@/components/icons';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
+import pageRedirection from '@/lib/pageRedirection';
 
 export default function ForgotPasswordForm() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [form] = Form.useForm();
   const { Title } = Typography;
@@ -37,7 +36,7 @@ export default function ForgotPasswordForm() {
       <Title level={3} className="relative flex items-center justify-center text-center mb-6 !text-2xl w-full">
         <button
           type="button"
-          onClick={() => router.push(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH)}
+          onClick={() => pageRedirection(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH)}
           className="absolute left-0 focus:outline-none bg-transparent border-none p-0 cursor-pointer"
           aria-label="Back to login"
         >
@@ -68,7 +67,7 @@ export default function ForgotPasswordForm() {
         Don&apos;t have an account?{' '}
         <button
           type="button"
-          onClick={() => router.push(PUBLIC_ROUTE.SIGNUP_PAGE_PATH)}
+          onClick={() => pageRedirection(PUBLIC_ROUTE.SIGNUP_PAGE_PATH)}
           className="font-medium underline text-[#FFF2E3] bg-transparent border-none p-0 cursor-pointer"
         >
           Sign up

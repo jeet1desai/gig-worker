@@ -5,12 +5,11 @@ import { Form, Button, Typography } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 import TextField from '@/components/TextField';
 import { verifyOtpSchema } from '../../../schemas/auth';
-import { useRouter } from 'next/navigation';
 import { BackArrowIconSvg } from '@/components/icons';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
+import pageRedirection from '@/lib/pageRedirection';
 
 export default function VerifyOtpForm() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [canResend, setCanResend] = useState(false);
   const [form] = Form.useForm();
@@ -57,7 +56,7 @@ export default function VerifyOtpForm() {
       <Title level={3} className="relative flex items-center justify-center text-center mb-6 !text-2xl w-full">
         <button
           type="button"
-          onClick={() => router.push(PUBLIC_ROUTE.FORGOT_PASSWORD_PAGE_PATH)}
+          onClick={() => pageRedirection(PUBLIC_ROUTE.FORGOT_PASSWORD_PAGE_PATH)}
           className="absolute left-0 focus:outline-none bg-transparent border-none p-0 cursor-pointer"
           aria-label="Back to login"
         >
