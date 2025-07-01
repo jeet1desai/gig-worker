@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react';
 import { Form, Button, Typography, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
-import { signupSchema } from '../../../schemas/auth';
+import { signupSchema } from '../../../schemas/fe/auth';
 import TextField from '@/components/TextField';
 import Link from 'next/link';
 import { Images } from '@/lib/images';
