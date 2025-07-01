@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { HttpStatusCode } from './lib/enum';
+
+import type { NextRequest } from 'next/server';
+import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { PUBLIC_ROUTE } from './constants/app-routes';
 
 const publicRoutes = (Object.values(PUBLIC_ROUTE) as string[]).filter(
