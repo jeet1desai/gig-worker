@@ -12,7 +12,9 @@ interface SidebarProps {
   onToggle: (collapsed: boolean) => void;
 }
 
-const navigation = [{ name: 'Dashboard', icon: BarChart3, current: true, href: '/dashboard' }];
+const navigation = [
+  { name: 'Dashboard', icon: BarChart3, current: true, href: '/dashboard' },
+];
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const isMobile = useIsMobile();
@@ -26,60 +28,68 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <div
       className={cn(
-        'fixed inset-y-0 left-0 z-50 text-white transition-all duration-300 shadow-2xl backdrop-blur-xl border-r border-slate-700/50',
+        'fixed inset-y-0 left-0 z-50 border-r border-slate-700/50 text-white shadow-2xl backdrop-blur-xl transition-all duration-300',
         collapsed ? 'w-18' : 'w-64',
       )}
     >
       <div className="flex h-full w-full flex-col">
-        <div className="relative flex items-center justify-between px-4 py-3 border-b border-slate-700/50">
-          <div className={cn('flex items-center space-x-2', collapsed && 'justify-center')}>
-            <img src={Images.logo} alt="logo" className="relative object-contain w-12 h-12" />
+        <div className="relative flex items-center justify-between border-b border-slate-700/50 px-4 py-3">
+          <div
+            className={cn('flex items-center space-x-2', collapsed && 'justify-center')}
+          >
+            <img
+              src={Images.logo}
+              alt="logo"
+              className="relative h-12 w-12 object-contain"
+            />
             {!collapsed && (
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Gig Workers</span>
+              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-xl font-bold text-transparent">
+                Gig Workers
+              </span>
             )}
           </div>
           <button
             onClick={() => onToggle(!collapsed)}
             className={cn(
-              'cursor-pointer absolute top-5 -right-4 p-2.5 rounded-full bg-slate-700/50 transition-all duration-200 hover:scale-110',
+              'absolute top-5 -right-4 cursor-pointer rounded-full bg-slate-700/50 p-2.5 transition-all duration-200 hover:scale-110',
               collapsed && 'hidden',
             )}
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="h-4 w-4" />
           </button>
         </div>
 
-        <nav className="flex-1 px-3 py-6 space-y-2">
+        <nav className="flex-1 space-y-2 px-3 py-6">
           {navigation.map((item) => (
             <a
               key={item.name}
               href={item.href}
               className={cn(
-                'flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group relative overflow-hidden',
+                'group relative flex items-center overflow-hidden rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200',
                 item.current
                   ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
-                  : 'text-slate-300 hover:bg-slate-700/50 hover:text-white hover:shadow-lg hover:scale-105',
+                  : 'text-slate-300 hover:scale-105 hover:bg-slate-700/50 hover:text-white hover:shadow-lg',
                 collapsed ? 'justify-center px-2' : 'space-x-3',
               )}
             >
-              <item.icon className="w-5 h-5 flex-shrink-0 relative z-10" />
+              <item.icon className="relative z-10 h-5 w-5 flex-shrink-0" />
               {!collapsed && <span className="relative z-10">{item.name}</span>}
               {item.current && !collapsed && (
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl blur-xl"></div>
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-xl"></div>
               )}
             </a>
           ))}
         </nav>
 
-        <div className="p-3 border-t border-slate-700/50">
+        <div className="border-t border-slate-700/50 p-3">
           <a
             href="#"
             className={cn(
-              'flex items-center px-4 py-3 text-sm font-medium text-slate-300 rounded-xl hover:bg-red-500/20 hover:text-red-400 transition-all duration-200 group hover:scale-105',
+              'group flex items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition-all duration-200 hover:scale-105 hover:bg-red-500/20 hover:text-red-400',
               collapsed ? 'justify-center px-2' : 'space-x-3',
             )}
           >
-            <LogOut className="w-5 h-5 flex-shrink-0 group-hover:rotate-12 transition-transform" />
+            <LogOut className="h-5 w-5 flex-shrink-0 transition-transform group-hover:rotate-12" />
             {!collapsed && <span>Log Out</span>}
           </a>
         </div>

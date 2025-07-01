@@ -33,10 +33,10 @@ export default function LoginForm() {
         password: values.password,
       });
 
-      if (result?.error === "Email not verified") {
-        setError("Your email is not verified. Please verify your account.");
+      if (result?.error === 'Email not verified') {
+        setError('Your email is not verified. Please verify your account.');
       } else if (!result?.ok) {
-        setError("Invalid email or password.");
+        setError('Invalid email or password.');
       } else {
         router.push(PRIVATE_ROUTE.DASHBOARD);
       }
@@ -58,14 +58,14 @@ export default function LoginForm() {
       }
     }
   };
-  
+
   const handleGoogleLogin = useCallback(() => {
-    signIn("google", { callbackUrl: PRIVATE_ROUTE.DASHBOARD });
+    signIn('google', { callbackUrl: PRIVATE_ROUTE.DASHBOARD });
   }, []);
 
   return (
     <>
-      <Title level={3} className="text-center mb-6 !text-2xl">
+      <Title level={3} className="mb-6 text-center !text-2xl">
         <span className="text-[#FFF2E3]">Welcome back</span>
       </Title>
       <Form
@@ -87,7 +87,7 @@ export default function LoginForm() {
           type="text"
           placeholder="Enter your email"
           icon={<MailOutlined className="text-[#FFF2E3]" />}
-          className="bg-transparent text-white border border-[#444] placeholder-white"
+          className="border border-[#444] bg-transparent text-white placeholder-white"
           labelClassName="text-[#FFF2E3]"
         />
 
@@ -96,12 +96,12 @@ export default function LoginForm() {
           name="password"
           required
           type="password"
-          className="bg-transparent text-white border border-[#444] placeholder-white"
+          className="border border-[#444] bg-transparent text-white placeholder-white"
           placeholder="Enter your password"
           icon={<LockOutlined className="text-[#FFF2E3]" />}
           labelClassName="text-[#FFF2E3]"
         />
-        <div className="flex justify-end w-full mt-2">
+        <div className="mt-2 flex w-full justify-end">
           <button
             type="button"
             onClick={() => pageRedirection(PUBLIC_ROUTE.FORGOT_PASSWORD_PAGE_PATH)}
@@ -111,16 +111,28 @@ export default function LoginForm() {
           </button>
         </div>
         <Form.Item>
-          <Button htmlType="submit" block size="large" className="mt-5 bg-[#635d57] text-[#FFF2E3] border-none shadow-none font-large">
+          <Button
+            htmlType="submit"
+            block
+            size="large"
+            className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none"
+          >
             Sign in
           </Button>
         </Form.Item>
       </Form>
-      <div className="text-[#FFF2E3] mt-6 mb-3 text-center text-sm">or sign in using</div>
-      <div className="flex justify-center mb-4">
-        <Image src={Images.googleIcon} alt="Google Icon" width={36} height={36} className="cursor-pointer" onClick={handleGoogleLogin} />
+      <div className="mt-6 mb-3 text-center text-sm text-[#FFF2E3]">or sign in using</div>
+      <div className="mb-4 flex justify-center">
+        <Image
+          src={Images.googleIcon}
+          alt="Google Icon"
+          width={36}
+          height={36}
+          className="cursor-pointer"
+          onClick={handleGoogleLogin}
+        />
       </div>
-      <div className="text-center text-[#FFF2E3] text-sm">
+      <div className="text-center text-sm text-[#FFF2E3]">
         Don&apos;t have an account?{' '}
         <button
           type="button"

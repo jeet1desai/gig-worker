@@ -1,7 +1,7 @@
 type TemplateOptions = {
-  userName?: string
-  actionLink: string
-}
+  userName?: string;
+  actionLink: string;
+};
 
 export const getVerificationEmail = ({
   userName = 'User',
@@ -21,10 +21,10 @@ export const getVerificationEmail = ({
     </div>
 
     <p>If you didn't create an account, you can safely ignore this email.</p>
-  `
+  `;
 
   return {
     subject: 'Verify Your Email Address',
     html: content,
-  }
-}
+  };
+};

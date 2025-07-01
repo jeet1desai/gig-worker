@@ -58,7 +58,10 @@ export default function VerifyOtpForm() {
 
   return (
     <>
-      <Title level={3} className="relative flex items-center justify-center text-center mb-6 !text-2xl w-full">
+      <Title
+        level={3}
+        className="relative mb-6 flex w-full items-center justify-center text-center !text-2xl"
+      >
         <button
           type="button"
           onClick={() => pageRedirection(PUBLIC_ROUTE.FORGOT_PASSWORD_PAGE_PATH)}
@@ -69,15 +72,28 @@ export default function VerifyOtpForm() {
         </button>
         <span className="text-[#FFF2E3]">Verify OTP</span>
       </Title>
-      <span className="text-[#9d9893] mb-6 text-center block">Kindly enter the confirmation code sent to the following email: xyz@gmail.com</span>
-      <Form form={form} name="otp" onFinish={handleSubmit} layout="vertical" className="w-full" requiredMark={false}>
-        <div className="flex justify-between items-center mb-1">
+      <span className="mb-6 block text-center text-[#9d9893]">
+        Kindly enter the confirmation code sent to the following email: xyz@gmail.com
+      </span>
+      <Form
+        form={form}
+        name="otp"
+        onFinish={handleSubmit}
+        layout="vertical"
+        className="w-full"
+        requiredMark={false}
+      >
+        <div className="mb-1 flex items-center justify-between">
           <label htmlFor="otp" className="font-medium text-[#FFF2E3]">
             OTP <span className="text-red-500">*</span>
           </label>
           <span className="text-sm">
             {canResend ? (
-              <Button type="link" className="p-0 m-0 !text-[#FFF2E3] font-medium" onClick={handleResend}>
+              <Button
+                type="link"
+                className="m-0 p-0 font-medium !text-[#FFF2E3]"
+                onClick={handleResend}
+              >
                 Resend OTP
               </Button>
             ) : (
@@ -92,12 +108,17 @@ export default function VerifyOtpForm() {
             type="text"
             placeholder="Enter your otp"
             icon={<LockOutlined className="text-[#FFF2E3]" />}
-            className="bg-transparent text-white border border-[#444] placeholder-white"
+            className="border border-[#444] bg-transparent text-white placeholder-white"
             label={''}
           />
         </Form.Item>
         <Form.Item>
-          <Button htmlType="submit" block size="large" className="bg-[#635d57] text-[#FFF2E3] border-none shadow-none font-large mt-2">
+          <Button
+            htmlType="submit"
+            block
+            size="large"
+            className="font-large mt-2 border-none bg-[#635d57] text-[#FFF2E3] shadow-none"
+          >
             Submit
           </Button>
         </Form.Item>

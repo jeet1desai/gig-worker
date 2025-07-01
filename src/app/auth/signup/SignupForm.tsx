@@ -47,12 +47,12 @@ export default function SignupForm() {
     }
   };
   const handleGoogleLogin = useCallback(() => {
-    signIn("google", { callbackUrl: PRIVATE_ROUTE.DASHBOARD });
+    signIn('google', { callbackUrl: PRIVATE_ROUTE.DASHBOARD });
   }, []);
 
   return (
     <>
-      <Title level={3} className="text-center mb-6 !text-2xl">
+      <Title level={3} className="mb-6 text-center !text-2xl">
         <span className="text-[#FFF2E3]">Join Us</span>
       </Title>
       <div className="w-full">
@@ -79,7 +79,7 @@ export default function SignupForm() {
             type="text"
             placeholder="Enter your firstname"
             icon={<UserOutlined className="text-[#FFF2E3]" />}
-            className="bg-transparent text-white border border-[#444] placeholder-white"
+            className="border border-[#444] bg-transparent text-white placeholder-white"
             labelClassName="text-[#FFF2E3]"
           />
 
@@ -90,7 +90,7 @@ export default function SignupForm() {
             type="text"
             placeholder="Enter your lastname"
             icon={<UserOutlined className="text-[#FFF2E3]" />}
-            className="bg-transparent text-white border border-[#444] placeholder-white"
+            className="border border-[#444] bg-transparent text-white placeholder-white"
             labelClassName="text-[#FFF2E3]"
           />
 
@@ -101,7 +101,7 @@ export default function SignupForm() {
             type="text"
             placeholder="Enter your email"
             icon={<MailOutlined className="text-[#FFF2E3]" />}
-            className="bg-transparent text-white border border-[#444] placeholder-white"
+            className="border border-[#444] bg-transparent text-white placeholder-white"
             labelClassName="text-[#FFF2E3]"
           />
 
@@ -112,7 +112,7 @@ export default function SignupForm() {
             type="password"
             placeholder="Enter your password"
             icon={<LockOutlined className="!text-[#FFF2E3]" />}
-            className="bg-transparent text-white border border-[#444] placeholder-white"
+            className="border border-[#444] bg-transparent text-white placeholder-white"
             labelClassName="text-[#FFF2E3]"
           />
 
@@ -122,28 +122,46 @@ export default function SignupForm() {
             required
             type="password"
             placeholder="Enter Confirm password"
-            icon={<LockOutlined className=" !text-[#FFF2E3]" />}
-            className="bg-transparent text-white border border-[#444] placeholder-white"
+            icon={<LockOutlined className="!text-[#FFF2E3]" />}
+            className="border border-[#444] bg-transparent text-white placeholder-white"
             labelClassName="text-[#FFF2E3]"
           />
 
-          <Form.Item name="terms" valuePropName="checked" rules={[{ required: true, message: 'You must accept the terms and conditions' }]}>
+          <Form.Item
+            name="terms"
+            valuePropName="checked"
+            rules={[
+              { required: true, message: 'You must accept the terms and conditions' },
+            ]}
+          >
             <Checkbox>
               <span className="!text-[#FFF2E3]">
                 Accept{' '}
-                <Link href="#" className="underline font-medium !text-[#FFF2E3]">
+                <Link href="#" className="font-medium !text-[#FFF2E3] underline">
                   terms & conditions
                 </Link>
               </span>
             </Checkbox>
           </Form.Item>
-          <Button htmlType="submit" block size="large" className="mt-5 bg-[#635d57] text-[#FFF2E3] font-bold w-full  border-none shadow-none">
+          <Button
+            htmlType="submit"
+            block
+            size="large"
+            className="mt-5 w-full border-none bg-[#635d57] font-bold text-[#FFF2E3] shadow-none"
+          >
             Sign up
           </Button>
         </Form>
-        <div className="text-center text-[#fff2e3] mt-6 mb-3">or sign in using</div>
-        <div className="flex justify-center mb-4">
-          <Image src={Images.googleIcon} alt="Google Icon" width={24} height={24} className="cursor-pointer" onClick={handleGoogleLogin} />
+        <div className="mt-6 mb-3 text-center text-[#fff2e3]">or sign in using</div>
+        <div className="mb-4 flex justify-center">
+          <Image
+            src={Images.googleIcon}
+            alt="Google Icon"
+            width={24}
+            height={24}
+            className="cursor-pointer"
+            onClick={handleGoogleLogin}
+          />
         </div>
         <div className="text-center text-[#fff2e3]">
           Already have an account?{' '}

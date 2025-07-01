@@ -27,5 +27,5 @@ export enum PUBLIC_API_ROUTES {
   SIGNUP_API = '/api/auth/signup',
   VERIFY_EMAIL_API = '/api/auth/verify-email',
   FORGOT_PASSWORD_API = '/api/auth/forgot-password',
-  RESET_PASSWORD_API = '/api/auth/reset-password'
+  RESET_PASSWORD_API = '/api/auth/reset-password',
 }

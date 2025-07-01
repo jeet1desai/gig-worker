@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthOptions, User } from "next-auth";
+import NextAuth, { NextAuthOptions, User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { PrismaClient } from '@prisma/client';
@@ -143,7 +143,7 @@ export const authOptions: NextAuthOptions = {
             });
 
             token.id = String(newUser.id);
-            token.role = newUser.role;            
+            token.role = newUser.role;
           } else {
             token.id = String(existingUser.id);
             token.role = existingUser.role;

@@ -32,12 +32,16 @@ const TextField: React.FC<TextFieldProps> = ({
   const InputComponent = type === 'password' ? Input.Password : Input;
 
   return (
-    <Form.Item name={name} rules={[{ required, message: `${label || name} is required` }]} className="mb-4">
+    <Form.Item
+      name={name}
+      rules={[{ required, message: `${label || name} is required` }]}
+      className="mb-4"
+    >
       <div>
         {label && (
-          <label htmlFor={name} className={`block mb-1 font-medium ${labelClassName}`}>
+          <label htmlFor={name} className={`mb-1 block font-medium ${labelClassName}`}>
             {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
+            {required && <span className="ml-1 text-red-500">*</span>}
           </label>
         )}
         {type === 'password' ? (
@@ -54,7 +58,13 @@ const TextField: React.FC<TextFieldProps> = ({
               ...style,
             }}
             rootClassName="custom-ant-input"
-            iconRender={(visible) => (visible ? <EyeTwoTone twoToneColor="#FFF2E3" /> : <EyeInvisibleOutlined style={{ color: '#FFF2E3' }} />)}
+            iconRender={(visible) =>
+              visible ? (
+                <EyeTwoTone twoToneColor="#FFF2E3" />
+              ) : (
+                <EyeInvisibleOutlined style={{ color: '#FFF2E3' }} />
+              )
+            }
           />
         ) : (
           <InputComponent

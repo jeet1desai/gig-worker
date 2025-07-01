@@ -1,7 +1,20 @@
 'use client';
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+} from 'recharts';
 
 const data = [
   { name: 'Jan', earnings: 1200, gigs: 8 },
@@ -14,8 +27,8 @@ const data = [
 
 export function AnalyticsChart() {
   return (
-    <div className="backdrop-blur-xl p-6 shadow-none border border-slate-700/50 rounded-2xl">
-      <div className="flex items-center justify-between mb-10">
+    <div className="rounded-2xl border border-slate-700/50 p-6 shadow-none backdrop-blur-xl">
+      <div className="mb-10 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-white">Earnings Overview</h3>
           <p className="text-sm text-slate-400">Monthly earnings and completed gigs</p>
@@ -25,7 +38,7 @@ export function AnalyticsChart() {
             <SelectTrigger className="border-slate-700/50 text-white">
               <SelectValue placeholder="Select an option" />
             </SelectTrigger>
-            <SelectContent className="bg-foreground text-white border-slate-700/50 hover:text-white">
+            <SelectContent className="bg-foreground border-slate-700/50 text-white hover:text-white">
               <SelectItem value="option1" className="hover:bg-slate-700/50">
                 Option 1
               </SelectItem>
@@ -41,7 +54,7 @@ export function AnalyticsChart() {
             <SelectTrigger className="border-slate-700/50 text-white">
               <SelectValue placeholder="Select an option" />
             </SelectTrigger>
-            <SelectContent className="bg-foreground text-white border-slate-700/50 hover:text-white">
+            <SelectContent className="bg-foreground border-slate-700/50 text-white hover:text-white">
               <SelectItem value="option1" className="hover:bg-slate-700/50">
                 Option 1
               </SelectItem>
@@ -60,9 +73,24 @@ export function AnalyticsChart() {
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
-            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
-            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
-            <Line type="monotone" dataKey="earnings" stroke="#3b82f6" strokeWidth={2} dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }} />
+            <XAxis
+              dataKey="name"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 12, fill: '#94a3b8' }}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 12, fill: '#94a3b8' }}
+            />
+            <Line
+              type="monotone"
+              dataKey="earnings"
+              stroke="#3b82f6"
+              strokeWidth={2}
+              dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

@@ -6,7 +6,7 @@ import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { PUBLIC_ROUTE, PUBLIC_API_ROUTES } from './constants/app-routes';
 
 const publicRoutes = (Object.values(PUBLIC_ROUTE) as string[]).filter(
-  (path) => path !== '#' && path !== '*'
+  (path) => path !== '#' && path !== '*',
 );
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -14,7 +14,7 @@ export async function middleware(req: NextRequest) {
   const publicApiRoutes = Object.values(PUBLIC_API_ROUTES) as string[];
   const isPublicApiRoute = publicApiRoutes.includes(pathname);
   const isPublicRoute = publicRoutes.some(
-    (route) => pathname === route || pathname.startsWith(route + '/')
+    (route) => pathname === route || pathname.startsWith(route + '/'),
   );
 
   if (isPublicRoute || isPublicApiRoute) {
@@ -28,7 +28,7 @@ export async function middleware(req: NextRequest) {
     if (isApiRoute) {
       return NextResponse.json(
         { message: 'Unauthorized: Token missing or expired' },
-        { status: HttpStatusCode.UNAUTHORIZED }
+        { status: HttpStatusCode.UNAUTHORIZED },
       );
     } else {
       const redirectUrl = req.nextUrl.clone();
@@ -39,10 +39,9 @@ export async function middleware(req: NextRequest) {
 
   if (token.exp && token.exp < now) {
     if (isApiRoute) {
-      return new NextResponse(
-        JSON.stringify({ message: 'Token expired' }),
-        { status: HttpStatusCode.UNAUTHORIZED }
-      );
+      return new NextResponse(JSON.stringify({ message: 'Token expired' }), {
+        status: HttpStatusCode.UNAUTHORIZED,
+      });
     } else {
       const redirectUrl = req.nextUrl.clone();
       redirectUrl.pathname = '/';
