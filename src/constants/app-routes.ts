@@ -9,12 +9,14 @@ export enum PUBLIC_ROUTE {
   ABOUT = '/about',
   LANDING_PAGE_PATH = '/landingpage',
   USER_LOGIN_PAGE_PATH = '/auth/login',
-  SIGNUP_PAGE_PATH = '/auth/signup',
-  FORGOT_PASSWORD_PAGE_PATH = '/auth/forgot-password',
-  VERIFY_OTP_PAGE_PATH = '/auth/verify-otp',
-  RESET_PASSWORD_PAGE_PATH = '/auth/reset-password',
-  EMAIL_VERIFICATION = '/auth/email-verification',
+  SIGNUP_PAGE_PATH = '/signup',
+  FORGOT_PASSWORD_PAGE_PATH = '/forgot-password',
+  VERIFY_OTP_PAGE_PATH = '/verify-otp',
+  RESET_PASSWORD_PAGE_PATH = '/reset-password',
+  EMAIL_VERIFICATION = '/email-verification',
   ADMIN_LOGIN_PATH = '/admin/login',
+  NOT_FOUND = '*',
+  EMAIL_VERIFICATION_PATH = '/verify-email',
 }
 
 export enum PRIVATE_ROUTE {
@@ -31,4 +33,5 @@ export enum PUBLIC_API_ROUTES {
   VERIFY_EMAIL_API = '/api/auth/verify-email',
   FORGOT_PASSWORD_API = '/api/auth/forgot-password',
   RESET_PASSWORD_API = '/api/auth/reset-password',
+  API_FORGOT_PASSWORD = '/api/auth/forgot-password',
 }
