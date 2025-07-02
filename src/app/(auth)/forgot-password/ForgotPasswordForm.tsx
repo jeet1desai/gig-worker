@@ -9,7 +9,17 @@ import { PUBLIC_API_ROUTES, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { useRouter } from 'next/navigation';
 import { forgotPasswordSchema } from '@/schemas/auth';
 import { toast } from 'react-toastify';
-import { APPLICATION_JSON, CONTENT_TYPE, POST } from '@/constants';
+import apiService from '@/services/api';
+
+interface ForgotPasswordResponse {
+  message?: string;
+  error?: {
+    message?: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+}
 
 export default function ForgotPasswordForm() {
   const [error, setError] = useState<string | null>(null);
@@ -25,13 +35,24 @@ export default function ForgotPasswordForm() {
     try {
       setError(null);
       await forgotPasswordSchema.validate(values, { abortEarly: false });
-      const response = await fetch(PUBLIC_API_ROUTES.FORGOT_PASSWORD_API, {
-        method: POST,
-        headers: { [CONTENT_TYPE]: APPLICATION_JSON },
-        body: JSON.stringify(values),
-      });
-      const data = await response.json();
-      if (!response.ok) {
+      const { data } = await apiService.post<ForgotPasswordResponse>(
+        PUBLIC_API_ROUTES.FORGOT_PASSWORD_API,
+        values,
+        { withAuth: false },
+      );
+
+      toast.success(data?.message || 'Check your email for reset instructions.');
+      form.resetFields();
+    } catch (err: any) {
+      if (err.name === 'ValidationError') {
+        const fieldErrors = err.inner.map((e: any) => ({
+          name: e.path,
+          errors: [e.message],
+        }));
+        form.setFields(fieldErrors);
+      } else if (err.response) {
+        const data: ForgotPasswordResponse = err.response.data;
+
         const apiErrorMessage =
           data?.error?.message || data?.message || 'Failed to send reset email.';
 
@@ -47,19 +68,7 @@ export default function ForgotPasswordForm() {
         setError(apiErrorMessage);
         toast.error(apiErrorMessage);
       } else {
-        toast.success(data?.message || 'Check your email for reset instructions.');
-        form.resetFields();
-      }
-    } catch (err: any) {
-      if (err.name === 'ValidationError') {
-        const fieldErrors = err.inner.map((e: any) => ({
-          name: e.path,
-          errors: [e.message],
-        }));
-        form.setFields(fieldErrors);
-      } else {
-        const errorMessage =
-          err?.response?.data?.message || err?.message || 'Something went wrong.';
+        const errorMessage = err?.message || 'Something went wrong.';
         setError(errorMessage);
         toast.error(errorMessage);
       }

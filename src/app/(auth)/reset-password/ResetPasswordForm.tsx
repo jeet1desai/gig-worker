@@ -1,17 +1,29 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Form, Button, Typography } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
-import TextField from '@/components/TextField';
-import { useState } from 'react';
-import { resetPasswordSchema } from '@/schemas/auth';
 import { toast } from 'react-toastify';
-import { APPLICATION_JSON, CONTENT_TYPE, PATCH } from '@/constants';
-import { useSearchParams } from 'next/navigation';
+import TextField from '@/components/TextField';
+import { resetPasswordSchema } from '@/schemas/auth';
+import { PUBLIC_API_ROUTES, PUBLIC_ROUTE } from '@/constants/app-routes';
+import apiService from '@/services/api';
+
+interface ResetPasswordResponse {
+  message?: string;
+  error?: {
+    message?: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+}
 
 export default function ResetPasswordForm() {
   const [error, setError] = useState<string | null>(null);
   const [form] = Form.useForm();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const { Title } = Typography;
@@ -24,18 +36,28 @@ export default function ResetPasswordForm() {
         token,
       };
       await resetPasswordSchema.validate(payload, { abortEarly: false });
-      const response = await fetch('/api/auth/reset-password', {
-        method: PATCH,
-        headers: { [CONTENT_TYPE]: APPLICATION_JSON },
-        body: JSON.stringify(payload),
-      });
-      let data;
-      try {
-        data = await response.json();
-      } catch {
-        data = {};
+      const { data } = await apiService.patch<ResetPasswordResponse>(
+        PUBLIC_API_ROUTES.RESET_PASSWORD_API,
+        payload,
+        { withAuth: false },
+      );
+
+      toast.success(data?.message || 'Password has been reset successfully.');
+      form.resetFields();
+      setTimeout(() => {
+        router.push(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH);
+      }, 3000);
+    } catch (err: any) {
+      if (err.name === 'ValidationError') {
+        const fieldErrors = err.inner.map((e: any) => ({
+          name: e.path,
+          errors: [e.message],
+        }));
+        form.setFields(fieldErrors);
+        return;
       }
-      if (!response.ok) {
+      if (err.response) {
+        const data: ResetPasswordResponse = err.response.data;
         const apiErrorMessage =
           data?.error?.message || data?.message || 'Failed to reset password.';
         if (data?.error?.fieldErrors) {
@@ -50,21 +72,9 @@ export default function ResetPasswordForm() {
         setError(apiErrorMessage);
         toast.error(apiErrorMessage);
       } else {
-        toast.success(data?.message || 'Password has been reset successfully.');
-        form.resetFields();
-      }
-    } catch (err: any) {
-      if (err.name === 'ValidationError') {
-        const fieldErrors = err.inner.map((e: any) => ({
-          name: e.path,
-          errors: [e.message],
-        }));
-        form.setFields(fieldErrors);
-      } else {
-        const errorMessage =
-          err?.response?.data?.message || err?.message || 'Something went wrong.';
-        setError(errorMessage);
-        toast.error(errorMessage);
+        const fallback = err?.message || 'Something went wrong.';
+        setError(fallback);
+        toast.error(fallback);
       }
     }
   };
@@ -74,6 +84,7 @@ export default function ResetPasswordForm() {
       <Title level={3} className="mb-6 text-center !text-2xl">
         <span className="text-[#FFF2E3]">Reset password</span>
       </Title>
+
       <Form
         name="resetpassword"
         form={form}
