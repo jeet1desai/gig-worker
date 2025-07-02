@@ -5,9 +5,7 @@ import type { NextRequest } from 'next/server';
 import { PUBLIC_ROUTE, PUBLIC_API_ROUTES } from '@/constants/app-routes';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 
-const publicRoutes = (Object.values(PUBLIC_ROUTE) as string[]).filter(
-  (path) => path !== '#' && path !== '*',
-);
+const publicRoutes = (Object.values(PUBLIC_ROUTE) as string[]).filter((path) => path !== '#' && path !== '*');
 
 export async function middleware(req: NextRequest) {
   if (req.headers.get('upgrade') === 'websocket') {
@@ -18,9 +16,7 @@ export async function middleware(req: NextRequest) {
   const isApiRoute = pathname.startsWith('/api');
   const publicApiRoutes = Object.values(PUBLIC_API_ROUTES) as string[];
   const isPublicApiRoute = publicApiRoutes.includes(pathname);
-  const isPublicRoute = publicRoutes.some(
-    (route) => pathname === route || pathname.startsWith(route + '/'),
-  );
+  const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
 
   if (isPublicRoute || isPublicApiRoute) {
     return NextResponse.next();
@@ -31,10 +27,7 @@ export async function middleware(req: NextRequest) {
 
   if (!token) {
     if (isApiRoute) {
-      return NextResponse.json(
-        { message: 'Unauthorized: Token missing or expired' },
-        { status: HttpStatusCode.UNAUTHORIZED },
-      );
+      return NextResponse.json({ message: 'Unauthorized: Token missing or expired' }, { status: HttpStatusCode.UNAUTHORIZED });
     } else {
       const redirectUrl = req.nextUrl.clone();
       redirectUrl.pathname = '/';

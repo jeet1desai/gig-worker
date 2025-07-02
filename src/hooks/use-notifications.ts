@@ -47,15 +47,18 @@ export function useNotifications(userId?: string) {
     [userId],
   );
 
-  const markAsRead = useCallback((notificationId: string) => {
-    const notificationIndex = notifications.findIndex((item) => BigInt(item.id) === BigInt(notificationId));
-    if (notificationIndex !== -1) {
-      const updatedNotifications = [...notifications];
-      updatedNotifications[notificationIndex].is_read = true;
-      setNotifications(updatedNotifications);
-    }
-    socketManager.emit('notification:mark_as_read', { userId, notificationId });
-  }, []);
+  const markAsRead = useCallback(
+    (notificationId: string) => {
+      const notificationIndex = notifications.findIndex((item) => BigInt(item.id) === BigInt(notificationId));
+      if (notificationIndex !== -1) {
+        const updatedNotifications = [...notifications];
+        updatedNotifications[notificationIndex].is_read = true;
+        setNotifications(updatedNotifications);
+      }
+      socketManager.emit('notification:mark_as_read', { userId, notificationId });
+    },
+    [notifications],
+  );
 
   const markAllAsRead = useCallback(() => {
     const updatedNotifications = notifications.map((item) => ({
@@ -64,7 +67,7 @@ export function useNotifications(userId?: string) {
     }));
     setNotifications(updatedNotifications);
     socketManager.emit('notification:mark_all_as_read', { userId });
-  }, []);
+  }, [notifications]);
 
   useEffect(() => {
     if (!userId) return;

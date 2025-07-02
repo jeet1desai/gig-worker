@@ -1,7 +1,5 @@
 'use client';
 
-import React, { useEffect } from 'react';
-
 import DashboardLayout from '@/components/dashboard/layout';
 
 import { MetricsCards } from './components/matrics-card';
@@ -10,19 +8,6 @@ import { UserProfile } from './components/user-profile';
 import { WeeklySummary } from './components/weekly-summary';
 
 const Dashboard = () => {
-  useEffect(() => {
-    sendNotifications();
-  }, []);
-
-  const sendNotifications = async () => {
-    try {
-      const response = await fetch('/api/users');
-      const result: any = await response.json();
-    } catch (error) {
-      console.error('Error sending notification:', error);
-    }
-  };
-
   return (
     <>
       <DashboardLayout>
@@ -32,10 +17,7 @@ const Dashboard = () => {
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:gap-4 md:gap-6 lg:grid-cols-3">
-            <div
-              className="animate-fade-in lg:col-span-2"
-              style={{ animationDelay: '0.1s' }}
-            >
+            <div className="animate-fade-in lg:col-span-2" style={{ animationDelay: '0.1s' }}>
               <AnalyticsChart />
             </div>
             <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
@@ -45,10 +27,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div
-            className="animate-fade-in pb-4 sm:pb-6"
-            style={{ animationDelay: '0.3s' }}
-          >
+          <div className="animate-fade-in pb-4 sm:pb-6" style={{ animationDelay: '0.3s' }}>
             <WeeklySummary />
           </div>
         </main>

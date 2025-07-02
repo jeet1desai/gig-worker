@@ -12,10 +12,7 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setUserRole: (
-      state: UserState,
-      action: PayloadAction<{ role: 'user' | 'provider' }>,
-    ) => {
+    setUserRole: (state: UserState, action: PayloadAction<{ role: 'user' | 'provider' }>) => {
       state.role = action.payload.role;
     },
   },

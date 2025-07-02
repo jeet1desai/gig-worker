@@ -20,7 +20,7 @@ export default function LoginForm() {
 
   const pageRedirection = (path: string) => {
     router.push(path);
-  }
+  };
 
   const handleSubmit = async (values: { email: string; password: string }) => {
     try {
@@ -105,39 +105,27 @@ export default function LoginForm() {
           <button
             type="button"
             onClick={() => pageRedirection(PUBLIC_ROUTE.FORGOT_PASSWORD_PAGE_PATH)}
-            className="font-medium underline text-[#FFF2E3] bg-transparent border-none p-0 cursor-pointer"
+            className="cursor-pointer border-none bg-transparent p-0 font-medium text-[#FFF2E3] underline"
           >
             Forgot password ?
           </button>
         </div>
         <Form.Item>
-          <Button
-            htmlType="submit"
-            block
-            size="large"
-            className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none"
-          >
+          <Button htmlType="submit" block size="large" className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none">
             Sign in
           </Button>
         </Form.Item>
       </Form>
       <div className="mt-6 mb-3 text-center text-sm text-[#FFF2E3]">or sign in using</div>
       <div className="mb-4 flex justify-center">
-        <Image
-          src={Images.googleIcon}
-          alt="Google Icon"
-          width={36}
-          height={36}
-          className="cursor-pointer"
-          onClick={handleGoogleLogin}
-        />
+        <Image src={Images.googleIcon} alt="Google Icon" width={36} height={36} className="cursor-pointer" onClick={handleGoogleLogin} />
       </div>
       <div className="text-center text-sm text-[#FFF2E3]">
         Don&apos;t have an account?{' '}
         <button
           type="button"
           onClick={() => pageRedirection(PUBLIC_ROUTE.SIGNUP_PAGE_PATH)}
-          className="font-medium underline text-[#FFF2E3] bg-transparent border-none p-0 cursor-pointer"
+          className="cursor-pointer border-none bg-transparent p-0 font-medium text-[#FFF2E3] underline"
         >
           Sign up
         </button>

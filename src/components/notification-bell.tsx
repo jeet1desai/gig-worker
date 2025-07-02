@@ -1,32 +1,19 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNotifications } from '../hooks/use-notifications';
 import { AlertCircle, Bell, Check, Clock, X } from 'lucide-react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const NotificationBell = () => {
   const userId = '5';
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { unreadCount, notifications, markAsRead, markAllAsRead, fetchNotifications, isLoading, pagination } = useNotifications(userId);
-  const notificationListRef = useRef<HTMLDivElement>(null);
 
-  const handleScroll = () => {
-    if (!notificationListRef.current) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = notificationListRef.current;
-    const isNearBottom = scrollHeight - (scrollTop + clientHeight) < 100;
-
-    if (isNearBottom && !isLoading && pagination.page < pagination.totalPages) {
-      loadMore();
+  const loadMore = useCallback(() => {
+    if (!isLoading && pagination.page < pagination.totalPages) {
+      fetchNotifications(pagination.page + 1, pagination.limit);
     }
-  };
-
-  const loadMore = () => {
-    const nextPage = pagination.page + 1;
-    console.log(nextPage, pagination.totalPages);
-    if (!isLoading && nextPage <= pagination.totalPages) {
-      fetchNotifications(nextPage, pagination.limit);
-    }
-  };
+  }, [isLoading, pagination.page, pagination.totalPages, pagination.limit, fetchNotifications]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -40,18 +27,6 @@ const NotificationBell = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
-  useEffect(() => {
-    const listElement = notificationListRef.current;
-    if (listElement && isOpen) {
-      listElement.addEventListener('scroll', handleScroll);
-    }
-    return () => {
-      if (listElement) {
-        listElement.removeEventListener('scroll', handleScroll);
-      }
-    };
-  }, [isOpen, handleScroll]);
 
   const handleNotificationClick = (notificationId: string) => {
     markAsRead(notificationId);
@@ -119,9 +94,16 @@ const NotificationBell = () => {
             </div>
           </div>
 
-          <div ref={notificationListRef} className="max-h-96 overflow-y-auto">
-            {notifications.length > 0 ? (
-              notifications.map((notification) => (
+          <div id="scrollableDiv" className="max-h-96 overflow-y-auto">
+            <InfiniteScroll
+              dataLength={notifications.length}
+              next={loadMore}
+              hasMore={pagination.page < pagination.totalPages}
+              loader={<div className="p-4 text-center text-sm text-slate-400">Loading more...</div>}
+              scrollableTarget="scrollableDiv"
+              scrollThreshold={0.9}
+            >
+              {notifications.map((notification) => (
                 <div
                   key={notification.id}
                   className={`cursor-pointer border-b border-slate-700/30 p-3 transition-colors hover:bg-slate-700/30 ${!notification.is_read ? 'bg-slate-800/70' : ''}`}
@@ -140,8 +122,9 @@ const NotificationBell = () => {
                     </div>
                   </div>
                 </div>
-              ))
-            ) : (
+              ))}
+            </InfiniteScroll>
+            {notifications.length === 0 && (
               <div className="p-6 text-center">
                 <Bell className="mx-auto mb-2 h-6 w-6 text-slate-500" />
                 <p className="text-sm text-slate-400">No new notifications</p>

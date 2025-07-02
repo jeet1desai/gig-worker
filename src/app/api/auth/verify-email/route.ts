@@ -10,11 +10,7 @@ export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token');
 
   if (!token) {
-    return errorResponse(
-      'TOKEN_MISSING',
-      'Verification token is missing.',
-      HttpStatusCode.BAD_REQUEST,
-    );
+    return errorResponse('TOKEN_MISSING', 'Verification token is missing.', HttpStatusCode.BAD_REQUEST);
   }
 
   try {
@@ -23,11 +19,7 @@ export async function GET(req: NextRequest) {
     const user = await prisma.user.findUnique({ where: { id: BigInt(userId) } });
 
     if (!user) {
-      return errorResponse(
-        'USER_NOT_FOUND',
-        'No user found for the provided token.',
-        HttpStatusCode.NOT_FOUND,
-      );
+      return errorResponse('USER_NOT_FOUND', 'No user found for the provided token.', HttpStatusCode.NOT_FOUND);
     }
 
     if (user.is_verified) {
@@ -47,13 +39,8 @@ export async function GET(req: NextRequest) {
 
     return successResponse(safeJson(updatedUser), 'Email verified successfully.');
   } catch (err) {
-    return errorResponse(
-      'INVALID_OR_EXPIRED_TOKEN',
-      'Verification token is invalid or has expired.',
-      HttpStatusCode.UNAUTHORIZED,
-      {
-        details: err instanceof Error ? err.message : 'Unknown error',
-      },
-    );
+    return errorResponse('INVALID_OR_EXPIRED_TOKEN', 'Verification token is invalid or has expired.', HttpStatusCode.UNAUTHORIZED, {
+      details: err instanceof Error ? err.message : 'Unknown error',
+    });
   }
 }

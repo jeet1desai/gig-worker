@@ -13,12 +13,9 @@ export async function PATCH(req: NextRequest) {
     const token = searchParams.get('token');
 
     if (!token) {
-      return errorResponse(
-        'VALIDATION_ERROR',
-        'Reset token is missing or expired.',
-        HttpStatusCode.BAD_REQUEST,
-        { fieldErrors: { token: 'Reset token is required.' } },
-      );
+      return errorResponse('VALIDATION_ERROR', 'Reset token is missing or expired.', HttpStatusCode.BAD_REQUEST, {
+        fieldErrors: { token: 'Reset token is required.' },
+      });
     }
 
     const body = await req.json();
@@ -32,11 +29,7 @@ export async function PATCH(req: NextRequest) {
     try {
       payload = verifyEmailVerificationToken(token);
     } catch {
-      return errorResponse(
-        'INVALID_TOKEN',
-        'Reset password link is invalid or expired.',
-        HttpStatusCode.BAD_REQUEST,
-      );
+      return errorResponse('INVALID_TOKEN', 'Reset password link is invalid or expired.', HttpStatusCode.BAD_REQUEST);
     }
 
     const user = await prisma.user.findUnique({
@@ -54,11 +47,7 @@ export async function PATCH(req: NextRequest) {
       data: { password: hashedPassword },
     });
 
-    return successResponse(
-      null,
-      'Password has been reset successfully.',
-      HttpStatusCode.OK,
-    );
+    return successResponse(null, 'Password has been reset successfully.', HttpStatusCode.OK);
   } catch (err) {
     if (err instanceof ValidationError) {
       const fieldErrors: Record<string, string> = {};
@@ -67,21 +56,11 @@ export async function PATCH(req: NextRequest) {
         else fieldErrors[''] = issue.message;
       }
 
-      return errorResponse(
-        'VALIDATION_ERROR',
-        'Invalid request payload',
-        HttpStatusCode.BAD_REQUEST,
-        { fieldErrors },
-      );
+      return errorResponse('VALIDATION_ERROR', 'Invalid request payload', HttpStatusCode.BAD_REQUEST, { fieldErrors });
     }
 
-    return errorResponse(
-      'INTERNAL_SERVER_ERROR',
-      'Something went wrong while processing your request.',
-      HttpStatusCode.INTERNAL_SERVER_ERROR,
-      {
-        details: err instanceof Error ? err.message : 'Unknown error',
-      },
-    );
+    return errorResponse('INTERNAL_SERVER_ERROR', 'Something went wrong while processing your request.', HttpStatusCode.INTERNAL_SERVER_ERROR, {
+      details: err instanceof Error ? err.message : 'Unknown error',
+    });
   }
 }

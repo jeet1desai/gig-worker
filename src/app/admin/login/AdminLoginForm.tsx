@@ -20,7 +20,7 @@ export default function AdminLoginForm() {
 
   return (
     <>
-      <Title level={3} className="text-center mb-6 !text-2xl">
+      <Title level={3} className="mb-6 text-center !text-2xl">
         <span className="text-[#FFF2E3]">Admin Login</span>
       </Title>
       <Form
@@ -42,7 +42,7 @@ export default function AdminLoginForm() {
           type="text"
           placeholder="Enter your email"
           icon={<MailOutlined className="text-[#FFF2E3]" />}
-          className="bg-transparent text-white border border-[#444] placeholder-white"
+          className="border border-[#444] bg-transparent text-white placeholder-white"
           labelClassName="text-[#FFF2E3]"
         />
 
@@ -53,14 +53,14 @@ export default function AdminLoginForm() {
           type="password"
           placeholder="Enter your password"
           icon={<LockOutlined className="text-[#FFF2E3]" />}
-          className="bg-transparent text-white border border-[#444] placeholder-white"
+          className="border border-[#444] bg-transparent text-white placeholder-white"
           labelClassName="text-[#FFF2E3]"
         />
 
-        {error && <div className="text-red-400 text-sm text-start mb-3">{error}</div>}
+        {error && <div className="mb-3 text-start text-sm text-red-400">{error}</div>}
 
         <Form.Item>
-          <Button htmlType="submit" block size="large" className="mt-5 bg-[#635d57] text-[#FFF2E3] border-none shadow-none font-large">
+          <Button htmlType="submit" block size="large" className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none">
             Sign in
           </Button>
         </Form.Item>

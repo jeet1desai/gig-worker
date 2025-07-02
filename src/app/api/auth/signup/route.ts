@@ -31,11 +31,7 @@ export async function POST(req: Request) {
       where: { email: formattedEmail },
     });
     if (existingUser) {
-      return errorResponse(
-        'USER_ALREADY_EXISTS',
-        'A user with this email already exists.',
-        HttpStatusCode.BAD_REQUEST,
-      );
+      return errorResponse('USER_ALREADY_EXISTS', 'A user with this email already exists.', HttpStatusCode.BAD_REQUEST);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -79,21 +75,11 @@ export async function POST(req: Request) {
         if (issue.path) fieldErrors[issue.path] = issue.message;
       }
 
-      return errorResponse(
-        'VALIDATION_ERROR',
-        'Invalid request payload',
-        HttpStatusCode.BAD_REQUEST,
-        { fieldErrors },
-      );
+      return errorResponse('VALIDATION_ERROR', 'Invalid request payload', HttpStatusCode.BAD_REQUEST, { fieldErrors });
     }
 
-    return errorResponse(
-      'INTERNAL_SERVER_ERROR',
-      'Something went wrong while creating the user.',
-      HttpStatusCode.INTERNAL_SERVER_ERROR,
-      {
-        details: err instanceof Error ? err.message : 'Unknown error',
-      },
-    );
+    return errorResponse('INTERNAL_SERVER_ERROR', 'Something went wrong while creating the user.', HttpStatusCode.INTERNAL_SERVER_ERROR, {
+      details: err instanceof Error ? err.message : 'Unknown error',
+    });
   }
 }

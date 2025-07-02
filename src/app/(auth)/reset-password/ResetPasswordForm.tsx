@@ -72,12 +72,7 @@ export default function ResetPasswordForm() {
           labelClassName="text-[#FFF2E3]"
         />
         <Form.Item>
-          <Button
-            htmlType="submit"
-            block
-            size="large"
-            className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none"
-          >
+          <Button htmlType="submit" block size="large" className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none">
             Change Password
           </Button>
         </Form.Item>

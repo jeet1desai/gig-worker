@@ -30,11 +30,7 @@ export default function ClientSocketWrapper() {
 
   return (
     <div className="fixed right-4 bottom-4 z-50 flex items-center rounded-lg bg-gray-800 px-4 py-2 text-sm text-white shadow-lg">
-      <div
-        className={`mr-2 h-3 w-3 rounded-full ${
-          isConnected ? 'bg-green-500' : 'bg-red-500'
-        }`}
-      ></div>
+      <div className={`mr-2 h-3 w-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
       <span>Socket: {isConnected ? 'Connected' : 'Disconnected'}</span>
     </div>
   );

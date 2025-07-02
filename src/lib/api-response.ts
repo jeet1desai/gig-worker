@@ -2,12 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { ApiResponse } from '@/types/shared/api-response';
 
-export function successResponse<T, S>(
-  data: T,
-  message?: string,
-  status = 200,
-  meta?: S,
-): NextResponse<ApiResponse<T, S>> {
+export function successResponse<T, S>(data: T, message?: string, status = 200, meta?: S): NextResponse<ApiResponse<T, S>> {
   const response: ApiResponse<T, S> = {
     success: true,
     data,

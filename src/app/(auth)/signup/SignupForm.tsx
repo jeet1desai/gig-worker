@@ -29,7 +29,7 @@ export default function SignupForm() {
 
   const pageRedirection = (path: string) => {
     router.push(path);
-  }
+  };
   const handleSubmit = async (values: SignupFormValues) => {
     try {
       setError(null);
@@ -127,13 +127,7 @@ export default function SignupForm() {
             labelClassName="text-[#FFF2E3]"
           />
 
-          <Form.Item
-            name="terms"
-            valuePropName="checked"
-            rules={[
-              { required: true, message: 'You must accept the terms and conditions' },
-            ]}
-          >
+          <Form.Item name="terms" valuePropName="checked" rules={[{ required: true, message: 'You must accept the terms and conditions' }]}>
             <Checkbox>
               <span className="!text-[#FFF2E3]">
                 Accept{' '}
@@ -143,29 +137,17 @@ export default function SignupForm() {
               </span>
             </Checkbox>
           </Form.Item>
-          <Button
-            htmlType="submit"
-            block
-            size="large"
-            className="mt-5 w-full border-none bg-[#635d57] font-bold text-[#FFF2E3] shadow-none"
-          >
+          <Button htmlType="submit" block size="large" className="mt-5 w-full border-none bg-[#635d57] font-bold text-[#FFF2E3] shadow-none">
             Sign up
           </Button>
         </Form>
         <div className="mt-6 mb-3 text-center text-[#fff2e3]">or sign in using</div>
         <div className="mb-4 flex justify-center">
-          <Image
-            src={Images.googleIcon}
-            alt="Google Icon"
-            width={24}
-            height={24}
-            className="cursor-pointer"
-            onClick={handleGoogleLogin}
-          />
+          <Image src={Images.googleIcon} alt="Google Icon" width={24} height={24} className="cursor-pointer" onClick={handleGoogleLogin} />
         </div>
         <div className="text-center text-[#fff2e3]">
           Already have an account?{' '}
-          <a className="font-medium text-[#fff2e3] underline cursor-pointer" onClick={() => pageRedirection(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH)}>
+          <a className="cursor-pointer font-medium text-[#fff2e3] underline" onClick={() => pageRedirection(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH)}>
             Log In
           </a>
         </div>

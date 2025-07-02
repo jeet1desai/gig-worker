@@ -15,12 +15,12 @@ export enum PUBLIC_ROUTE {
   VERIFY_OTP_PAGE_PATH = '/verify-otp',
   RESET_PASSWORD_PAGE_PATH = '/reset-password',
   ADMIN_LOGIN_PATH = '/admin/login',
-  NOT_FOUND = '*',
   EMAIL_VERIFICATION_PATH = '/email-verification',
-  DASHBOARD = '/dashboard',
+  NOT_FOUND = '*',
 }
 
 export enum PRIVATE_ROUTE {
+  DASHBOARD = '/dashboard',
   USER_PROFILE = '/profile',
   ADMIN_DASHBOARD_PATH = '/admin/dashboard',
   ADMIN_USERS_DASHBOARD_PATH = '/admin/dashboard/users',
