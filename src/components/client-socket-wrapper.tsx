@@ -17,7 +17,6 @@ export default function ClientSocketWrapper() {
 
   useEffect(() => {
     if (socket && !isInitialized) {
-      console.log('Socket initialized:', socket.id);
       setIsInitialized(true);
 
       const currentUserId = '5';

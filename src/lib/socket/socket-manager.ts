@@ -58,14 +58,12 @@ class SocketManager {
     if (!this.socket) return;
 
     const onConnect = () => {
-      console.log('Socket connected:', this.socket?.id);
       this.isConnected = true;
       this.reconnectAttempts = 0;
       this.notifySubscribers();
     };
 
     const onDisconnect = () => {
-      console.log('Socket disconnected');
       this.isConnected = false;
       this.notifySubscribers();
     };

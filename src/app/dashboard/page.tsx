@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import DashboardLayout from '@/components/dashboard/layout';
 
@@ -10,6 +10,19 @@ import { UserProfile } from './components/user-profile';
 import { WeeklySummary } from './components/weekly-summary';
 
 const Dashboard = () => {
+  useEffect(() => {
+    sendNotifications();
+  }, []);
+
+  const sendNotifications = async () => {
+    try {
+      const response = await fetch('/api/users');
+      const result: any = await response.json();
+    } catch (error) {
+      console.error('Error sending notification:', error);
+    }
+  };
+
   return (
     <>
       <DashboardLayout>
