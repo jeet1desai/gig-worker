@@ -33,7 +33,7 @@ export async function POST(req: Request) {
       email: user.email,
     });
 
-    const resetUrl = `${publicEnv.NEXT_PUBLIC_BASE_URL}${PUBLIC_ROUTE.RESET_PASSWORD}?token=${token}`;
+    const resetUrl = `${publicEnv.NEXT_PUBLIC_BASE_URL}${PUBLIC_ROUTE.RESET_PASSWORD_PAGE_PATH}?token=${token}`;
     const userName = user.email;
     const { subject, html } = getResetPasswordEmail({ userName, actionLink: resetUrl });
 
