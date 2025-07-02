@@ -22,10 +22,10 @@ export async function POST(req: Request) {
     const user = await prisma.user.findUnique({ where: { email: formattedEmail } });
 
     if (!user) {
-      return successResponse(
-        null,
-        'Check your inbox! Password reset link has been sent.',
-        HttpStatusCode.OK,
+      return errorResponse(
+        'USER_NOT_FOUND',
+        'User with this email does not exist.',
+        HttpStatusCode.BAD_REQUEST,
       );
     }
 
