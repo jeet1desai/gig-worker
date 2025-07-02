@@ -10,6 +10,7 @@ datasource db {
 enum ROLE {
   user
   provider
+  admin
 }
 
 enum TIER {
@@ -148,6 +149,7 @@ model Admin {
   last_name   String
   password    String
   profile_url String?
+  role        ROLE     @default(admin)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 }
