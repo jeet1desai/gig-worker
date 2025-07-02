@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Tooltip } from 'antd';
 import {
   Bell,
@@ -17,6 +17,9 @@ import {
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '../ui/button';
+import { signOut } from 'next-auth/react';
+import { PUBLIC_ROUTE } from '@/constants/app-routes';
+import { useRouter } from 'next/navigation';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -36,6 +39,7 @@ interface Notification {
 
 export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps) {
   const isMobile = useIsMobile();
+  const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -73,6 +77,12 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
   ]);
 
   const notificationRef = useRef<HTMLDivElement>(null);
+
+  const handleLogout = useCallback(async () => {
+    await signOut({ redirect: false });
+    router.push(PUBLIC_ROUTE.HOME);
+    // router.refresh();
+  }, [router, PUBLIC_ROUTE.HOME]);
 
   // Close notifications when clicking outside
   useEffect(() => {
@@ -184,6 +194,14 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
               <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 animate-pulse items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-[9px] font-bold text-white">
                 3
               </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="font-medium text-[#FFF2E3] bg-transparent border-none p-0 cursor-pointer pl-3"
+            >
+              Logout
             </button>
 
             {showNotifications && (

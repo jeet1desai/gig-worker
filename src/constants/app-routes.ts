@@ -28,10 +28,18 @@ export enum PRIVATE_ROUTE {
 }
 
 export enum PUBLIC_API_ROUTES {
-  LOGIN_API = '/api/auth/login',
   SIGNUP_API = '/api/auth/signup',
   VERIFY_EMAIL_API = '/api/auth/verify-email',
   FORGOT_PASSWORD_API = '/api/auth/forgot-password',
   RESET_PASSWORD_API = '/api/auth/reset-password',
   API_FORGOT_PASSWORD = '/api/auth/forgot-password',
 }
+
+export const excludedPublicRoutes = [
+  PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH,
+  PUBLIC_ROUTE.SIGNUP_PAGE_PATH,
+  PUBLIC_ROUTE.FORGOT_PASSWORD_PAGE_PATH,
+  PUBLIC_ROUTE.VERIFY_OTP_PAGE_PATH,
+  PUBLIC_ROUTE.RESET_PASSWORD_PAGE_PATH,
+  PUBLIC_ROUTE.EMAIL_VERIFICATION_PATH
+];

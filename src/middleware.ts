@@ -3,11 +3,10 @@ import { getToken } from 'next-auth/jwt';
 
 import type { NextRequest } from 'next/server';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
-import { PUBLIC_ROUTE, PUBLIC_API_ROUTES } from './constants/app-routes';
+import { PUBLIC_ROUTE, PUBLIC_API_ROUTES, PRIVATE_ROUTE, excludedPublicRoutes } from './constants/app-routes';
 
-const publicRoutes = (Object.values(PUBLIC_ROUTE) as string[]).filter(
-  (path) => path !== '#' && path !== '*',
-);
+const publicRoutes = Object.values(PUBLIC_ROUTE) as string[];
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isApiRoute = pathname.startsWith('/api');
@@ -17,12 +16,31 @@ export async function middleware(req: NextRequest) {
     (route) => pathname === route || pathname.startsWith(route + '/'),
   );
 
-  if (isPublicRoute || isPublicApiRoute) {
+  if (isPublicApiRoute) {
     return NextResponse.next();
   }
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const now = Math.floor(Date.now() / 1000);
+
+  const isRestrictedPublicRoute = excludedPublicRoutes.some(
+    (route) => pathname === route || pathname.startsWith(route + '/'),
+  );
+
+  if (isPublicRoute) {
+    if (
+      token &&
+      token.exp > now &&
+      isRestrictedPublicRoute &&
+      pathname !== PRIVATE_ROUTE.DASHBOARD
+    ) {
+      const url = req.nextUrl.clone();
+      url.pathname = PRIVATE_ROUTE.DASHBOARD;
+      return NextResponse.redirect(url);
+    }
+
+    return NextResponse.next();
+  }
 
   if (!token) {
     if (isApiRoute) {
