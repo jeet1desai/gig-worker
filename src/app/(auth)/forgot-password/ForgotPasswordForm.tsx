@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { Form, Button, Typography } from 'antd';
 import { MailOutlined } from '@ant-design/icons';
 import TextField from '@/components/TextField';
-import { forgotPasswordSchema } from '../../../schemas/auth';
 import { BackArrowIconSvg } from '@/components/icons';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { useRouter } from 'next/navigation';
+import { handleForgotPassword } from '@/controllers/UserForgotPasswordController';
 
 export default function ForgotPasswordForm() {
   const [error, setError] = useState<string | null>(null);
@@ -17,23 +17,10 @@ export default function ForgotPasswordForm() {
 
   const pageRedirection = (path: string) => {
     router.push(path);
-  }
+  };
 
-  const handleSubmit = async (values: { email: string }) => {
-    try {
-      setError(null);
-      await forgotPasswordSchema.validate(values, { abortEarly: false });
-    } catch (err: any) {
-      if (err.name === 'ValidationError') {
-        const fieldErrors = err.inner.map((e: any) => ({
-          name: e.path,
-          errors: [e.message],
-        }));
-        form.setFields(fieldErrors);
-      } else {
-        setError('Something went wrong');
-      }
-    }
+  const onFinish = (values: { email: string }) => {
+    handleForgotPassword(values, form, setError);
   };
 
   return (
@@ -45,7 +32,7 @@ export default function ForgotPasswordForm() {
         <button
           type="button"
           onClick={() => pageRedirection(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH)}
-          className="absolute left-0 focus:outline-none bg-transparent border-none p-0 cursor-pointer"
+          className="absolute left-0 cursor-pointer border-none bg-transparent p-0 focus:outline-none"
           aria-label="Back to login"
         >
           <BackArrowIconSvg />
@@ -57,7 +44,7 @@ export default function ForgotPasswordForm() {
       </span>
       <Form
         name="email"
-        onFinish={handleSubmit}
+        onFinish={onFinish}
         form={form}
         layout="vertical"
         className="w-full"
@@ -91,7 +78,7 @@ export default function ForgotPasswordForm() {
         <button
           type="button"
           onClick={() => pageRedirection(PUBLIC_ROUTE.SIGNUP_PAGE_PATH)}
-          className="font-medium underline text-[#FFF2E3] bg-transparent border-none p-0 cursor-pointer"
+          className="cursor-pointer border-none bg-transparent p-0 font-medium text-[#FFF2E3] underline"
         >
           Sign up
         </button>
