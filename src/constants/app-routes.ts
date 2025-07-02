@@ -6,6 +6,12 @@ export const INSTAGRAM_PROFILE_PATH = 'https://www.instagram.com';
 export enum PUBLIC_ROUTE {
   UNKNOWN = '#',
   HOME = '/',
+  LOGIN = '/login',
+  SIGNUP = '/signup',
+  FORGOT_PASSWORD = '/forgot-password',
+  VERIFY_OTP = '/verify-otp',
+  RESET_PASSWORD = '/reset-password',
+  LANDING_PAGE = '/landingpage',
   ABOUT = '/about',
   LANDING_PAGE_PATH = '/landingpage',
   USER_LOGIN_PAGE_PATH = '/auth/login',
@@ -16,7 +22,7 @@ export enum PUBLIC_ROUTE {
   EMAIL_VERIFICATION = '/email-verification',
   ADMIN_LOGIN_PATH = '/admin/login',
   NOT_FOUND = '*',
-  EMAIL_VERIFICATION_PATH = '/verify-email',
+  EMAIL_VERIFICATION_PATH = '/email-verification',
 }
 
 export enum PRIVATE_ROUTE {
