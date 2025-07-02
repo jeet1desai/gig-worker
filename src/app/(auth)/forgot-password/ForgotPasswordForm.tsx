@@ -5,9 +5,11 @@ import { Form, Button, Typography } from 'antd';
 import { MailOutlined } from '@ant-design/icons';
 import TextField from '@/components/TextField';
 import { BackArrowIconSvg } from '@/components/icons';
-import { PUBLIC_ROUTE } from '@/constants/app-routes';
+import { PUBLIC_API_ROUTES, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { useRouter } from 'next/navigation';
-import { handleForgotPassword } from '@/controllers/UserForgotPasswordController';
+import { forgotPasswordSchema } from '@/schemas/auth';
+import { toast } from 'react-toastify';
+import { APPLICATION_JSON, CONTENT_TYPE, POST } from '@/constants';
 
 export default function ForgotPasswordForm() {
   const [error, setError] = useState<string | null>(null);
@@ -19,8 +21,49 @@ export default function ForgotPasswordForm() {
     router.push(path);
   };
 
-  const onFinish = (values: { email: string }) => {
-    handleForgotPassword(values, form, setError);
+  const onFinish = async (values: { email: string }) => {
+    try {
+      setError(null);
+      await forgotPasswordSchema.validate(values, { abortEarly: false });
+      const response = await fetch(PUBLIC_API_ROUTES.FORGOT_PASSWORD_API, {
+        method: POST,
+        headers: { [CONTENT_TYPE]: APPLICATION_JSON },
+        body: JSON.stringify(values),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        const apiErrorMessage =
+          data?.error?.message || data?.message || 'Failed to send reset email.';
+
+        if (data?.error?.fieldErrors) {
+          const fieldErrors = Object.entries(data.error.fieldErrors).map(
+            ([name, message]) => ({
+              name,
+              errors: [message as string],
+            }),
+          );
+          form.setFields(fieldErrors);
+        }
+        setError(apiErrorMessage);
+        toast.error(apiErrorMessage);
+      } else {
+        toast.success(data?.message || 'Check your email for reset instructions.');
+        form.resetFields();
+      }
+    } catch (err: any) {
+      if (err.name === 'ValidationError') {
+        const fieldErrors = err.inner.map((e: any) => ({
+          name: e.path,
+          errors: [e.message],
+        }));
+        form.setFields(fieldErrors);
+      } else {
+        const errorMessage =
+          err?.response?.data?.message || err?.message || 'Something went wrong.';
+        setError(errorMessage);
+        toast.error(errorMessage);
+      }
+    }
   };
 
   return (
