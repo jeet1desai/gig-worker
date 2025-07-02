@@ -6,5 +6,10 @@ export interface SignupPayload {
 }
 
 export interface forgotPasswordPayload {
-  email: string
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  password: string;
+  confirmPassword: string;
 }
