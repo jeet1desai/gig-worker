@@ -1,23 +1,32 @@
 'use client';
 
-import { useEffect } from 'react';
-import { BarChart3, LogOut, ChevronLeft } from 'lucide-react';
-
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Images } from '@/lib/images';
 import { cn } from '@/lib/utils';
+import { LogOut, ChevronLeft, LucideProps } from 'lucide-react';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { ForwardRefExoticComponent, RefAttributes, useEffect } from 'react';
 
 interface SidebarProps {
   collapsed: boolean;
   onToggle: (collapsed: boolean) => void;
+  navigation_menu: Array<{
+    name: string;
+    icon: ForwardRefExoticComponent<
+      Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+    >;
+    href: string;
+  }>;
 }
 
-const navigation = [
-  { name: 'Dashboard', icon: BarChart3, current: true, href: '/dashboard' },
-];
-
-export function Sidebar({ collapsed, onToggle }: SidebarProps) {
+export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) {
   const isMobile = useIsMobile();
+  const pathname = usePathname();
+
+  const isPathMatch = (itemUrl: string) => {
+    return pathname === itemUrl || pathname.startsWith(`${itemUrl}/`);
+  };
 
   useEffect(() => {
     if (isMobile) {
@@ -33,19 +42,29 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       )}
     >
       <div className="flex h-full w-full flex-col">
-        <div className="relative flex items-center justify-between border-b border-slate-700/50 px-4 py-3">
+        <div className="relative flex items-center justify-between border-b border-slate-700/50 p-4">
           <div
-            className={cn('flex items-center space-x-2', collapsed && 'justify-center')}
+            className={cn('flex items-center space-x-3', collapsed && 'justify-center')}
           >
-            <img
-              src={Images.logo}
-              alt="logo"
-              className="relative h-12 w-12 object-contain"
-            />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl font-bold text-white shadow-lg">
+              <div className="relative flex aspect-[200/113] w-[200px] items-center justify-center">
+                <Image
+                  src={Images.logo}
+                  alt="logo"
+                  fill
+                  className="object-contain object-center"
+                />
+              </div>
+            </div>
             {!collapsed && (
-              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-xl font-bold text-transparent">
-                Gig Workers
-              </span>
+              <div className="max-w-auto relative flex aspect-[150/25] w-[150px] items-center justify-center">
+                <Image
+                  src={Images.big_logo_icon}
+                  alt="big_logo"
+                  fill
+                  className="object-contain object-center"
+                />
+              </div>
             )}
           </div>
           <button
@@ -60,13 +79,13 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         </div>
 
         <nav className="flex-1 space-y-2 px-3 py-6">
-          {navigation.map((item) => (
+          {navigation_menu.map((item) => (
             <a
               key={item.name}
               href={item.href}
               className={cn(
                 'group relative flex items-center overflow-hidden rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200',
-                item.current
+                isPathMatch(item.href)
                   ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
                   : 'text-slate-300 hover:scale-105 hover:bg-slate-700/50 hover:text-white hover:shadow-lg',
                 collapsed ? 'justify-center px-2' : 'space-x-3',
@@ -74,7 +93,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             >
               <item.icon className="relative z-10 h-5 w-5 flex-shrink-0" />
               {!collapsed && <span className="relative z-10">{item.name}</span>}
-              {item.current && !collapsed && (
+              {isPathMatch(item.href) && !collapsed && (
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-xl"></div>
               )}
             </a>

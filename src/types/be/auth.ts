@@ -4,3 +4,12 @@ export interface SignupPayload {
   last_name: string;
   password: string;
 }
+
+export interface forgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  password: string;
+  confirmPassword: string;
+}

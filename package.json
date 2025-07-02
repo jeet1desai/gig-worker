@@ -25,6 +25,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "@types/socket.io-client": "^1.4.36",
     "antd": "^5.26.1",
+    "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "jsonwebtoken": "^9.0.2",
@@ -36,6 +37,7 @@
     "prisma": "^6.9.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-toastify": "^11.0.5",
     "react-redux": "^9.2.0",
     "recharts": "^3.0.2",
     "redux": "^5.0.1",
@@ -85,5 +87,8 @@
       "eslint --fix",
       "prettier --write"
     ]
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   }
 }

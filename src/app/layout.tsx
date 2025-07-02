@@ -6,6 +6,9 @@ import './globals.css';
 import { Providers } from '@/app/providers';
 import ClientSocketWrapper from '@/components/client-socket-wrapper';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -37,6 +40,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <ClientSocketWrapper />
+          <ToastContainer position="top-right" autoClose={3000} />
         </Providers>
       </body>
     </html>

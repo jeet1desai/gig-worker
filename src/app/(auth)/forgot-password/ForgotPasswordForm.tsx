@@ -2,18 +2,22 @@
 
 import { useState } from 'react';
 import { Form, Button, Typography } from 'antd';
-import { LeftOutlined, MailOutlined } from '@ant-design/icons';
+import { MailOutlined } from '@ant-design/icons';
 import TextField from '@/components/TextField';
 import { forgotPasswordSchema } from '../../../schemas/auth';
-import { useRouter } from 'next/navigation';
 import { BackArrowIconSvg } from '@/components/icons';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
+import { useRouter } from 'next/navigation';
 
 export default function ForgotPasswordForm() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const [form] = Form.useForm();
   const { Title } = Typography;
+
+  const pageRedirection = (path: string) => {
+    router.push(path);
+  }
 
   const handleSubmit = async (values: { email: string }) => {
     try {
@@ -40,8 +44,8 @@ export default function ForgotPasswordForm() {
       >
         <button
           type="button"
-          onClick={() => router.push(PUBLIC_ROUTE.LOGIN)}
-          className="absolute left-0 cursor-pointer border-none bg-transparent p-0 focus:outline-none"
+          onClick={() => pageRedirection(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH)}
+          className="absolute left-0 focus:outline-none bg-transparent border-none p-0 cursor-pointer"
           aria-label="Back to login"
         >
           <BackArrowIconSvg />
@@ -86,8 +90,8 @@ export default function ForgotPasswordForm() {
         Don&apos;t have an account?{' '}
         <button
           type="button"
-          onClick={() => router.push(PUBLIC_ROUTE.SIGNUP)}
-          className="cursor-pointer border-none bg-transparent p-0 font-medium text-[#FFF2E3] underline"
+          onClick={() => pageRedirection(PUBLIC_ROUTE.SIGNUP_PAGE_PATH)}
+          className="font-medium underline text-[#FFF2E3] bg-transparent border-none p-0 cursor-pointer"
         >
           Sign up
         </button>

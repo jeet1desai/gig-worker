@@ -9,7 +9,7 @@ import { SignupPayload } from '@/types/be/auth';
 import { USER_SIGNUP_TYPE } from '@/enums/be/user';
 import { publicEnv } from '@/lib/config/publicEnv';
 import { generateEmailVerificationToken } from '@/lib/tokens';
-import { EMAIL_VERIFICATION_PATH } from '@/constants/app-routes';
+import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { getVerificationEmail } from '@/lib/email/templates/emailVerification';
 import { sendEmail } from '@/lib/email/sendEmail';
 import { safeJson } from '@/lib/utils/safeJson';
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
     });
 
     const userName = `${first_name} ${last_name}`;
-    const verificationUrl = `${publicEnv.NEXT_PUBLIC_BASE_URL}${EMAIL_VERIFICATION_PATH}?token=${token}`;
+    const verificationUrl = `${publicEnv.NEXT_PUBLIC_BASE_URL}${PUBLIC_ROUTE.EMAIL_VERIFICATION_PATH}?token=${token}`;
     const { subject, html } = getVerificationEmail({
       userName,
       actionLink: verificationUrl,

@@ -2,6 +2,7 @@
 
 import { Tooltip } from 'antd';
 import { Menu, MessageCircle, Search, User, Briefcase } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -71,9 +72,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
 
           <div className="flex cursor-pointer items-center space-x-2 border-l border-slate-700 pl-2 sm:space-x-3 sm:pl-3 md:pl-4">
             <div className="hidden text-right sm:block">
-              <p className="max-w-[120px] truncate text-sm font-medium text-white md:max-w-none">
-                John Doe
-              </p>
+              <p className="max-w-[120px] truncate text-sm font-medium text-white md:max-w-none">John Doe</p>
               <p className="hidden text-xs text-slate-400 md:block">Web Developer</p>
             </div>
             <div className="relative">
