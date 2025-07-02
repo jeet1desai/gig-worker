@@ -1,16 +1,15 @@
 export enum PUBLIC_ROUTE {
   UNKNOWN = '#',
   HOME = '/',
-  LOGIN = '/auth/login',
-  SIGNUP = '/auth/signup',
-  FORGOT_PASSWORD = '/auth/forgot-password',
-  VERIFY_OTP = '/auth/verify-otp',
-  RESET_PASSWORD = '/auth/reset-password',
+  LOGIN = '/login',
+  SIGNUP = '/signup',
+  FORGOT_PASSWORD = '/forgot-password',
+  VERIFY_OTP = '/verify-otp',
+  RESET_PASSWORD = '/reset-password',
   LANDING_PAGE = '/landingpage',
   ABOUT = '/about',
   NOT_FOUND = '*',
-  EMAIL_VERIFICATION_PATH = '/auth/verify-email',
-  API_FORGOT_PASSWORD = '/api/auth/forgot-password',
+  EMAIL_VERIFICATION_PATH = '/email-verification',
 }
 
 export enum PRIVATE_ROUTE {
