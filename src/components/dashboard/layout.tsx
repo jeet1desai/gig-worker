@@ -8,6 +8,7 @@ import { RootState } from '@/store/store';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { setUserRole } from '@/store/slices/user';
+import { user_navigation_menu } from '@/constants';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -28,6 +29,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <Sidebar
         collapsed={sidebarCollapsed}
         onToggle={(collapsed) => setSidebarCollapsed(collapsed)}
+        navigation_menu={user_navigation_menu}
       />
 
       <div
