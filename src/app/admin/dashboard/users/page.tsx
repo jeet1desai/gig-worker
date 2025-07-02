@@ -1,7 +1,8 @@
 import React from 'react';
+import UsersListingPage from './UsersListingPage';
 
-function UsersListingPage() {
-  return <div>Users Listing Page</div>;
+function UsersPage() {
+  return <UsersListingPage />;
 }
 
-export default UsersListingPage;
+export default UsersPage;

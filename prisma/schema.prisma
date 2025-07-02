@@ -80,6 +80,7 @@ model User {
   sign_up_type String? // e.g., 'google', 'facebook', 'email'
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
+  is_deleted  Boolean  @default(false)
 
   // Relations
   profile                 UserProfile?

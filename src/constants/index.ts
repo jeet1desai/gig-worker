@@ -14,3 +14,10 @@ export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
   { name: 'Users', icon: Users2Icon, href: PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH },
   { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH },
 ];
+
+export const DEFAULT_PAGINATION = {
+  page: 1,
+  pageSize: 10,
+  total: 0,
+  totalPages: 0,
+};

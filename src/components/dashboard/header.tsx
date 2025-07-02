@@ -21,7 +21,7 @@ import { Button } from '../ui/button';
 interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
-  role: 'user' | 'provider';
+  role: 'user' | 'provider' | 'admin';
   onRoleChange: (role: 'user' | 'provider') => void;
 }
 
@@ -141,24 +141,26 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
         </div>
 
         <div className="flex items-center space-x-4">
-          <div className="flex items-center gap-1 rounded-xl bg-slate-700/50 p-1">
-            <Button
-              className={`flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg p-2 transition-all duration-200 hover:scale-110 ${role == 'user' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'}`}
-              onClick={() => onRoleChange('user')}
-            >
-              <Tooltip title="User">
-                <User className="h-4 w-4" />
-              </Tooltip>
-            </Button>
-            <Button
-              className={`flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg p-2 transition-all duration-200 hover:scale-110 ${role == 'provider' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'}`}
-              onClick={() => onRoleChange('provider')}
-            >
-              <Tooltip title="Provider">
-                <Briefcase className="h-4 w-4" />
-              </Tooltip>
-            </Button>
-          </div>
+          {role !== 'admin' && (
+            <div className="flex items-center gap-1 rounded-xl bg-slate-700/50 p-1">
+              <Button
+                className={`flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg p-2 transition-all duration-200 hover:scale-110 ${role == 'user' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'}`}
+                onClick={() => onRoleChange('user')}
+              >
+                <Tooltip title="User">
+                  <User className="h-4 w-4" />
+                </Tooltip>
+              </Button>
+              <Button
+                className={`flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg p-2 transition-all duration-200 hover:scale-110 ${role == 'provider' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'}`}
+                onClick={() => onRoleChange('provider')}
+              >
+                <Tooltip title="Provider">
+                  <Briefcase className="h-4 w-4" />
+                </Tooltip>
+              </Button>
+            </div>
+          )}
 
           <button
             className="cursor-pointer rounded-xl bg-slate-700/50 p-1.5 text-slate-400 transition-all duration-200 hover:scale-110 hover:text-slate-300 sm:p-2"
