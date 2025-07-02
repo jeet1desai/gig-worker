@@ -5,17 +5,21 @@ import { Form, Button, Typography } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 import TextField from '@/components/TextField';
 import { verifyOtpSchema } from '../../../schemas/auth';
-import { useRouter } from 'next/navigation';
 import { BackArrowIconSvg } from '@/components/icons';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
+import { useRouter } from 'next/navigation';
 
 export default function VerifyOtpForm() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [canResend, setCanResend] = useState(false);
+  const router = useRouter();
   const [form] = Form.useForm();
   const [timer, setTimer] = useState(60);
   const { Title } = Typography;
+
+  const pageRedirection = (path: string) => {
+    router.push(path);
+  }
 
   const handleSubmit = async (values: { email: string }) => {
     try {
@@ -60,8 +64,8 @@ export default function VerifyOtpForm() {
       >
         <button
           type="button"
-          onClick={() => router.push(PUBLIC_ROUTE.FORGOT_PASSWORD)}
-          className="absolute left-0 cursor-pointer border-none bg-transparent p-0 focus:outline-none"
+          onClick={() => pageRedirection(PUBLIC_ROUTE.FORGOT_PASSWORD_PAGE_PATH)}
+          className="absolute left-0 focus:outline-none bg-transparent border-none p-0 cursor-pointer"
           aria-label="Back to login"
         >
           <BackArrowIconSvg />
