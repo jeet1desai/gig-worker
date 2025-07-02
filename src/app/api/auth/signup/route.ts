@@ -63,7 +63,7 @@ export async function POST(req: Request) {
     });
 
     const userName = `${first_name} ${last_name}`;
-    const verificationUrl = `${publicEnv.NEXT_PUBLIC_BASE_URL}${PUBLIC_ROUTE.EMAIL_VERIFICATION}?token=${token}`;
+    const verificationUrl = `${publicEnv.NEXT_PUBLIC_BASE_URL}${PUBLIC_ROUTE.EMAIL_VERIFICATION_PATH}?token=${token}`;
     const { subject, html } = getVerificationEmail({
       userName,
       actionLink: verificationUrl,

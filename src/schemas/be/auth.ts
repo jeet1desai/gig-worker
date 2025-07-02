@@ -14,3 +14,7 @@ export const signupSchema = yup.object({
     .matches(/\d/, 'Password must contain at least one number')
     .matches(/[@$!%*?&]/, 'Password must contain at least one special character'),
 });
+
+export const forgotPasswordSchema = yup.object({
+  email: yup.string().email('Invalid email address').required('Email is required'),
+});
