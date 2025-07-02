@@ -66,6 +66,13 @@ enum GIG_STATUS {
   rejected
 }
 
+enum NOTIFICATION_TYPE {
+  success
+  warning
+  error
+  info
+}
+
 model User {
   id           BigInt   @id @default(autoincrement())
   first_name   String?
@@ -339,15 +346,16 @@ model Message {
 }
 
 model Notification {
-  id         BigInt   @id @default(autoincrement())
+  id         BigInt            @id @default(autoincrement())
   user_id    BigInt
   title      String
   message    String?
-  is_read    Boolean  @default(false)
-  type       String // message, payment, review, gig_update
+  is_read    Boolean           @default(false)
+  type       NOTIFICATION_TYPE @default(info)
+  module     String
   related_id BigInt?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime          @default(now())
+  updated_at DateTime          @updatedAt
 
   // Relations
   user User? @relation(fields: [user_id], references: [id])

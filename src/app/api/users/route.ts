@@ -1,17 +1,26 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { sendNotification } from '@/lib/socket/socket-server';
+import { getSocketServer } from '@/app/api/socket/route';
 
 export async function GET() {
   try {
-    const users = await prisma.user.findUnique({
-      where: { email: 'test@gmail.com' },
-      select: {
-        created_at: true,
-        updated_at: true,
-      },
-    });
-    return NextResponse.json(users);
+    const io = getSocketServer();
+    const notificationData = {
+      title: 'Test Notification',
+      message: 'This is a test notification!',
+      module: 'system',
+      type: 'info',
+    };
+
+    const result = await sendNotification(io, '5', notificationData);
+    return NextResponse.json({ success: true, notification: result });
   } catch (error) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Failed to send notification',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 },
+    );
   }
 }

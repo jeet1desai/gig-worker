@@ -9,10 +9,12 @@ export enum PUBLIC_ROUTE {
   LANDING_PAGE = '/landingpage',
   ABOUT = '/about',
   NOT_FOUND = '*',
+  TEST_SOCKET = '/test-socket',
+  DASHBOARD = '/dashboard',
+  NOTIFICATION = '/notification',
 }
 
 export enum PRIVATE_ROUTE {
-  DASHBOARD = '/dashboard',
   USER_PROFILE = '/profile',
 }
 
