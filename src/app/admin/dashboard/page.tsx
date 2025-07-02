@@ -1,12 +1,7 @@
-import AdminProtectedRoute from '@/components/routing/AdminProtectedRoute';
 import React from 'react';
 
 function AdminDashboard() {
-  return (
-    <AdminProtectedRoute>
-      <div>Admin Dashboard</div>
-    </AdminProtectedRoute>
-  );
+  return <div>Admin Dashboard</div>;
 }
 
 export default AdminDashboard;
