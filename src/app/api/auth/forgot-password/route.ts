@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     if (!user) {
       return successResponse(
         null,
-        'If an account with that email exists, a password reset link has been sent.',
+        'Check your inbox! Password reset link has been sent.',
         HttpStatusCode.OK,
       );
     }
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
       email: user.email,
     });
 
-    const resetUrl = `${publicEnv.NEXT_PUBLIC_BASE_URL}${PUBLIC_ROUTE.API_FORGOT_PASSWORD}?token=${token}`;
+    const resetUrl = `${publicEnv.NEXT_PUBLIC_BASE_URL}${PUBLIC_ROUTE.RESET_PASSWORD}?token=${token}`;
     const userName = user.email;
     const { subject, html } = getResetPasswordEmail({ userName, actionLink: resetUrl });
 
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 
     return successResponse(
       null,
-      'If an account with that email exists, a password reset link has been sent.',
+      'Check your inbox! Password reset link has been sent.',
       HttpStatusCode.OK,
     );
   } catch (err) {
