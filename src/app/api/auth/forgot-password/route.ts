@@ -8,14 +8,15 @@ import { publicEnv } from '@/lib/config/publicEnv';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { generateEmailVerificationToken } from '@/lib/tokens';
 import { getResetPasswordEmail } from '@/lib/email/templates/resetPassword';
+import { forgotPasswordPayload } from '@/types/be/auth';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { email } = await forgotPasswordSchema.validate(body, {
+    const { email } = (await forgotPasswordSchema.validate(body, {
       abortEarly: false,
       stripUnknown: true,
-    });
+    })) as forgotPasswordPayload;
 
     const formattedEmail = email.toLowerCase().trim();
     const user = await prisma.user.findUnique({ where: { email: formattedEmail } });
