@@ -7,9 +7,306 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id                      BigInt            @id @default(autoincrement())
+  first_name              String?
+  last_name               String?
+  profile_url             String?
+  email                   String            @unique
+  password                String
+  role                    ROLE              @default(user)
+  is_verified             Boolean           @default(false)
+  is_banned               Boolean           @default(false)
+  sign_up_type            String?
+  created_at              DateTime          @default(now())
+  updated_at              DateTime          @updatedAt
+  provider_bids           Bid[]             @relation("ProviderBid")
+  user_received_bids      Bid[]             @relation("UserReceivedBid")
+  challenged              Challenged[]
+  provider_complaints     Complaint[]       @relation("ProviderComplaint")
+  user_received_complaint Complaint[]       @relation("UserReceivedComplaint")
+  gigs                    Gig[]
+  received_messages       Message[]         @relation("Receiver")
+  sent_messages           Message[]         @relation("Sender")
+  notifications           Notification[]
+  payments                Payment[]
+  provider_earnings       ProviderEarning[] @relation("ProviderEarning")
+  user_spending           ProviderEarning[] @relation("UserSpending")
+  provider_rating         ReviewRating[]    @relation("ProviderRating")
+  user_received_rating    ReviewRating[]    @relation("UserReceivedRating")
+  subscriptions           Subscription[]
+  provider_testimonials   Testimonials[]    @relation("ProviderTestimonials")
+  user_testimonials       Testimonials[]    @relation("UserTestimonials")
+  user_ban                UserBan?
+  profile                 UserProfile?
+}
+
+model UserProfile {
+  id              BigInt   @id @default(autoincrement())
+  user_id         BigInt   @unique
+  interests       String[]
+  extracurricular String[]
+  certifications  String[]
+  skills          String[]
+  educations      String[]
+  badges          Json?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  user            User     @relation(fields: [user_id], references: [id])
+}
+
+model UserBan {
+  id             BigInt    @id @default(autoincrement())
+  user_id        BigInt    @unique
+  reason         String?
+  ban_expires_at DateTime?
+  strike_count   Int       @default(0)
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+  user           User      @relation(fields: [user_id], references: [id])
+}
+
+model UserRoleLimit {
+  id         BigInt            @id @default(autoincrement())
+  role       SUBSCRIPTION_TYPE @default(free)
+  gig_limit  Int               @default(0)
+  bid_limit  Int               @default(0)
+  price      Decimal           @default(0.00)
+  created_at DateTime          @default(now())
+  updated_at DateTime          @updatedAt
+}
+
+model Admin {
+  id          BigInt   @id @default(autoincrement())
+  email       String   @unique
+  first_name  String
+  last_name   String
+  password    String
+  profile_url String?
+  role        ROLE     @default(admin)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model CMS {
+  id          BigInt   @id @default(autoincrement())
+  name        String
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model Plan {
+  id                  Int      @id @default(autoincrement())
+  plan_id             String   @unique
+  product_id          String
+  name                String
+  description         String?
+  status              String
+  price               Decimal  @db.Decimal(8, 2)
+  currency            String
+  interval            String
+  interval_count      Int
+  billing_cycle_count Int      @default(0)
+  usage_type          String?
+  setup_fee           Decimal? @db.Decimal(8, 2)
+  tax_percentage      Decimal? @db.Decimal(5, 2)
+  merchant_id         String
+  benefits            String[] @default([])
+  isPublic            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  lastSyncedAt        DateTime @updatedAt
+}
+
+model Subscription {
+  id                      BigInt              @id @default(autoincrement())
+  user_id                 BigInt
+  type                    SUBSCRIPTION_TYPE   @default(free)
+  amount                  Decimal             @default(0.00)
+  status                  SUBSCRIPTION_STATUS
+  subscription_expires_at DateTime?
+  created_at              DateTime            @default(now())
+  updated_at              DateTime            @updatedAt
+  user                    User                @relation(fields: [user_id], references: [id])
+}
+
+model ProviderEarning {
+  id          BigInt      @id @default(autoincrement())
+  user_id     BigInt
+  provider_id BigInt
+  gig_id      BigInt
+  amount      Decimal     @default(0.00)
+  status      EARN_STATUS @default(in_progress)
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+  gig         Gig         @relation(fields: [gig_id], references: [id])
+  provider    User        @relation("ProviderEarning", fields: [provider_id], references: [id])
+  user        User        @relation("UserSpending", fields: [user_id], references: [id])
+}
+
+model Gig {
+  id                BigInt            @id @default(autoincrement())
+  user_id           BigInt
+  title             String
+  description       String?
+  start_date        DateTime?
+  end_date          DateTime?
+  tier              TIER              @default(basic)
+  price_range       Json
+  keywords          String[]
+  completed_at      DateTime?
+  thumbnail         String?
+  attachments       String[]
+  created_at        DateTime          @default(now())
+  updated_at        DateTime          @updatedAt
+  bids              Bid[]
+  challenged        Challenged?
+  complaint         Complaint?
+  user              User              @relation(fields: [user_id], references: [id])
+  pipeline          GigPipeline?
+  messages          Message[]
+  payment           Payment[]
+  provider_earnings ProviderEarning[]
+  review_rating     ReviewRating?
+  Testimonials      Testimonials[]
+}
+
+model GigPipeline {
+  id         BigInt     @id @default(autoincrement())
+  gig_id     BigInt     @unique
+  status     GIG_STATUS @default(open)
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  gig        Gig        @relation(fields: [gig_id], references: [id])
+}
+
+model Bid {
+  id          BigInt     @id @default(autoincrement())
+  gig_id      BigInt
+  provider_id BigInt
+  user_id     BigInt
+  proposal    String
+  bid_price   Decimal    @default(0.00)
+  status      BID_STATUS @default(pending)
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  gig         Gig        @relation(fields: [gig_id], references: [id])
+  provider    User       @relation("ProviderBid", fields: [provider_id], references: [id])
+  user        User       @relation("UserReceivedBid", fields: [user_id], references: [id])
+}
+
+model ReviewRating {
+  id              BigInt     @id @default(autoincrement())
+  gig_id          BigInt     @unique
+  provider_id     BigInt
+  user_id         BigInt
+  rating          Int        @default(0)
+  rating_feedback String?
+  up_vote         Int        @default(0)
+  down_vote       Int        @default(0)
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+  complaint       Complaint?
+  gig             Gig        @relation(fields: [gig_id], references: [id])
+  provider        User       @relation("ProviderRating", fields: [provider_id], references: [id])
+  user            User       @relation("UserReceivedRating", fields: [user_id], references: [id])
+}
+
+model Payment {
+  id             BigInt                 @id @default(autoincrement())
+  gig_id         BigInt
+  provider_id    BigInt
+  amount         Decimal
+  platform_fee   Decimal
+  payment_method String?
+  status         PAYMENT_STATUS         @default(held)
+  request_status PAYMENT_REQUEST_STATUS @default(pending)
+  created_at     DateTime               @default(now())
+  updated_at     DateTime               @updatedAt
+  gig            Gig                    @relation(fields: [gig_id], references: [id])
+  provider       User                   @relation(fields: [provider_id], references: [id])
+}
+
+model Complaint {
+  id                    BigInt       @id @default(autoincrement())
+  review_rating_id      BigInt       @unique
+  provider_id           BigInt
+  user_id               BigInt
+  gig_id                BigInt       @unique
+  issue_text            String
+  suggested_improvement String?
+  receiver_response     String?
+  is_challenged         Boolean      @default(false)
+  created_at            DateTime     @default(now())
+  updated_at            DateTime     @updatedAt
+  challenged            Challenged?
+  gig                   Gig          @relation(fields: [gig_id], references: [id])
+  provider              User         @relation("ProviderComplaint", fields: [provider_id], references: [id])
+  review_rating         ReviewRating @relation(fields: [review_rating_id], references: [id])
+  user                  User         @relation("UserReceivedComplaint", fields: [user_id], references: [id])
+}
+
+model Challenged {
+  id           BigInt             @id @default(autoincrement())
+  outcome      CHALLENGED_OUTCOME @default(pending)
+  resolution   String?
+  gig_id       BigInt             @unique
+  complaint_id BigInt             @unique
+  provider_id  BigInt
+  created_at   DateTime           @default(now())
+  updated_at   DateTime           @updatedAt
+  complaint    Complaint          @relation(fields: [complaint_id], references: [id])
+  gig          Gig                @relation(fields: [gig_id], references: [id])
+  provider     User               @relation(fields: [provider_id], references: [id])
+}
+
+model Message {
+  id           BigInt   @id @default(autoincrement())
+  chat_id      BigInt?
+  gig_id       BigInt
+  sender_id    BigInt
+  receiver_id  BigInt
+  message_text String?
+  attachment   String?
+  read_status  Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  gig          Gig      @relation(fields: [gig_id], references: [id])
+  receiver     User     @relation("Receiver", fields: [receiver_id], references: [id])
+  sender       User     @relation("Sender", fields: [sender_id], references: [id])
+}
+
+model Notification {
+  id         BigInt   @id @default(autoincrement())
+  user_id    BigInt
+  title      String
+  message    String?
+  is_read    Boolean  @default(false)
+  type       String
+  related_id BigInt?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [user_id], references: [id])
+}
+
+model Testimonials {
+  id               BigInt   @id @default(autoincrement())
+  user_id          BigInt
+  provider_id      BigInt
+  gig_id           BigInt
+  testimonial_text String
+  is_approved      Boolean  @default(false)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  gig              Gig      @relation(fields: [gig_id], references: [id])
+  provider         User     @relation("ProviderTestimonials", fields: [provider_id], references: [id])
+  user             User     @relation("UserTestimonials", fields: [user_id], references: [id])
+}
+
 enum ROLE {
   user
   provider
+  admin
 }
 
 enum TIER {
@@ -71,308 +368,4 @@ enum NOTIFICATION_TYPE {
   warning
   error
   info
-}
-
-model User {
-  id           BigInt   @id @default(autoincrement())
-  first_name   String?
-  last_name    String?
-  profile_url  String?
-  email        String   @unique
-  password     String
-  role         ROLE     @default(user)
-  is_verified  Boolean  @default(false)
-  is_banned    Boolean  @default(false)
-  sign_up_type String? // e.g., 'google', 'facebook', 'email'
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-
-  // Relations
-  profile                 UserProfile?
-  user_ban                UserBan?
-  subscriptions           Subscription[]
-  gigs                    Gig[]
-  provider_bids           Bid[]             @relation("ProviderBid")
-  user_received_bids      Bid[]             @relation("UserReceivedBid")
-  provider_rating         ReviewRating[]    @relation("ProviderRating")
-  user_received_rating    ReviewRating[]    @relation("UserReceivedRating")
-  payments                Payment[]
-  provider_complaints     Complaint[]       @relation("ProviderComplaint")
-  user_received_complaint Complaint[]       @relation("UserReceivedComplaint")
-  challenged              Challenged[]
-  provider_earnings       ProviderEarning[] @relation("ProviderEarning")
-  user_spending           ProviderEarning[] @relation("UserSpending")
-  sent_messages           Message[]         @relation("Sender")
-  received_messages       Message[]         @relation("Receiver")
-  notifications           Notification[]
-  user_testimonials       Testimonials[]    @relation("UserTestimonials")
-  provider_testimonials   Testimonials[]    @relation("ProviderTestimonials")
-}
-
-model UserProfile {
-  id              BigInt   @id @default(autoincrement())
-  user_id         BigInt   @unique
-  interests       String[]
-  extracurricular String[]
-  certifications  String[]
-  skills          String[]
-  educations      String[]
-  badges          Json? // [{role: "", badge: ""}]
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-
-  // Relations
-  user User? @relation(fields: [user_id], references: [id])
-}
-
-model UserBan {
-  id             BigInt    @id @default(autoincrement())
-  user_id        BigInt    @unique
-  reason         String?
-  ban_expires_at DateTime?
-  strike_count   Int       @default(0)
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
-
-  // Relations
-  user User? @relation(fields: [user_id], references: [id])
-}
-
-model UserRoleLimit {
-  id         BigInt            @id @default(autoincrement())
-  role       SUBSCRIPTION_TYPE @default(free)
-  gig_limit  Int               @default(0)
-  bid_limit  Int               @default(0)
-  price      Decimal           @default(0.00)
-  created_at DateTime          @default(now())
-  updated_at DateTime          @updatedAt
-}
-
-model Admin {
-  id          BigInt   @id @default(autoincrement())
-  email       String   @unique
-  first_name  String
-  last_name   String
-  password    String
-  profile_url String?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-}
-
-model CMS {
-  id          BigInt   @id @default(autoincrement())
-  name        String
-  description String?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-}
-
-model Subscription {
-  id                      BigInt              @id @default(autoincrement())
-  user_id                 BigInt
-  type                    SUBSCRIPTION_TYPE   @default(free)
-  amount                  Decimal             @default(0.00)
-  status                  SUBSCRIPTION_STATUS
-  subscription_expires_at DateTime?
-  created_at              DateTime            @default(now())
-  updated_at              DateTime            @updatedAt
-
-  // Relations
-  user User? @relation(fields: [user_id], references: [id])
-}
-
-model ProviderEarning {
-  id          BigInt      @id @default(autoincrement())
-  user_id     BigInt
-  provider_id BigInt
-  gig_id      BigInt
-  amount      Decimal     @default(0.00)
-  status      EARN_STATUS @default(in_progress)
-  created_at  DateTime    @default(now())
-  updated_at  DateTime    @updatedAt
-
-  // Relations
-  user     User @relation(fields: [user_id], references: [id], name: "UserSpending")
-  provider User @relation(fields: [provider_id], references: [id], name: "ProviderEarning")
-  gig      Gig  @relation(fields: [gig_id], references: [id])
-}
-
-model Gig {
-  id           BigInt    @id @default(autoincrement())
-  user_id      BigInt
-  title        String
-  description  String?
-  start_date   DateTime?
-  end_date     DateTime?
-  tier         TIER      @default(basic)
-  price_range  Json
-  keywords     String[]
-  completed_at DateTime?
-  thumbnail    String?
-  attachments  String[]
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-
-  // Relations
-  user              User              @relation(fields: [user_id], references: [id])
-  bids              Bid[]
-  review_rating     ReviewRating[]
-  payment           Payment[]
-  complaint         Complaint?
-  pipeline          GigPipeline?
-  challenged        Challenged?
-  provider_earnings ProviderEarning[]
-  messages          Message[]
-  Testimonials      Testimonials[]
-}
-
-model GigPipeline {
-  id         BigInt     @id @default(autoincrement())
-  gig_id     BigInt     @unique
-  status     GIG_STATUS @default(open)
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
-
-  // Relations
-  gig Gig @relation(fields: [gig_id], references: [id])
-}
-
-model Bid {
-  id          BigInt     @id @default(autoincrement())
-  gig_id      BigInt
-  provider_id BigInt
-  user_id     BigInt
-  proposal    String
-  bid_price   Decimal    @default(0.00)
-  status      BID_STATUS @default(pending)
-  created_at  DateTime   @default(now())
-  updated_at  DateTime   @updatedAt
-
-  // Relations
-  gig      Gig   @relation(fields: [gig_id], references: [id])
-  provider User? @relation(fields: [provider_id], references: [id], name: "ProviderBid")
-  user     User? @relation(fields: [user_id], references: [id], name: "UserReceivedBid")
-}
-
-model ReviewRating {
-  id              BigInt   @id @default(autoincrement())
-  gig_id          BigInt   @unique
-  provider_id     BigInt
-  user_id         BigInt
-  rating          Int      @default(0)
-  rating_feedback String?
-  up_vote         Int      @default(0)
-  down_vote       Int      @default(0)
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-
-  // Relations
-  gig       Gig        @relation(fields: [gig_id], references: [id])
-  provider  User       @relation(fields: [provider_id], references: [id], name: "ProviderRating")
-  user      User       @relation(fields: [user_id], references: [id], name: "UserReceivedRating")
-  complaint Complaint?
-}
-
-model Payment {
-  id             BigInt                 @id @default(autoincrement())
-  gig_id         BigInt
-  provider_id    BigInt
-  amount         Decimal
-  platform_fee   Decimal
-  payment_method String?
-  status         PAYMENT_STATUS         @default(held)
-  request_status PAYMENT_REQUEST_STATUS @default(pending)
-  created_at     DateTime               @default(now())
-  updated_at     DateTime               @updatedAt
-
-  // Relations
-  gig      Gig  @relation(fields: [gig_id], references: [id])
-  provider User @relation(fields: [provider_id], references: [id])
-}
-
-model Complaint {
-  id                    BigInt   @id @default(autoincrement())
-  review_rating_id      BigInt   @unique
-  provider_id           BigInt
-  user_id               BigInt
-  gig_id                BigInt   @unique
-  issue_text            String
-  suggested_improvement String?
-  receiver_response     String?
-  is_challenged         Boolean  @default(false)
-  created_at            DateTime @default(now())
-  updated_at            DateTime @updatedAt
-
-  // Relations
-  review_rating ReviewRating @relation(fields: [review_rating_id], references: [id])
-  gig           Gig          @relation(fields: [gig_id], references: [id])
-  provider      User         @relation(fields: [provider_id], references: [id], name: "ProviderComplaint")
-  user          User         @relation(fields: [user_id], references: [id], name: "UserReceivedComplaint")
-  challenged    Challenged?
-}
-
-model Challenged {
-  id           BigInt             @id @default(autoincrement())
-  outcome      CHALLENGED_OUTCOME @default(pending)
-  resolution   String?
-  gig_id       BigInt             @unique
-  complaint_id BigInt             @unique
-  provider_id  BigInt
-  created_at   DateTime           @default(now())
-  updated_at   DateTime           @updatedAt
-
-  // Relations
-  complaint Complaint @relation(fields: [complaint_id], references: [id])
-  gig       Gig       @relation(fields: [gig_id], references: [id])
-  provider  User      @relation(fields: [provider_id], references: [id])
-}
-
-model Message {
-  id           BigInt   @id @default(autoincrement())
-  chat_id      BigInt?
-  gig_id       BigInt
-  sender_id    BigInt
-  receiver_id  BigInt
-  message_text String?
-  attachment   String?
-  read_status  Boolean  @default(false)
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-
-  // Relations
-  gig      Gig  @relation(fields: [gig_id], references: [id])
-  sender   User @relation(fields: [sender_id], references: [id], name: "Sender")
-  receiver User @relation(fields: [receiver_id], references: [id], name: "Receiver")
-}
-
-model Notification {
-  id         BigInt            @id @default(autoincrement())
-  user_id    BigInt
-  title      String
-  message    String?
-  is_read    Boolean           @default(false)
-  type       NOTIFICATION_TYPE @default(info)
-  module     String
-  related_id BigInt?
-  created_at DateTime          @default(now())
-  updated_at DateTime          @updatedAt
-
-  // Relations
-  user User? @relation(fields: [user_id], references: [id])
-}
-
-model Testimonials {
-  id               BigInt   @id @default(autoincrement())
-  user_id          BigInt
-  provider_id      BigInt
-  gig_id           BigInt
-  testimonial_text String
-  is_approved      Boolean  @default(false)
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
-
-  // Relations
-  user     User @relation(fields: [user_id], references: [id], name: "UserTestimonials")
-  provider User @relation(fields: [provider_id], references: [id], name: "ProviderTestimonials")
-  gig      Gig  @relation(fields: [gig_id], references: [id])
 }

@@ -1,61 +1,85 @@
-import prisma from '@/lib/prisma';
-import { resetPasswordSchema } from '@/schemas/be/auth';
-import { ValidationError } from 'yup';
-import { errorResponse, successResponse } from '@/lib/api-response';
-import { HttpStatusCode } from '@/enums/shared/http-status-code';
-import { verifyEmailVerificationToken } from '@/lib/tokens';
-import bcrypt from 'bcryptjs';
-import { NextRequest } from 'next/server';
+import { ValidationError } from 'yup'
+import bcrypt from 'bcryptjs'
+import { NextRequest } from 'next/server'
+
+import prisma from '@/lib/prisma'
+import { resetPasswordSchema } from '@/schemas/be/auth'
+import { errorResponse, successResponse } from '@/lib/api-response'
+import { HttpStatusCode } from '@/enums/shared/http-status-code'
+import { verifyEmailVerificationToken } from '@/lib/tokens'
 
 export async function PATCH(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await req.json()
     const { password } = await resetPasswordSchema.validate(body, {
-      abortEarly: false,
-    });
-    const token = body.token;
+      abortEarly: false
+    })
+    const token = body.token
     if (!token) {
-      return errorResponse('VALIDATION_ERROR', 'Reset token is missing or expired.', HttpStatusCode.BAD_REQUEST, {
-        fieldErrors: { token: 'Reset token is required.' },
-      });
+      return errorResponse({
+        code: 'VALIDATION_ERROR',
+        message: 'Reset token is missing or expired.',
+        statusCode: HttpStatusCode.BAD_REQUEST,
+        fieldErrors: { token: 'Reset token is required.' }
+      })
     }
 
-    let payload: { userId: string };
+    let payload: { userId: string }
     try {
-      payload = verifyEmailVerificationToken(token);
+      payload = verifyEmailVerificationToken(token)
     } catch {
-      return errorResponse('INVALID_TOKEN', 'Reset password link is invalid or expired.', HttpStatusCode.BAD_REQUEST);
+      return errorResponse({
+        code: 'INVALID_TOKEN',
+        message: 'Reset password link is invalid or expired.',
+        statusCode: HttpStatusCode.BAD_REQUEST
+      })
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: Number(payload.userId) },
-    });
+      where: { id: Number(payload.userId) }
+    })
 
     if (!user) {
-      return errorResponse('USER_NOT_FOUND', 'User not found.', HttpStatusCode.NOT_FOUND);
+      return errorResponse({
+        code: 'USER_NOT_FOUND',
+        message: 'User not found.',
+        statusCode: HttpStatusCode.NOT_FOUND
+      })
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10)
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { password: hashedPassword },
-    });
+      data: { password: hashedPassword }
+    })
 
-    return successResponse(null, 'Password has been reset successfully.', HttpStatusCode.OK);
+    return successResponse({
+      data: null,
+      message: 'Password has been reset successfully.',
+      statusCode: HttpStatusCode.OK
+    })
   } catch (err) {
     if (err instanceof ValidationError) {
-      const fieldErrors: Record<string, string> = {};
+      const fieldErrors: Record<string, string> = {}
       for (const issue of err.inner) {
-        if (issue.path) fieldErrors[issue.path] = issue.message;
-        else fieldErrors[''] = issue.message;
+        if (issue.path) fieldErrors[issue.path] = issue.message
+        else fieldErrors[''] = issue.message
       }
 
-      return errorResponse('VALIDATION_ERROR', 'Invalid request payload', HttpStatusCode.BAD_REQUEST, { fieldErrors });
+      return errorResponse({
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid request payload',
+        statusCode: HttpStatusCode.BAD_REQUEST,
+        fieldErrors
+      })
     }
 
-    return errorResponse('INTERNAL_SERVER_ERROR', 'Something went wrong while processing your request.', HttpStatusCode.INTERNAL_SERVER_ERROR, {
-      details: err instanceof Error ? err.message : 'Unknown error',
-    });
+    return errorResponse({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Something went wrong while processing your request.',
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
+      details: err instanceof Error ? err.message : 'Unknown error'
+    })
   }
 }
