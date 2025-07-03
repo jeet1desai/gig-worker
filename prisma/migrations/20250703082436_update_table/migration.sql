@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "ROLE" AS ENUM ('user', 'provider', 'admin');
+CREATE TYPE "ROLE" AS ENUM ('user', 'provider');
 
 -- CreateEnum
 CREATE TYPE "TIER" AS ENUM ('basic', 'advanced', 'expert');
@@ -99,7 +99,6 @@ CREATE TABLE "Admin" (
     "last_name" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "profile_url" TEXT,
-    "role" "ROLE" NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 

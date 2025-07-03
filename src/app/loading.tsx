@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import FullPageLoader from '@/components/Loader'
+import FullPageLoader from '@/components/Loader';
 
 const Loading = () => {
-  return <FullPageLoader isLoading />
-}
+  return <FullPageLoader isLoading />;
+};
 
-export default Loading
+export default Loading;
