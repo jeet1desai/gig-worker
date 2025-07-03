@@ -22,9 +22,10 @@ export enum PUBLIC_ROUTE {
 export enum PRIVATE_ROUTE {
   DASHBOARD = '/dashboard',
   USER_PROFILE = '/profile',
-  ADMIN_DASHBOARD_PATH = '/admin/dashboard',
-  ADMIN_USERS_DASHBOARD_PATH = '/admin/dashboard/users',
-  ADMIN_GIGS_DASHBOARD_PATH = '/admin/dashboard/gigs',
+  ADMIN_DASHBOARD_PATH = '/admin',
+  ADMIN_USERS_DASHBOARD_PATH = '/admin/users',
+  ADMIN_GIGS_DASHBOARD_PATH = '/admin/gigs',
+  ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH = '/admin/subscriptions',
 }
 
 export enum PUBLIC_API_ROUTES {
