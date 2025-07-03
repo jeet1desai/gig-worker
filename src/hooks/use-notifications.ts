@@ -49,6 +49,7 @@ export function useNotifications(userId?: string) {
 
   const markAsRead = useCallback(
     (notificationId: string) => {
+      if (!userId) return;
       const notificationIndex = notifications.findIndex((item) => BigInt(item.id) === BigInt(notificationId));
       if (notificationIndex !== -1) {
         const updatedNotifications = [...notifications];
@@ -61,6 +62,7 @@ export function useNotifications(userId?: string) {
   );
 
   const markAllAsRead = useCallback(() => {
+    if (!userId) return;
     const updatedNotifications = notifications.map((item) => ({
       ...item,
       is_read: true,

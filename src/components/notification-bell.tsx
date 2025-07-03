@@ -3,8 +3,7 @@ import { useNotifications } from '../hooks/use-notifications';
 import { AlertCircle, Bell, Check, Clock, X } from 'lucide-react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-const NotificationBell = () => {
-  const userId = '5';
+const NotificationBell = ({ userId }: { userId: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { unreadCount, notifications, markAsRead, markAllAsRead, fetchNotifications, isLoading, pagination } = useNotifications(userId);

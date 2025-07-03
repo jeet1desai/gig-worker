@@ -68,7 +68,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
             <MessageCircle className="h-4 w-4" />
           </button>
 
-          <NotificationBell />
+          <NotificationBell userId="5" />
 
           <div className="flex cursor-pointer items-center space-x-2 border-l border-slate-700 pl-2 sm:space-x-3 sm:pl-3 md:pl-4">
             <div className="hidden text-right sm:block">
