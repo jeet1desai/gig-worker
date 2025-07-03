@@ -1,35 +1,80 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Form, Button, Typography } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
+import { toast } from 'react-toastify';
 import TextField from '@/components/TextField';
-import { useState } from 'react';
 import { resetPasswordSchema } from '@/schemas/auth';
+import { PUBLIC_API_ROUTES, PUBLIC_ROUTE } from '@/constants/app-routes';
+import apiService from '@/services/api';
+
+interface ResetPasswordResponse {
+  message?: string;
+  error?: {
+    message?: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+}
 
 export default function ResetPasswordForm() {
   const [error, setError] = useState<string | null>(null);
   const [form] = Form.useForm();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
   const { Title } = Typography;
 
-  const handleSubmit = async (values: { email: string; password: string }) => {
+  const handleSubmit = async (values: { password: string; confirmPassword: string }) => {
     try {
       setError(null);
-      await resetPasswordSchema.validate(values, { abortEarly: false });
+      const payload = {
+        ...values,
+        token,
+      };
+      await resetPasswordSchema.validate(payload, { abortEarly: false });
+      const { data } = await apiService.patch<ResetPasswordResponse>(
+        PUBLIC_API_ROUTES.RESET_PASSWORD_API,
+        payload,
+        { withAuth: false },
+      );
+
+      toast.success(data?.message || 'Password has been reset successfully.');
+      form.resetFields();
+      setTimeout(() => {
+        router.push(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH);
+      }, 3000);
     } catch (err: any) {
       if (err.name === 'ValidationError') {
-        const formErrors = err.inner.reduce((acc: any, curr: any) => {
-          acc[curr.path] = curr.message;
-          return acc;
-        }, {});
-
-        form.setFields(
-          Object.entries(formErrors).map(([name, message]) => ({
-            name,
-            errors: [message as string],
-          })),
-        );
+        const fieldErrors = err.inner.map((e: any) => ({
+          name: e.path,
+          errors: [e.message],
+        }));
+        form.setFields(fieldErrors);
+        return;
+      }
+      if (err.response) {
+        const data: ResetPasswordResponse = err.response.data;
+        const apiErrorMessage =
+          data?.error?.message || data?.message || 'Failed to reset password.';
+        if (data?.error?.fieldErrors) {
+          const fieldErrors = Object.entries(data.error.fieldErrors).map(
+            ([name, message]) => ({
+              name,
+              errors: [message as string],
+            }),
+          );
+          form.setFields(fieldErrors);
+        }
+        setError(apiErrorMessage);
+        toast.error(apiErrorMessage);
       } else {
-        setError('Something went wrong');
+        const fallback = err?.message || 'Something went wrong.';
+        setError(fallback);
+        toast.error(fallback);
       }
     }
   };
@@ -39,6 +84,7 @@ export default function ResetPasswordForm() {
       <Title level={3} className="mb-6 text-center !text-2xl">
         <span className="text-[#FFF2E3]">Reset password</span>
       </Title>
+
       <Form
         name="resetpassword"
         form={form}
