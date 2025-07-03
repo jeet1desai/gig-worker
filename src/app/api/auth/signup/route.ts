@@ -13,6 +13,8 @@ import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { getVerificationEmail } from '@/lib/email/templates/emailVerification';
 import { sendEmail } from '@/lib/email/sendEmail';
 import { safeJson } from '@/lib/utils/safeJson';
+import { sendNotification } from '@/lib/socket/socket-server';
+import { io } from '@/server';
 
 export async function POST(req: Request) {
   try {
@@ -60,6 +62,13 @@ export async function POST(req: Request) {
     const token = generateEmailVerificationToken({
       userId: safeUser.id,
       email: user.email,
+    });
+
+    await sendNotification(io, user.id.toString(), {
+      title: 'User Created',
+      message: 'User created successfully.',
+      module: 'system',
+      type: 'success',
     });
 
     const userName = `${first_name} ${last_name}`;

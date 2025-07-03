@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import prisma, { NOTIFICATION_TYPE } from '@/lib/prisma';
 
 export function serializeBigInt(obj: any): any {
   return JSON.parse(JSON.stringify(obj, (key, value) => (typeof value === 'bigint' ? value.toString() : value)));
@@ -25,7 +25,7 @@ export const notificationService = {
           user_id: BigInt(userId),
           title: data.title,
           message: data.message,
-          type: data?.type || 'info',
+          type: data?.type || NOTIFICATION_TYPE.info,
           module: data?.module || 'system',
           related_id: data?.relatedId ? BigInt(data.relatedId) : null,
         },
