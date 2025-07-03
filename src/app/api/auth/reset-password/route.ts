@@ -9,9 +9,11 @@ import { NextRequest } from 'next/server';
 
 export async function PATCH(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const token = searchParams.get('token');
-
+    const body = await req.json();
+    const { password } = await resetPasswordSchema.validate(body, {
+      abortEarly: false,
+    });
+    const token = body.token;
     if (!token) {
       return errorResponse(
         'VALIDATION_ERROR',
@@ -20,13 +22,6 @@ export async function PATCH(req: NextRequest) {
         { fieldErrors: { token: 'Reset token is required.' } },
       );
     }
-
-    const body = await req.json();
-
-    const { password } = await resetPasswordSchema.validate(body, {
-      abortEarly: false,
-      strict: true,
-    });
 
     let payload: { userId: string };
     try {
