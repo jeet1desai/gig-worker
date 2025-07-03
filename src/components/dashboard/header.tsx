@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Tooltip, Badge } from 'antd';
+import { Tooltip } from 'antd';
 import {
   Bell,
   Menu,
