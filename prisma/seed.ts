@@ -22,7 +22,6 @@ async function main() {
         last_name: 'Admin',
         password: hashedPassword,
         profile_url: '',
-        role: 'admin',
       },
     });
   }

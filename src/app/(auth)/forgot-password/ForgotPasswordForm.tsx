@@ -35,11 +35,7 @@ export default function ForgotPasswordForm() {
     try {
       setError(null);
       await forgotPasswordSchema.validate(values, { abortEarly: false });
-      const { data } = await apiService.post<ForgotPasswordResponse>(
-        PUBLIC_API_ROUTES.FORGOT_PASSWORD_API,
-        values,
-        { withAuth: false },
-      );
+      const { data } = await apiService.post<ForgotPasswordResponse>(PUBLIC_API_ROUTES.FORGOT_PASSWORD_API, values, { withAuth: false });
 
       toast.success(data?.message || 'Check your email for reset instructions.');
       form.resetFields();
@@ -53,16 +49,13 @@ export default function ForgotPasswordForm() {
       } else if (err.response) {
         const data: ForgotPasswordResponse = err.response.data;
 
-        const apiErrorMessage =
-          data?.error?.message || data?.message || 'Failed to send reset email.';
+        const apiErrorMessage = data?.error?.message || data?.message || 'Failed to send reset email.';
 
         if (data?.error?.fieldErrors) {
-          const fieldErrors = Object.entries(data.error.fieldErrors).map(
-            ([name, message]) => ({
-              name,
-              errors: [message as string],
-            }),
-          );
+          const fieldErrors = Object.entries(data.error.fieldErrors).map(([name, message]) => ({
+            name,
+            errors: [message as string],
+          }));
           form.setFields(fieldErrors);
         }
         setError(apiErrorMessage);
@@ -77,10 +70,7 @@ export default function ForgotPasswordForm() {
 
   return (
     <>
-      <Title
-        level={3}
-        className="relative mb-6 flex w-full items-center justify-center text-center !text-2xl"
-      >
+      <Title level={3} className="relative mb-6 flex w-full items-center justify-center text-center !text-2xl">
         <button
           type="button"
           onClick={() => pageRedirection(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH)}
@@ -91,18 +81,8 @@ export default function ForgotPasswordForm() {
         </button>
         <span className="text-[#FFF2E3]">Forgot password</span>
       </Title>
-      <span className="mb-6 text-center text-[#9d9893]">
-        No worries, we’ll send you an OTP to your mail id
-      </span>
-      <Form
-        name="email"
-        onFinish={onFinish}
-        form={form}
-        layout="vertical"
-        className="w-full"
-        initialValues={{ email: '' }}
-        requiredMark={false}
-      >
+      <span className="mb-6 text-center text-[#9d9893]">No worries, we’ll send you an OTP to your mail id</span>
+      <Form name="email" onFinish={onFinish} form={form} layout="vertical" className="w-full" initialValues={{ email: '' }} requiredMark={false}>
         <TextField
           name="email"
           label="Email"
@@ -114,12 +94,7 @@ export default function ForgotPasswordForm() {
           labelClassName="text-[#FFF2E3]"
         />
         <Form.Item>
-          <Button
-            htmlType="submit"
-            block
-            size="large"
-            className="font-large mt-2 border-none bg-[#635d57] text-[#FFF2E3] shadow-none"
-          >
+          <Button htmlType="submit" block size="large" className="font-large mt-2 border-none bg-[#635d57] text-[#FFF2E3] shadow-none">
             Confirm
           </Button>
         </Form.Item>

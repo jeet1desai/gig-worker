@@ -41,9 +41,7 @@ export function MetricsCards() {
 
           <div className="relative">
             <div className="mb-4 flex items-center justify-between">
-              <div
-                className={`rounded-2xl bg-gradient-to-br p-3 ${metric.iconBg} shadow-lg transition-transform duration-300 group-hover:scale-110`}
-              >
+              <div className={`rounded-2xl bg-gradient-to-br p-3 ${metric.iconBg} shadow-lg transition-transform duration-300 group-hover:scale-110`}>
                 <metric.icon className="h-6 w-6 text-white" />
               </div>
               <div
@@ -59,12 +57,8 @@ export function MetricsCards() {
             </div>
 
             <div>
-              <p className="mb-1 text-3xl font-bold text-white transition-colors group-hover:text-blue-400">
-                {metric.title}
-              </p>
-              <p className="text-sm text-slate-400 transition-colors group-hover:text-slate-300">
-                {metric.subtitle}
-              </p>
+              <p className="mb-1 text-3xl font-bold text-white transition-colors group-hover:text-blue-400">{metric.title}</p>
+              <p className="text-sm text-slate-400 transition-colors group-hover:text-slate-300">{metric.subtitle}</p>
             </div>
           </div>
         </div>

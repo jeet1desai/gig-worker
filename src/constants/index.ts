@@ -8,9 +8,7 @@ export const BASE_API_URL = '/api';
 export const CONTENT_TYPE = 'Content-Type';
 export const APPLICATION_JSON = 'application/json';
 
-export const DASHBOARD_NAVIGATION_MENU = [
-  { name: 'Dashboard', icon: BarChart3, href: PRIVATE_ROUTE.DASHBOARD },
-];
+export const DASHBOARD_NAVIGATION_MENU = [{ name: 'Dashboard', icon: BarChart3, href: PRIVATE_ROUTE.DASHBOARD }];
 
 export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
   { name: 'Users', icon: Users2Icon, href: PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH },

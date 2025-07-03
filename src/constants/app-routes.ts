@@ -15,8 +15,8 @@ export enum PUBLIC_ROUTE {
   VERIFY_OTP_PAGE_PATH = '/verify-otp',
   RESET_PASSWORD_PAGE_PATH = '/reset-password',
   ADMIN_LOGIN_PATH = '/admin/login',
-  NOT_FOUND = '*',
-  EMAIL_VERIFICATION_PATH = '/email-verification'
+  EMAIL_VERIFICATION_PATH = '/email-verification',
+  NOT_FOUND = '*'
 }
 
 export enum PRIVATE_ROUTE {

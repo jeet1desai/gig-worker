@@ -1,11 +1,11 @@
 import { Geist, Geist_Mono, Outfit } from 'next/font/google'
-import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { ToastContainer } from 'react-toastify'
 
 import './globals.css'
 import type { Metadata } from 'next'
+import { Providers } from '@/app/providers'
+import ClientSocketWrapper from '@/components/client-socket-wrapper'
 import 'react-toastify/dist/ReactToastify.css'
-import { ReduxProvider } from '@/store/redux-provider'
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -38,16 +38,14 @@ export default function RootLayout({
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
         <meta name="robots" content="noindex, nofollow" />
       </head>
-      <body
-        className={`${outfit.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ReduxProvider>
-          <AntdRegistry>{children}</AntdRegistry>
+      <body className={`${outfit.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Providers>
+          {children}
+          <ClientSocketWrapper />
           <ToastContainer position="top-right" autoClose={3000} />
-        </ReduxProvider>
+        </Providers>
       </body>
     </html>
   )

@@ -1,10 +1,5 @@
 import Link from 'next/link';
-import {
-  FacebookIconSvg,
-  InstagramIconSvg,
-  LinkedInIconSvg,
-  TwitterIconSvg,
-} from './icons';
+import { FacebookIconSvg, InstagramIconSvg, LinkedInIconSvg, TwitterIconSvg } from './icons';
 import Image from 'next/image';
 import { Images } from '@/lib/images';
 import { FACEBOOK_PROFILE_PATH, INSTAGRAM_PROFILE_PATH, LINKEDIN_PROFILE_PATH, TWITTER_PROFILE_PATH } from '@/constants/app-routes';
@@ -17,25 +12,13 @@ function Footer() {
         <div>
           <div className="flex items-center space-x-2">
             <div className="relative flex aspect-[200/113] w-[200px] items-center justify-center">
-              <Image
-                src={Images.logo}
-                alt="logo"
-                fill
-                className="object-contain object-center"
-              />
+              <Image src={Images.logo} alt="logo" fill className="object-contain object-center" />
             </div>
             <div className="max-w-auto relative aspect-[130/22] w-full">
-              <Image
-                src={Images.big_logo_icon}
-                alt="logo"
-                fill
-                className="object-contain"
-              />
+              <Image src={Images.big_logo_icon} alt="logo" fill className="object-contain" />
             </div>
           </div>
-          <p className="mt-4 text-sm text-gray-300">
-            Your one stop marketplace for exclusive design resource
-          </p>
+          <p className="mt-4 text-sm text-gray-300">Your one stop marketplace for exclusive design resource</p>
         </div>
 
         <div>
@@ -129,7 +112,7 @@ function Footer() {
           </Link>
         </div>
 
-        <div className="flex space-x-4 mt-4 md:mt-0">
+        <div className="mt-4 flex space-x-4 md:mt-0">
           <Link href={LINKEDIN_PROFILE_PATH} target="_blank" rel="noopener noreferrer">
             <LinkedInIconSvg />
           </Link>

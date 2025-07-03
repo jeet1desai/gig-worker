@@ -362,3 +362,10 @@ enum GIG_STATUS {
   completed
   rejected
 }
+
+enum NOTIFICATION_TYPE {
+  success
+  warning
+  error
+  info
+}
