@@ -2,10 +2,11 @@
   "name": "gig-workers",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "prisma generate && next dev --turbopack",
+    "dev": "prisma generate && tsx watch src/server.ts",
     "build": "prisma generate && next build",
-    "start": "prisma migrate deploy && next start",
+    "start": "prisma migrate deploy && NODE_ENV=production tsx src/server.ts",
     "type-check": "tsc",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
@@ -14,7 +15,9 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:seed": "prisma db seed",
     "prisma:update": "npx prisma migrate dev --name update_table",
-    "prisma:reset": "npx prisma migrate reset"
+    "prisma:reset": "npx prisma migrate reset",
+    "seed:dev:paypal-plans": "tsx src/scripts/seed-paypal-plans.ts",
+    "seed:prod:paypal-plans": "node dist/scripts/seed-paypal-plans.ts"
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.2",
@@ -28,6 +31,8 @@
     "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
+    "date-fns": "^4.1.0",
+    "dotenv": "^17.0.1",
     "jsonwebtoken": "^9.0.2",
     "juice": "^11.0.1",
     "lucide-react": "^0.522.0",
@@ -37,12 +42,14 @@
     "prisma": "^6.9.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-toastify": "^11.0.5",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-redux": "^9.2.0",
+    "react-toastify": "^11.0.5",
     "recharts": "^3.0.2",
     "redux": "^5.0.1",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
+    "spinners-react": "^1.0.11",
     "superjson": "^2.2.2",
     "tailwind-merge": "^3.3.1",
     "tailwind-scrollbar": "^4.0.2",
@@ -54,13 +61,15 @@
     "@commitlint/cz-commitlint": "^19.0.0",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.29.0",
-    "@prisma/client": "^6.9.0",
+    "@prisma/client": "^6.11.0",
     "@tailwindcss/postcss": "^4",
+    "@types/dotenv": "^8.2.3",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^20",
+    "@types/node": "^20.19.4",
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/ws": "^8.18.1",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
     "autoprefixer": "^10.4.21",
@@ -78,6 +87,7 @@
     "prettier-plugin-tailwindcss": "^0.6.13",
     "tailwindcss": "^4.1.10",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
   "lint-staged": {
@@ -87,6 +97,6 @@
     ]
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts"
   }
 }

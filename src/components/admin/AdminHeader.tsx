@@ -28,9 +28,7 @@ export function AdminHeader({ collapsed, onToggle }: SidebarProps) {
         <div>
           <div className="flex cursor-pointer items-center space-x-2 pl-2 sm:space-x-3 sm:pl-3 md:pl-4">
             <div className="hidden text-right sm:block">
-              <p className="max-w-[120px] truncate text-sm font-medium text-white md:max-w-none">
-                John Doe
-              </p>
+              <p className="max-w-[120px] truncate text-sm font-medium text-white md:max-w-none">John Doe</p>
               <p className="hidden text-xs text-slate-400 md:block">Web Developer</p>
             </div>
             <div className="relative">

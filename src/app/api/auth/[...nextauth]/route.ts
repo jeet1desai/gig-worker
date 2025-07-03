@@ -81,8 +81,8 @@ export const authOptions: NextAuthOptions = {
           first_name: admin.first_name || '',
           last_name: admin.last_name || '',
           image: admin.profile_url || '',
-          role: admin.role || 'admin',
           is_verified: true,
+          role: 'admin',
         };
       },
     }),
@@ -130,7 +130,7 @@ export const authOptions: NextAuthOptions = {
             where: { email: user.email },
           });
           if (!existingUser) {
-            const newUser = await prisma.user.create({
+            const newUser: any = await prisma.user.create({
               data: {
                 email: user.email,
                 first_name: user.first_name,
@@ -139,6 +139,7 @@ export const authOptions: NextAuthOptions = {
                 sign_up_type: 'google',
                 is_verified: true,
                 role: 'user',
+                password: '',
               },
             });
 

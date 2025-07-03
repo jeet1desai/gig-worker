@@ -7,6 +7,10 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   withAuth?: boolean;
 }
 
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  withAuth?: boolean;
+}
+
 const api = axios.create({
   baseURL: BASE_API_URL,
   headers: {

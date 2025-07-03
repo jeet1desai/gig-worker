@@ -15,13 +15,14 @@ export enum PUBLIC_ROUTE {
   VERIFY_OTP_PAGE_PATH = '/verify-otp',
   RESET_PASSWORD_PAGE_PATH = '/reset-password',
   ADMIN_LOGIN_PATH = '/admin/login',
-  NOT_FOUND = '*',
   EMAIL_VERIFICATION_PATH = '/email-verification',
+  NOT_FOUND = '*',
 }
 
 export enum PRIVATE_ROUTE {
   DASHBOARD = '/dashboard',
   USER_PROFILE = '/profile',
+  PLANS = '/plans',
   ADMIN_DASHBOARD_PATH = '/admin/dashboard',
   ADMIN_USERS_DASHBOARD_PATH = '/admin/dashboard/users',
   ADMIN_GIGS_DASHBOARD_PATH = '/admin/dashboard/gigs',
@@ -34,4 +35,8 @@ export enum PUBLIC_API_ROUTES {
   FORGOT_PASSWORD_API = '/api/auth/forgot-password',
   RESET_PASSWORD_API = '/api/auth/reset-password',
   API_FORGOT_PASSWORD = '/api/auth/forgot-password',
+}
+
+export enum PRIVATE_API_ROUTES {
+  SUBSCRIPTION_PLANS_API = '/api/subscriptions/plans',
 }

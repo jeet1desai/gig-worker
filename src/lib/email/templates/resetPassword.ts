@@ -1,12 +1,9 @@
 type TemplateOptions = {
-  userName?: string
-  actionLink: string
-}
+  userName?: string;
+  actionLink: string;
+};
 
-export const getResetPasswordEmail = ({
-  userName = 'User',
-  actionLink,
-}: TemplateOptions) => {
+export const getResetPasswordEmail = ({ userName = 'User', actionLink }: TemplateOptions) => {
   const content = `
     <div class="header">
       <h1>Reset Your Password</h1>
@@ -21,10 +18,10 @@ export const getResetPasswordEmail = ({
     </div>
 
     <p>If you did not request a password reset, you can safely ignore this email.</p>
-  `
+  `;
 
   return {
     subject: 'Reset Your Password',
     html: content,
-  }
-}
+  };
+};

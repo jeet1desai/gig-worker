@@ -13,6 +13,8 @@ import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { getVerificationEmail } from '@/lib/email/templates/emailVerification';
 import { sendEmail } from '@/lib/email/sendEmail';
 import { safeJson } from '@/lib/utils/safeJson';
+import { sendNotification } from '@/lib/socket/socket-server';
+import { io } from '@/server';
 
 export async function POST(req: Request) {
   try {
@@ -31,11 +33,11 @@ export async function POST(req: Request) {
       where: { email: formattedEmail },
     });
     if (existingUser) {
-      return errorResponse(
-        'USER_ALREADY_EXISTS',
-        'A user with this email already exists.',
-        HttpStatusCode.BAD_REQUEST,
-      );
+      return errorResponse({
+        code: 'USER_ALREADY_EXISTS',
+        message: 'A user with this email already exists.',
+        statusCode: HttpStatusCode.BAD_REQUEST,
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -62,6 +64,13 @@ export async function POST(req: Request) {
       email: user.email,
     });
 
+    await sendNotification(io, user.id.toString(), {
+      title: 'User Created',
+      message: 'User created successfully.',
+      module: 'system',
+      type: 'success',
+    });
+
     const userName = `${first_name} ${last_name}`;
     const verificationUrl = `${publicEnv.NEXT_PUBLIC_BASE_URL}${PUBLIC_ROUTE.EMAIL_VERIFICATION_PATH}?token=${token}`;
     const { subject, html } = getVerificationEmail({
@@ -69,9 +78,13 @@ export async function POST(req: Request) {
       actionLink: verificationUrl,
     });
 
-    sendEmail({ to: email, subject, html }).catch(console.error);
+    sendEmail({ to: email, subject, html });
 
-    return successResponse(safeUser, 'User created successfully', HttpStatusCode.CREATED);
+    return successResponse({
+      data: safeUser,
+      message: 'User created successfully',
+      statusCode: HttpStatusCode.CREATED,
+    });
   } catch (err) {
     if (err instanceof ValidationError) {
       const fieldErrors: Record<string, string> = {};
@@ -79,21 +92,19 @@ export async function POST(req: Request) {
         if (issue.path) fieldErrors[issue.path] = issue.message;
       }
 
-      return errorResponse(
-        'VALIDATION_ERROR',
-        'Invalid request payload',
-        HttpStatusCode.BAD_REQUEST,
-        { fieldErrors },
-      );
+      return errorResponse({
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid request payload',
+        statusCode: HttpStatusCode.BAD_REQUEST,
+        fieldErrors,
+      });
     }
 
-    return errorResponse(
-      'INTERNAL_SERVER_ERROR',
-      'Something went wrong while creating the user.',
-      HttpStatusCode.INTERNAL_SERVER_ERROR,
-      {
-        details: err instanceof Error ? err.message : 'Unknown error',
-      },
-    );
+    return errorResponse({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Something went wrong while creating the user.',
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
+      details: err instanceof Error ? err.message : 'Unknown error',
+    });
   }
 }

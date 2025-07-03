@@ -25,7 +25,6 @@ export async function GET(req: Request) {
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({
-        where: { is_deleted: false },
         skip,
         take: pageSize,
         orderBy: {
@@ -50,11 +49,8 @@ export async function GET(req: Request) {
     return paginatedResponse(users, page, pageSize, total, { status: HttpStatusCode.OK });
   } catch (error) {
     console.error('Error fetching paginated users:', error);
-    return NextResponse.json(
-      errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR),
-      {
-        status: HttpStatusCode.INTERNAL_SERVER_ERROR,
-      },
-    );
+    return NextResponse.json(errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR), {
+      status: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    });
   }
 }

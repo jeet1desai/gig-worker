@@ -22,11 +22,11 @@ export async function POST(req: Request) {
     const user = await prisma.user.findUnique({ where: { email: formattedEmail } });
 
     if (!user) {
-      return errorResponse(
-        'USER_NOT_FOUND',
-        'User with this email does not exist.',
-        HttpStatusCode.BAD_REQUEST,
-      );
+      return errorResponse({
+        code: 'USER_NOT_FOUND',
+        message: 'User with this email does not exist.',
+        statusCode: HttpStatusCode.BAD_REQUEST,
+      });
     }
 
     const token = generateEmailVerificationToken({
@@ -40,31 +40,28 @@ export async function POST(req: Request) {
 
     await sendEmail({ to: user.email, subject, html });
 
-    return successResponse(
-      null,
-      'Check your inbox! Password reset link has been sent.',
-      HttpStatusCode.OK,
-    );
+    return successResponse({
+      data: null,
+      message: 'Check your inbox! Password reset link has been sent.',
+      statusCode: HttpStatusCode.OK,
+    });
   } catch (err) {
     if (err instanceof ValidationError) {
       const fieldErrors: Record<string, string> = {};
       for (const issue of err.inner) {
         if (issue.path) fieldErrors[issue.path] = issue.message;
       }
-      return errorResponse(
-        'VALIDATION_ERROR',
-        'Invalid request payload',
-        HttpStatusCode.BAD_REQUEST,
-        { fieldErrors },
-      );
+      return errorResponse({
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid request payload',
+        statusCode: HttpStatusCode.BAD_REQUEST,
+        fieldErrors,
+      });
     }
-    return errorResponse(
-      'INTERNAL_SERVER_ERROR',
-      'Something went wrong while processing your request.',
-      HttpStatusCode.INTERNAL_SERVER_ERROR,
-      {
-        details: err instanceof Error ? err.message : 'Unknown error',
-      },
-    );
+    return errorResponse({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Something went wrong while processing your request.',
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    });
   }
 }

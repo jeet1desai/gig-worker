@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, NOTIFICATION_TYPE } from '@prisma/client';
 
 let prisma: PrismaClient;
 
@@ -45,3 +45,5 @@ process.on('beforeExit', async () => {
 });
 
 export default prisma;
+
+export { NOTIFICATION_TYPE };
