@@ -8,9 +8,11 @@ import TextField from '@/components/TextField';
 import Link from 'next/link';
 import { Images } from '@/lib/images';
 import { useRouter } from 'next/navigation';
-import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
+import { PRIVATE_ROUTE, PUBLIC_API_ROUTES, PUBLIC_ROUTE } from '@/constants/app-routes';
 import Image from 'next/image';
 import { signIn } from 'next-auth/react';
+import apiService from '@/services/api';
+import { toast } from 'react-toastify';
 
 const { Title } = Typography;
 interface SignupFormValues {
@@ -22,6 +24,14 @@ interface SignupFormValues {
   terms: boolean;
 }
 
+interface SignupApiResponse {
+  message?: string;
+  error?: {
+    message?: string;
+    fieldErrors?: Record<string, string>;
+  };
+}
+
 export default function SignupForm() {
   const [form] = Form.useForm();
   const router = useRouter();
@@ -30,10 +40,26 @@ export default function SignupForm() {
   const pageRedirection = (path: string) => {
     router.push(path);
   };
+
   const handleSubmit = async (values: SignupFormValues) => {
     try {
       setError(null);
       await signupSchema.validate(values, { abortEarly: false });
+
+      const payload = {
+        first_name: values.firstname,
+        last_name: values.lastname,
+        email: values.email,
+        password: values.password,
+      };
+
+      const { data } = await apiService.post<SignupApiResponse>(PUBLIC_API_ROUTES.SIGNUP_API, payload, { withAuth: false });
+
+      toast.success(data?.message || 'Signup successful!');
+      form.resetFields();
+      setTimeout(() => {
+        router.push(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH);
+      }, 1500);
     } catch (err: any) {
       if (err.name === 'ValidationError') {
         const fieldErrors = err.inner.map((e: any) => ({
@@ -41,11 +67,26 @@ export default function SignupForm() {
           errors: [e.message],
         }));
         form.setFields(fieldErrors);
+      } else if (err.response) {
+        const data: SignupApiResponse = err.response.data;
+        const apiErrorMessage = data?.error?.message || data?.message || 'Signup failed. Please try again.';
+        if (data?.error?.fieldErrors) {
+          const fieldErrors = Object.entries(data.error.fieldErrors).map(([name, message]) => ({
+            name,
+            errors: [message as string],
+          }));
+          form.setFields(fieldErrors);
+        }
+        setError(apiErrorMessage);
+        toast.error(apiErrorMessage);
       } else {
-        setError('Something went wrong. Please try again.');
+        const errorMessage = err?.message || 'Something went wrong.';
+        setError(errorMessage);
+        toast.error(errorMessage);
       }
     }
   };
+
   const handleGoogleLogin = useCallback(() => {
     signIn('google', { callbackUrl: PRIVATE_ROUTE.DASHBOARD });
   }, []);
@@ -63,8 +104,8 @@ export default function SignupForm() {
           layout="vertical"
           className="w-full"
           initialValues={{
-            firstName: '',
-            lastName: '',
+            firstname: '',
+            lastname: '',
             email: '',
             password: '',
             confirmPassword: '',
