@@ -45,7 +45,7 @@ export default function LoginForm() {
         setLoading(false);
       } else {
         setLoading(false);
-        router.replace('/dashboard');
+        router.replace(PRIVATE_ROUTE.DASHBOARD);
         router.refresh();
       }
     } catch (err: any) {
