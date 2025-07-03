@@ -7,6 +7,8 @@ import { resetPasswordSchema } from '@/schemas/be/auth';
 import { errorResponse, successResponse } from '@/lib/api-response';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { verifyEmailVerificationToken } from '@/lib/tokens';
+import { sendNotification } from '@/lib/socket/socket-server';
+import { io } from '@/server';
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -52,6 +54,13 @@ export async function PATCH(req: NextRequest) {
     await prisma.user.update({
       where: { id: user.id },
       data: { password: hashedPassword },
+    });
+
+    await sendNotification(io, user.id.toString(), {
+      title: 'User Password Reset',
+      message: 'User password reset successfully.',
+      module: 'system',
+      type: 'success',
     });
 
     return successResponse({
