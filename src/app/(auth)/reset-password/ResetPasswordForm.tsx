@@ -36,11 +36,7 @@ export default function ResetPasswordForm() {
         token,
       };
       await resetPasswordSchema.validate(payload, { abortEarly: false });
-      const { data } = await apiService.patch<ResetPasswordResponse>(
-        PUBLIC_API_ROUTES.RESET_PASSWORD_API,
-        payload,
-        { withAuth: false },
-      );
+      const { data } = await apiService.patch<ResetPasswordResponse>(PUBLIC_API_ROUTES.RESET_PASSWORD_API, payload, { withAuth: false });
 
       toast.success(data?.message || 'Password has been reset successfully.');
       form.resetFields();
@@ -58,15 +54,12 @@ export default function ResetPasswordForm() {
       }
       if (err.response) {
         const data: ResetPasswordResponse = err.response.data;
-        const apiErrorMessage =
-          data?.error?.message || data?.message || 'Failed to reset password.';
+        const apiErrorMessage = data?.error?.message || data?.message || 'Failed to reset password.';
         if (data?.error?.fieldErrors) {
-          const fieldErrors = Object.entries(data.error.fieldErrors).map(
-            ([name, message]) => ({
-              name,
-              errors: [message as string],
-            }),
-          );
+          const fieldErrors = Object.entries(data.error.fieldErrors).map(([name, message]) => ({
+            name,
+            errors: [message as string],
+          }));
           form.setFields(fieldErrors);
         }
         setError(apiErrorMessage);

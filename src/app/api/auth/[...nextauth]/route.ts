@@ -139,6 +139,7 @@ export const authOptions: NextAuthOptions = {
                 sign_up_type: 'google',
                 is_verified: true,
                 role: 'user',
+                password: '',
               },
             });
 

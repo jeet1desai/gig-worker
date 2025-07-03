@@ -7,16 +7,12 @@ export async function createSubscription(httpBody: CreateSubscriptionPayload) {
   const accessToken = await getPayPalAccessToken();
 
   try {
-    const response = await paypalClient.post(
-      endpoints.payPalSubscriptions,
-      httpBody,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          Prefer: 'return=representation',
-        },
+    const response = await paypalClient.post(endpoints.payPalSubscriptions, httpBody, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Prefer: 'return=representation',
       },
-    );
+    });
 
     return response.data;
   } catch (error: any) {

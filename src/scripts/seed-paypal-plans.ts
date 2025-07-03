@@ -1,27 +1,27 @@
-import 'dotenv/config'
-import { PrismaClient } from '@prisma/client'
-import { Decimal } from '@prisma/client/runtime/library'
+import 'dotenv/config';
+import { PrismaClient } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/library';
 
-import { listSubscriptionPlans } from '@/lib/paypal/plans'
-import { FREE_PLAN, planBenefits } from '@/constants/plans'
+import { listSubscriptionPlans } from '@/lib/paypal/plans';
+import { FREE_PLAN, planBenefits } from '@/constants/plans';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 const seedPayPalPlans = async () => {
   try {
-    const plans = await listSubscriptionPlans()
+    const plans = await listSubscriptionPlans();
 
     for (const plan of plans) {
-      const billing = plan.billing_cycles[0]
-      const priceInfo = billing.pricing_scheme?.fixed_price
+      const billing = plan.billing_cycles[0];
+      const priceInfo = billing.pricing_scheme?.fixed_price;
 
       if (!priceInfo) {
-        console.warn(`Skipping plan "${plan.name}" — missing price info.`)
-        continue
+        console.warn(`Skipping plan "${plan.name}" — missing price info.`);
+        continue;
       }
 
-      const setupFee = plan.payment_preferences.setup_fee
-      const tax = plan.taxes.percentage
+      const setupFee = plan.payment_preferences.setup_fee;
+      const tax = plan.taxes.percentage;
 
       const sharedData = {
         plan_id: plan.id,
@@ -39,34 +39,34 @@ const seedPayPalPlans = async () => {
         tax_percentage: tax ? new Decimal(tax) : undefined,
         merchant_id: plan.payee.merchant_id || 'unknown',
         benefits: planBenefits[plan.id] || [],
-        isPublic: true
-      }
+        isPublic: true,
+      };
 
       await prisma.plan.upsert({
         where: { plan_id: plan.id },
         update: sharedData,
-        create: sharedData
-      })
+        create: sharedData,
+      });
     }
 
-    const FREE_PLAN_ID = 'FREE-PLAN'
+    const FREE_PLAN_ID = 'FREE-PLAN';
 
     const existingFree = await prisma.plan.findUnique({
-      where: { plan_id: FREE_PLAN_ID }
-    })
+      where: { plan_id: FREE_PLAN_ID },
+    });
 
     if (!existingFree) {
       await prisma.plan.create({
-        data: FREE_PLAN
-      })
+        data: FREE_PLAN,
+      });
     }
 
-    console.log('Done seeding PayPal plans.')
+    console.log('Done seeding PayPal plans.');
   } catch (err) {
-    console.error('Error while seeding PayPal plans:', err)
+    console.error('Error while seeding PayPal plans:', err);
   } finally {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   }
-}
+};
 
-seedPayPalPlans()
+seedPayPalPlans();
