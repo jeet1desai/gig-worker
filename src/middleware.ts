@@ -31,14 +31,12 @@ export async function middleware(req: NextRequest) {
     if (
       token &&
       token.exp > now &&
-      isRestrictedPublicRoute &&
-      pathname !== PRIVATE_ROUTE.DASHBOARD
+      isRestrictedPublicRoute
     ) {
       const url = req.nextUrl.clone();
       url.pathname = PRIVATE_ROUTE.DASHBOARD;
       return NextResponse.redirect(url);
     }
-
     return NextResponse.next();
   }
 
