@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "ROLE" AS ENUM ('user', 'provider');
+CREATE TYPE "ROLE" AS ENUM ('user', 'provider', 'admin');
 
 -- CreateEnum
 CREATE TYPE "TIER" AS ENUM ('basic', 'advanced', 'expert');
@@ -27,6 +27,9 @@ CREATE TYPE "EARN_STATUS" AS ENUM ('in_progress', 'completed');
 
 -- CreateEnum
 CREATE TYPE "GIG_STATUS" AS ENUM ('open', 'requested', 'in_progress', 'completed', 'rejected');
+
+-- CreateEnum
+CREATE TYPE "NOTIFICATION_TYPE" AS ENUM ('success', 'warning', 'error', 'info');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -96,6 +99,7 @@ CREATE TABLE "Admin" (
     "last_name" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "profile_url" TEXT,
+    "role" "ROLE" NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -111,6 +115,31 @@ CREATE TABLE "CMS" (
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "CMS_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Plan" (
+    "id" SERIAL NOT NULL,
+    "plan_id" TEXT NOT NULL,
+    "product_id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "status" TEXT NOT NULL,
+    "price" DECIMAL(8,2) NOT NULL,
+    "currency" TEXT NOT NULL,
+    "interval" TEXT NOT NULL,
+    "interval_count" INTEGER NOT NULL,
+    "billing_cycle_count" INTEGER NOT NULL DEFAULT 0,
+    "usage_type" TEXT,
+    "setup_fee" DECIMAL(8,2),
+    "tax_percentage" DECIMAL(5,2),
+    "merchant_id" TEXT NOT NULL,
+    "benefits" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "isPublic" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastSyncedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Plan_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -308,6 +337,9 @@ CREATE UNIQUE INDEX "UserBan_user_id_key" ON "UserBan"("user_id");
 CREATE UNIQUE INDEX "Admin_email_key" ON "Admin"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Plan_plan_id_key" ON "Plan"("plan_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "GigPipeline_gig_id_key" ON "GigPipeline"("gig_id");
 
 -- CreateIndex
@@ -335,13 +367,13 @@ ALTER TABLE "UserBan" ADD CONSTRAINT "UserBan_user_id_fkey" FOREIGN KEY ("user_i
 ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProviderEarning" ADD CONSTRAINT "ProviderEarning_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ProviderEarning" ADD CONSTRAINT "ProviderEarning_gig_id_fkey" FOREIGN KEY ("gig_id") REFERENCES "Gig"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProviderEarning" ADD CONSTRAINT "ProviderEarning_provider_id_fkey" FOREIGN KEY ("provider_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProviderEarning" ADD CONSTRAINT "ProviderEarning_gig_id_fkey" FOREIGN KEY ("gig_id") REFERENCES "Gig"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ProviderEarning" ADD CONSTRAINT "ProviderEarning_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Gig" ADD CONSTRAINT "Gig_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -374,13 +406,13 @@ ALTER TABLE "Payment" ADD CONSTRAINT "Payment_gig_id_fkey" FOREIGN KEY ("gig_id"
 ALTER TABLE "Payment" ADD CONSTRAINT "Payment_provider_id_fkey" FOREIGN KEY ("provider_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Complaint" ADD CONSTRAINT "Complaint_review_rating_id_fkey" FOREIGN KEY ("review_rating_id") REFERENCES "ReviewRating"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Complaint" ADD CONSTRAINT "Complaint_gig_id_fkey" FOREIGN KEY ("gig_id") REFERENCES "Gig"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Complaint" ADD CONSTRAINT "Complaint_provider_id_fkey" FOREIGN KEY ("provider_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Complaint" ADD CONSTRAINT "Complaint_review_rating_id_fkey" FOREIGN KEY ("review_rating_id") REFERENCES "ReviewRating"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Complaint" ADD CONSTRAINT "Complaint_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -398,19 +430,19 @@ ALTER TABLE "Challenged" ADD CONSTRAINT "Challenged_provider_id_fkey" FOREIGN KE
 ALTER TABLE "Message" ADD CONSTRAINT "Message_gig_id_fkey" FOREIGN KEY ("gig_id") REFERENCES "Gig"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Message" ADD CONSTRAINT "Message_sender_id_fkey" FOREIGN KEY ("sender_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Message" ADD CONSTRAINT "Message_receiver_id_fkey" FOREIGN KEY ("receiver_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Message" ADD CONSTRAINT "Message_receiver_id_fkey" FOREIGN KEY ("receiver_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Message" ADD CONSTRAINT "Message_sender_id_fkey" FOREIGN KEY ("sender_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Notification" ADD CONSTRAINT "Notification_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Testimonials" ADD CONSTRAINT "Testimonials_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Testimonials" ADD CONSTRAINT "Testimonials_gig_id_fkey" FOREIGN KEY ("gig_id") REFERENCES "Gig"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Testimonials" ADD CONSTRAINT "Testimonials_provider_id_fkey" FOREIGN KEY ("provider_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Testimonials" ADD CONSTRAINT "Testimonials_gig_id_fkey" FOREIGN KEY ("gig_id") REFERENCES "Gig"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Testimonials" ADD CONSTRAINT "Testimonials_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
