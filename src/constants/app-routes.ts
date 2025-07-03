@@ -1,7 +1,7 @@
-export const LINKEDIN_PROFILE_PATH = 'https://www.linkedin.com';
-export const FACEBOOK_PROFILE_PATH = 'https://www.facebook.com';
-export const TWITTER_PROFILE_PATH = 'https://www.twitter.com';
-export const INSTAGRAM_PROFILE_PATH = 'https://www.instagram.com';
+export const LINKEDIN_PROFILE_PATH = 'https://www.linkedin.com'
+export const FACEBOOK_PROFILE_PATH = 'https://www.facebook.com'
+export const TWITTER_PROFILE_PATH = 'https://www.twitter.com'
+export const INSTAGRAM_PROFILE_PATH = 'https://www.instagram.com'
 
 export enum PUBLIC_ROUTE {
   UNKNOWN = '#',
@@ -16,15 +16,16 @@ export enum PUBLIC_ROUTE {
   RESET_PASSWORD_PAGE_PATH = '/reset-password',
   ADMIN_LOGIN_PATH = '/admin/login',
   NOT_FOUND = '*',
-  EMAIL_VERIFICATION_PATH = '/email-verification',
+  EMAIL_VERIFICATION_PATH = '/email-verification'
 }
 
 export enum PRIVATE_ROUTE {
   DASHBOARD = '/dashboard',
   USER_PROFILE = '/profile',
+  PLANS = '/plans',
   ADMIN_DASHBOARD_PATH = '/admin/dashboard',
   ADMIN_USERS_DASHBOARD_PATH = '/admin/dashboard/users',
-  ADMIN_GIGS_DASHBOARD_PATH = '/admin/dashboard/gigs',
+  ADMIN_GIGS_DASHBOARD_PATH = '/admin/dashboard/gigs'
 }
 
 export enum PUBLIC_API_ROUTES {
@@ -33,5 +34,9 @@ export enum PUBLIC_API_ROUTES {
   VERIFY_EMAIL_API = '/api/auth/verify-email',
   FORGOT_PASSWORD_API = '/api/auth/forgot-password',
   RESET_PASSWORD_API = '/api/auth/reset-password',
-  API_FORGOT_PASSWORD = '/api/auth/forgot-password',
+  API_FORGOT_PASSWORD = '/api/auth/forgot-password'
+}
+
+export enum PRIVATE_API_ROUTES {
+  SUBSCRIPTION_PLANS_API = '/api/subscriptions/plans'
 }
