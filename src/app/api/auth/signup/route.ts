@@ -69,7 +69,7 @@ export async function POST(req: Request) {
       actionLink: verificationUrl
     })
 
-    sendEmail({ to: email, subject, html }).catch(console.error)
+    sendEmail({ to: email, subject, html })
 
     return successResponse({
       data: safeUser,
