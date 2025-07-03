@@ -85,7 +85,7 @@ export interface PayPalLink {
 
 export interface CreateSubscriptionPayload {
   plan_id: string;
-  custom_id: string
+  custom_id: string;
   subscriber?: {
     name?: {
       given_name?: string;
