@@ -10,11 +10,13 @@ import { useRouter } from 'next/navigation';
 import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { signIn } from 'next-auth/react';
 import Image from 'next/image';
+import { toast } from 'react-toastify';
 
 const { Title } = Typography;
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const router = useRouter();
 
@@ -26,7 +28,7 @@ export default function LoginForm() {
     try {
       setError(null);
       await loginSchema.validate(values, { abortEarly: false });
-
+      setLoading(true); 
       const result = await signIn('credentials', {
         redirect: false,
         email: values.email,
@@ -35,10 +37,16 @@ export default function LoginForm() {
 
       if (result?.error === 'Email not verified') {
         setError('Your email is not verified. Please verify your account.');
+        toast.error("Email is not verified");
+        setLoading(false);
       } else if (!result?.ok) {
         setError('Invalid email or password.');
+        toast.error('Invalid email or password.');
+        setLoading(false);
       } else {
-        router.push(PRIVATE_ROUTE.DASHBOARD);
+        setLoading(false);
+        router.replace(PRIVATE_ROUTE.DASHBOARD);
+        router.refresh();
       }
     } catch (err: any) {
       if (err.name === 'ValidationError') {
@@ -101,6 +109,7 @@ export default function LoginForm() {
           icon={<LockOutlined className="text-[#FFF2E3]" />}
           labelClassName="text-[#FFF2E3]"
         />
+        {error && <div className="text-red-400 text-sm text-start mb-3">{error}</div>}
         <div className="mt-2 flex w-full justify-end">
           <button
             type="button"
@@ -111,7 +120,7 @@ export default function LoginForm() {
           </button>
         </div>
         <Form.Item>
-          <Button htmlType="submit" block size="large" className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none">
+          <Button htmlType="submit" block size="large" loading={loading} className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none">
             Sign in
           </Button>
         </Form.Item>

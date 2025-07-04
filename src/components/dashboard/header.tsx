@@ -2,11 +2,14 @@
 
 import { Tooltip } from 'antd';
 import { Menu, MessageCircle, Search, User, Briefcase } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useCallback } from 'react';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 
 import { Button } from '../ui/button';
+import { signOut } from 'next-auth/react';
+import { PUBLIC_ROUTE } from '@/constants/app-routes';
+import { useRouter } from 'next/navigation';
 import NotificationBell from '../notification-bell';
 
 interface SidebarProps {
@@ -18,6 +21,13 @@ interface SidebarProps {
 
 export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps) {
   const isMobile = useIsMobile();
+  const router = useRouter();
+
+  const handleLogout = useCallback(async () => {
+    await signOut({ redirect: false });
+    router.push(PUBLIC_ROUTE.HOME);
+    router.refresh();
+  }, [router, PUBLIC_ROUTE.HOME]);
 
   return (
     <header className="border-b border-slate-700/50 p-4 pl-6 shadow-sm">
@@ -71,6 +81,10 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
           </button>
 
           <NotificationBell userId="5" />
+
+          <button type="button" onClick={handleLogout} className="font-medium text-[#FFF2E3] bg-transparent border-none p-0 cursor-pointer pl-3">
+            Logout
+          </button>
 
           <div className="flex cursor-pointer items-center space-x-2 border-l border-slate-700 pl-2 sm:space-x-3 sm:pl-3 md:pl-4">
             <div className="hidden text-right sm:block">
