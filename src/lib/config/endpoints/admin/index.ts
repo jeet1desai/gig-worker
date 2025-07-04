@@ -1,1 +1,0 @@
-export const ADMIN_LOGIN_API_ENDPOINT = '/admin/login';

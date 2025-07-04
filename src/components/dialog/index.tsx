@@ -1,5 +1,5 @@
 import { Button } from '../ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './Dialog';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 
 interface ControlledConfirmDeleteDialogProps {
   open: boolean;
@@ -34,12 +34,12 @@ const CommonDialog = ({
         </DialogHeader>
         <DialogFooter className="">
           <DialogClose asChild>
-            <Button type="button" variant="secondary" className="border border-[#5750F1] cursor-pointer dark:border-white dark:text-white">
+            <Button type="button" variant="secondary" className="cursor-pointer border border-[#5750F1] dark:border-white dark:text-white">
               {cancelLabel}
             </Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button type="button" variant="destructive" className="bg-[#5750F1] cursor-pointer text-white" onClick={handleConfirm}>
+            <Button type="button" variant="destructive" className="cursor-pointer bg-[#5750F1] text-white" onClick={handleConfirm}>
               {confirmLabel}
             </Button>
           </DialogClose>

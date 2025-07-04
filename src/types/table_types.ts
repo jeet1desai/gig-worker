@@ -18,17 +18,3 @@ export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElem
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
-
-export interface IUser {
-  id: string;
-  first_name: string;
-  last_name: string;
-  profile_url: string;
-  email: string;
-  role: string;
-  sign_up_type: string;
-  is_verified: boolean;
-  is_banned: boolean;
-  created_at: string;
-  updated_at: string;
-}

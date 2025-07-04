@@ -73,7 +73,7 @@ export function DynamicTable<T extends { id: number | string }>({
   const renderCell = (col: ColumnConfig<T>, value: T[keyof T], row: T, index: number) => {
     if (col.key === 'coupon_code' || col.key === 'code') {
       return (
-        <div className="flex cursor-pointer items-center gap-2 hover:text-primary" onClick={() => handleCopyToClipboard(String(value), row.id)}>
+        <div className="hover:text-primary flex cursor-pointer items-center gap-2" onClick={() => handleCopyToClipboard(String(value), row.id)}>
           <span>{String(value)}</span>
           {copiedId === row.id ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
         </div>

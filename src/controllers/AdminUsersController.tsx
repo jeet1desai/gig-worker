@@ -8,7 +8,6 @@ export async function deleteUser(id: string) {
   const updated = await prisma.user.update({
     where: { id: bigint_id },
     data: {
-      is_deleted: true,
       updated_at: new Date(),
     },
   });
