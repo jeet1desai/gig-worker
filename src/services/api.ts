@@ -1,13 +1,10 @@
-import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
-import { toast } from 'react-toastify';
 import { BASE_API_URL } from '@/constants';
 import { AUTH_TOKEN_KEY } from '@/constants/local-storage-keys';
 import { getStorage } from '@/lib/local-storage';
-
-declare module 'axios' {
-  export interface InternalAxiosRequestConfig {
-    withAuth?: boolean;
-  }
+import axios, { AxiosHeaders, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
+import { toast } from 'react-toastify';
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  withAuth?: boolean;
 }
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
@@ -22,23 +19,19 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
+  (config): InternalAxiosRequestConfig => {
     const token = getStorage(AUTH_TOKEN_KEY);
+
+    // Safely cast to custom type to access withAuth
     const customConfig = config as CustomAxiosRequestConfig;
+
+    if (customConfig.withAuth && token && config.headers instanceof AxiosHeaders) {
+      config.headers.set('Authorization', `Bearer ${token}`);
+    }
     const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData;
 
-    config.headers = config.headers || {};
-
-    if (!isFormData && !('Content-Type' in config.headers)) {
-      config.headers['Content-Type'] = 'application/json';
-    }
-
-    if (customConfig.withAuth && token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
-    } else {
-      if ('Authorization' in config.headers) {
-        delete config.headers['Authorization'];
-      }
+    if (config.headers instanceof AxiosHeaders && !isFormData && !config.headers.has('Content-Type')) {
+      config.headers.set('Content-Type', 'application/json');
     }
 
     return config;

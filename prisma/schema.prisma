@@ -8,18 +8,20 @@ datasource db {
 }
 
 model User {
-  id                      BigInt            @id @default(autoincrement())
-  first_name              String?
-  last_name               String?
-  profile_url             String?
-  email                   String            @unique
-  password                String
-  role                    ROLE              @default(user)
-  is_verified             Boolean           @default(false)
-  is_banned               Boolean           @default(false)
-  sign_up_type            String?
-  created_at              DateTime          @default(now())
-  updated_at              DateTime          @updatedAt
+  id           BigInt   @id @default(autoincrement())
+  first_name   String?
+  last_name    String?
+  profile_url  String?
+  email        String   @unique
+  password     String
+  role         ROLE     @default(user)
+  is_verified  Boolean  @default(false)
+  is_banned    Boolean  @default(false)
+  sign_up_type String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  // Relations
   provider_bids           Bid[]             @relation("ProviderBid")
   user_received_bids      Bid[]             @relation("UserReceivedBid")
   challenged              Challenged[]
@@ -50,9 +52,13 @@ model UserProfile {
   skills          String[]
   educations      String[]
   badges          Json?
+  bio             String?
+  banner_url      String?
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
-  user            User     @relation(fields: [user_id], references: [id])
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id])
 }
 
 model UserBan {
@@ -63,7 +69,9 @@ model UserBan {
   strike_count   Int       @default(0)
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
-  user           User      @relation(fields: [user_id], references: [id])
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id])
 }
 
 model UserRoleLimit {
@@ -126,7 +134,9 @@ model Subscription {
   subscription_expires_at DateTime?
   created_at              DateTime            @default(now())
   updated_at              DateTime            @updatedAt
-  user                    User                @relation(fields: [user_id], references: [id])
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id])
 }
 
 model ProviderEarning {
@@ -138,26 +148,30 @@ model ProviderEarning {
   status      EARN_STATUS @default(in_progress)
   created_at  DateTime    @default(now())
   updated_at  DateTime    @updatedAt
-  gig         Gig         @relation(fields: [gig_id], references: [id])
-  provider    User        @relation("ProviderEarning", fields: [provider_id], references: [id])
-  user        User        @relation("UserSpending", fields: [user_id], references: [id])
+
+  // Relations
+  gig      Gig  @relation(fields: [gig_id], references: [id])
+  provider User @relation("ProviderEarning", fields: [provider_id], references: [id])
+  user     User @relation("UserSpending", fields: [user_id], references: [id])
 }
 
 model Gig {
-  id                BigInt            @id @default(autoincrement())
-  user_id           BigInt
-  title             String
-  description       String?
-  start_date        DateTime?
-  end_date          DateTime?
-  tier              TIER              @default(basic)
-  price_range       Json
-  keywords          String[]
-  completed_at      DateTime?
-  thumbnail         String?
-  attachments       String[]
-  created_at        DateTime          @default(now())
-  updated_at        DateTime          @updatedAt
+  id           BigInt    @id @default(autoincrement())
+  user_id      BigInt
+  title        String
+  description  String?
+  start_date   DateTime?
+  end_date     DateTime?
+  tier         TIER      @default(basic)
+  price_range  Json
+  keywords     String[]
+  completed_at DateTime?
+  thumbnail    String?
+  attachments  String[]
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  // Relations
   bids              Bid[]
   challenged        Challenged?
   complaint         Complaint?
@@ -189,26 +203,30 @@ model Bid {
   status      BID_STATUS @default(pending)
   created_at  DateTime   @default(now())
   updated_at  DateTime   @updatedAt
-  gig         Gig        @relation(fields: [gig_id], references: [id])
-  provider    User       @relation("ProviderBid", fields: [provider_id], references: [id])
-  user        User       @relation("UserReceivedBid", fields: [user_id], references: [id])
+
+  // Relations
+  gig      Gig  @relation(fields: [gig_id], references: [id])
+  provider User @relation("ProviderBid", fields: [provider_id], references: [id])
+  user     User @relation("UserReceivedBid", fields: [user_id], references: [id])
 }
 
 model ReviewRating {
-  id              BigInt     @id @default(autoincrement())
-  gig_id          BigInt     @unique
+  id              BigInt   @id @default(autoincrement())
+  gig_id          BigInt   @unique
   provider_id     BigInt
   user_id         BigInt
-  rating          Int        @default(0)
+  rating          Int      @default(0)
   rating_feedback String?
-  up_vote         Int        @default(0)
-  down_vote       Int        @default(0)
-  created_at      DateTime   @default(now())
-  updated_at      DateTime   @updatedAt
-  complaint       Complaint?
-  gig             Gig        @relation(fields: [gig_id], references: [id])
-  provider        User       @relation("ProviderRating", fields: [provider_id], references: [id])
-  user            User       @relation("UserReceivedRating", fields: [user_id], references: [id])
+  up_vote         Int      @default(0)
+  down_vote       Int      @default(0)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  complaint Complaint?
+  gig       Gig        @relation(fields: [gig_id], references: [id])
+  provider  User       @relation("ProviderRating", fields: [provider_id], references: [id])
+  user      User       @relation("UserReceivedRating", fields: [user_id], references: [id])
 }
 
 model Payment {
@@ -222,27 +240,31 @@ model Payment {
   request_status PAYMENT_REQUEST_STATUS @default(pending)
   created_at     DateTime               @default(now())
   updated_at     DateTime               @updatedAt
-  gig            Gig                    @relation(fields: [gig_id], references: [id])
-  provider       User                   @relation(fields: [provider_id], references: [id])
+
+  // Relations
+  gig      Gig  @relation(fields: [gig_id], references: [id])
+  provider User @relation(fields: [provider_id], references: [id])
 }
 
 model Complaint {
-  id                    BigInt       @id @default(autoincrement())
-  review_rating_id      BigInt       @unique
+  id                    BigInt   @id @default(autoincrement())
+  review_rating_id      BigInt   @unique
   provider_id           BigInt
   user_id               BigInt
-  gig_id                BigInt       @unique
+  gig_id                BigInt   @unique
   issue_text            String
   suggested_improvement String?
   receiver_response     String?
-  is_challenged         Boolean      @default(false)
-  created_at            DateTime     @default(now())
-  updated_at            DateTime     @updatedAt
-  challenged            Challenged?
-  gig                   Gig          @relation(fields: [gig_id], references: [id])
-  provider              User         @relation("ProviderComplaint", fields: [provider_id], references: [id])
-  review_rating         ReviewRating @relation(fields: [review_rating_id], references: [id])
-  user                  User         @relation("UserReceivedComplaint", fields: [user_id], references: [id])
+  is_challenged         Boolean  @default(false)
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  // Relations
+  challenged    Challenged?
+  gig           Gig          @relation(fields: [gig_id], references: [id])
+  provider      User         @relation("ProviderComplaint", fields: [provider_id], references: [id])
+  review_rating ReviewRating @relation(fields: [review_rating_id], references: [id])
+  user          User         @relation("UserReceivedComplaint", fields: [user_id], references: [id])
 }
 
 model Challenged {
@@ -254,9 +276,11 @@ model Challenged {
   provider_id  BigInt
   created_at   DateTime           @default(now())
   updated_at   DateTime           @updatedAt
-  complaint    Complaint          @relation(fields: [complaint_id], references: [id])
-  gig          Gig                @relation(fields: [gig_id], references: [id])
-  provider     User               @relation(fields: [provider_id], references: [id])
+
+  // Relations
+  complaint Complaint @relation(fields: [complaint_id], references: [id])
+  gig       Gig       @relation(fields: [gig_id], references: [id])
+  provider  User      @relation(fields: [provider_id], references: [id])
 }
 
 model Message {
@@ -270,9 +294,11 @@ model Message {
   read_status  Boolean  @default(false)
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
-  gig          Gig      @relation(fields: [gig_id], references: [id])
-  receiver     User     @relation("Receiver", fields: [receiver_id], references: [id])
-  sender       User     @relation("Sender", fields: [sender_id], references: [id])
+
+  // Relations
+  gig      Gig  @relation(fields: [gig_id], references: [id])
+  receiver User @relation("Receiver", fields: [receiver_id], references: [id])
+  sender   User @relation("Sender", fields: [sender_id], references: [id])
 }
 
 model Notification {
@@ -298,9 +324,11 @@ model Testimonials {
   is_approved      Boolean  @default(false)
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
-  gig              Gig      @relation(fields: [gig_id], references: [id])
-  provider         User     @relation("ProviderTestimonials", fields: [provider_id], references: [id])
-  user             User     @relation("UserTestimonials", fields: [user_id], references: [id])
+
+  // Relations
+  gig      Gig  @relation(fields: [gig_id], references: [id])
+  provider User @relation("ProviderTestimonials", fields: [provider_id], references: [id])
+  user     User @relation("UserTestimonials", fields: [user_id], references: [id])
 }
 
 enum ROLE {
