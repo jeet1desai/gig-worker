@@ -6,47 +6,30 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { X } from 'lucide-react';
-import { Plan } from '@/types/fe';
+import { SubscriptionPlan } from '@/types/fe';
+import { subscriptionsPlanValidationSchema } from '@/schemas/fe/auth';
 
 interface AddPlanModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (planData: {
-    name: string;
-    description: string;
-    features: string[];
-    price: number;
-    maxGigs: number;
-    maxBids: number;
-  }) => void;
-  initialData?: Plan | null;
+  onSave: (planData: { name: string; description: string; benefits: string[]; price: string; maxGigs: number; maxBids: number }) => void;
+  initialData?: SubscriptionPlan | null;
   mode?: 'add' | 'edit';
 }
 
-const AddPlanModal = ({
-  isOpen,
-  onClose,
-  onSave,
-  initialData,
-  mode = 'add',
-}: AddPlanModalProps) => {
+const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add' }: AddPlanModalProps) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    features: [''],
-    price: '',
-    maxGigs: '',
-    maxBids: '',
+    benefits: [''],
+    price: '0',
+    maxGigs: '0',
+    maxBids: '0',
   });
 
-  const [errors, setErrors] = useState({
-    name: false,
-    description: false,
-    features: false,
-    price: false,
-    maxGigs: false,
-    maxBids: false,
-  });
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
+
+  const parseUnlimited = (value: string): number => (value.trim().toLowerCase() === 'unlimited' ? -1 : Number(value));
 
   useEffect(() => {
     if (isOpen) {
@@ -54,108 +37,110 @@ const AddPlanModal = ({
         setFormData({
           name: initialData.name || '',
           description: initialData.description || '',
-          features: initialData.description?.length ? initialData.features : [''],
-          price: initialData.price?.toString() || '',
-          maxGigs: initialData.maxGigs?.toString() || '',
-          maxBids: initialData.maxBids?.toString() || '',
+          benefits: initialData.benefits?.length ? initialData.benefits : [''],
+          price: initialData.price?.toString() || '0',
+          maxGigs: initialData.maxGigs === -1 ? 'unlimited' : initialData.maxGigs?.toString() || '0',
+          maxBids: initialData.maxBids === -1 ? 'unlimited' : initialData.maxBids?.toString() || '0',
         });
       } else {
         setFormData({
           name: '',
           description: '',
-          price: '',
-          maxGigs: '',
-          maxBids: '',
-          features: [''],
+          price: '0',
+          maxGigs: '0',
+          maxBids: '0',
+          benefits: [''],
         });
       }
-      setErrors({
-        name: false,
-        description: false,
-        features: false,
-        price: false,
-        maxGigs: false,
-        maxBids: false,
-      });
+      setErrors({});
     }
   }, [isOpen, initialData]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field as keyof typeof errors]) {
-      setErrors((prev) => ({ ...prev, [field]: false }));
+    if (errors[field]) {
+      setErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[field];
+        return updated;
+      });
     }
   };
 
+  const normalizeEmptyToZero = (value: string) => (value.trim() === '' ? '0' : value);
+
   const handleFeatureChange = (index: number, value: string) => {
-    const updated = [...formData.features];
+    const updated = [...formData.benefits];
     updated[index] = value;
-    setFormData((prev) => ({ ...prev, features: updated }));
+    setFormData((prev) => ({ ...prev, benefits: updated }));
+    const errorKey = `benefits[${index}]`;
+    if (errors[errorKey]) {
+      setErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[errorKey];
+        return updated;
+      });
+    }
   };
 
   const handleAddFeature = () => {
-    if (formData.description.length < 5) {
-      setFormData((prev) => ({ ...prev, features: [...prev.features, ''] }));
+    if (formData.benefits.length < 5) {
+      setFormData((prev) => ({ ...prev, benefits: [...prev.benefits, ''] }));
     }
   };
 
   const handleRemoveFeature = (index: number) => {
-    const updated = formData.features.filter((_, i) => i !== index);
-    setFormData((prev) => ({ ...prev, features: updated }));
+    const updated = formData.benefits.filter((_, i) => i !== index);
+    setFormData((prev) => ({ ...prev, benefits: updated }));
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      Object.keys(newErrors).forEach((key) => {
+        if (key.startsWith(`benefits[${index}]`) || key === `benefits[${index}]`) {
+          delete newErrors[key];
+        }
+      });
+      return newErrors;
+    });
   };
 
   const validateForm = () => {
-    const featureCount = formData.features.filter((b) => b.trim() !== '').length;
-
-    const newErrors = {
-      name: !formData.name.trim(),
-      description: !formData.description.trim(),
-      features: featureCount < 1 || featureCount > 4,
-      price:
-        !formData.price.trim() ||
-        isNaN(Number(formData.price)) ||
-        Number(formData.price) <= 0,
-      maxGigs:
-        !formData.maxGigs.trim() ||
-        isNaN(Number(formData.maxGigs)) ||
-        Number(formData.maxGigs) <= 0,
-      maxBids:
-        !formData.maxBids.trim() ||
-        isNaN(Number(formData.maxBids)) ||
-        Number(formData.maxBids) <= 0,
-    };
-
-    setErrors(newErrors);
-    return !Object.values(newErrors).some(Boolean);
+    try {
+      subscriptionsPlanValidationSchema.validateSync(formData, { abortEarly: false });
+      setErrors({});
+      return true;
+    } catch (err: any) {
+      const newErrors: Record<string, boolean> = {};
+      if (err.inner) {
+        err.inner.forEach((e: any) => {
+          if (e.path) {
+            newErrors[e.path] = true;
+          }
+        });
+      }
+      setErrors(newErrors);
+      return false;
+    }
   };
 
   const handleSave = () => {
+    const cleanedFormData = {
+      ...formData,
+      price: normalizeEmptyToZero(formData.price),
+      maxGigs: normalizeEmptyToZero(formData.maxGigs),
+      maxBids: normalizeEmptyToZero(formData.maxBids),
+    };
+
+    setFormData(cleanedFormData);
     if (validateForm()) {
       onSave({
         name: formData.name,
         description: formData.description,
-        features: formData.features.filter((b) => b.trim() !== ''),
-        price: Number(formData.price),
-        maxGigs: Number(formData.maxGigs),
-        maxBids: Number(formData.maxBids),
+        benefits: formData.benefits.filter((b) => b.trim() !== ''),
+        price: formData.price,
+        maxGigs: parseUnlimited(formData.maxGigs),
+        maxBids: parseUnlimited(formData.maxBids),
       });
-      setFormData({
-        name: '',
-        features: [''],
-        description: '',
-        price: '',
-        maxGigs: '',
-        maxBids: '',
-      });
-      setErrors({
-        name: false,
-        description: false,
-        price: false,
-        maxGigs: false,
-        features: false,
-        maxBids: false,
-      });
-      onClose();
+      handleCancel();
     }
   };
 
@@ -163,19 +148,12 @@ const AddPlanModal = ({
     setFormData({
       name: '',
       description: '',
-      price: '',
-      maxGigs: '',
-      maxBids: '',
-      features: [''],
+      price: '0',
+      maxGigs: '0',
+      maxBids: '0',
+      benefits: [''],
     });
-    setErrors({
-      name: false,
-      description: false,
-      price: false,
-      maxGigs: false,
-      maxBids: false,
-      features: false,
-    });
+    setErrors({});
     onClose();
   };
 
@@ -187,132 +165,94 @@ const AddPlanModal = ({
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <DialogTitle className="text-xl font-semibold">
-            {mode === 'edit' ? 'Edit Plan' : 'Add New Plan'}
-          </DialogTitle>
+          <DialogTitle className="text-xl font-semibold">{mode === 'edit' ? 'Edit Plan' : 'Add New Plan'}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Name</Label>
+            <Label>Name</Label>
             <Input
               placeholder="Enter plan name"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
-              className={`border-slate-600 bg-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none ${
-                errors.name ? 'border-red-500' : ''
-              }`}
+              className={`border-slate-600 bg-slate-700 text-white ${errors.name ? 'border-red-500' : ''}`}
             />
             {errors.name && <p className="text-sm text-red-400">Name is required</p>}
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Description</Label>
+            <Label>Description</Label>
             <Input
               placeholder="Enter plan description"
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
-              className={`border-slate-600 bg-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none ${
-                errors.description ? 'border-red-500' : ''
-              }`}
+              className={`border-slate-600 bg-slate-700 text-white ${errors.description ? 'border-red-500' : ''}`}
             />
-            {errors.description && (
-              <p className="text-sm text-red-400">Description is required</p>
-            )}
+            {errors.description && <p className="text-sm text-red-400">Description is required</p>}
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Features</Label>
-            {formData.features.map((feature, index) => (
+            <Label>Features</Label>
+            {formData.benefits.map((feature, index) => (
               <div key={index} className="flex items-center gap-2">
                 <Input
-                  placeholder={`Features ${index + 1}`}
+                  placeholder={`Feature ${index + 1}`}
                   value={feature}
                   onChange={(e) => handleFeatureChange(index, e.target.value)}
-                  className={`border-slate-600 bg-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none ${
-                    errors.features && feature.trim() === '' ? 'border-red-500' : ''
-                  }`}
+                  className={`border-slate-600 bg-slate-700 text-white ${errors[`benefits[${index}]`] ? 'border-red-500' : ''}`}
                 />
-                {formData.features.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="text-red-400 hover:text-red-600"
-                    onClick={() => handleRemoveFeature(index)}
-                  >
+                {formData.benefits.length > 1 && (
+                  <Button type="button" variant="ghost" className="text-red-400 hover:text-red-600" onClick={() => handleRemoveFeature(index)}>
                     <X size={16} />
                   </Button>
                 )}
               </div>
             ))}
-            {formData.features.length < 5 && (
-              <Button
-                type="button"
-                onClick={handleAddFeature}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500"
-              >
+            {formData.benefits.length < 5 && (
+              <Button type="button" onClick={handleAddFeature} className="cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                 + Add Feature
               </Button>
             )}
-            {errors.features && (
-              <p className="text-sm text-red-400">Enter 1 to 5 non-empty features</p>
-            )}
+            {Object.keys(errors).some((k) => k.startsWith('benefits')) && <p className="text-sm text-red-400">Enter 1 to 5 non-empty features</p>}
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Bid Limit</Label>
+            <Label>Bid Limit</Label>
             <Input
-              placeholder="Enter max bids"
+              placeholder="Enter max bids or 'unlimited'"
               value={formData.maxBids}
               onChange={(e) => handleInputChange('maxBids', e.target.value)}
-              className={`border-slate-600 bg-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none ${
-                errors.maxBids ? 'border-red-500' : ''
-              }`}
-              type="number"
-              min="0"
-              step="1"
+              className={`border-slate-600 bg-slate-700 text-white ${errors.maxBids ? 'border-red-500' : ''}`}
+              type="text"
             />
-            {errors.maxBids && (
-              <p className="text-sm text-red-400">Valid max bids is required</p>
-            )}
+            {errors.maxBids && <p className="text-sm text-red-400">Must be 0, positive number, or "unlimited"</p>}
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Gig Limit</Label>
+            <Label>Gig Limit</Label>
             <Input
-              placeholder="Enter max gigs"
+              placeholder="Enter max gigs or 'unlimited'"
               value={formData.maxGigs}
               onChange={(e) => handleInputChange('maxGigs', e.target.value)}
-              className={`border-slate-600 bg-slate-700 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none ${
-                errors.maxGigs ? 'border-red-500' : ''
-              }`}
-              type="number"
-              min="0"
-              step="1"
+              className={`border-slate-600 bg-slate-700 text-white ${errors.maxGigs ? 'border-red-500' : ''}`}
+              type="text"
             />
-            {errors.maxGigs && (
-              <p className="text-sm text-red-400">Valid max gigs is required</p>
-            )}
+            {errors.maxGigs && <p className="text-sm text-red-400">Must be 0, positive number, or "unlimited"</p>}
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Plan Price</Label>
+            <Label>Plan Price</Label>
             <div className="relative">
               <span className="absolute top-2 left-3 transform text-slate-400">$</span>
               <Input
                 placeholder="Enter plan price"
                 value={formData.price}
                 onChange={(e) => handleInputChange('price', e.target.value)}
-                className={`border-slate-600 bg-slate-700 pl-8 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none ${
-                  errors.price ? 'border-red-500' : ''
-                }`}
+                className={`border-slate-600 bg-slate-700 pl-8 text-white ${errors.price ? 'border-red-500' : ''}`}
                 type="number"
                 min="0"
-                step="1"
               />
-              {errors.price && (
-                <p className="text-sm text-red-400">Valid plan price is required</p>
-              )}
+              {errors.price && <p className="text-sm text-red-400">Valid price (0 or more) required</p>}
             </div>
           </div>
         </div>
@@ -325,10 +265,7 @@ const AddPlanModal = ({
           >
             Cancel
           </Button>
-          <Button
-            onClick={handleSave}
-            className="cursor-pointer border-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500"
-          >
+          <Button onClick={handleSave} className="cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white">
             {mode === 'edit' ? 'Update' : 'Save'}
           </Button>
         </div>

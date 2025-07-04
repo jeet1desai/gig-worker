@@ -1,25 +1,30 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Check, Trash2, Plus, Star, TrendingUp, Users } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Check, Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import AddPlanModal from './AddPlanModal';
-import { SUBSCRIPTION_PLANS_LIST } from '@/constants';
-import { Plan } from '@/types/fe';
+import { SubscriptionPlan, SubscriptionPlanResponse } from '@/types/fe';
+import apiService from '@/services/api';
+import { ADMIN_SUBSCRIPTION_PLANS_GET_ENDPOINT } from '@/lib/config/endpoints/admin';
+import { HttpStatusCode } from '@/enums/shared/http-status-code';
+import { toast } from 'react-toastify';
+import Loader from '@/components/Loader';
 
 const SubscriptionPlans = () => {
-  const [plans, setPlans] = useState<Plan[]>(SUBSCRIPTION_PLANS_LIST);
+  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleDeletePlan = (planId: string) => {
+  const handleDeletePlan = (planId: number | string) => {
     setPlans(plans.filter((plan) => plan.id !== planId));
   };
 
-  const handleUpdatePlan = (planId: string) => {
+  const handleUpdatePlan = (planId: number | string) => {
     const plan = plans.find((p) => p.id === planId);
     if (plan) {
       setSelectedPlan(plan);
@@ -34,59 +39,56 @@ const SubscriptionPlans = () => {
   const handleSaveNewPlan = (planData: {
     name: string;
     description: string;
-    features: string[];
-    price: number;
+    benefits: string[];
+    price: string;
     maxGigs: number;
     maxBids: number;
   }) => {
-    const newPlan: Plan = {
-      id: Date.now().toString(),
-      name: planData.name,
-      price: planData.price,
-      description: planData.description,
-      features: planData.features,
-      maxGigs: planData.maxGigs,
-      maxBids: planData.maxBids,
-    };
-    setPlans([...plans, newPlan]);
+    console.log(planData);
   };
 
   const handleSaveUpdatedPlan = (planData: {
     name: string;
     description: string;
-    features: string[];
-    price: number;
+    benefits: string[];
+    price: string;
     maxGigs: number;
     maxBids: number;
   }) => {
-    if (selectedPlan) {
-      setPlans(
-        plans.map((plan) =>
-          plan.id === selectedPlan.id
-            ? {
-                ...plan,
-                name: planData.name,
-                price: planData.price,
-                features: planData.features,
-                description: planData.description,
-                maxBids: planData.maxBids,
-                maxGigs: planData.maxGigs,
-              }
-            : plan,
-        ),
-      );
+    console.log(planData);
+  };
+
+  const getSubscriptionPlans = async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiService.get<SubscriptionPlanResponse>(ADMIN_SUBSCRIPTION_PLANS_GET_ENDPOINT, { withAuth: true });
+
+      if (response.data.data && response.status === HttpStatusCode.OK && response.data.message) {
+        setPlans(response.data.data);
+        toast.success(response.data.message);
+      }
+    } catch (error: unknown) {
+      console.error('Error fetching subscription plans', error);
+      toast.error('Error fetching subscription plans');
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    getSubscriptionPlans();
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#020d1a]">
+      <Loader isLoading={isLoading} />
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="mb-2 text-3xl font-bold text-white">Subscription Plans</h1>
             <p className="text-slate-400">Manage your subscription plans and pricing</p>
           </div>
-          {plans.length < 3 && (
+          {plans.length < 4 && (
             <Button
               onClick={handleAddPlan}
               className="font-base flex cursor-pointer items-center gap-2 rounded-lg border-0 bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-purple-700 hover:shadow-xl"
@@ -115,9 +117,7 @@ const SubscriptionPlans = () => {
                   <h3 className="text-xl font-bold text-white">{plan.name}</h3>
                   <h6 className="text-sm font-medium text-white">{plan.description}</h6>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold text-white">
-                      {`$ ${plan.price.toFixed(1)} `}
-                    </span>
+                    <span className="text-3xl font-bold text-white">{`$ ${Number(plan.price).toFixed(1)} `}</span>
                     <span className="text-sm text-slate-400">per month</span>
                   </div>
                 </div>
@@ -125,7 +125,7 @@ const SubscriptionPlans = () => {
 
               <CardContent className="pt-0">
                 <div className="mb-6 space-y-3">
-                  {plan.features.map((feature, index) => (
+                  {plan.benefits.map((feature, index) => (
                     <div key={index} className="flex items-center gap-3">
                       <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-blue-500/20">
                         <Check size={12} className="text-blue-400" />
@@ -147,7 +147,7 @@ const SubscriptionPlans = () => {
             </Card>
           ))}
 
-          {plans.length < 3 && (
+          {plans.length < 4 && (
             <Card
               onClick={handleAddPlan}
               className="group flex min-h-[280px] cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-slate-600/50 bg-slate-800/30 backdrop-blur-sm transition-all duration-300 hover:border-blue-500/50 hover:bg-slate-800/50"
@@ -156,32 +156,25 @@ const SubscriptionPlans = () => {
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-purple-600 transition-transform duration-200 group-hover:scale-110">
                   <Plus size={32} className="text-white" />
                 </div>
-                <h3 className="text-lg font-semibold text-slate-300 transition-colors duration-200 group-hover:text-white">
-                  Add New Plan
-                </h3>
-                <p className="mt-1 text-sm text-slate-500">
-                  Create a custom subscription plan
-                </p>
+                <h3 className="text-lg font-semibold text-slate-300 transition-colors duration-200 group-hover:text-white">Add New Plan</h3>
+                <p className="mt-1 text-sm text-slate-500">Create a custom subscription plan</p>
               </div>
             </Card>
           )}
         </div>
       </div>
 
-      <AddPlanModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSave={handleSaveNewPlan}
-        mode="add"
-      />
+      {isAddModalOpen && <AddPlanModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onSave={handleSaveNewPlan} mode="add" />}
 
-      <AddPlanModal
-        isOpen={isUpdateModalOpen}
-        onClose={() => setIsUpdateModalOpen(false)}
-        onSave={handleSaveUpdatedPlan}
-        initialData={selectedPlan}
-        mode="edit"
-      />
+      {isUpdateModalOpen && (
+        <AddPlanModal
+          isOpen={isUpdateModalOpen}
+          onClose={() => setIsUpdateModalOpen(false)}
+          onSave={handleSaveUpdatedPlan}
+          initialData={selectedPlan}
+          mode="edit"
+        />
+      )}
     </div>
   );
 };
