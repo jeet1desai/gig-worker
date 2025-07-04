@@ -55,6 +55,22 @@ export default function SignupForm() {
 
       const { data } = await apiService.post<SignupApiResponse>(PUBLIC_API_ROUTES.SIGNUP_API, payload, { withAuth: false });
 
+      if (data?.error) {
+        const apiErrorMessage = data?.error?.message || data?.message || 'Signup failed. Please try again.';
+
+        if (data?.error?.fieldErrors) {
+          const fieldErrors = Object.entries(data.error.fieldErrors).map(([name, message]) => ({
+            name,
+            errors: [message as string],
+          }));
+          form.setFields(fieldErrors);
+        }
+
+        setError(apiErrorMessage);
+        toast.error(apiErrorMessage);
+        return;
+      }
+
       toast.success(data?.message || 'Signup successful!');
       form.resetFields();
       setTimeout(() => {
@@ -68,8 +84,10 @@ export default function SignupForm() {
         }));
         form.setFields(fieldErrors);
       } else if (err.response) {
+        // API error response
         const data: SignupApiResponse = err.response.data;
         const apiErrorMessage = data?.error?.message || data?.message || 'Signup failed. Please try again.';
+
         if (data?.error?.fieldErrors) {
           const fieldErrors = Object.entries(data.error.fieldErrors).map(([name, message]) => ({
             name,
@@ -77,9 +95,11 @@ export default function SignupForm() {
           }));
           form.setFields(fieldErrors);
         }
+
         setError(apiErrorMessage);
         toast.error(apiErrorMessage);
       } else {
+        // General error
         const errorMessage = err?.message || 'Something went wrong.';
         setError(errorMessage);
         toast.error(errorMessage);
