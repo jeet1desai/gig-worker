@@ -88,7 +88,7 @@ const SubscriptionPlans = () => {
             <h1 className="mb-2 text-3xl font-bold text-white">Subscription Plans</h1>
             <p className="text-slate-400">Manage your subscription plans and pricing</p>
           </div>
-          {plans.length < 4 && (
+          {plans.length < 3 && (
             <Button
               onClick={handleAddPlan}
               className="font-base flex cursor-pointer items-center gap-2 rounded-lg border-0 bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-purple-700 hover:shadow-xl"
@@ -147,7 +147,7 @@ const SubscriptionPlans = () => {
             </Card>
           ))}
 
-          {plans.length < 4 && (
+          {plans.length < 3 && (
             <Card
               onClick={handleAddPlan}
               className="group flex min-h-[280px] cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-slate-600/50 bg-slate-800/30 backdrop-blur-sm transition-all duration-300 hover:border-blue-500/50 hover:bg-slate-800/50"
