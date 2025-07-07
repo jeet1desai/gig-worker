@@ -1,0 +1,33 @@
+import { errorResponse } from '@/lib/api-response';
+import { HttpStatusCode } from '@/enums/shared/http-status-code';
+import { deleteSubscriptionPlan } from '@/lib/paypal/plans';
+import { NextResponse } from 'next/server';
+import { deletePlan } from '@/lib/server/deletePlan';
+
+export async function DELETE(_request: Request, { params }: { params: { plan_id: string } }) {
+  const { plan_id } = await params;
+
+  if (!plan_id) {
+    return errorResponse({
+      code: 'BAD_REQUEST',
+      message: 'Missing Plan Id',
+      statusCode: HttpStatusCode.BAD_REQUEST,
+    });
+  }
+
+  try {
+    const delete_response = await deleteSubscriptionPlan(plan_id);
+
+    if (delete_response) {
+      const delete_message = await deletePlan(plan_id);
+      return NextResponse.json({ message: delete_message }, { status: HttpStatusCode.OK });
+    }
+  } catch (err: any) {
+    const message = err instanceof Error ? err.message : 'Unknown error occurred';
+    return errorResponse({
+      code: 'INTERNAL_SERVER_ERROR',
+      message,
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
+    });
+  }
+}
