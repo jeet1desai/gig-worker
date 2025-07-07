@@ -14,7 +14,8 @@ import { getVerificationEmail } from '@/lib/email/templates/emailVerification';
 import { sendEmail } from '@/lib/email/sendEmail';
 import { safeJson } from '@/lib/utils/safeJson';
 import { sendNotification } from '@/lib/socket/socket-server';
-import { io } from '@/server';
+import { getSocketServer } from '@/app/api/socket/route';
+const io = getSocketServer();
 
 export async function POST(req: Request) {
   try {
