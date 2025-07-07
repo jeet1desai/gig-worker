@@ -128,3 +128,12 @@ body {
     -moz-appearance: textfield;
   }
 }
+
+@layer utilities {
+  .animate-spin-slow {
+    animation: spin 2s linear infinite;
+  }
+  .animate-spin-fast {
+    animation: spin 1s linear infinite;
+  }
+}
