@@ -2,19 +2,6 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function deleteUser(id: string) {
-  const bigint_id = BigInt(id);
-
-  const updated = await prisma.user.update({
-    where: { id: bigint_id },
-    data: {
-      updated_at: new Date(),
-    },
-  });
-
-  return updated;
-}
-
 export async function getUserDetails(id: string) {
   const bigint_id = BigInt(id);
 
