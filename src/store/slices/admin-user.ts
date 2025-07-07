@@ -26,12 +26,16 @@ const adminUserSlice = createSlice({
       state.pagination = action.payload.pagination;
       state.loading = false;
     },
+    deleteAdminUsers: (state, action: PayloadAction<{ id: string }>) => {
+      const { id } = action.payload;
+      state.users = state.users.filter((user) => user.id !== id);
+    },
     setPage: (state, action: PayloadAction<{ page: number }>) => {
       state.pagination.page = action.payload.page;
     },
   },
 });
 
-export const { setLoading, setAdminUsers, setPage } = adminUserSlice.actions;
+export const { setLoading, setAdminUsers, deleteAdminUsers, setPage } = adminUserSlice.actions;
 
 export default adminUserSlice.reducer;

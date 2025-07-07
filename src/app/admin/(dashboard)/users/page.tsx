@@ -28,16 +28,17 @@ export interface IUser {
 const UsersList = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [sortKey, setSortKey] = useState<keyof IUser | ''>('created_at');
+  const [search, setSearch] = useState<string>('');
 
   const dispatch = useDispatch();
   const { users, pagination, loading } = useSelector((state: RootState) => state.adminUser);
 
   useDebouncedEffect(
     () => {
-      dispatch(adminService.getAdminUsers({ page: pagination.page, pageSize: pagination.pageSize, sortKey, sortOrder }) as any);
+      dispatch(adminService.getAdminUsers({ page: pagination.page, pageSize: pagination.pageSize, sortKey, sortOrder, search }) as any);
     },
     500,
-    [pagination.page, sortOrder, sortKey],
+    [pagination.page, sortOrder, sortKey, search],
   );
 
   const handlePageChange = (page: number) => {
@@ -61,6 +62,8 @@ const UsersList = () => {
         handleSort={handleSort}
         pagination={pagination}
         handlePageChange={handlePageChange}
+        search={search}
+        setSearch={setSearch}
       />
     </>
   );
