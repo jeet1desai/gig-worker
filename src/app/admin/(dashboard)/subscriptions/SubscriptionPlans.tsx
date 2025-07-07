@@ -26,7 +26,7 @@ const SubscriptionPlans = () => {
   const handleDeletePlan = async () => {
     setIsLoading(true);
     try {
-      const response = await apiService.delete<{ [key: string]: any }>(`${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}/${selectedPlanId}`, {
+      const response = await apiService.delete<SubscriptionPlanResponse>(`${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}/${selectedPlanId}`, {
         withAuth: true,
       });
 
@@ -62,9 +62,9 @@ const SubscriptionPlans = () => {
   const handleSaveNewPlan = async (planData: SubscriptionPlanPayload) => {
     setIsLoading(true);
     try {
-      const response = await apiService.post<{ [key: string]: any }>(`${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}`, planData, { withAuth: true });
+      const response = await apiService.post<SubscriptionPlanResponse>(`${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}`, planData, { withAuth: true });
 
-      if (response.data.data && response.data.message) {
+      if (response.data.message) {
         getSubscriptionPlans();
         toast.success(response.data.message);
       }
@@ -85,11 +85,11 @@ const SubscriptionPlans = () => {
     };
 
     try {
-      const response = await apiService.patch<{ [key: string]: any }>(`${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}`, payload_data, {
+      const response = await apiService.patch<SubscriptionPlanResponse>(`${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}`, payload_data, {
         withAuth: true,
       });
 
-      if (response.data.data && response.data.message) {
+      if (response.data.message) {
         getSubscriptionPlans();
         toast.success(response.data.message);
       }

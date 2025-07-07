@@ -5,6 +5,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect, useState } from 'react';
 import { getSession } from 'next-auth/react';
 import { Session } from 'next-auth';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -49,17 +50,17 @@ export function AdminHeader({ collapsed, onToggle }: SidebarProps) {
               </p>
             </div>
             <div className="relative">
-              <img
-                className="h-7 w-7 rounded-xl object-cover ring-2 ring-blue-500/20 transition-all duration-200 hover:scale-105 hover:ring-blue-500/40 sm:h-8 sm:w-8"
-                src={
-                  userDetails?.user.image ||
-                  'https://images.unsplash.com/profile-1704991443592-a7f79d25ffb1image?w=150&dpr=2&crop=faces&bg=%23fff&h=150&auto=format&fit=crop&q=60&ixlib=rb-4.1.0'
-                }
-                alt="Profile"
-                width={32}
-                height={32}
-                loading="lazy"
-              />
+              <Avatar className="h-8 w-8 rounded-xl object-cover ring-2 ring-blue-500/20 transition-all duration-200 hover:scale-105 hover:ring-blue-500/40">
+                <AvatarImage src={userDetails?.user.image} alt={userDetails?.user.name || 'Admin Profile'} />
+                <AvatarFallback className="text-white">
+                  {userDetails?.user.name
+                    ?.split(' ')
+                    .map((n: string) => n[0])
+                    .join('')
+                    .slice(0, 2) || 'AD'}
+                </AvatarFallback>
+              </Avatar>
+
               <div className="absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full border-2 border-slate-800 bg-green-500"></div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import PlanCard from '@/components/PlanCard';
-import { getPlans } from '@/lib/server/getPlans';
+import { getPlans } from '@/lib/server/subscriptionPlans';
 
 export default async function PricingPage() {
   const plans = await getPlans();

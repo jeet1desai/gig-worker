@@ -1,5 +1,5 @@
 import { paypalClient } from './paypalClient';
-import { getPayPalAccessToken, getProductId } from './index';
+import { getPayPalAccessToken } from './index';
 import { PayPalPlan, PayPalPlansResponse } from '@/types/paypal';
 import { endpoints } from '@/lib/config/endpoints';
 import { SubscriptionPlanPayload } from '@/types/fe';
@@ -28,6 +28,44 @@ export async function listSubscriptionPlans(): Promise<PayPalPlan[]> {
     throw new Error(message);
   }
 }
+
+export const getProductId = async (): Promise<{ id: string; access_token: string }> => {
+  const access_token = await getPayPalAccessToken();
+  try {
+    const response = await paypalClient.get(`${endpoints.payPalProductList}?page_size=1&page=1&total_required=true`, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+
+    return { id: response.data.products[0].id, access_token: access_token };
+  } catch (error: any) {
+    const message = error.response?.data?.message || error.message || 'Failed to fetch PayPal product list';
+    throw new Error(message);
+  }
+};
+
+export const getPlanDetailsById = async (id: string): Promise<any> => {
+  const access_token = await getPayPalAccessToken();
+  try {
+    const response = await paypalClient.get(`${endpoints.payPalPlans}/${id}`, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+
+    if (response.data && response.status === HttpStatusCode.OK) {
+      return response.data;
+    }
+  } catch (error: any) {
+    const message = error.response?.data?.message || error.message || 'Failed to fetch PayPal product list';
+    throw new Error(message);
+  }
+};
 
 export async function deleteSubscriptionPlan(plan_id: string): Promise<boolean> {
   const accessToken = await getPayPalAccessToken();
@@ -116,7 +154,7 @@ export async function updateSubscriptionPlanDetails(
   update_payload: {
     op: string;
     path: string;
-    value: any;
+    value: string;
   }[],
 ) {
   const accessToken = await getPayPalAccessToken();

@@ -1,12 +1,10 @@
 import { errorResponse, successResponse } from '@/lib/api-response';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
-import { getPlans } from '@/lib/server/getPlans';
 import { createSubscriptionPlan, updateSubscriptionPlanDetails } from '@/lib/paypal/plans';
 import { SubscriptionPlanPayload } from '@/types/fe';
-import { createPlan } from '@/lib/server/createPlan';
-import { updatePlan } from '@/lib/server/updatePlan';
 import lodash from 'lodash';
 import { FREE_PLAN } from '@/constants/plans';
+import { createPlan, getPlans, updatePlan } from '@/lib/server/subscriptionPlans';
 
 export async function GET(_req: Request) {
   try {
@@ -55,7 +53,7 @@ export async function PATCH(request: Request) {
     const updated = body.updated_data;
     const plan_id = existing.plan_id;
 
-    const patchPayload: { op: string; path: string; value: any }[] = [];
+    const patchPayload: { op: string; path: string; value: string }[] = [];
 
     const nameChanged = !lodash.isEqual(existing.name, updated.name);
     const descriptionChanged = !lodash.isEqual(existing.description, updated.description);
@@ -79,7 +77,7 @@ export async function PATCH(request: Request) {
     if (!nameOrDescriptionChanged || plan_id === FREE_PLAN.plan_id) {
       const update_success_message = await updatePlan(plan_id, updated);
       return successResponse({
-        data: {},
+        data: [],
         message: update_success_message,
       });
     }
@@ -87,7 +85,7 @@ export async function PATCH(request: Request) {
     if (update_plan_details) {
       const update_success_message = await updatePlan(plan_id, updated);
       return successResponse({
-        data: {},
+        data: [],
         message: update_success_message,
       });
     }
