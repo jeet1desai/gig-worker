@@ -7,8 +7,7 @@ import { StarIcon, PencilIcon } from "lucide-react";
 export default function UserProfilePage() {
   return (
     <div className="min-h-screen bg-black text-white font-sans">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 px-4 py-6 md:px-8 lg:px-16">
-        
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 px-4 md:px-8 lg:px-16">
         {/* LEFT SIDEBAR */}
         <Card className="bg-[#111] rounded-2xl overflow-hidden border border-gray-800 shadow-md lg:col-span-1">
           {/* Banner Section */}
@@ -37,112 +36,114 @@ export default function UserProfilePage() {
 
           <CardContent className="pt-6 space-y-6 px-6 pb-8">
             {/* About */}
-            <p className="text-sm text-gray-300">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.
-            </p>
+            <div className="bg-black rounded-xl px-4 py-4">
+              <h3 className="text-sm font-semibold mb-2">About Designer</h3>
+              <p className="text-sm text-gray-300">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labpr.
+              </p>
+            </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
+            <div className="rounded-xl border border-gray-700 grid grid-cols-4 text-center text-sm overflow-hidden">
+              <div className="px-2 py-3 bg-black border-r border-gray-700">
                 <p className="text-gray-400">Profile Views</p>
-                <p>2046</p>
+                <p className="text-white font-medium">2046</p>
               </div>
-              <div>
+              <div className="px-2 py-3 bg-black border-r border-gray-700">
                 <p className="text-gray-400">Likes</p>
-                <p>309</p>
+                <p className="text-white font-medium">309</p>
               </div>
-              <div>
-                <p className="text-gray-400">Avg Paid Rate</p>
-                <p>₹ 900 pr/hr</p>
+              <div className="px-2 py-3 bg-black border-r border-gray-700">
+                <p className="text-gray-400">Avg paid rate</p>
+                <p className="text-white font-medium">₹ 900 pr/hr</p>
               </div>
-              <div>
-                <p className="text-gray-400">Rating</p>
-                <p className="inline-flex items-center gap-1">
-                  4.5 <StarIcon className="w-4 h-4 fill-yellow-400" />
+              <div className="px-2 py-3 bg-black">
+                <p className="text-gray-400">Ratings</p>
+                <p className="inline-flex items-center justify-center gap-1 font-medium text-green-400">
+                  4.5 <StarIcon className="w-4 h-4 fill-green-500 text-green-500" />
                 </p>
               </div>
             </div>
 
             {/* Rate */}
-            <div className="text-sm text-blue-300">
-              <p className="font-semibold">Rate</p>
-              <p>₹ 2000 - 2500/hr</p>
-            </div>
-
-            {/* Expertise */}
-            <div>
-              <h3 className="font-semibold text-white mb-1">Expertise</h3>
-              <div className="flex flex-wrap gap-2">
-                {"User Experience,User Interface,User Research,User Interface".split(",").map((item) => (
-                  <Badge key={item} className="bg-gray-700 border border-gray-600 text-white">
-                    {item}
-                  </Badge>
-                ))}
+            <div className="bg-black rounded-xl px-4 py-3">
+              <h3 className="text-sm font-semibold mb-1">Rate</h3>
+              <div className="text-blue-300 bg-[#1a1a1a] inline-block px-3 py-1 rounded-full text-sm font-medium">
+                2000 - 2500₹/hr
               </div>
             </div>
 
-            {/* Skills */}
-            <div>
-              <h3 className="font-semibold text-white mb-1">Skills</h3>
+            {/* Expertise */}
+            <div className="bg-black rounded-xl px-4 py-4">
+              <h3 className="text-sm font-semibold mb-2">✨ Expertise</h3>
+              <div className="flex flex-wrap gap-4 text-sm underline text-white">
+                {"User Experience,User Interface,User Research,User Interface".split(",").map((item) => (
+                  <a key={item} href="#" className="hover:text-blue-400">{item}</a>
+                ))}
+              </div>
+              <hr className="my-4 border-gray-800" />
+
+              {/* Skills */}
+              <h3 className="text-sm font-semibold mb-2">Skills</h3>
               <div className="flex flex-wrap gap-2">
-                {"Research,Prototype,Interviews,Wireframes,UI".split(",").map((item) => (
-                  <Badge key={item} className="bg-gray-800 text-white">
+                {"Research,Prototype,Interviews,Wireframes,UI,Interviews,Wireframes,UI".split(",").map((item) => (
+                  <span
+                    key={item}
+                    className="bg-[#1b1b1b] text-white text-sm px-3 py-1 rounded-full"
+                  >
                     {item}
-                  </Badge>
+                  </span>
                 ))}
               </div>
             </div>
 
             {/* Followers */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-gray-400">Followers</p>
-                <p>1396</p>
+            <div className="bg-black rounded-xl flex text-center divide-x divide-gray-800">
+              <div className="flex-1 py-4">
+                <p className="text-sm text-gray-400">Followers</p>
+                <p className="text-lg font-semibold">1396</p>
               </div>
-              <div>
-                <p className="text-gray-400">Following</p>
-                <p>246</p>
+              <div className="flex-1 py-4">
+                <p className="text-sm text-gray-400">Following</p>
+                <p className="text-lg font-semibold">246</p>
               </div>
             </div>
 
             {/* Ratings */}
-            <div>
-              <h3 className="font-semibold text-white mb-2">Ratings</h3>
+            <div className="bg-black rounded-xl px-4 py-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold">Ratings</h3>
+                <span className="text-xs text-gray-400">236 Reviews</span>
+              </div>
+              <div className="inline-flex items-center gap-2 bg-green-500 text-white px-2 py-0.5 rounded text-sm w-fit">
+                4.5 <StarIcon className="w-4 h-4 fill-white" />
+              </div>
+
               {[1, 2].map((_, i) => (
-                <div key={i} className="text-sm mb-2">
-                  <p className="text-gray-300 mb-1">
-                    Efficient to work with Lorem ipsum dolor sit amet, consectetur adipiscing elit...
+                <div key={i} className="border-t border-gray-800 pt-4">
+                  <p className="text-sm text-gray-300 mb-2">
+                    Efficient to work with Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labpr...
                   </p>
-                  <p className="text-gray-500 text-xs">Anil Mishra (Senior UI/UX Designer)</p>
+                  <div className="flex items-center gap-2">
+                    <img src="/avatar.jpg" alt="Anil" className="w-6 h-6 rounded-full" />
+                    <span className="text-xs text-gray-500">Anil Mishra (Senior UI/UX Designer)</span>
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* Work Experience */}
-            <div>
-              <h3 className="font-semibold text-white mb-2">Work Experience (7)</h3>
-              <div className="text-sm mb-2">
-                <p className="font-medium">Senior Brand Identity Designer</p>
-                <p className="text-gray-400">ABC Technologies</p>
-                <p className="text-gray-500">2019 - Present • 5 years</p>
-              </div>
-              <div className="text-sm">
-                <p className="font-medium">Senior Brand Identity Designer</p>
-                <p className="text-gray-400">Client Name</p>
-                <p className="text-gray-500">2019 - Present • 5 years</p>
-              </div>
-            </div>
-
             {/* Education */}
-            <div>
-              <h3 className="font-semibold text-white mb-2">Education</h3>
-              <div className="text-sm">
-                <p className="font-medium">UI/UX Design Essentials</p>
-                <p className="text-gray-400">Meta 2019 - 2023</p>
+            <div className="bg-black rounded-xl px-4 py-4 space-y-3">
+              <h3 className="text-sm font-semibold text-gray-300">Education</h3>
+
+              <div className="flex justify-between text-sm">
+                <span className="text-white">UI/UX Design Essentials</span>
+                <span className="text-gray-400">Meta 2019 - 2023</span>
               </div>
-              <div className="text-sm mt-2">
-                <p className="font-medium">Wireframing and Prototyping</p>
-                <p className="text-gray-400">University of Maryland 2023 - 2024</p>
+
+              <div className="flex justify-between text-sm">
+                <span className="text-white">Wireframing and Prototyping</span>
+                <span className="text-gray-400">University of Maryland 2023 - 2024</span>
               </div>
             </div>
           </CardContent>
