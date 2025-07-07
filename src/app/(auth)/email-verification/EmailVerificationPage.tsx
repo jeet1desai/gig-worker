@@ -72,12 +72,10 @@ export default function EmailVerificationPage() {
         <div className="flex flex-col items-center">
           {verified ? (
             <>
-              <CheckCircleOutlined style={{ fontSize: 64, color: '#52c41a' }} />
-              <Title level={3} className="mt-4 !text-[#FFF2E3]">
-                <MailCheck />
-                Email Verified
+              <Title level={3} className="mt-4 flex items-center !text-[#FFF2E3]">
+                <MailCheck className="mr-2" /> Email Verified
               </Title>
-              <Text className="mb-6 text-[#FFF2E3]">Your email address is verified successfully.</Text>
+              <Text className="mb-6 !text-[#FFF2E3]">Your email address is verified successfully.</Text>
               <div className="inline-block rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
                 <button
                   className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg px-5 py-2 text-[#FFFFFF] transition"
