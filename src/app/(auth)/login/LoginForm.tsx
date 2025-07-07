@@ -11,6 +11,7 @@ import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
+import Loader from '@/components/Loader';
 
 const { Title } = Typography;
 
@@ -28,7 +29,7 @@ export default function LoginForm() {
     try {
       setError(null);
       await loginSchema.validate(values, { abortEarly: false });
-      setLoading(true); 
+      setLoading(true);
       const result = await signIn('credentials', {
         redirect: false,
         email: values.email,
@@ -37,7 +38,7 @@ export default function LoginForm() {
 
       if (result?.error === 'Email not verified') {
         setError('Your email is not verified. Please verify your account.');
-        toast.error("Email is not verified");
+        toast.error('Email is not verified');
         setLoading(false);
       } else if (!result?.ok) {
         setError('Invalid email or password.');
@@ -49,6 +50,7 @@ export default function LoginForm() {
         router.refresh();
       }
     } catch (err: any) {
+      setLoading(false);
       if (err.name === 'ValidationError') {
         const formErrors = err.inner.reduce((acc: any, curr: any) => {
           acc[curr.path] = curr.message;
@@ -73,6 +75,7 @@ export default function LoginForm() {
 
   return (
     <>
+      <Loader isLoading={loading} />
       <Title level={3} className="mb-6 text-center !text-2xl">
         <span className="text-[#FFF2E3]">Welcome back</span>
       </Title>
@@ -109,7 +112,7 @@ export default function LoginForm() {
           icon={<LockOutlined className="text-[#FFF2E3]" />}
           labelClassName="text-[#FFF2E3]"
         />
-        {error && <div className="text-red-400 text-sm text-start mb-3">{error}</div>}
+        {error && <div className="mb-3 text-start text-sm text-red-400">{error}</div>}
         <div className="mt-2 flex w-full justify-end">
           <button
             type="button"
@@ -120,7 +123,13 @@ export default function LoginForm() {
           </button>
         </div>
         <Form.Item>
-          <Button htmlType="submit" block size="large" loading={loading} className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none">
+          <Button
+            htmlType="submit"
+            block
+            size="large"
+            loading={false}
+            className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none"
+          >
             Sign in
           </Button>
         </Form.Item>

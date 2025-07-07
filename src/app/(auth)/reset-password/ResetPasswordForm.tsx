@@ -9,6 +9,7 @@ import TextField from '@/components/TextField';
 import { resetPasswordSchema } from '@/schemas/auth';
 import { PUBLIC_API_ROUTES, PUBLIC_ROUTE } from '@/constants/app-routes';
 import apiService from '@/services/api';
+import Loader from '@/components/Loader';
 
 interface ResetPasswordResponse {
   message?: string;
@@ -22,6 +23,7 @@ interface ResetPasswordResponse {
 
 export default function ResetPasswordForm() {
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,6 +33,7 @@ export default function ResetPasswordForm() {
   const handleSubmit = async (values: { password: string; confirmPassword: string }) => {
     try {
       setError(null);
+      setLoading(true);
       const payload = {
         ...values,
         token,
@@ -40,10 +43,12 @@ export default function ResetPasswordForm() {
 
       toast.success(data?.message || 'Password has been reset successfully.');
       form.resetFields();
+      setLoading(false);
       setTimeout(() => {
         router.push(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH);
       }, 3000);
     } catch (err: any) {
+      setLoading(false);
       if (err.name === 'ValidationError') {
         const fieldErrors = err.inner.map((e: any) => ({
           name: e.path,
@@ -74,6 +79,7 @@ export default function ResetPasswordForm() {
 
   return (
     <>
+      <Loader isLoading={loading} />
       <Title level={3} className="mb-6 text-center !text-2xl">
         <span className="text-[#FFF2E3]">Reset password</span>
       </Title>

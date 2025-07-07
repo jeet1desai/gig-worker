@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { forgotPasswordSchema } from '@/schemas/auth';
 import { toast } from 'react-toastify';
 import apiService from '@/services/api';
+import Loader from '@/components/Loader';
 
 interface ForgotPasswordResponse {
   message?: string;
@@ -23,6 +24,7 @@ interface ForgotPasswordResponse {
 
 export default function ForgotPasswordForm() {
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [form] = Form.useForm();
   const { Title } = Typography;
@@ -34,12 +36,15 @@ export default function ForgotPasswordForm() {
   const onFinish = async (values: { email: string }) => {
     try {
       setError(null);
+      setLoading(true);
       await forgotPasswordSchema.validate(values, { abortEarly: false });
       const { data } = await apiService.post<ForgotPasswordResponse>(PUBLIC_API_ROUTES.FORGOT_PASSWORD_API, values, { withAuth: false });
 
       toast.success(data?.message || 'Check your email for reset instructions.');
       form.resetFields();
+      setLoading(false);
     } catch (err: any) {
+      setLoading(false);
       if (err.name === 'ValidationError') {
         const fieldErrors = err.inner.map((e: any) => ({
           name: e.path,
@@ -70,6 +75,7 @@ export default function ForgotPasswordForm() {
 
   return (
     <>
+      <Loader isLoading={loading} />
       <Title level={3} className="relative mb-6 flex w-full items-center justify-center text-center !text-2xl">
         <button
           type="button"
