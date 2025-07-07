@@ -35,10 +35,16 @@ export async function GET(req: Request) {
         amount: parseFloat(price),
         status: SUBSCRIPTION_STATUS.active,
         subscription_expires_at,
-      },
+        subscription_id: subscription.id,
+        plan_id: subscription.plan_id
+      }
     });
 
-    return NextResponse.json({ success: true, data: subscription, message: 'Subscription verified successfully' });
+    return NextResponse.json({
+      success: true,
+      data: subscription,
+      message: 'Subscription verified successfully'
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

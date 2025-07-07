@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 
 import { listSubscriptionPlans } from '@/lib/paypal/plans';
-import { FREE_PLAN, planBenefits } from '@/constants/plans';
+import { FREE_PLAN, FREE_PLAN_ID, planBenefits } from '@/constants/plans';
 
 const prisma = new PrismaClient();
 
@@ -39,25 +39,23 @@ const seedPayPalPlans = async () => {
         tax_percentage: tax ? new Decimal(tax) : undefined,
         merchant_id: plan.payee.merchant_id || 'unknown',
         benefits: planBenefits[plan.id] || [],
-        isPublic: true,
+        isPublic: true
       };
 
       await prisma.plan.upsert({
         where: { plan_id: plan.id },
         update: sharedData,
-        create: sharedData,
+        create: sharedData
       });
     }
 
-    const FREE_PLAN_ID = 'FREE-PLAN';
-
     const existingFree = await prisma.plan.findUnique({
-      where: { plan_id: FREE_PLAN_ID },
+      where: { plan_id: 'FREE-PLAN' }
     });
 
     if (!existingFree) {
       await prisma.plan.create({
-        data: FREE_PLAN,
+        data: FREE_PLAN
       });
     }
 

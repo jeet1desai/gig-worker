@@ -8,7 +8,9 @@ import { errorResponse, successResponse } from '@/lib/api-response';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { verifyEmailVerificationToken } from '@/lib/tokens';
 import { sendNotification } from '@/lib/socket/socket-server';
-import { io } from '@/server';
+import { getSocketServer } from '@/app/api/socket/route';
+
+const io = getSocketServer();
 
 export async function PATCH(req: NextRequest) {
   try {

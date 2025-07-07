@@ -6,7 +6,9 @@ import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { safeJson } from '@/lib/utils/safeJson';
 import { verifyEmailVerificationToken } from '@/lib/tokens';
 import { sendNotification } from '@/lib/socket/socket-server';
-import { io } from '@/server';
+import { getSocketServer } from '@/app/api/socket/route';
+
+const io = getSocketServer();
 
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token');

@@ -1,35 +1,19 @@
 import { paypalClient } from './paypalClient';
 import { getPayPalAccessToken } from './index';
 import { endpoints } from '@/lib/config/endpoints';
-import { CreateSubscriptionPayload } from '@/types/paypal';
-
-export async function createSubscription(httpBody: CreateSubscriptionPayload) {
-  const accessToken = await getPayPalAccessToken();
-
-  try {
-    const response = await paypalClient.post(endpoints.payPalSubscriptions, httpBody, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Prefer: 'return=representation',
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    const message = error.response?.data?.message || error.message || 'Failed to create PayPal subscription';
-    throw new Error(message);
-  }
-}
 
 export async function getSubscription(subscriptionId: string) {
   const accessToken = await getPayPalAccessToken();
 
   try {
-    const res = await paypalClient.get(`${endpoints.payPalSubscriptions}/${subscriptionId}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const res = await paypalClient.get(
+      `${endpoints.payPalSubscriptions}/${subscriptionId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+    );
 
     return res.data;
   } catch (err: any) {
