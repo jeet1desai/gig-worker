@@ -3,6 +3,7 @@ import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { deleteSubscriptionPlan } from '@/lib/paypal/plans';
 import { NextResponse } from 'next/server';
 import { deletePlan } from '@/lib/server/deletePlan';
+import { FREE_PLAN } from '@/constants/plans';
 
 export async function DELETE(_request: Request, { params }: { params: { plan_id: string } }) {
   const { plan_id } = await params;
@@ -16,9 +17,13 @@ export async function DELETE(_request: Request, { params }: { params: { plan_id:
   }
 
   try {
-    const delete_response = await deleteSubscriptionPlan(plan_id);
+    let delete_response;
 
-    if (delete_response) {
+    if (plan_id !== FREE_PLAN.plan_id) {
+      delete_response = await deleteSubscriptionPlan(plan_id);
+    }
+
+    if (delete_response || plan_id === FREE_PLAN.plan_id) {
       const delete_message = await deletePlan(plan_id);
       return NextResponse.json({ message: delete_message }, { status: HttpStatusCode.OK });
     }

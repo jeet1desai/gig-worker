@@ -6,6 +6,7 @@ import { SubscriptionPlanPayload } from '@/types/fe';
 import { createPlan } from '@/lib/server/createPlan';
 import { updatePlan } from '@/lib/server/updatePlan';
 import lodash from 'lodash';
+import { FREE_PLAN } from '@/constants/plans';
 
 export async function GET(_req: Request) {
   try {
@@ -71,11 +72,11 @@ export async function PATCH(request: Request) {
 
     let update_plan_details = false;
 
-    if (nameOrDescriptionChanged) {
+    if (nameOrDescriptionChanged && plan_id !== FREE_PLAN.plan_id) {
       update_plan_details = await updateSubscriptionPlanDetails(plan_id, patchPayload);
     }
 
-    if (!nameOrDescriptionChanged) {
+    if (!nameOrDescriptionChanged || plan_id === FREE_PLAN.plan_id) {
       const update_success_message = await updatePlan(plan_id, updated);
       return successResponse({
         data: {},
