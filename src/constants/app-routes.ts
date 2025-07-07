@@ -20,20 +20,21 @@ export enum PUBLIC_ROUTE {
 }
 
 export enum PRIVATE_ROUTE {
+  PLANS = '/plans',
   DASHBOARD = '/dashboard',
   USER_PROFILE = '/profile',
-  PLANS = '/plans',
-  ADMIN_DASHBOARD_PATH = '/admin/dashboard',
-  ADMIN_USERS_DASHBOARD_PATH = '/admin/dashboard/users',
-  ADMIN_GIGS_DASHBOARD_PATH = '/admin/dashboard/gigs'
+  ADMIN_DASHBOARD_PATH = '/admin',
+  ADMIN_USERS_DASHBOARD_PATH = '/admin/users',
+  ADMIN_GIGS_DASHBOARD_PATH = '/admin/gigs',
+  ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH = '/admin/subscriptions'
 }
 
 export enum PUBLIC_API_ROUTES {
-  SIGNUP_API = '/api/auth/signup',
-  VERIFY_EMAIL_API = '/api/auth/verify-email',
-  FORGOT_PASSWORD_API = '/api/auth/forgot-password',
-  RESET_PASSWORD_API = '/api/auth/reset-password',
-  API_FORGOT_PASSWORD = '/api/auth/forgot-password'
+  SIGNUP_API = '/auth/signup',
+  VERIFY_EMAIL_API = '/auth/verify-email',
+  FORGOT_PASSWORD_API = '/auth/forgot-password',
+  RESET_PASSWORD_API = '/auth/reset-password',
+  API_FORGOT_PASSWORD = '/auth/forgot-password'
 }
 
 export enum PRIVATE_API_ROUTES {
