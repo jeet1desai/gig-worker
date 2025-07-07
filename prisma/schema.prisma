@@ -123,10 +123,15 @@ model Plan {
   isPublic            Boolean  @default(true)
   createdAt           DateTime @default(now())
   lastSyncedAt        DateTime @updatedAt
+
+  // Relations
+  Subscription Subscription[]
 }
 
 model Subscription {
   id                      BigInt              @id @default(autoincrement())
+  subscription_id         String              @unique
+  plan_id                 Int
   user_id                 BigInt
   type                    SUBSCRIPTION_TYPE   @default(free)
   amount                  Decimal             @default(0.00)
@@ -136,6 +141,7 @@ model Subscription {
   updated_at              DateTime            @updatedAt
 
   // Relations
+  plan Plan @relation(fields: [plan_id], references: [id])
   user User @relation(fields: [user_id], references: [id])
 }
 
