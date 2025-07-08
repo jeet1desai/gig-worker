@@ -58,20 +58,12 @@ export const DEFAULT_PAGINATION = {
   totalPages: 0,
 };
 
-export const SIGNUP_CODES = {
-  USER_ALREADY_EXISTS: 'USER_ALREADY_EXISTS',
-  VALIDATION_ERROR: 'VALIDATION_ERROR',
-  INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
-};
-
 export const SIGNUP_MESSAGES = {
   USER_ALREADY_EXISTS: 'A user with this email already exists.',
   USER_CREATED_SUCCESS: 'User created successfully',
-  VALIDATION_ERROR: 'Invalid request payload',
   INTERNAL_SERVER_ERROR: 'Something went wrong while creating the user.',
   success: 'Signup successful!',
   failure: 'Signup failed. Please try again.',
-  genericError: 'Something went wrong.',
 };
 
 export const NOTIFICATION_MESSAGES = {
@@ -93,30 +85,26 @@ export const EMAIL_VERIFICATION_MESSAGES = {
   VERIFYING: 'Verifying your email...',
   SUCCESS: 'Your email has been verified successfully!',
   FAILURE: 'Verification failed. Please try again to verify your email address.',
-  INVALIDTOKEN: 'Invalid or missing verification token.',
-  ERRORMESSAGE: 'Something went wrong. Please try again.',
 };
 
 export const FORGOT_PASSWORD_MESSAGES = {
   title: 'Forgot password',
   subtitle: 'No worries, we’ll send you an OTP to your mail id',
-  success: 'Check your email for reset instructions.',
+  success: 'Check your inbox! Password reset link has been sent.',
   error: {
     default: 'Failed to send reset email.',
-    somethingWentWrong: 'Something went wrong.',
   },
 };
 
 export const LOGIN_MESSAGES = {
   emailNotVerified: 'Your email is not verified. Please verify your account.',
   invalidCredentials: 'Invalid email or password.',
-  genericError: 'Something went wrong',
 };
 
 export const RESET_PASSWORD_MESSAGES = {
   success: 'Password has been reset successfully.',
   validationError: 'Validation error occurred.',
-  genericError: 'Something went wrong.',
+  invalidOrExpiredToken: 'Reset password link is invalid or expired.',
   apiFallback: 'Failed to reset password.',
   redirectDelay: 3000,
 };
@@ -127,14 +115,28 @@ export const VERIFICATION_CODES = {
   INVALID_OR_EXPIRED_TOKEN: 'INVALID_OR_EXPIRED_TOKEN',
   USER_ALREADY_VERIFIED: 'USER_ALREADY_VERIFIED',
   EMAIL_VERIFIED_SUCCESS: 'EMAIL_VERIFIED_SUCCESS',
+  SOMETHING_WENT_WRONG: 'SOMETHING_WENT_WRONG',
+  INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
+  USER_ALREADY_EXISTS: 'USER_ALREADY_EXISTS',
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
 };
 
 export const VERIFICATION_MESSAGES = {
   TOKEN_MISSING: 'Verification token is missing.',
-  USER_NOT_FOUND: 'No user found for the provided token.',
   INVALID_OR_EXPIRED_TOKEN: 'Verification token is invalid or has expired.',
   USER_ALREADY_VERIFIED: 'User already verified.',
   EMAIL_VERIFIED_SUCCESS: 'Email verified successfully.',
   EMAIL_VERIFIED_NOTIFICATION_TITLE: 'Email Verified',
   EMAIL_VERIFIED_NOTIFICATION_MESSAGE: 'Your email has been verified successfully.',
+};
+
+export const COMMON_ERROR_MESSAGES = {
+  INTERNAL_SERVER_ERROR_MESSAGE: 'Internal server error. Please try again later.',
+  USER_NOT_FOUND_MESSAGE: 'User not found. Please check the provided information.',
+  SOMETHING_WENT_WRONG_MESSAGE: 'Something went wrong. Please try again later.',
+  INVALID_REQUEST: 'Invalid request. Please check your input and try again.',
+  UNAUTHORIZED: 'Unauthorized access. Please log in and try again.',
+  EMAIL_NOT_EXISTS: 'User with this email does not exist.',
+  INVALID_REQUEST_PAYLOAD: 'Invalid request payload',
+  VALIDATION_ERROR: 'Validation error occurred. Please check your input.',
 };
