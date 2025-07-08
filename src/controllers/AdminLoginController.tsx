@@ -1,19 +1,22 @@
-import { FormInstance } from 'antd';
 import { toast } from 'react-toastify';
 import { loginSchema } from '@/schemas/auth';
 import { setStorage } from '@/lib/local-storage';
 import { ADMIN_AUTH_TOKEN_KEY, ADMIN_PROFILE_KEY, AUTH_TOKEN_KEY } from '@/constants/local-storage-keys';
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
 import { getSession, signIn } from 'next-auth/react';
+import { FieldValues, UseFormSetError } from 'react-hook-form';
+import { Dispatch, SetStateAction } from 'react';
 
 type LoginValues = { email: string; password: string };
 
 export async function handleAdminLogin(
   values: LoginValues,
-  form: FormInstance,
+  formUtils: { setError: UseFormSetError<LoginValues> },
   router: ReturnType<typeof import('next/navigation').useRouter>,
   setError: (msg: string | null) => void,
+  setIsLoading: Dispatch<SetStateAction<boolean>>,
 ) {
+  setIsLoading(true);
   try {
     setError(null);
 
@@ -28,12 +31,11 @@ export async function handleAdminLogin(
     if (response?.error) {
       setError(response.error);
       toast.error(response.error);
+      return;
     }
 
-    if (response?.ok && response?.status === 200) {
-      form.resetFields();
+    if (response?.ok && response.status === 200) {
       toast.success('Login successful!');
-
       const session = await getSession();
 
       if (session) {
@@ -46,20 +48,15 @@ export async function handleAdminLogin(
     }
   } catch (err: any) {
     if (err.name === 'ValidationError' && err.inner) {
-      const formErrors = err.inner.reduce((acc: any, curr: any) => {
-        acc[curr.path] = curr.message;
-        return acc;
-      }, {});
-      form.setFields(
-        Object.entries(formErrors).map(([name, message]) => ({
-          name,
-          errors: [message as string],
-        })),
-      );
+      err.inner.forEach((e: any) => {
+        formUtils.setError(e.path as keyof LoginValues, { message: e.message });
+      });
     } else {
       const errorMessage = err?.response?.data?.message || err?.message || 'Something went wrong.';
       setError(errorMessage);
       toast.error(errorMessage);
     }
+  } finally {
+    setIsLoading(false);
   }
 }

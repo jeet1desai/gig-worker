@@ -9,7 +9,9 @@ import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ForwardRefExoticComponent, RefAttributes, useCallback, useEffect } from 'react';
+import { ForwardRefExoticComponent, RefAttributes, useCallback, useEffect, useState } from 'react';
+import CommonDeleteDialog from '../CommonDeleteDialog';
+import { clearStorage } from '@/lib/local-storage';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -25,16 +27,21 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
   const isMobile = useIsMobile();
   const pathname = usePathname();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
+
+  const handleLogout = useCallback(async () => {
+    setIsLoading(true);
+    await signOut({ redirect: false });
+    setIsLoggingOut(false);
+    clearStorage();
+    router.push(PUBLIC_ROUTE.HOME);
+    setIsLoading(false);
+  }, []);
 
   const isPathMatch = (itemUrl: string) => {
     return pathname === itemUrl || pathname.startsWith(`${itemUrl}/`);
   };
-
-  const handleLogout = useCallback(async () => {
-      await signOut({ redirect: false });
-      router.push(PUBLIC_ROUTE.HOME);
-      router.refresh();
-    }, [router, PUBLIC_ROUTE.HOME]);
 
   useEffect(() => {
     if (isMobile) {
@@ -109,6 +116,18 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
           </button>
         </div>
       </div>
+      {isLoggingOut && (
+        <CommonDeleteDialog
+          open={isLoggingOut}
+          title="Logout"
+          isLoading={isLoading}
+          description="Are you sure you want to logout?"
+          onConfirm={handleLogout}
+          cancelLabel="Cancel"
+          confirmLabel="Logout"
+          onOpenChange={setIsLoggingOut}
+        />
+      )}
     </div>
   );
 }
