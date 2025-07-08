@@ -69,7 +69,7 @@ export default function EmailVerificationPage() {
           <p className="my-4 text-sm text-[#FFF2E3]">Your email address is verified successfully.</p>
           <div className="inline-block rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
             <button
-              className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg px-5 py-2 text-[#383937] transition"
+              className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg px-5 py-2 font-semibold text-[#383937] transition"
               onClick={() => pageRedirection(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH)}
             >
               Go to Login
@@ -82,7 +82,7 @@ export default function EmailVerificationPage() {
           <p className="my-4 text-sm text-[#FFF2E3]">{message || 'Please try again to verify your email address.'}</p>
           <div className="inline-block rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
             <button
-              className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg px-5 py-2 text-[#383937] transition"
+              className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg px-5 py-2 font-semibold text-[#383937] transition"
               onClick={() => pageRedirection(PUBLIC_ROUTE.SIGNUP_PAGE_PATH)}
             >
               Back to Signup

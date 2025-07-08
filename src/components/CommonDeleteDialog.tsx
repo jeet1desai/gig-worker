@@ -5,6 +5,7 @@ interface ControlledConfirmDeleteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title?: string;
+  isLoading?: boolean;
   description?: string;
   confirmLabel?: string;
   cancelLabel?: string;
@@ -15,6 +16,7 @@ const CommonDeleteDialog = ({
   open,
   onOpenChange,
   title = 'User',
+  isLoading = false,
   description = 'Are you sure you want to delete user?',
   confirmLabel = 'Delete',
   cancelLabel = 'Cancel',
@@ -34,7 +36,12 @@ const CommonDeleteDialog = ({
         </DialogHeader>
         <DialogFooter className="">
           <DialogClose asChild>
-            <Button type="button" variant="secondary" className="cursor-pointer border border-slate-500 dark:border-white dark:text-white">
+            <Button
+              type="button"
+              disabled={isLoading}
+              variant="secondary"
+              className="cursor-pointer border border-slate-500 dark:border-white dark:text-white"
+            >
               {cancelLabel}
             </Button>
           </DialogClose>
@@ -42,6 +49,7 @@ const CommonDeleteDialog = ({
             <Button
               type="button"
               variant="destructive"
+              disabled={isLoading}
               className="cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white"
               onClick={handleConfirm}
             >

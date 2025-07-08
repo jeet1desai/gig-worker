@@ -121,7 +121,7 @@ export default function ForgotPasswordForm() {
 
           {serverError && <p className="text-sm text-red-400">{serverError}</p>}
 
-          <div className="rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
+          <div className="mt-12 rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
             <button type="submit" className="w-full rounded-lg px-5 py-2 font-bold text-[#383937]">
               Confirm
             </button>

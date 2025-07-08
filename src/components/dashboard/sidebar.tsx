@@ -10,7 +10,6 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { ForwardRefExoticComponent, RefAttributes, useCallback, useEffect, useState } from 'react';
 import CommonDeleteDialog from '../CommonDeleteDialog';
-import Loader from '../Loader';
 import { clearStorage } from '@/lib/local-storage';
 
 interface SidebarProps {
@@ -56,7 +55,6 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
         collapsed ? 'w-18' : 'w-64',
       )}
     >
-      <Loader isLoading={isLoading} />
       <div className="flex h-full w-full flex-col">
         <div className="relative flex items-center justify-between border-b border-slate-700/50 p-4">
           <div className={cn('flex items-center space-x-3', collapsed && 'justify-center')}>
@@ -121,6 +119,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
         <CommonDeleteDialog
           open={isLoggingOut}
           title="Logout"
+          isLoading={isLoading}
           description="Are you sure you want to logout?"
           onConfirm={handleLogout}
           cancelLabel="Cancel"
