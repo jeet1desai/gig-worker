@@ -30,6 +30,15 @@ export interface SubscriptionPlanResponse {
   [key: string]: any;
 }
 
+export interface ApiResponse {
+  message?: string;
+  error?: {
+    message?: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+}
 export interface SubscriptionPlanPayload {
   id?: string;
   name: string;
