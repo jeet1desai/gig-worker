@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import type { NextRequest } from 'next/server';
 
-import { PUBLIC_ROUTE, PUBLIC_API_ROUTES, excludedPublicRoutes, PRIVATE_ROUTE } from '@/constants/app-routes'
-import { HttpStatusCode } from '@/enums/shared/http-status-code'
+import { PUBLIC_ROUTE, PUBLIC_API_ROUTES, excludedPublicRoutes, PRIVATE_ROUTE } from '@/constants/app-routes';
+import { HttpStatusCode } from '@/enums/shared/http-status-code';
 
 const publicRoutes = Object.values(PUBLIC_ROUTE) as string[];
 
@@ -19,26 +19,20 @@ export async function middleware(req: NextRequest) {
   const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
 
   if (isPublicApiRoute) {
-    return NextResponse.next()
+    return NextResponse.next();
   }
 
   if (req.headers.get('upgrade') === 'websocket') {
-    return NextResponse.next()
+    return NextResponse.next();
   }
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const now = Math.floor(Date.now() / 1000);
 
-  const isRestrictedPublicRoute = excludedPublicRoutes.some(
-    (route) => pathname === route || pathname.startsWith(route + '/'),
-  );
+  const isRestrictedPublicRoute = excludedPublicRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
 
   if (isPublicRoute) {
-    if (
-      token &&
-      token.exp > now &&
-      isRestrictedPublicRoute
-    ) {
+    if (token && token.exp > now && isRestrictedPublicRoute) {
       const url = req.nextUrl.clone();
       url.pathname = PRIVATE_ROUTE.DASHBOARD;
       return NextResponse.redirect(url);
