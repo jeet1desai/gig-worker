@@ -8,6 +8,7 @@ import { verifyOtpSchema } from '../../../schemas/auth';
 import { BackArrowIconSvg } from '@/components/icons';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { useRouter } from 'next/navigation';
+import { COMMON_ERROR_MESSAGES } from '@/constants';
 
 export default function VerifyOtpForm() {
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +34,7 @@ export default function VerifyOtpForm() {
         }));
         form.setFields(fieldErrors);
       } else {
-        setError('Something went wrong');
+        setError(COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE);
       }
     }
   };
@@ -97,9 +98,11 @@ export default function VerifyOtpForm() {
           />
         </Form.Item>
         <Form.Item>
-          <Button htmlType="submit" block size="large" className="font-large mt-2 border-none bg-[#635d57] text-[#FFF2E3] shadow-none">
-            Submit
-          </Button>
+          <div className="mt-2 w-full rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
+            <button type="submit" className="h-full w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937]">
+              Submit
+            </button>
+          </div>
         </Form.Item>
       </Form>
     </>

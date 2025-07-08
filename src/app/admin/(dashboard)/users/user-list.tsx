@@ -2,17 +2,19 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
 import { ArrowUpDown, ChevronLeft, ChevronRight, Search, Trash, View } from 'lucide-react';
 
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
 import { cn } from '@/lib/utils';
-import { deleteUserAction } from '@/actions/AdminUserActions';
 
-import CommonDialog from '@/components/dialog';
+import { useDispatch } from '@/store/store';
+import { adminService } from '@/services/admin.services';
+
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+
 import { IUser } from './page';
 
 type ColumnConfig<T> = {
@@ -29,6 +31,8 @@ const UsersListingPage = ({
   handleSort,
   sortKey,
   sortOrder,
+  search,
+  setSearch,
 }: {
   users: any[];
   pagination: any;
@@ -36,8 +40,11 @@ const UsersListingPage = ({
   handleSort: (key: keyof IUser) => void;
   sortKey: keyof IUser | '';
   sortOrder: 'asc' | 'desc';
+  search: string;
+  setSearch: (value: string) => void;
 }) => {
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
   const [selectedUserId, setSelectedUserId] = useState<string>('');
@@ -52,13 +59,10 @@ const UsersListingPage = ({
   };
 
   const handleDeleteConfirm = async () => {
-    const response = await deleteUserAction(selectedUserId);
-
-    if (response.success) {
-      toast.success('User deleted successfully');
+    setIsDeleteOpen(false);
+    const response = await dispatch(adminService.deleteAdminUsers({ id: selectedUserId }) as any);
+    if (response && response.data) {
       setSelectedUserId('');
-    } else {
-      toast.error(response.error);
     }
   };
 
@@ -118,6 +122,8 @@ const UsersListingPage = ({
               type="text"
               placeholder="Search users..."
               className="h-9 w-full rounded-lg border border-[#374151] bg-[#1F2A37] pr-4 pl-10 text-white placeholder-gray-400 focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/50 focus:ring-offset-0 focus:ring-offset-transparent sm:w-64"
+              value={search}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
             />
           </div>
         </div>
@@ -210,13 +216,26 @@ const UsersListingPage = ({
         </div>
       )}
 
-      <CommonDialog
-        open={isDeleteOpen}
-        onOpenChange={setIsDeleteOpen}
-        onConfirm={handleDeleteConfirm}
-        title="Delete User"
-        description="Are you sure you want to delete this user? This action cannot be undone."
-      />
+      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete User</DialogTitle>
+            <DialogDescription>Are you sure you want to delete this user? This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="">
+            <DialogClose asChild>
+              <Button type="button" variant="secondary" className="cursor-pointer border border-[#5750F1] dark:border-white dark:text-white">
+                Cancel
+              </Button>
+            </DialogClose>
+            <DialogClose asChild>
+              <Button type="button" variant="destructive" className="cursor-pointer bg-[#5750F1] text-white" onClick={handleDeleteConfirm}>
+                Delete
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

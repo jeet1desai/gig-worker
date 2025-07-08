@@ -24,7 +24,7 @@ function Layout({
         <div className={`w-full flex-1 overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
           <AdminHeader collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
 
-          <main className="space-y-4 p-4 pl-6 sm:space-y-6 sm:p-4 md:px-8 md:py-6">{children}</main>
+          <main className="space-y-4 p-3 pl-5 sm:space-y-6 sm:p-4 md:p-6">{children}</main>
         </div>
       </div>
     </AdminProtectedRoute>

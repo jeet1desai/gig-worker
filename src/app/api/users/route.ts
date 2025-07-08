@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { errorResponse, paginatedResponse } from '@/utils/apiResponse';
 import { checkAdminRole } from '@/utils/checkAdminRole';
@@ -12,6 +12,7 @@ export async function GET(req: Request) {
 
   try {
     const { searchParams } = new URL(req.url);
+    const searchParam = searchParams.get('search');
     const pageParam = searchParams.get('page');
     const pageSizeParam = searchParams.get('pageSize');
     const sortByParam = searchParams.get('sortBy');
@@ -23,8 +24,19 @@ export async function GET(req: Request) {
     const sortBy = sortByParam || 'created_at';
     const order = orderParam === 'asc' || orderParam === 'desc' ? orderParam : 'desc';
 
+    const whereClause = searchParam
+      ? {
+          OR: [
+            { email: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
+            { first_name: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
+            { last_name: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
+          ],
+        }
+      : {};
+
     const [users, total] = await Promise.all([
       prisma.user.findMany({
+        where: whereClause,
         skip,
         take: pageSize,
         orderBy: {
@@ -43,7 +55,7 @@ export async function GET(req: Request) {
           subscriptions: true,
         },
       }),
-      prisma.user.count(),
+      prisma.user.count({ where: whereClause }),
     ]);
 
     return paginatedResponse(users, page, pageSize, total, { status: HttpStatusCode.OK });

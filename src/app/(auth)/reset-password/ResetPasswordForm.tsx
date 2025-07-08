@@ -9,41 +9,38 @@ import TextField from '@/components/TextField';
 import { resetPasswordSchema } from '@/schemas/auth';
 import { PUBLIC_API_ROUTES, PUBLIC_ROUTE } from '@/constants/app-routes';
 import apiService from '@/services/api';
-
-interface ResetPasswordResponse {
-  message?: string;
-  error?: {
-    message?: string;
-    fieldErrors?: {
-      [key: string]: string;
-    };
-  };
-}
+import Loader from '@/components/Loader';
+import { COMMON_ERROR_MESSAGES, RESET_PASSWORD_MESSAGES, TOKEN } from '@/constants';
+import { ApiResponse } from '@/types/fe';
 
 export default function ResetPasswordForm() {
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams.get(TOKEN);
   const { Title } = Typography;
 
   const handleSubmit = async (values: { password: string; confirmPassword: string }) => {
     try {
       setError(null);
+      setLoading(true);
       const payload = {
         ...values,
         token,
       };
       await resetPasswordSchema.validate(payload, { abortEarly: false });
-      const { data } = await apiService.patch<ResetPasswordResponse>(PUBLIC_API_ROUTES.RESET_PASSWORD_API, payload, { withAuth: false });
+      const { data } = await apiService.patch<ApiResponse>(PUBLIC_API_ROUTES.RESET_PASSWORD_API, payload, { withAuth: false });
 
-      toast.success(data?.message || 'Password has been reset successfully.');
+      toast.success(data?.message || RESET_PASSWORD_MESSAGES.success);
       form.resetFields();
+      setLoading(false);
       setTimeout(() => {
         router.push(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH);
-      }, 3000);
+      }, RESET_PASSWORD_MESSAGES.redirectDelay);
     } catch (err: any) {
+      setLoading(false);
       if (err.name === 'ValidationError') {
         const fieldErrors = err.inner.map((e: any) => ({
           name: e.path,
@@ -53,8 +50,8 @@ export default function ResetPasswordForm() {
         return;
       }
       if (err.response) {
-        const data: ResetPasswordResponse = err.response.data;
-        const apiErrorMessage = data?.error?.message || data?.message || 'Failed to reset password.';
+        const data: ApiResponse = err.response.data;
+        const apiErrorMessage = data?.error?.message || data?.message || RESET_PASSWORD_MESSAGES.apiFallback;
         if (data?.error?.fieldErrors) {
           const fieldErrors = Object.entries(data.error.fieldErrors).map(([name, message]) => ({
             name,
@@ -65,7 +62,7 @@ export default function ResetPasswordForm() {
         setError(apiErrorMessage);
         toast.error(apiErrorMessage);
       } else {
-        const fallback = err?.message || 'Something went wrong.';
+        const fallback = err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE;
         setError(fallback);
         toast.error(fallback);
       }
@@ -74,6 +71,7 @@ export default function ResetPasswordForm() {
 
   return (
     <>
+      <Loader isLoading={loading} />
       <Title level={3} className="mb-6 text-center !text-2xl">
         <span className="text-[#FFF2E3]">Reset password</span>
       </Title>
@@ -111,9 +109,11 @@ export default function ResetPasswordForm() {
           labelClassName="text-[#FFF2E3]"
         />
         <Form.Item>
-          <Button htmlType="submit" block size="large" className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none">
-            Change Password
-          </Button>
+          <div className="mt-5 w-full rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
+            <button type="submit" className="h-full w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937]">
+              Change Password
+            </button>
+          </div>
         </Form.Item>
       </Form>
     </>
