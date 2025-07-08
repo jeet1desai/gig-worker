@@ -108,9 +108,9 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
 
             <NotificationBell userId="5" />
 
-            <Button variant="ghost" onClick={handleLogout} className="pl-3 text-[#FFF2E3] hover:bg-transparent hover:text-red-400">
-              Logout
-            </Button>
+          <button type="button" onClick={handleLogout} className="cursor-pointer border-none bg-transparent p-0 pl-3 font-medium text-[#FFF2E3]">
+            Logout
+          </button>
 
             <div className="flex cursor-pointer items-center space-x-2 border-l border-slate-700 pl-2 sm:space-x-3 sm:pl-3 md:pl-4">
               <div className="hidden text-right sm:block">
