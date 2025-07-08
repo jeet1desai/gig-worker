@@ -85,7 +85,7 @@ const UserDetails = () => {
     <>
       <Loader isLoading={loading} />
 
-      <UserDetailPage user={user} />
+      <UserDetailPage user={user} setUser={setUser} />
     </>
   );
 };

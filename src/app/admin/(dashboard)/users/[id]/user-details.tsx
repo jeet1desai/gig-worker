@@ -1,14 +1,28 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Mail, User as UserIcon, Shield, Calendar, CheckCircle, Award, BookOpen, Ban, Fingerprint, Loader2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  Mail,
+  User as UserIcon,
+  Shield,
+  Calendar as CalendarIcon,
+  CheckCircle,
+  Award,
+  BookOpen,
+  Ban,
+  Fingerprint,
+  Loader2,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Form, Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
+import { format } from 'date-fns';
 
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
+import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/date-format';
 
 import { Button } from '@/components/ui/button';
@@ -18,47 +32,62 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
 import { UserDetails } from './page';
+
 import { adminService } from '@/services/admin.services';
 import { useDispatch } from '@/store/store';
 
-const initialValues = {
-  firstName: '',
-  lastName: '',
-  email: '',
-};
-
-type FormValues = typeof initialValues;
-
-const UserDetailPage = ({ user }: { user: Partial<UserDetails> }) => {
+const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser: React.Dispatch<React.SetStateAction<Partial<UserDetails>>> }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
   const [activeTab, setActiveTab] = useState('overview');
 
+  const [isBanDialogOpen, setIsBanDialogOpen] = useState(false);
+  const [banExpiresAt, setBanExpiresAt] = useState<Date | undefined>(undefined);
+
   const redirectToPreviousPage = () => {
     router.push(PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH);
   };
 
-  const handleVerifyAccount = (userId: any) => {
+  const handleVerifyAccount = async (userId: any) => {
     if (!user.is_verified) {
-      console.log(userId);
+      try {
+        const response = await dispatch(adminService.verifyUser({ id: userId }) as any);
+        if (response && response.data) {
+          toast.success('User verified successfully');
+          setUser((prevUser) => ({ ...prevUser, ...response.data }));
+        }
+      } catch (error: any) {
+        console.error('Error verifying user:', error);
+      }
     }
   };
 
-  const handleBanUser = (userId: any, isBanned: boolean) => {
-    console.log(userId, isBanned);
+  const handleBanUser = async () => {
+    setIsBanDialogOpen(true);
   };
 
-  const handleUpdateUser = async (values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
-    console.log(user.id, values);
+  const handleBanSubmit = async (values: any) => {};
+
+  const handleUpdateUser = async (values: any, { setSubmitting }: FormikHelpers<any>) => {
     setSubmitting(true);
     try {
-      const response = await dispatch(adminService.updateAdminUsers({ id: user.id?.toString() || '', body: values }) as any);
+      const response = await dispatch(
+        adminService.updateAdminUser({
+          id: user.id?.toString() || '',
+          body: { first_name: values.firstName, last_name: values.lastName, email: values.email },
+        }) as any,
+      );
       if (response && response.data) {
         setSubmitting(false);
         toast.success('User updated successfully');
+        setUser((prevUser) => ({ ...prevUser, ...response.data }));
       }
     } catch (error: any) {
       console.error('Error updating user:', error);
@@ -78,19 +107,11 @@ const UserDetailPage = ({ user }: { user: Partial<UserDetails> }) => {
         </div>
         <div className="flex space-x-2">
           {user.is_banned ? (
-            <Button
-              onClick={() => handleBanUser(user?.id, false)}
-              variant="outline"
-              className="cursor-pointer rounded-xl bg-green-600 !px-4 text-white hover:bg-green-700"
-            >
+            <Button variant="outline" className="cursor-pointer rounded-xl bg-green-600 !px-4 text-white hover:bg-green-700">
               <CheckCircle className="mr-2 h-4 w-4" /> Unban User
             </Button>
           ) : (
-            <Button
-              onClick={() => handleBanUser(user.id, true)}
-              variant="destructive"
-              className="cursor-pointer rounded-xl bg-red-600 !px-4 text-white hover:bg-red-700"
-            >
+            <Button onClick={handleBanUser} variant="destructive" className="cursor-pointer rounded-xl bg-red-600 !px-4 text-white hover:bg-red-700">
               <Ban className="h-4 w-4" /> Ban User
             </Button>
           )}
@@ -163,7 +184,7 @@ const UserDetailPage = ({ user }: { user: Partial<UserDetails> }) => {
               </div>
               <div className="flex items-start">
                 <div className="flex-shrink-0 text-blue-400">
-                  <Calendar className="size-4" />
+                  <CalendarIcon className="size-4" />
                 </div>
                 <div className="ml-2">
                   <p className="text-sm font-medium text-gray-400">Member Since</p>
@@ -548,6 +569,80 @@ const UserDetailPage = ({ user }: { user: Partial<UserDetails> }) => {
           </Tabs>
         </div>
       </div>
+
+      <Dialog open={isBanDialogOpen} onOpenChange={setIsBanDialogOpen}>
+        <DialogContent className="border-gray-700 bg-gray-800 sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-white">Ban User</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Are you sure you want to ban this user? Please provide a reason and expiration date.
+            </DialogDescription>
+          </DialogHeader>
+
+          <Formik
+            initialValues={{
+              banReason: '',
+              banExpiresAt: '',
+            }}
+            validationSchema={Yup.object().shape({
+              banReason: Yup.string().required('Required'),
+              banExpiresAt: Yup.date().required('Required'),
+            })}
+            onSubmit={handleBanSubmit}
+          >
+            {({ isSubmitting, values, getFieldProps, errors, touched, handleSubmit }) => (
+              <Form className="space-y-8" onSubmit={handleSubmit}>
+                <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-gray-300">Ban Expiration</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-full justify-start border-gray-600 bg-gray-700 text-left font-normal !text-gray-300 hover:bg-gray-700',
+                            !banExpiresAt && 'text-muted-foreground',
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {banExpiresAt ? format(banExpiresAt, 'PPP') : <span>Pick a date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto border-gray-700 bg-gray-800 p-0">
+                        <Calendar
+                          mode="single"
+                          selected={banExpiresAt}
+                          onSelect={setBanExpiresAt}
+                          className="bg-gray-800 text-white"
+                          disabled={(date) => date < new Date()}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <p className="text-xs text-gray-400">The ban will be automatically lifted on the selected date.</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="banReason" className="text-gray-300">
+                      Reason for Ban
+                    </Label>
+                    <Textarea
+                      id="banReason"
+                      className="min-h-[100px] border-gray-600 bg-gray-700 text-white"
+                      placeholder="Enter the reason for banning this user..."
+                    />
+                  </div>
+                </div>
+
+                <DialogFooter className="sm:justify-end">
+                  <Button type="button" variant="destructive" onClick={handleBanSubmit} className="bg-red-600 text-white hover:bg-red-700">
+                    {false ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Confirm Ban'}
+                  </Button>
+                </DialogFooter>
+              </Form>
+            )}
+          </Formik>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

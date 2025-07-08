@@ -30,12 +30,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const body = await request.json();
     const { is_verified } = body;
 
-    if (typeof is_verified !== 'boolean') {
-      return NextResponse.json(errorResponse('Invalid verification status. Expected a boolean value.', HttpStatusCode.BAD_REQUEST), {
-        status: HttpStatusCode.BAD_REQUEST,
-      });
-    }
-
     const updatedUser = await prisma.user.update({
       where: { id: BigInt(userId) },
       data: { is_verified },

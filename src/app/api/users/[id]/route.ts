@@ -127,13 +127,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const updatedUser = await prisma.user.update({
       where: { id: BigInt(userId) },
       data: updateData,
-      select: {
-        id: true,
-        email: true,
-        first_name: true,
-        last_name: true,
-        is_verified: true,
-      },
+      select: { id: true, email: true, first_name: true, last_name: true },
     });
 
     return safeJsonResponse(

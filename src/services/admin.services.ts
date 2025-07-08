@@ -95,13 +95,37 @@ export const adminService = {
     };
   },
 
-  updateAdminUsers({ id, body }: { id: string; body: any }) {
+  updateAdminUser({ id, body }: { id: string; body: any }) {
     return async (dispatch: AppDispatch) => {
       dispatch(setLoading({ loading: true }));
       try {
         const response = await apiService.patch(`/users/${id}`, body, {
           withAuth: true,
         });
+        if (response.status === 200 && response.data) {
+          return response.data;
+        }
+      } catch (error: any) {
+        toast.error(error.response?.data?.message);
+      } finally {
+        dispatch(setLoading({ loading: false }));
+      }
+    };
+  },
+
+  verifyUser({ id }: { id: string }) {
+    return async (dispatch: AppDispatch) => {
+      dispatch(setLoading({ loading: true }));
+      try {
+        const response = await apiService.patch(
+          `/users/${id}/verify`,
+          {
+            is_verified: true,
+          },
+          {
+            withAuth: true,
+          },
+        );
         if (response.status === 200 && response.data) {
           return response.data;
         }
