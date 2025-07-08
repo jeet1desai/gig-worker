@@ -121,6 +121,8 @@ model Plan {
   merchant_id         String
   benefits            String[] @default([])
   isPublic            Boolean  @default(true)
+  maxGigs             Int      @default(0)
+  maxBids             Int      @default(0)
   createdAt           DateTime @default(now())
   lastSyncedAt        DateTime @updatedAt
 

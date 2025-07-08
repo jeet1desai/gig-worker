@@ -5,12 +5,13 @@ import { Check, Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import AddPlanModal from './AddPlanModal';
-import { SubscriptionPlan, SubscriptionPlanResponse } from '@/types/fe';
+import { SubscriptionPlan, SubscriptionPlanPayload, SubscriptionPlanResponse } from '@/types/fe';
 import apiService from '@/services/api';
-import { ADMIN_SUBSCRIPTION_PLANS_GET_ENDPOINT } from '@/lib/config/endpoints/admin';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { toast } from 'react-toastify';
 import Loader from '@/components/Loader';
+import { PRIVATE_API_ROUTES } from '@/constants/app-routes';
+import CommonDeleteDialog from '@/components/CommonDeleteDialog';
 
 const SubscriptionPlans = () => {
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
@@ -19,13 +20,35 @@ const SubscriptionPlans = () => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>('');
 
-  const handleDeletePlan = (planId: number | string) => {
-    setPlans(plans.filter((plan) => plan.id !== planId));
+  const handleDeletePlan = async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiService.delete<SubscriptionPlanResponse>(`${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}/${selectedPlanId}`, {
+        withAuth: true,
+      });
+
+      if (response.data.message) {
+        getSubscriptionPlans();
+        toast.success(response.data.message);
+      }
+    } catch (error: any) {
+      const message = error?.response?.data?.error?.message || error?.message || 'Error deleting subscription plan';
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const openDeleteConfirmation = (id: string) => {
+    setSelectedPlanId(id);
+    setIsDeleteOpen(true);
   };
 
   const handleUpdatePlan = (planId: number | string) => {
-    const plan = plans.find((p) => p.id === planId);
+    const plan = plans.find((p) => p.plan_id === planId);
     if (plan) {
       setSelectedPlan(plan);
       setIsUpdateModalOpen(true);
@@ -36,32 +59,52 @@ const SubscriptionPlans = () => {
     setIsAddModalOpen(true);
   };
 
-  const handleSaveNewPlan = (planData: {
-    name: string;
-    description: string;
-    benefits: string[];
-    price: string;
-    maxGigs: number;
-    maxBids: number;
-  }) => {
-    console.log(planData);
+  const handleSaveNewPlan = async (planData: SubscriptionPlanPayload) => {
+    setIsLoading(true);
+    try {
+      const response = await apiService.post<SubscriptionPlanResponse>(`${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}`, planData, { withAuth: true });
+
+      if (response.data.message) {
+        getSubscriptionPlans();
+        toast.success(response.data.message);
+      }
+    } catch (error: any) {
+      const message = error?.response?.data?.error?.message || error?.message || 'Error deleting subscription plan';
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleSaveUpdatedPlan = (planData: {
-    name: string;
-    description: string;
-    benefits: string[];
-    price: string;
-    maxGigs: number;
-    maxBids: number;
-  }) => {
-    console.log(planData);
+  const handleSaveUpdatedPlan = async (planData: SubscriptionPlanPayload) => {
+    setIsLoading(true);
+
+    const payload_data = {
+      old_data: selectedPlan,
+      updated_data: planData,
+    };
+
+    try {
+      const response = await apiService.patch<SubscriptionPlanResponse>(`${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}`, payload_data, {
+        withAuth: true,
+      });
+
+      if (response.data.message) {
+        getSubscriptionPlans();
+        toast.success(response.data.message);
+      }
+    } catch (error: any) {
+      const message = error?.response?.data?.error?.message || error?.message || 'Error deleting subscription plan';
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getSubscriptionPlans = async () => {
     setIsLoading(true);
     try {
-      const response = await apiService.get<SubscriptionPlanResponse>(ADMIN_SUBSCRIPTION_PLANS_GET_ENDPOINT, { withAuth: true });
+      const response = await apiService.get<SubscriptionPlanResponse>(PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API, { withAuth: true });
 
       if (response.data.data && response.status === HttpStatusCode.OK && response.data.message) {
         setPlans(response.data.data);
@@ -106,7 +149,7 @@ const SubscriptionPlans = () => {
               className="group relative overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/50 shadow-xl backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
             >
               <button
-                onClick={() => handleDeletePlan(plan.id)}
+                onClick={() => openDeleteConfirmation(plan.plan_id)}
                 className="absolute top-4 right-4 z-10 cursor-pointer rounded-lg p-2 text-red-400 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-300"
               >
                 <Trash2 size={18} />
@@ -136,7 +179,7 @@ const SubscriptionPlans = () => {
                 </div>
 
                 <Button
-                  onClick={() => handleUpdatePlan(plan.id)}
+                  onClick={() => handleUpdatePlan(plan.plan_id)}
                   className="font-base w-full cursor-pointer rounded-lg border-0 bg-gradient-to-r from-blue-600 to-purple-600 py-3 text-white shadow-md transition-all duration-200 hover:from-blue-700 hover:to-purple-700 hover:shadow-lg"
                 >
                   Update Plan
@@ -173,6 +216,16 @@ const SubscriptionPlans = () => {
           onSave={handleSaveUpdatedPlan}
           initialData={selectedPlan}
           mode="edit"
+        />
+      )}
+
+      {isDeleteOpen && (
+        <CommonDeleteDialog
+          open={isDeleteOpen}
+          onOpenChange={setIsDeleteOpen}
+          onConfirm={handleDeletePlan}
+          title="Delete Subscription Plan"
+          description="Are you sure you want to delete this plan? This action cannot be undone."
         />
       )}
     </div>
