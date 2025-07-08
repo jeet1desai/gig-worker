@@ -9,6 +9,13 @@ import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { verifyEmailVerificationToken } from '@/lib/tokens';
 import { sendNotification } from '@/lib/socket/socket-server';
 import { getSocketServer } from '@/app/api/socket/route';
+import {
+  COMMON_ERROR_MESSAGES,
+  NOTIFICATION_MODULES,
+  NOTIFICATION_TYPES,
+  RESET_PASSWORD_MESSAGES,
+  VERIFICATION_CODES
+} from '@/constants';
 
 const io = getSocketServer();
 
@@ -16,15 +23,15 @@ export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json();
     const { password } = await resetPasswordSchema.validate(body, {
-      abortEarly: false,
+      abortEarly: false
     });
     const token = body.token;
     if (!token) {
       return errorResponse({
-        code: 'VALIDATION_ERROR',
-        message: 'Reset token is missing or expired.',
+        code: VERIFICATION_CODES.VALIDATION_ERROR,
+        message: RESET_PASSWORD_MESSAGES.invalidOrExpiredToken,
         statusCode: HttpStatusCode.BAD_REQUEST,
-        fieldErrors: { token: 'Reset token is required.' },
+        fieldErrors: { token: 'Reset token is required.' }
       });
     }
 
@@ -33,21 +40,21 @@ export async function PATCH(req: NextRequest) {
       payload = verifyEmailVerificationToken(token);
     } catch {
       return errorResponse({
-        code: 'INVALID_TOKEN',
-        message: 'Reset password link is invalid or expired.',
-        statusCode: HttpStatusCode.BAD_REQUEST,
+        code: VERIFICATION_CODES.INVALID_OR_EXPIRED_TOKEN,
+        message: RESET_PASSWORD_MESSAGES.invalidOrExpiredToken,
+        statusCode: HttpStatusCode.BAD_REQUEST
       });
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: Number(payload.userId) },
+      where: { id: Number(payload.userId) }
     });
 
     if (!user) {
       return errorResponse({
-        code: 'USER_NOT_FOUND',
-        message: 'User not found.',
-        statusCode: HttpStatusCode.NOT_FOUND,
+        code: VERIFICATION_CODES.USER_NOT_FOUND,
+        message: COMMON_ERROR_MESSAGES.USER_NOT_FOUND_MESSAGE,
+        statusCode: HttpStatusCode.NOT_FOUND
       });
     }
 
@@ -55,20 +62,20 @@ export async function PATCH(req: NextRequest) {
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { password: hashedPassword },
+      data: { password: hashedPassword }
     });
 
     await sendNotification(io, user.id.toString(), {
       title: 'User Password Reset',
-      message: 'User password reset successfully.',
-      module: 'system',
-      type: 'success',
+      message: RESET_PASSWORD_MESSAGES.success,
+      module: NOTIFICATION_MODULES.SYSTEM,
+      type: NOTIFICATION_TYPES.SUCCESS
     });
 
     return successResponse({
       data: null,
-      message: 'Password has been reset successfully.',
-      statusCode: HttpStatusCode.OK,
+      message: RESET_PASSWORD_MESSAGES.success,
+      statusCode: HttpStatusCode.OK
     });
   } catch (err) {
     if (err instanceof ValidationError) {
@@ -79,18 +86,18 @@ export async function PATCH(req: NextRequest) {
       }
 
       return errorResponse({
-        code: 'VALIDATION_ERROR',
-        message: 'Invalid request payload',
+        code: VERIFICATION_CODES.VALIDATION_ERROR,
+        message: COMMON_ERROR_MESSAGES.INVALID_REQUEST_PAYLOAD,
         statusCode: HttpStatusCode.BAD_REQUEST,
-        fieldErrors,
+        fieldErrors
       });
     }
 
     return errorResponse({
-      code: 'INTERNAL_SERVER_ERROR',
-      message: 'Something went wrong while processing your request.',
+      code: VERIFICATION_CODES.INTERNAL_SERVER_ERROR,
+      message: COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE,
       statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-      details: err instanceof Error ? err.message : 'Unknown error',
+      details: err instanceof Error ? err.message : 'Unknown error'
     });
   }
 }

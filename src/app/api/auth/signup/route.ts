@@ -15,6 +15,15 @@ import { sendEmail } from '@/lib/email/sendEmail';
 import { safeJson } from '@/lib/utils/safeJson';
 import { sendNotification } from '@/lib/socket/socket-server';
 import { getSocketServer } from '@/app/api/socket/route';
+import {
+  BCRYPT_SALT_ROUNDS,
+  COMMON_ERROR_MESSAGES,
+  NOTIFICATION_MESSAGES,
+  NOTIFICATION_MODULES,
+  NOTIFICATION_TYPES,
+  SIGNUP_MESSAGES,
+  VERIFICATION_CODES
+} from '@/constants';
 const io = getSocketServer();
 
 export async function POST(req: Request) {
@@ -35,13 +44,13 @@ export async function POST(req: Request) {
     });
     if (existingUser) {
       return errorResponse({
-        code: 'USER_ALREADY_EXISTS',
-        message: 'A user with this email already exists.',
+        code: VERIFICATION_CODES.USER_ALREADY_EXISTS,
+        message: SIGNUP_MESSAGES.USER_ALREADY_EXISTS,
         statusCode: HttpStatusCode.BAD_REQUEST
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
 
     const user = await prisma.user.create({
       data: {
@@ -66,10 +75,10 @@ export async function POST(req: Request) {
     });
 
     await sendNotification(io, user.id.toString(), {
-      title: 'User Created',
-      message: 'User created successfully.',
-      module: 'system',
-      type: 'success'
+      title: NOTIFICATION_MESSAGES.USER_CREATED_TITLE,
+      message: NOTIFICATION_MESSAGES.USER_CREATED,
+      module: NOTIFICATION_MODULES.SYSTEM,
+      type: NOTIFICATION_TYPES.SUCCESS
     });
 
     const userName = `${first_name} ${last_name}`;
@@ -83,7 +92,7 @@ export async function POST(req: Request) {
 
     return successResponse({
       data: safeUser,
-      message: 'User created successfully',
+      message: SIGNUP_MESSAGES.USER_CREATED_SUCCESS,
       statusCode: HttpStatusCode.CREATED
     });
   } catch (err) {
@@ -94,16 +103,16 @@ export async function POST(req: Request) {
       }
 
       return errorResponse({
-        code: 'VALIDATION_ERROR',
-        message: 'Invalid request payload',
+        code: VERIFICATION_CODES.VALIDATION_ERROR,
+        message: COMMON_ERROR_MESSAGES.VALIDATION_ERROR,
         statusCode: HttpStatusCode.BAD_REQUEST,
         fieldErrors
       });
     }
 
     return errorResponse({
-      code: 'INTERNAL_SERVER_ERROR',
-      message: 'Something went wrong while creating the user.',
+      code: VERIFICATION_CODES.INTERNAL_SERVER_ERROR,
+      message: SIGNUP_MESSAGES.INTERNAL_SERVER_ERROR,
       statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
       details: err instanceof Error ? err.message : 'Unknown error'
     });

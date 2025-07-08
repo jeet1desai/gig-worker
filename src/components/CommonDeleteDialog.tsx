@@ -1,5 +1,5 @@
-import { Button } from '../ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
+import { Button } from './ui/button';
 
 interface ControlledConfirmDeleteDialogProps {
   open: boolean;
@@ -11,7 +11,7 @@ interface ControlledConfirmDeleteDialogProps {
   onConfirm: () => void;
 }
 
-const CommonDialog = ({
+const CommonDeleteDialog = ({
   open,
   onOpenChange,
   title = 'User',
@@ -27,19 +27,24 @@ const CommonDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sborder-slate-700 bg-slate-800 text-white sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter className="">
           <DialogClose asChild>
-            <Button type="button" variant="secondary" className="cursor-pointer border border-[#5750F1] dark:border-white dark:text-white">
+            <Button type="button" variant="secondary" className="cursor-pointer border border-slate-500 dark:border-white dark:text-white">
               {cancelLabel}
             </Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button type="button" variant="destructive" className="cursor-pointer bg-[#5750F1] text-white" onClick={handleConfirm}>
+            <Button
+              type="button"
+              variant="destructive"
+              className="cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+              onClick={handleConfirm}
+            >
               {confirmLabel}
             </Button>
           </DialogClose>
@@ -49,4 +54,4 @@ const CommonDialog = ({
   );
 };
 
-export default CommonDialog;
+export default CommonDeleteDialog;

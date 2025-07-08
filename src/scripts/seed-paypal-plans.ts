@@ -38,8 +38,10 @@ const seedPayPalPlans = async () => {
         setup_fee: setupFee ? new Decimal(setupFee.value) : undefined,
         tax_percentage: tax ? new Decimal(tax) : undefined,
         merchant_id: plan.payee.merchant_id || 'unknown',
-        benefits: planBenefits[plan.id] || [],
-        isPublic: true
+        benefits: planBenefits[plan.id] || planBenefits[0],
+        isPublic: true,
+        maxGigs: 0,
+        maxBids: 0
       };
 
       await prisma.plan.upsert({

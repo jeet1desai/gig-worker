@@ -7,17 +7,23 @@ import { safeJson } from '@/lib/utils/safeJson';
 import { verifyEmailVerificationToken } from '@/lib/tokens';
 import { sendNotification } from '@/lib/socket/socket-server';
 import { getSocketServer } from '@/app/api/socket/route';
+import {
+  COMMON_ERROR_MESSAGES,
+  TOKEN,
+  VERIFICATION_CODES,
+  VERIFICATION_MESSAGES
+} from '@/constants';
 
 const io = getSocketServer();
 
 export async function GET(req: NextRequest) {
-  const token = req.nextUrl.searchParams.get('token');
+  const token = req.nextUrl.searchParams.get(TOKEN);
 
   if (!token) {
     return errorResponse({
-      code: 'TOKEN_MISSING',
-      message: 'Verification token is missing.',
-      statusCode: HttpStatusCode.BAD_REQUEST,
+      code: VERIFICATION_CODES.TOKEN_MISSING,
+      message: VERIFICATION_MESSAGES.TOKEN_MISSING,
+      statusCode: HttpStatusCode.BAD_REQUEST
     });
   }
 
@@ -28,16 +34,16 @@ export async function GET(req: NextRequest) {
 
     if (!user) {
       return errorResponse({
-        code: 'USER_NOT_FOUND',
-        message: 'No user found for the provided token.',
-        statusCode: HttpStatusCode.NOT_FOUND,
+        code: VERIFICATION_CODES.USER_NOT_FOUND,
+        message: COMMON_ERROR_MESSAGES.USER_NOT_FOUND_MESSAGE,
+        statusCode: HttpStatusCode.NOT_FOUND
       });
     }
 
     if (user.is_verified) {
       return successResponse({
         data: null,
-        message: 'User already verified.',
+        message: VERIFICATION_MESSAGES.USER_ALREADY_VERIFIED
       });
     }
 
@@ -48,27 +54,27 @@ export async function GET(req: NextRequest) {
         id: true,
         email: true,
         first_name: true,
-        last_name: true,
-      },
+        last_name: true
+      }
     });
 
     await sendNotification(io, userId, {
-      title: 'Email Verified',
-      message: 'Your email has been verified successfully.',
+      title: VERIFICATION_MESSAGES.EMAIL_VERIFIED_NOTIFICATION_TITLE,
+      message: VERIFICATION_MESSAGES.EMAIL_VERIFIED_NOTIFICATION_MESSAGE,
       module: 'system',
-      type: 'success',
+      type: 'success'
     });
 
     return successResponse({
       data: safeJson(updatedUser),
-      message: 'Email verified successfully.',
+      message: VERIFICATION_MESSAGES.EMAIL_VERIFIED_SUCCESS
     });
   } catch (err) {
     return errorResponse({
-      code: 'INVALID_OR_EXPIRED_TOKEN',
-      message: 'Verification token is invalid or has expired.',
+      code: VERIFICATION_CODES.INVALID_OR_EXPIRED_TOKEN,
+      message: VERIFICATION_MESSAGES.INVALID_OR_EXPIRED_TOKEN,
       statusCode: HttpStatusCode.UNAUTHORIZED,
-      details: err instanceof Error ? err.message : 'Unknown error',
+      details: err instanceof Error ? err.message : 'Unknown error'
     });
   }
 }

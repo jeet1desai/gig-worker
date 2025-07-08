@@ -25,7 +25,7 @@ function HeroSection() {
           </p>
           <Link href="#" className="font-inter">
             <div className="inline-block rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
-              <button className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg px-5 py-2 text-[#FFFFFF] transition">
+              <button className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937] transition">
                 Explore Gigs
               </button>
             </div>
