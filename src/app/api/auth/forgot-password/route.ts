@@ -9,6 +9,7 @@ import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { generateEmailVerificationToken } from '@/lib/tokens';
 import { getResetPasswordEmail } from '@/lib/email/templates/resetPassword';
 import { forgotPasswordPayload } from '@/types/be/auth';
+import { COMMON_ERROR_MESSAGES, FORGOT_PASSWORD_MESSAGES, VERIFICATION_CODES } from '@/constants';
 
 export async function POST(req: Request) {
   try {
@@ -23,8 +24,8 @@ export async function POST(req: Request) {
 
     if (!user) {
       return errorResponse({
-        code: 'USER_NOT_FOUND',
-        message: 'User with this email does not exist.',
+        code: VERIFICATION_CODES.USER_NOT_FOUND,
+        message: COMMON_ERROR_MESSAGES.EMAIL_NOT_EXISTS,
         statusCode: HttpStatusCode.BAD_REQUEST,
       });
     }
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
 
     return successResponse({
       data: null,
-      message: 'Check your inbox! Password reset link has been sent.',
+      message: FORGOT_PASSWORD_MESSAGES.success,
       statusCode: HttpStatusCode.OK,
     });
   } catch (err) {
@@ -52,15 +53,15 @@ export async function POST(req: Request) {
         if (issue.path) fieldErrors[issue.path] = issue.message;
       }
       return errorResponse({
-        code: 'VALIDATION_ERROR',
-        message: 'Invalid request payload',
+        code: COMMON_ERROR_MESSAGES.VALIDATION_ERROR,
+        message: COMMON_ERROR_MESSAGES.INVALID_REQUEST_PAYLOAD,
         statusCode: HttpStatusCode.BAD_REQUEST,
         fieldErrors,
       });
     }
     return errorResponse({
-      code: 'INTERNAL_SERVER_ERROR',
-      message: 'Something went wrong while processing your request.',
+      code: VERIFICATION_CODES.INTERNAL_SERVER_ERROR,
+      message: COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE,
       statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
     });
   }

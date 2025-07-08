@@ -23,4 +23,6 @@ export const FREE_PLAN = {
   merchant_id: 'system',
   isPublic: true,
   benefits: planBenefits['FREE-PLAN'],
+  maxGigs: 0,
+  maxBids: 0,
 };

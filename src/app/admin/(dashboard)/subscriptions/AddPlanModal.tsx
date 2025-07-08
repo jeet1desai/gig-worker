@@ -6,13 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { X } from 'lucide-react';
-import { SubscriptionPlan } from '@/types/fe';
+import { SubscriptionPlan, SubscriptionPlanPayload } from '@/types/fe';
 import { subscriptionsPlanValidationSchema } from '@/schemas/fe/auth';
 
 interface AddPlanModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (planData: { name: string; description: string; benefits: string[]; price: string; maxGigs: number; maxBids: number }) => void;
+  onSave: (planData: SubscriptionPlanPayload) => void;
   initialData?: SubscriptionPlan | null;
   mode?: 'add' | 'edit';
 }
@@ -248,11 +248,15 @@ const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add' }: Ad
                 placeholder="Enter plan price"
                 value={formData.price}
                 onChange={(e) => handleInputChange('price', e.target.value)}
-                className={`border-slate-600 bg-slate-700 pl-8 text-white ${errors.price ? 'border-red-500' : ''}`}
+                className={`border-slate-600 bg-slate-700 pl-8 text-white ${errors.price ? 'border-red-500' : ''} ${mode === 'edit' ? 'cursor-not-allowed opacity-50' : ''}`}
                 type="number"
                 min="0"
+                disabled={mode === 'edit'}
               />
               {errors.price && <p className="text-sm text-red-400">Valid price (0 or more) required</p>}
+              {mode === 'edit' && (
+                <p className="mt-1 text-sm text-red-400">Price cannot be changed for an existing plan. Create a new plan for updated pricing.</p>
+              )}
             </div>
           </div>
         </div>

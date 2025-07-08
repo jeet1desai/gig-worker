@@ -11,6 +11,8 @@ import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
+import Loader from '@/components/Loader';
+import { COMMON_ERROR_MESSAGES, LOGIN_MESSAGES } from '@/constants';
 
 const { Title } = Typography;
 
@@ -28,7 +30,7 @@ export default function LoginForm() {
     try {
       setError(null);
       await loginSchema.validate(values, { abortEarly: false });
-      setLoading(true); 
+      setLoading(true);
       const result = await signIn('credentials', {
         redirect: false,
         email: values.email,
@@ -36,12 +38,12 @@ export default function LoginForm() {
       });
 
       if (result?.error === 'Email not verified') {
-        setError('Your email is not verified. Please verify your account.');
-        toast.error("Email is not verified");
+        setError(LOGIN_MESSAGES.emailNotVerified);
+        toast.error(LOGIN_MESSAGES.emailNotVerified);
         setLoading(false);
       } else if (!result?.ok) {
-        setError('Invalid email or password.');
-        toast.error('Invalid email or password.');
+        setError(LOGIN_MESSAGES.invalidCredentials);
+        toast.error(LOGIN_MESSAGES.invalidCredentials);
         setLoading(false);
       } else {
         setLoading(false);
@@ -49,6 +51,7 @@ export default function LoginForm() {
         router.refresh();
       }
     } catch (err: any) {
+      setLoading(false);
       if (err.name === 'ValidationError') {
         const formErrors = err.inner.reduce((acc: any, curr: any) => {
           acc[curr.path] = curr.message;
@@ -62,7 +65,7 @@ export default function LoginForm() {
           })),
         );
       } else {
-        setError('Something went wrong');
+        setError(COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE);
       }
     }
   };
@@ -73,6 +76,7 @@ export default function LoginForm() {
 
   return (
     <>
+      <Loader isLoading={loading} />
       <Title level={3} className="mb-6 text-center !text-2xl">
         <span className="text-[#FFF2E3]">Welcome back</span>
       </Title>
@@ -109,7 +113,6 @@ export default function LoginForm() {
           icon={<LockOutlined className="text-[#FFF2E3]" />}
           labelClassName="text-[#FFF2E3]"
         />
-        {error && <div className="text-red-400 text-sm text-start mb-3">{error}</div>}
         <div className="mt-2 flex w-full justify-end">
           <button
             type="button"
@@ -120,9 +123,11 @@ export default function LoginForm() {
           </button>
         </div>
         <Form.Item>
-          <Button htmlType="submit" block size="large" loading={loading} className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none">
-            Sign in
-          </Button>
+          <div className="mt-5 w-full rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
+            <button type="submit" className="h-full w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937]">
+              Sign in
+            </button>
+          </div>
         </Form.Item>
       </Form>
       <div className="mt-6 mb-3 text-center text-sm text-[#FFF2E3]">or sign in using</div>
