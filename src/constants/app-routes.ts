@@ -37,7 +37,7 @@ export enum PUBLIC_API_ROUTES {
 }
 
 export enum PRIVATE_API_ROUTES {
-  SUBSCRIPTION_PLANS_API = '/api/subscriptions/plans',
+  SUBSCRIPTION_PLANS_API = '/subscriptions/plans',
 }
 
 export const excludedPublicRoutes = [

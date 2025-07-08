@@ -18,6 +18,8 @@ export interface SubscriptionPlan {
   isPublic: boolean;
   createdAt: string;
   lastSyncedAt: string;
+  maxGigs: number;
+  maxBids: number;
   [key: string]: any;
 }
 
@@ -26,4 +28,14 @@ export interface SubscriptionPlanResponse {
   data: SubscriptionPlan[];
   message: string;
   [key: string]: any;
+}
+
+export interface SubscriptionPlanPayload {
+  id?: string;
+  name: string;
+  description: string;
+  benefits: string[];
+  price: string;
+  maxGigs: number;
+  maxBids: number;
 }
