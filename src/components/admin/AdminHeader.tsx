@@ -52,7 +52,7 @@ export function AdminHeader({ collapsed, onToggle }: SidebarProps) {
             <div className="relative">
               <Avatar className="h-8 w-8 rounded-xl object-cover ring-2 ring-blue-500/20 transition-all duration-200 hover:scale-105 hover:ring-blue-500/40">
                 <AvatarImage src={userDetails?.user.image} alt={userDetails?.user.name || 'Admin Profile'} />
-                <AvatarFallback className="text-white">
+                <AvatarFallback className="bg-transparent text-white">
                   {userDetails?.user.name
                     ?.split(' ')
                     .map((n: string) => n[0])
