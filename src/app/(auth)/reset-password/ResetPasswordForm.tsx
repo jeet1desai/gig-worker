@@ -10,17 +10,8 @@ import { resetPasswordSchema } from '@/schemas/auth';
 import { PUBLIC_API_ROUTES, PUBLIC_ROUTE } from '@/constants/app-routes';
 import apiService from '@/services/api';
 import Loader from '@/components/Loader';
-import { RESET_PASSWORD_MESSAGES, TOKEN } from '@/constants';
-
-interface ResetPasswordResponse {
-  message?: string;
-  error?: {
-    message?: string;
-    fieldErrors?: {
-      [key: string]: string;
-    };
-  };
-}
+import { COMMON_ERROR_MESSAGES, RESET_PASSWORD_MESSAGES, TOKEN } from '@/constants';
+import { ApiResponse } from '@/types/fe';
 
 export default function ResetPasswordForm() {
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +31,7 @@ export default function ResetPasswordForm() {
         token,
       };
       await resetPasswordSchema.validate(payload, { abortEarly: false });
-      const { data } = await apiService.patch<ResetPasswordResponse>(PUBLIC_API_ROUTES.RESET_PASSWORD_API, payload, { withAuth: false });
+      const { data } = await apiService.patch<ApiResponse>(PUBLIC_API_ROUTES.RESET_PASSWORD_API, payload, { withAuth: false });
 
       toast.success(data?.message || RESET_PASSWORD_MESSAGES.success);
       form.resetFields();
@@ -59,7 +50,7 @@ export default function ResetPasswordForm() {
         return;
       }
       if (err.response) {
-        const data: ResetPasswordResponse = err.response.data;
+        const data: ApiResponse = err.response.data;
         const apiErrorMessage = data?.error?.message || data?.message || RESET_PASSWORD_MESSAGES.apiFallback;
         if (data?.error?.fieldErrors) {
           const fieldErrors = Object.entries(data.error.fieldErrors).map(([name, message]) => ({
@@ -71,7 +62,7 @@ export default function ResetPasswordForm() {
         setError(apiErrorMessage);
         toast.error(apiErrorMessage);
       } else {
-        const fallback = err?.message || RESET_PASSWORD_MESSAGES.genericError;
+        const fallback = err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE;
         setError(fallback);
         toast.error(fallback);
       }

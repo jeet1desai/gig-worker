@@ -12,7 +12,7 @@ import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 import Loader from '@/components/Loader';
-import { LOGIN_MESSAGES } from '@/constants';
+import { COMMON_ERROR_MESSAGES, LOGIN_MESSAGES } from '@/constants';
 
 const { Title } = Typography;
 
@@ -65,7 +65,7 @@ export default function LoginForm() {
           })),
         );
       } else {
-        setError(LOGIN_MESSAGES.genericError);
+        setError(COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE);
       }
     }
   };

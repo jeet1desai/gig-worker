@@ -15,7 +15,7 @@ import apiService from '@/services/api';
 import { toast } from 'react-toastify';
 import Loader from '@/components/Loader';
 import { ApiResponse } from '@/types/fe';
-import { SIGNUP_MESSAGES } from '@/constants';
+import { COMMON_ERROR_MESSAGES, SIGNUP_MESSAGES } from '@/constants';
 
 const { Title } = Typography;
 interface SignupFormValues {
@@ -95,7 +95,7 @@ export default function SignupForm() {
         setError(apiErrorMessage);
         toast.error(apiErrorMessage);
       } else {
-        const errorMessage = err?.message || SIGNUP_MESSAGES.genericError;
+        const errorMessage = err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE;
         setError(errorMessage);
         toast.error(errorMessage);
       }

@@ -91,9 +91,7 @@ export const FORGOT_PASSWORD_MESSAGES = {
   title: 'Forgot password',
   subtitle: 'No worries, we’ll send you an OTP to your mail id',
   success: 'Check your inbox! Password reset link has been sent.',
-  error: {
-    default: 'Failed to send reset email.',
-  },
+  error: 'Failed to send reset email.',
 };
 
 export const LOGIN_MESSAGES = {

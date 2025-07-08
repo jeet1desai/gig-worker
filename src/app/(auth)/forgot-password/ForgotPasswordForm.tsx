@@ -11,17 +11,8 @@ import { forgotPasswordSchema } from '@/schemas/auth';
 import { toast } from 'react-toastify';
 import apiService from '@/services/api';
 import Loader from '@/components/Loader';
-import { FORGOT_PASSWORD_MESSAGES } from '@/constants';
-
-interface ForgotPasswordResponse {
-  message?: string;
-  error?: {
-    message?: string;
-    fieldErrors?: {
-      [key: string]: string;
-    };
-  };
-}
+import { COMMON_ERROR_MESSAGES, FORGOT_PASSWORD_MESSAGES } from '@/constants';
+import { ApiResponse } from '@/types/fe';
 
 export default function ForgotPasswordForm() {
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +30,7 @@ export default function ForgotPasswordForm() {
       setError(null);
       setLoading(true);
       await forgotPasswordSchema.validate(values, { abortEarly: false });
-      const { data } = await apiService.post<ForgotPasswordResponse>(PUBLIC_API_ROUTES.FORGOT_PASSWORD_API, values, { withAuth: false });
+      const { data } = await apiService.post<ApiResponse>(PUBLIC_API_ROUTES.FORGOT_PASSWORD_API, values, { withAuth: false });
 
       toast.success(data?.message || FORGOT_PASSWORD_MESSAGES.success);
       form.resetFields();
@@ -53,9 +44,9 @@ export default function ForgotPasswordForm() {
         }));
         form.setFields(fieldErrors);
       } else if (err.response) {
-        const data: ForgotPasswordResponse = err.response.data;
+        const data: ApiResponse = err.response.data;
 
-        const apiErrorMessage = data?.error?.message || data?.message || FORGOT_PASSWORD_MESSAGES.error.default;
+        const apiErrorMessage = data?.error?.message || data?.message || FORGOT_PASSWORD_MESSAGES.error;
 
         if (data?.error?.fieldErrors) {
           const fieldErrors = Object.entries(data.error.fieldErrors).map(([name, message]) => ({
@@ -67,7 +58,7 @@ export default function ForgotPasswordForm() {
         setError(apiErrorMessage);
         toast.error(apiErrorMessage);
       } else {
-        const errorMessage = err?.message || FORGOT_PASSWORD_MESSAGES.error.somethingWentWrong;
+        const errorMessage = err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE;
         setError(errorMessage);
         toast.error(errorMessage);
       }

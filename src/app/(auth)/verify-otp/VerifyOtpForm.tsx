@@ -8,6 +8,7 @@ import { verifyOtpSchema } from '../../../schemas/auth';
 import { BackArrowIconSvg } from '@/components/icons';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { useRouter } from 'next/navigation';
+import { COMMON_ERROR_MESSAGES } from '@/constants';
 
 export default function VerifyOtpForm() {
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +34,7 @@ export default function VerifyOtpForm() {
         }));
         form.setFields(fieldErrors);
       } else {
-        setError('Something went wrong');
+        setError(COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE);
       }
     }
   };

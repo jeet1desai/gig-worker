@@ -7,7 +7,7 @@ import { PUBLIC_ROUTE, PUBLIC_API_ROUTES } from '@/constants/app-routes';
 import { MailCheck } from 'lucide-react';
 import apiService from '@/services/api';
 import { toast } from 'react-toastify';
-import { EMAIL_VERIFICATION_MESSAGES, TOKEN } from '@/constants';
+import { COMMON_ERROR_MESSAGES, EMAIL_VERIFICATION_MESSAGES, TOKEN, VERIFICATION_MESSAGES } from '@/constants';
 import { ApiResponse } from '@/types/fe';
 
 const { Title, Text } = Typography;
@@ -23,7 +23,7 @@ export default function EmailVerificationPage() {
     const token = searchParams.get(TOKEN);
     if (!token) {
       setVerified(false);
-      setMessage(EMAIL_VERIFICATION_MESSAGES.INVALIDTOKEN);
+      setMessage(VERIFICATION_MESSAGES.INVALID_OR_EXPIRED_TOKEN);
       setLoading(false);
       return;
     }
@@ -42,7 +42,7 @@ export default function EmailVerificationPage() {
         }
       } catch (err: any) {
         setVerified(false);
-        setMessage(err?.response?.data?.message || err?.message || EMAIL_VERIFICATION_MESSAGES.ERRORMESSAGE);
+        setMessage(err?.response?.data?.message || err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE);
       } finally {
         setLoading(false);
       }
