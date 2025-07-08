@@ -26,7 +26,7 @@ export interface IUser {
 }
 
 const UsersList = () => {
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [sortKey, setSortKey] = useState<keyof IUser | ''>('created_at');
   const [search, setSearch] = useState<string>('');
 
