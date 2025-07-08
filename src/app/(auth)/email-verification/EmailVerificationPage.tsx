@@ -3,22 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Spin, Typography } from 'antd';
-import { CheckCircleOutlined } from '@ant-design/icons';
 import { PUBLIC_ROUTE, PUBLIC_API_ROUTES } from '@/constants/app-routes';
 import { MailCheck } from 'lucide-react';
 import apiService from '@/services/api';
+import { toast } from 'react-toastify';
+import { EMAIL_VERIFICATION_MESSAGES, TOKEN } from '@/constants';
+import { ApiResponse } from '@/types/fe';
 
 const { Title, Text } = Typography;
-
-interface VerifiedEmailResponse {
-  message?: string;
-  error?: {
-    message?: string;
-    fieldErrors?: {
-      [key: string]: string;
-    };
-  };
-}
 
 export default function EmailVerificationPage() {
   const router = useRouter();
@@ -28,29 +20,29 @@ export default function EmailVerificationPage() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const token = searchParams.get('token');
+    const token = searchParams.get(TOKEN);
     if (!token) {
       setVerified(false);
-      setMessage('Invalid or missing verification token.');
+      setMessage(EMAIL_VERIFICATION_MESSAGES.INVALIDTOKEN);
       setLoading(false);
       return;
     }
 
     const verifyEmail = async () => {
       try {
-        const token = searchParams.get('token');
-        const { data, status } = await apiService.get<VerifiedEmailResponse>(`${PUBLIC_API_ROUTES.VERIFY_EMAIL_API}?token=${token}`);
+        const token = searchParams.get(TOKEN);
+        const { data, status } = await apiService.get<ApiResponse>(`${PUBLIC_API_ROUTES.VERIFY_EMAIL_API}?token=${token}`);
 
         if (status === 200 || status === 201) {
           setVerified(true);
-          setMessage(data?.message || 'Your email has been verified successfully!');
+          toast.success(data?.message || EMAIL_VERIFICATION_MESSAGES.SUCCESS);
         } else {
           setVerified(false);
-          setMessage(data?.message || 'Verification failed.');
+          toast.error(data?.message || EMAIL_VERIFICATION_MESSAGES.FAILURE);
         }
       } catch (err: any) {
         setVerified(false);
-        setMessage(err?.response?.data?.message || err?.message || 'Something went wrong. Please try again.');
+        setMessage(err?.response?.data?.message || err?.message || EMAIL_VERIFICATION_MESSAGES.ERRORMESSAGE);
       } finally {
         setLoading(false);
       }
@@ -78,7 +70,7 @@ export default function EmailVerificationPage() {
               <Text className="mb-6 !text-[#FFF2E3]">Your email address is verified successfully.</Text>
               <div className="inline-block rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
                 <button
-                  className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg px-5 py-2 text-[#FFFFFF] transition"
+                  className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg px-5 py-2 text-[#383937] transition"
                   onClick={() => router.push(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH)}
                 >
                   Go to Login
@@ -93,7 +85,7 @@ export default function EmailVerificationPage() {
               <Text className="mb-6 !text-[#FFF2E3]">Please try again to verify your email address.</Text>
               <div className="inline-block rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
                 <button
-                  className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg px-5 py-2 text-[#FFFFFF] transition"
+                  className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg px-5 py-2 text-[#383937] transition"
                   onClick={() => router.push(PUBLIC_ROUTE.SIGNUP_PAGE_PATH)}
                 >
                   Back to Signup

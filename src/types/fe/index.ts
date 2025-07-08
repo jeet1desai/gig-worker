@@ -27,3 +27,13 @@ export interface SubscriptionPlanResponse {
   message: string;
   [key: string]: any;
 }
+
+export interface ApiResponse {
+  message?: string;
+  error?: {
+    message?: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+}

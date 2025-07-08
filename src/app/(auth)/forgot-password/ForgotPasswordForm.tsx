@@ -11,6 +11,7 @@ import { forgotPasswordSchema } from '@/schemas/auth';
 import { toast } from 'react-toastify';
 import apiService from '@/services/api';
 import Loader from '@/components/Loader';
+import { FORGOT_PASSWORD_MESSAGES } from '@/constants';
 
 interface ForgotPasswordResponse {
   message?: string;
@@ -40,7 +41,7 @@ export default function ForgotPasswordForm() {
       await forgotPasswordSchema.validate(values, { abortEarly: false });
       const { data } = await apiService.post<ForgotPasswordResponse>(PUBLIC_API_ROUTES.FORGOT_PASSWORD_API, values, { withAuth: false });
 
-      toast.success(data?.message || 'Check your email for reset instructions.');
+      toast.success(data?.message || FORGOT_PASSWORD_MESSAGES.success);
       form.resetFields();
       setLoading(false);
     } catch (err: any) {
@@ -54,7 +55,7 @@ export default function ForgotPasswordForm() {
       } else if (err.response) {
         const data: ForgotPasswordResponse = err.response.data;
 
-        const apiErrorMessage = data?.error?.message || data?.message || 'Failed to send reset email.';
+        const apiErrorMessage = data?.error?.message || data?.message || FORGOT_PASSWORD_MESSAGES.error.default;
 
         if (data?.error?.fieldErrors) {
           const fieldErrors = Object.entries(data.error.fieldErrors).map(([name, message]) => ({
@@ -66,7 +67,7 @@ export default function ForgotPasswordForm() {
         setError(apiErrorMessage);
         toast.error(apiErrorMessage);
       } else {
-        const errorMessage = err?.message || 'Something went wrong.';
+        const errorMessage = err?.message || FORGOT_PASSWORD_MESSAGES.error.somethingWentWrong;
         setError(errorMessage);
         toast.error(errorMessage);
       }
@@ -100,9 +101,11 @@ export default function ForgotPasswordForm() {
           labelClassName="text-[#FFF2E3]"
         />
         <Form.Item>
-          <Button htmlType="submit" block size="large" className="font-large mt-2 border-none bg-[#635d57] text-[#FFF2E3] shadow-none">
-            Confirm
-          </Button>
+          <div className="mt-2 w-full rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
+            <button type="submit" className="h-full w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937]">
+              Confirm
+            </button>
+          </div>
         </Form.Item>
       </Form>
 

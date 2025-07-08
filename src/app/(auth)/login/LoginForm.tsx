@@ -12,6 +12,7 @@ import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 import Loader from '@/components/Loader';
+import { LOGIN_MESSAGES } from '@/constants';
 
 const { Title } = Typography;
 
@@ -37,12 +38,12 @@ export default function LoginForm() {
       });
 
       if (result?.error === 'Email not verified') {
-        setError('Your email is not verified. Please verify your account.');
-        toast.error('Email is not verified');
+        setError(LOGIN_MESSAGES.emailNotVerified);
+        toast.error(LOGIN_MESSAGES.emailNotVerified);
         setLoading(false);
       } else if (!result?.ok) {
-        setError('Invalid email or password.');
-        toast.error('Invalid email or password.');
+        setError(LOGIN_MESSAGES.invalidCredentials);
+        toast.error(LOGIN_MESSAGES.invalidCredentials);
         setLoading(false);
       } else {
         setLoading(false);
@@ -64,7 +65,7 @@ export default function LoginForm() {
           })),
         );
       } else {
-        setError('Something went wrong');
+        setError(LOGIN_MESSAGES.genericError);
       }
     }
   };
@@ -112,7 +113,6 @@ export default function LoginForm() {
           icon={<LockOutlined className="text-[#FFF2E3]" />}
           labelClassName="text-[#FFF2E3]"
         />
-        {error && <div className="mb-3 text-start text-sm text-red-400">{error}</div>}
         <div className="mt-2 flex w-full justify-end">
           <button
             type="button"
@@ -123,15 +123,11 @@ export default function LoginForm() {
           </button>
         </div>
         <Form.Item>
-          <Button
-            htmlType="submit"
-            block
-            size="large"
-            loading={false}
-            className="font-large mt-5 border-none bg-[#635d57] text-[#FFF2E3] shadow-none"
-          >
-            Sign in
-          </Button>
+          <div className="mt-5 w-full rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
+            <button type="submit" className="h-full w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937]">
+              Sign in
+            </button>
+          </div>
         </Form.Item>
       </Form>
       <div className="mt-6 mb-3 text-center text-sm text-[#FFF2E3]">or sign in using</div>

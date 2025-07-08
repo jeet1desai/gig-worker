@@ -7,6 +7,7 @@ export const BRAND_NAME = 'Gig Workers';
 export const BASE_API_URL = '/api';
 export const CONTENT_TYPE = 'Content-Type';
 export const APPLICATION_JSON = 'application/json';
+export const TOKEN = 'token';
 
 export const DASHBOARD_NAVIGATION_MENU = [{ name: 'Dashboard', icon: BarChart3, href: PRIVATE_ROUTE.DASHBOARD }];
 
@@ -28,11 +29,7 @@ export const SUBSCRIPTION_PLANS_LIST = [
     price: 0,
     maxGigs: 0,
     maxBids: 3,
-    features: [
-      'Access as a User only',
-      'Rate and review providers after gigs',
-      'Only request a gig',
-    ],
+    features: ['Access as a User only', 'Rate and review providers after gigs', 'Only request a gig'],
   },
   {
     id: '2',
@@ -41,11 +38,7 @@ export const SUBSCRIPTION_PLANS_LIST = [
     maxGigs: 3,
     maxBids: 5,
     description: 'Unleash the Power of Your Services with Basic Plan.',
-    features: [
-      'Post up to 3 gigs/month',
-      'Place up to 5 bids/month',
-      'No access to "Top Rated Seller" badge',
-    ],
+    features: ['Post up to 3 gigs/month', 'Place up to 5 bids/month', 'No access to "Top Rated Seller" badge'],
   },
   {
     id: '3',
@@ -54,11 +47,7 @@ export const SUBSCRIPTION_PLANS_LIST = [
     price: 20,
     maxGigs: 365,
     maxBids: 365,
-    features: [
-      'Includes all Basic Plan features',
-      'Unlimited gig postings and bids',
-      'Eligible for Top Rated Seller badge',
-    ],
+    features: ['Includes all Basic Plan features', 'Unlimited gig postings and bids', 'Eligible for Top Rated Seller badge'],
   },
 ];
 
@@ -67,4 +56,85 @@ export const DEFAULT_PAGINATION = {
   pageSize: 10,
   total: 0,
   totalPages: 0,
+};
+
+export const SIGNUP_CODES = {
+  USER_ALREADY_EXISTS: 'USER_ALREADY_EXISTS',
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
+};
+
+export const SIGNUP_MESSAGES = {
+  USER_ALREADY_EXISTS: 'A user with this email already exists.',
+  USER_CREATED_SUCCESS: 'User created successfully',
+  VALIDATION_ERROR: 'Invalid request payload',
+  INTERNAL_SERVER_ERROR: 'Something went wrong while creating the user.',
+  success: 'Signup successful!',
+  failure: 'Signup failed. Please try again.',
+  genericError: 'Something went wrong.',
+};
+
+export const NOTIFICATION_MESSAGES = {
+  USER_CREATED_TITLE: 'User Created',
+  USER_CREATED: 'User created successfully.',
+};
+
+export const NOTIFICATION_MODULES = {
+  SYSTEM: 'system',
+};
+
+export const NOTIFICATION_TYPES = {
+  SUCCESS: 'success',
+};
+
+export const BCRYPT_SALT_ROUNDS = 10;
+
+export const EMAIL_VERIFICATION_MESSAGES = {
+  VERIFYING: 'Verifying your email...',
+  SUCCESS: 'Your email has been verified successfully!',
+  FAILURE: 'Verification failed. Please try again to verify your email address.',
+  INVALIDTOKEN: 'Invalid or missing verification token.',
+  ERRORMESSAGE: 'Something went wrong. Please try again.',
+};
+
+export const FORGOT_PASSWORD_MESSAGES = {
+  title: 'Forgot password',
+  subtitle: 'No worries, we’ll send you an OTP to your mail id',
+  success: 'Check your email for reset instructions.',
+  error: {
+    default: 'Failed to send reset email.',
+    somethingWentWrong: 'Something went wrong.',
+  },
+};
+
+export const LOGIN_MESSAGES = {
+  emailNotVerified: 'Your email is not verified. Please verify your account.',
+  invalidCredentials: 'Invalid email or password.',
+  genericError: 'Something went wrong',
+};
+
+export const RESET_PASSWORD_MESSAGES = {
+  success: 'Password has been reset successfully.',
+  validationError: 'Validation error occurred.',
+  genericError: 'Something went wrong.',
+  apiFallback: 'Failed to reset password.',
+  redirectDelay: 3000,
+};
+
+export const VERIFICATION_CODES = {
+  TOKEN_MISSING: 'TOKEN_MISSING',
+  USER_NOT_FOUND: 'USER_NOT_FOUND',
+  INVALID_OR_EXPIRED_TOKEN: 'INVALID_OR_EXPIRED_TOKEN',
+  USER_ALREADY_VERIFIED: 'USER_ALREADY_VERIFIED',
+  EMAIL_VERIFIED_SUCCESS: 'EMAIL_VERIFIED_SUCCESS',
+};
+
+export const VERIFICATION_MESSAGES = {
+  TOKEN_MISSING: 'Verification token is missing.',
+  USER_NOT_FOUND: 'No user found for the provided token.',
+  INVALID_OR_EXPIRED_TOKEN: 'Verification token is invalid or has expired.',
+  USER_ALREADY_VERIFIED: 'User already verified.',
+  EMAIL_VERIFIED_SUCCESS: 'Email verified successfully.',
+  EMAIL_VERIFIED_NOTIFICATION_TITLE: 'Email Verified',
+  EMAIL_VERIFIED_NOTIFICATION_MESSAGE: 'Your email has been verified successfully.',
 };

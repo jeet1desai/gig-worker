@@ -14,6 +14,8 @@ import { signIn } from 'next-auth/react';
 import apiService from '@/services/api';
 import { toast } from 'react-toastify';
 import Loader from '@/components/Loader';
+import { ApiResponse } from '@/types/fe';
+import { SIGNUP_MESSAGES } from '@/constants';
 
 const { Title } = Typography;
 interface SignupFormValues {
@@ -23,14 +25,6 @@ interface SignupFormValues {
   password: string;
   confirmPassword: string;
   terms: boolean;
-}
-
-interface SignupApiResponse {
-  message?: string;
-  error?: {
-    message?: string;
-    fieldErrors?: Record<string, string>;
-  };
 }
 
 export default function SignupForm() {
@@ -57,10 +51,10 @@ export default function SignupForm() {
         password: values.password,
       };
 
-      const { data } = await apiService.post<SignupApiResponse>(PUBLIC_API_ROUTES.SIGNUP_API, payload, { withAuth: false });
+      const { data } = await apiService.post<ApiResponse>(PUBLIC_API_ROUTES.SIGNUP_API, payload, { withAuth: false });
 
       if (data?.error) {
-        const apiErrorMessage = data?.error?.message || data?.message || 'Signup failed. Please try again.';
+        const apiErrorMessage = data?.error?.message || data?.message || SIGNUP_MESSAGES.failure;
 
         if (data?.error?.fieldErrors) {
           const fieldErrors = Object.entries(data.error.fieldErrors).map(([name, message]) => ({
@@ -75,7 +69,7 @@ export default function SignupForm() {
         return;
       }
       setSuccess(true);
-      toast.success(data?.message || 'Signup successful!');
+      toast.success(data?.message || SIGNUP_MESSAGES.success);
       form.resetFields();
       setLoading(false);
     } catch (err: any) {
@@ -87,8 +81,8 @@ export default function SignupForm() {
         }));
         form.setFields(fieldErrors);
       } else if (err.response) {
-        const data: SignupApiResponse = err.response.data;
-        const apiErrorMessage = data?.error?.message || data?.message || 'Signup failed. Please try again.';
+        const data: ApiResponse = err.response.data;
+        const apiErrorMessage = data?.error?.message || data?.message || SIGNUP_MESSAGES.failure;
 
         if (data?.error?.fieldErrors) {
           const fieldErrors = Object.entries(data.error.fieldErrors).map(([name, message]) => ({
@@ -101,7 +95,7 @@ export default function SignupForm() {
         setError(apiErrorMessage);
         toast.error(apiErrorMessage);
       } else {
-        const errorMessage = err?.message || 'Something went wrong.';
+        const errorMessage = err?.message || SIGNUP_MESSAGES.genericError;
         setError(errorMessage);
         toast.error(errorMessage);
       }
@@ -204,9 +198,11 @@ export default function SignupForm() {
                   </span>
                 </Checkbox>
               </Form.Item>
-              <Button htmlType="submit" block size="large" className="mt-5 w-full border-none bg-[#635d57] font-bold text-[#FFF2E3] shadow-none">
-                Sign up
-              </Button>
+              <div className="w-full rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
+                <button type="submit" className="h-full w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937]">
+                  Sign up
+                </button>
+              </div>
             </Form>
             <div className="mt-6 mb-3 text-center text-[#fff2e3]">or sign in using</div>
             <div className="mb-4 flex justify-center">
