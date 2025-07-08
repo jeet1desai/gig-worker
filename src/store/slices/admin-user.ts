@@ -30,12 +30,16 @@ const adminUserSlice = createSlice({
       const { id } = action.payload;
       state.users = state.users.filter((user) => user.id !== id);
     },
+    createAdminUsers: (state, action: PayloadAction<{ user: any }>) => {
+      const { user } = action.payload;
+      state.users = [user, ...state.users];
+    },
     setPage: (state, action: PayloadAction<{ page: number }>) => {
       state.pagination.page = action.payload.page;
     },
   },
 });
 
-export const { setLoading, setAdminUsers, deleteAdminUsers, setPage } = adminUserSlice.actions;
+export const { setLoading, setAdminUsers, deleteAdminUsers, createAdminUsers, setPage } = adminUserSlice.actions;
 
 export default adminUserSlice.reducer;
