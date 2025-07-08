@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Label } from '@/components/ui/label';
@@ -38,6 +38,7 @@ export default function SignupForm() {
     register,
     handleSubmit,
     setError,
+    control,
     formState: { errors },
     reset,
   } = useForm<SignupFormValues>({
@@ -140,15 +141,22 @@ export default function SignupForm() {
             {renderField('email', 'Email', 'email', Mail)}
             {renderField('password', 'Password', 'password', Lock)}
             {renderField('confirmPassword', 'Confirm Password', 'password', Lock)}
-            <div className="flex items-start space-x-2">
-              <Checkbox id="terms" {...register('terms')} />
-              <Label htmlFor="terms" className="leading-snug text-[#FFF2E3]">
-                Accept{' '}
-                <Link href="#" className="underline">
-                  terms & conditions
-                </Link>
-              </Label>
-            </div>
+
+            <Controller
+              name="terms"
+              control={control}
+              render={({ field }) => (
+                <div className="flex items-start space-x-2">
+                  <Checkbox id="terms" checked={field.value} onCheckedChange={(checked) => field.onChange(checked)} />
+                  <Label htmlFor="terms" className="leading-snug text-[#FFF2E3]">
+                    Accept{' '}
+                    <Link href="#" className="underline">
+                      terms & conditions
+                    </Link>
+                  </Label>
+                </div>
+              )}
+            />
             {errors.terms && <p className="text-sm text-red-500">{errors.terms.message}</p>}
 
             <div className="rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">

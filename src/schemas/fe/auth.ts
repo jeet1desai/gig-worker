@@ -13,14 +13,14 @@ export const signupSchema = Yup.object().shape({
     .required('Password is required')
     .min(8, 'Password must be at least 8 characters')
     .max(128, 'Password is too long')
-    .matches(/[A-Z]/, 'At least one uppercase letter required')
-    .matches(/[a-z]/, 'At least one lowercase letter required')
-    .matches(/\d/, 'At least one number required')
-    .matches(/[@$!%*?&]/, 'At least one special character required'),
+    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .matches(/\d/, 'Password must contain at least one number')
+    .matches(/[@$!%*?&]/, 'Password must contain at least one special character'),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref('password')], 'Passwords must match')
     .required('Confirm Password is required'),
-  terms: Yup.boolean().oneOf([true], 'You must accept the terms and conditions').required(),
+  terms: Yup.bool().oneOf([true], 'You must accept the terms and conditions').required(),
 });
 
 export const subscriptionsPlanValidationSchema = Yup.object().shape({
