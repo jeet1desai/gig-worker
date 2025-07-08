@@ -37,7 +37,8 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
     clearStorage();
     router.push(PUBLIC_ROUTE.HOME);
     setIsLoading(false);
-  }, []);
+    router.refresh();
+  }, [router]);
 
   const isPathMatch = (itemUrl: string) => {
     return pathname === itemUrl || pathname.startsWith(`${itemUrl}/`);
@@ -105,7 +106,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
 
         <div className="border-t border-slate-700/50 p-3">
           <button
-            onClick={handleLogout}
+            onClick={() => setIsLoggingOut(true)}
             className={cn(
               'group flex items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition-all duration-200 hover:scale-105 hover:bg-red-500/20 hover:text-red-400 w-full',
               collapsed ? 'justify-center px-2' : 'space-x-3',

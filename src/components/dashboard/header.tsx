@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import NotificationBell from '../notification-bell';
 import Link from 'next/link';
+import { clearStorage } from '@/lib/local-storage';
+import CommonDeleteDialog from '../CommonDeleteDialog';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -26,10 +28,16 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
   const isMobile = useIsMobile();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
 
   const handleLogout = useCallback(async () => {
+    setIsLoading(true);
     await signOut({ redirect: false });
+    setIsLoggingOut(false);
+    clearStorage();
     router.push(PUBLIC_ROUTE.HOME);
+    setIsLoading(false);
     router.refresh();
   }, [router]);
 
@@ -145,8 +153,8 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                     <span>Profile</span>
                   </Link>
                   <button
-                    onClick={handleLogout}
-                    className="flex items-center space-x-2 cursor-pointer rounded-md px-3 py-2 text-sm hover:bg-slate-700 w-full">
+                    onClick={() => setIsLoggingOut(true)}
+                    className="flex items-center space-x-2 cursor-pointer rounded-md px-3 py-2 text-sm hover:bg-slate-700 w-full outline-none focus:outline-none focus-visible:ring-0">
                     <LogOut className="h-4 w-4" />
                     <span>Logout</span>
                   </button>
@@ -156,6 +164,18 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
           </div>
         </div>
       </header>
+      {isLoggingOut && (
+        <CommonDeleteDialog
+          open={isLoggingOut}
+          title="Logout"
+          isLoading={isLoading}
+          description="Are you sure you want to logout?"
+          onConfirm={handleLogout}
+          cancelLabel="Cancel"
+          confirmLabel="Logout"
+          onOpenChange={setIsLoggingOut}
+        />
+      )}
     </TooltipProvider>
   );
 }

@@ -103,10 +103,10 @@ export default function UserProfilePage() {
                 <CardContent className="pt-6 space-y-6 px-6 pb-8">
                   <div className="bg-black rounded-xl px-4 py-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-semibold mb-2">About</h3>
+                      <h3 className="text-sm font-semibold text-gray-300 mb-2">About</h3>
                       <EditProfileModal />
                     </div>
-                    <p className="text-sm text-gray-300">
+                    <p className="text-sm text-white">
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labpr.
                     </p>
                   </div>
@@ -114,7 +114,7 @@ export default function UserProfilePage() {
                   <div className="bg-black rounded-xl px-4 py-5 space-y-6">
                     <div>
                       <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-white">🛠️ Skills</h3>
+                        <h3 className="text-sm font-semibold text-gray-300">🛠️ Skills</h3>
                         <EditProfileTagsModal />
                       </div>
                       <div className="flex flex-wrap gap-2 mt-2">
@@ -131,7 +131,7 @@ export default function UserProfilePage() {
 
                     <div>
                       <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-white">🎯 Extracurricular</h3>
+                        <h3 className="text-sm font-semibold text-gray-300">🎯 Extracurricular</h3>
                       </div>
                       <div className="flex flex-wrap gap-4 text-sm mt-2 underline text-white">
                         {extracurricular.map((item, index) => (
@@ -142,7 +142,7 @@ export default function UserProfilePage() {
 
                     <div>
                       <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-white">💡 Interests</h3>
+                        <h3 className="text-sm font-semibold text-gray-300">💡 Interests</h3>
                       </div>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {interests.map((item, idx) => (
@@ -160,7 +160,7 @@ export default function UserProfilePage() {
                   <div className="bg-black rounded-xl px-4 py-4 space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-5">
-                        <h3 className="text-sm font-semibold">Ratings</h3>
+                        <h3 className="text-sm font-semibold text-gray-300">Ratings</h3>
                         <div className="inline-flex items-center gap-2 bg-green-500 text-white px-2 py-0.5 rounded text-sm w-fit">
                           4.5 <StarIcon className="w-4 h-4 fill-white" />
                         </div>
