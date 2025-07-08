@@ -1,12 +1,17 @@
 'use client';
 
+import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Images } from '@/lib/images';
 import { cn } from '@/lib/utils';
 import { LogOut, ChevronLeft, LucideProps } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { ForwardRefExoticComponent, RefAttributes, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { ForwardRefExoticComponent, RefAttributes, useCallback, useEffect, useState } from 'react';
+import CommonDeleteDialog from '../CommonDeleteDialog';
+import Loader from '../Loader';
+import { clearStorage } from '@/lib/local-storage';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -21,6 +26,18 @@ interface SidebarProps {
 export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) {
   const isMobile = useIsMobile();
   const pathname = usePathname();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
+
+  const handleLogout = useCallback(async () => {
+    setIsLoading(true);
+    await signOut({ redirect: false });
+    setIsLoggingOut(false);
+    clearStorage();
+    router.push(PUBLIC_ROUTE.HOME);
+    setIsLoading(false);
+  }, []);
 
   const isPathMatch = (itemUrl: string) => {
     return pathname === itemUrl || pathname.startsWith(`${itemUrl}/`);
@@ -39,6 +56,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
         collapsed ? 'w-18' : 'w-64',
       )}
     >
+      <Loader isLoading={isLoading} />
       <div className="flex h-full w-full flex-col">
         <div className="relative flex items-center justify-between border-b border-slate-700/50 p-4">
           <div className={cn('flex items-center space-x-3', collapsed && 'justify-center')}>
@@ -88,7 +106,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
 
         <div className="border-t border-slate-700/50 p-3">
           <a
-            href="#"
+            onClick={() => setIsLoggingOut(true)}
             className={cn(
               'group flex items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition-all duration-200 hover:scale-105 hover:bg-red-500/20 hover:text-red-400',
               collapsed ? 'justify-center px-2' : 'space-x-3',
@@ -99,6 +117,17 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
           </a>
         </div>
       </div>
+      {isLoggingOut && (
+        <CommonDeleteDialog
+          open={isLoggingOut}
+          title="Logout"
+          description="Are you sure you want to logout?"
+          onConfirm={handleLogout}
+          cancelLabel="Cancel"
+          confirmLabel="Logout"
+          onOpenChange={setIsLoggingOut}
+        />
+      )}
     </div>
   );
 }

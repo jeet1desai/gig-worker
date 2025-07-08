@@ -1,104 +1,99 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { Form, Button, Typography, Checkbox } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
-import { signupSchema } from '../../../schemas/fe/auth';
-import TextField from '@/components/TextField';
-import Link from 'next/link';
-import { Images } from '@/lib/images';
 import { useRouter } from 'next/navigation';
-import { PRIVATE_ROUTE, PUBLIC_API_ROUTES, PUBLIC_ROUTE } from '@/constants/app-routes';
-import Image from 'next/image';
 import { signIn } from 'next-auth/react';
-import apiService from '@/services/api';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import Loader from '@/components/Loader';
-import { ApiResponse } from '@/types/fe';
+import { Images } from '@/lib/images';
+import apiService from '@/services/api';
+import { PRIVATE_ROUTE, PUBLIC_API_ROUTES, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { COMMON_ERROR_MESSAGES, SIGNUP_MESSAGES } from '@/constants';
+import { ApiResponse } from '@/types/fe';
+import { Mail, Lock, User } from 'lucide-react';
+import { signupSchema } from '@/schemas/fe/auth';
 
-const { Title } = Typography;
 interface SignupFormValues {
-  firstname: string;
-  lastname: string;
   email: string;
+  first_name: string;
+  last_name: string;
   password: string;
   confirmPassword: string;
   terms: boolean;
 }
 
 export default function SignupForm() {
-  const [form] = Form.useForm();
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const pageRedirection = (path: string) => {
-    router.push(path);
-  };
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+    reset,
+  } = useForm<SignupFormValues>({
+    resolver: yupResolver(signupSchema),
+    defaultValues: {
+      first_name: '',
+      last_name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      terms: false,
+    },
+  });
 
-  const handleSubmit = async (values: SignupFormValues) => {
+  const pageRedirection = (path: string) => router.push(path);
+
+  const onSubmit = async (values: SignupFormValues) => {
     try {
-      setError(null);
       setLoading(true);
-      await signupSchema.validate(values, { abortEarly: false });
-
       const payload = {
-        first_name: values.firstname,
-        last_name: values.lastname,
+        first_name: values.first_name,
+        last_name: values.last_name,
         email: values.email,
         password: values.password,
       };
 
-      const { data } = await apiService.post<ApiResponse>(PUBLIC_API_ROUTES.SIGNUP_API, payload, { withAuth: false });
+      const { data } = await apiService.post<ApiResponse>(PUBLIC_API_ROUTES.SIGNUP_API, payload, {
+        withAuth: false,
+      });
 
       if (data?.error) {
         const apiErrorMessage = data?.error?.message || data?.message || SIGNUP_MESSAGES.failure;
 
         if (data?.error?.fieldErrors) {
-          const fieldErrors = Object.entries(data.error.fieldErrors).map(([name, message]) => ({
-            name,
-            errors: [message as string],
-          }));
-          form.setFields(fieldErrors);
+          Object.entries(data.error.fieldErrors).forEach(([field, message]) => {
+            setError(field as keyof SignupFormValues, {
+              type: 'manual',
+              message: message as string,
+            });
+          });
         }
-        setError(apiErrorMessage);
+
         toast.error(apiErrorMessage);
-        setLoading(false);
         return;
       }
+
       setSuccess(true);
       toast.success(data?.message || SIGNUP_MESSAGES.success);
-      form.resetFields();
-      setLoading(false);
+      reset();
     } catch (err: any) {
+      const apiErrorMessage =
+        err?.response?.data?.error?.message || err?.response?.data?.message || err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE;
+
+      toast.error(apiErrorMessage);
+    } finally {
       setLoading(false);
-      if (err.name === 'ValidationError') {
-        const fieldErrors = err.inner.map((e: any) => ({
-          name: e.path,
-          errors: [e.message],
-        }));
-        form.setFields(fieldErrors);
-      } else if (err.response) {
-        const data: ApiResponse = err.response.data;
-        const apiErrorMessage = data?.error?.message || data?.message || SIGNUP_MESSAGES.failure;
-
-        if (data?.error?.fieldErrors) {
-          const fieldErrors = Object.entries(data.error.fieldErrors).map(([name, message]) => ({
-            name,
-            errors: [message as string],
-          }));
-          form.setFields(fieldErrors);
-        }
-
-        setError(apiErrorMessage);
-        toast.error(apiErrorMessage);
-      } else {
-        const errorMessage = err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE;
-        setError(errorMessage);
-        toast.error(errorMessage);
-      }
     }
   };
 
@@ -106,117 +101,79 @@ export default function SignupForm() {
     signIn('google', { callbackUrl: PRIVATE_ROUTE.DASHBOARD });
   }, []);
 
+  const renderField = (name: keyof SignupFormValues, label: string, type: string, Icon: React.ElementType) => (
+    <div>
+      <Label htmlFor={name} className="mb-1 block text-[#FFF2E3]">
+        {label}
+      </Label>
+      <div className="relative">
+        <Icon className="absolute top-1/2 left-3 -translate-y-1/2 text-[#FFF2E3]" size={18} />
+        <Input
+          id={name}
+          type={type}
+          {...register(name)}
+          className="!border !border-[#444] bg-transparent !pl-10 !text-white !placeholder-white"
+          placeholder={`Enter your ${label.toLowerCase()}`}
+        />
+      </div>
+      {errors[name] && <p className="mt-1 text-sm text-red-500">{errors[name]?.message}</p>}
+    </div>
+  );
+
   return (
     <>
       <Loader isLoading={loading} />
-      <Title level={3} className="mb-6 text-center !text-2xl">
-        <span className="text-[#FFF2E3]">Join Us</span>
-      </Title>
+      <h3 className="mb-6 text-center text-2xl font-semibold text-[#FFF2E3]">Join Us</h3>
+
       <div className="w-full">
         {success ? (
           <div className="flex flex-col items-center justify-center py-10">
             <div className="mb-6 rounded border border-green-700 bg-green-900/40 px-6 py-5 text-center">
               <div className="mb-2 text-lg font-semibold text-[#FFF2E3]">Check your email</div>
-              <div className="text-[#FFF2E3]">Please check your email to verify your email address and complete your registration.</div>
+              <div className="text-[#FFF2E3]">Please verify your email address to complete your registration.</div>
             </div>
           </div>
         ) : (
-          <>
-            <Form
-              form={form}
-              name="signup"
-              onFinish={handleSubmit}
-              layout="vertical"
-              className="w-full"
-              initialValues={{
-                firstname: '',
-                lastname: '',
-                email: '',
-                password: '',
-                confirmPassword: '',
-                terms: false,
-              }}
-              requiredMark={false}
-            >
-              <TextField
-                name="firstname"
-                label="First name"
-                required
-                type="text"
-                placeholder="Enter your firstname"
-                icon={<UserOutlined className="text-[#FFF2E3]" />}
-                className="border border-[#444] bg-transparent text-white placeholder-white"
-                labelClassName="text-[#FFF2E3]"
-              />
-              <TextField
-                name="lastname"
-                label="Last name"
-                required
-                type="text"
-                placeholder="Enter your lastname"
-                icon={<UserOutlined className="text-[#FFF2E3]" />}
-                className="border border-[#444] bg-transparent text-white placeholder-white"
-                labelClassName="text-[#FFF2E3]"
-              />
-              <TextField
-                name="email"
-                label="Email"
-                required
-                type="text"
-                placeholder="Enter your email"
-                icon={<MailOutlined className="text-[#FFF2E3]" />}
-                className="border border-[#444] bg-transparent text-white placeholder-white"
-                labelClassName="text-[#FFF2E3]"
-              />
-              <TextField
-                name="password"
-                label="Password"
-                required
-                type="password"
-                placeholder="Enter your password"
-                icon={<LockOutlined className="!text-[#FFF2E3]" />}
-                className="border border-[#444] bg-transparent text-white placeholder-white"
-                labelClassName="text-[#FFF2E3]"
-              />
-              <TextField
-                name="confirmPassword"
-                label="Confirm Password"
-                required
-                type="password"
-                placeholder="Enter Confirm password"
-                icon={<LockOutlined className="!text-[#FFF2E3]" />}
-                className="border border-[#444] bg-transparent text-white placeholder-white"
-                labelClassName="text-[#FFF2E3]"
-              />
-              <Form.Item name="terms" valuePropName="checked" rules={[{ required: true, message: 'You must accept the terms and conditions' }]}>
-                <Checkbox>
-                  <span className="!text-[#FFF2E3]">
-                    Accept{' '}
-                    <Link href="#" className="font-medium !text-[#FFF2E3] underline">
-                      terms & conditions
-                    </Link>
-                  </span>
-                </Checkbox>
-              </Form.Item>
-              <div className="w-full rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
-                <button type="submit" className="h-full w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937]">
-                  Sign up
-                </button>
-              </div>
-            </Form>
-            <div className="mt-6 mb-3 text-center text-[#fff2e3]">or sign in using</div>
-            <div className="mb-4 flex justify-center">
-              <Image src={Images.googleIcon} alt="Google Icon" width={24} height={24} className="cursor-pointer" onClick={handleGoogleLogin} />
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {renderField('first_name', 'First name', 'text', User)}
+            {renderField('last_name', 'Last name', 'text', User)}
+            {renderField('email', 'Email', 'email', Mail)}
+            {renderField('password', 'Password', 'password', Lock)}
+            {renderField('confirmPassword', 'Confirm Password', 'password', Lock)}
+            <div className="flex items-start space-x-2">
+              <Checkbox id="terms" {...register('terms')} />
+              <Label htmlFor="terms" className="leading-snug text-[#FFF2E3]">
+                Accept{' '}
+                <Link href="#" className="underline">
+                  terms & conditions
+                </Link>
+              </Label>
             </div>
-            <div className="text-center text-[#fff2e3]">
-              Already have an account?{' '}
-              <a className="cursor-pointer font-medium text-[#fff2e3] underline" onClick={() => pageRedirection(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH)}>
-                Log In
-              </a>
+            {errors.terms && <p className="text-sm text-red-500">{errors.terms.message}</p>}
+
+            <div className="rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
+              <button type="submit" className="w-full rounded-lg px-5 py-2 font-bold text-[#383937] hover:opacity-90">
+                Sign up
+              </button>
             </div>
-          </>
+          </form>
         )}
       </div>
+
+      {!success && (
+        <>
+          <div className="mt-6 mb-3 text-center text-[#fff2e3]">or sign in using</div>
+          <div className="mb-4 flex justify-center">
+            <Image src={Images.googleIcon} alt="Google Icon" width={24} height={24} className="cursor-pointer" onClick={handleGoogleLogin} />
+          </div>
+          <div className="text-center text-[#fff2e3]">
+            Already have an account?{' '}
+            <button type="button" onClick={() => pageRedirection(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH)} className="cursor-pointer font-medium underline">
+              Log In
+            </button>
+          </div>
+        </>
+      )}
     </>
   );
 }
