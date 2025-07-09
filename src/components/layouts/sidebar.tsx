@@ -108,7 +108,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
           <button
             onClick={() => setIsLoggingOut(true)}
             className={cn(
-              'group flex items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition-all duration-200 hover:scale-105 hover:bg-red-500/20 hover:text-red-400 w-full',
+              'group flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition-all duration-200 hover:scale-105 hover:bg-red-500/20 hover:text-red-400',
               collapsed ? 'justify-center px-2' : 'space-x-3',
             )}
           >
