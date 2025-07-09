@@ -9,14 +9,24 @@ import { PayPalButtons, FUNDING } from '@paypal/react-paypal-js';
 import type { OnApproveData } from '@paypal/paypal-js';
 
 import PlanCard from '@/components/PlanCard';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
 import apiService from '@/services/api';
 import { PRIVATE_API_ROUTES, PRIVATE_ROUTE } from '@/constants/app-routes';
 import { ApiResponse } from '@/types/shared/api-response';
-import { ISafePlan, ISafeSubscription, ISubscriptionCreateResponse } from '@/types/fe/api-responses';
+import {
+  ISafePlan,
+  ISafeSubscription,
+  ISubscriptionCreateResponse
+} from '@/types/fe/api-responses';
 import { PAYPAL_BUTTON_CONFIG } from '@/constants';
 import { FREE_PLAN_ID } from '@/constants/plans';
 import Loader from '@/components/Loader';
+import CommonModal from '@/components/CommonModal';
 
 interface PricingClientWrapperProps {
   activeSubscription: ISafeSubscription | null;
@@ -29,7 +39,10 @@ type PayPalSubscriptionActions = {
   };
 };
 
-const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrapperProps) => {
+const PricingClientWrapper = ({
+  plans,
+  activeSubscription
+}: PricingClientWrapperProps) => {
   const router = useRouter();
   const { data: session } = useSession();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -38,11 +51,11 @@ const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrappe
 
   const navigateToDashboard = () => {
     router.push(PRIVATE_ROUTE.DASHBOARD);
-  }
+  };
 
   const handleChoosePlan = (plan: ISafePlan) => {
     if (plan.plan_id === FREE_PLAN_ID) {
-      navigateToDashboard()
+      navigateToDashboard();
     } else {
       setSelectedPlan(plan);
       setIsDialogOpen(true);
@@ -69,27 +82,31 @@ const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrappe
     }
   };
 
-  const handleSubscriptionApprove = async (data: OnApproveData): Promise<void> => {
+  const handleSubscriptionApprove = async (
+    data: OnApproveData
+  ): Promise<void> => {
     setIsDialogOpen(false);
     if (!data.subscriptionID) {
       throw new Error('Something went wrong! Try again later');
     }
 
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const payload = {
         subscriptionId: data.subscriptionID
       };
 
-      const response = await apiService.post<ApiResponse<ISubscriptionCreateResponse>>(
-        PRIVATE_API_ROUTES.SUBSCRIPTION_CREATE_API,
-        payload,
-        { withAuth: true }
-      );
+      const response = await apiService.post<
+        ApiResponse<ISubscriptionCreateResponse>
+      >(PRIVATE_API_ROUTES.SUBSCRIPTION_CREATE_API, payload, {
+        withAuth: true
+      });
 
-      toast.success(response.data.message || 'Subscription created successfully!');
+      toast.success(
+        response.data.message || 'Subscription created successfully!'
+      );
       setIsDialogOpen(false);
-      navigateToDashboard()
+      navigateToDashboard();
     } catch (err) {
       const error = err as AxiosError<ApiResponse<null>>;
       const apiErrorMessage =
@@ -98,13 +115,13 @@ const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrappe
         'Something went wrong.';
       toast.error(apiErrorMessage);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
   const handleSubscriptionError = (error: any) => {
     const errorMessage = error.message || '';
-    setIsDialogOpen(false)
+    setIsDialogOpen(false);
     if (errorMessage.includes('popup close')) return;
 
     if (
@@ -117,7 +134,9 @@ const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrappe
       errorMessage.includes('currency_not_supported') ||
       errorMessage.includes('country_not_supported')
     ) {
-      toast.error('This payment option is not supported. Please choose a different one.');
+      toast.error(
+        'This payment option is not supported. Please choose a different one.'
+      );
     } else if (
       errorMessage.includes('INVALID_REQUEST') ||
       errorMessage.includes('system_config_error') ||
@@ -142,37 +161,35 @@ const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrappe
         />
       ))}
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl p-8">
-          <DialogHeader>
-            <DialogTitle className="font-[Outfit] text-2xl font-bold">
-              Subscribe to the {selectedPlan?.name} plan?
-            </DialogTitle>
-            <div className="mt-8">
-              {selectedPlan && (
-                <div className="flex flex-col gap-2">
-                  <PayPalButtons
-                    style={PAYPAL_BUTTON_CONFIG}
-                    fundingSource={FUNDING.PAYPAL}
-                    forceReRender={[selectedPlan.plan_id]}
-                    createSubscription={handleSubscriptionCreate}
-                    onApprove={handleSubscriptionApprove}
-                    onError={handleSubscriptionError}
-                  />
-                  <PayPalButtons
-                    fundingSource={FUNDING.CARD}
-                    style={PAYPAL_BUTTON_CONFIG}
-                    forceReRender={[selectedPlan.plan_id]}
-                    createSubscription={handleSubscriptionCreate}
-                    onApprove={handleSubscriptionApprove}
-                    onError={handleSubscriptionError}
-                  />
-                </div>
-              )}
+      <CommonModal
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        className="py-6"
+        title={`Subscribe to the ${selectedPlan?.name} plan?`}
+      >
+        <div className="mt-8">
+          {selectedPlan && (
+            <div className="flex flex-col gap-3 p-3">
+              <PayPalButtons
+                style={PAYPAL_BUTTON_CONFIG}
+                fundingSource={FUNDING.PAYPAL}
+                forceReRender={[selectedPlan.plan_id]}
+                createSubscription={handleSubscriptionCreate}
+                onApprove={handleSubscriptionApprove}
+                onError={handleSubscriptionError}
+              />
+              <PayPalButtons
+                fundingSource={FUNDING.CARD}
+                style={PAYPAL_BUTTON_CONFIG}
+                forceReRender={[selectedPlan.plan_id]}
+                createSubscription={handleSubscriptionCreate}
+                onApprove={handleSubscriptionApprove}
+                onError={handleSubscriptionError}
+              />
             </div>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+          )}
+        </div>
+      </CommonModal>
     </div>
   );
 };

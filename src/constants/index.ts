@@ -18,7 +18,7 @@ export const PAYPAL_CONFIG_OPTIONS = {
 };
 export const PAYPAL_BUTTON_CONFIG: PayPalButtonStyle = {
   layout: 'vertical',
-  color: 'white',
+  color: 'black',
   shape: 'pill',
   label: 'subscribe'
 };
