@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { LogOut, ChevronLeft, LucideProps } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ForwardRefExoticComponent, RefAttributes, useCallback, useEffect, useState } from 'react';
 import CommonDeleteDialog from '../CommonDeleteDialog';
@@ -36,7 +37,8 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
     clearStorage();
     router.push(PUBLIC_ROUTE.HOME);
     setIsLoading(false);
-  }, []);
+    router.refresh();
+  }, [router]);
 
   const isPathMatch = (itemUrl: string) => {
     return pathname === itemUrl || pathname.startsWith(`${itemUrl}/`);
@@ -82,7 +84,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
 
         <nav className="flex-1 space-y-2 px-3 py-6">
           {navigation_menu.map((item) => (
-            <a
+            <Link
               key={item.name}
               href={item.href}
               className={cn(
@@ -98,21 +100,21 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
               {isPathMatch(item.href) && !collapsed && (
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-xl"></div>
               )}
-            </a>
+            </Link>
           ))}
         </nav>
 
         <div className="border-t border-slate-700/50 p-3">
-          <a
+          <button
             onClick={() => setIsLoggingOut(true)}
             className={cn(
-              'group flex items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition-all duration-200 hover:scale-105 hover:bg-red-500/20 hover:text-red-400',
+              'group flex items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition-all duration-200 hover:scale-105 hover:bg-red-500/20 hover:text-red-400 w-full',
               collapsed ? 'justify-center px-2' : 'space-x-3',
             )}
           >
             <LogOut className="h-5 w-5 flex-shrink-0 transition-transform group-hover:rotate-12" />
             {!collapsed && <span>Log Out</span>}
-          </a>
+          </button>
         </div>
       </div>
       {isLoggingOut && (
