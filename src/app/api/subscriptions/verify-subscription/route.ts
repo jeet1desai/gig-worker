@@ -35,6 +35,8 @@ export async function GET(req: Request) {
         amount: parseFloat(price),
         status: SUBSCRIPTION_STATUS.active,
         subscription_expires_at,
+        subscription_id: '',
+        plan_id: 1,
       },
     });
 
