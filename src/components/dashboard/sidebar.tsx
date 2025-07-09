@@ -44,6 +44,10 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
     return pathname === itemUrl || pathname.startsWith(`${itemUrl}/`);
   };
 
+  const redirectToHome = useCallback(() => {
+    router.push(PUBLIC_ROUTE.HOME);
+  }, []);
+
   useEffect(() => {
     if (isMobile) {
       onToggle(true);
@@ -59,7 +63,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
     >
       <div className="flex h-full w-full flex-col">
         <div className="relative flex items-center justify-between border-b border-slate-700/50 p-4">
-          <div className={cn('flex items-center space-x-3', collapsed && 'justify-center')}>
+          <div className={cn('flex cursor-pointer items-center space-x-3', collapsed && 'justify-center')} onClick={redirectToHome}>
             <div className="flex h-10 w-10 items-center justify-center rounded-xl font-bold text-white shadow-lg">
               <div className="relative flex aspect-[200/113] w-[200px] items-center justify-center">
                 <Image src={Images.logo} alt="logo" fill className="object-contain object-center" />
@@ -108,7 +112,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
           <button
             onClick={() => setIsLoggingOut(true)}
             className={cn(
-              'group flex items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition-all duration-200 hover:scale-105 hover:bg-red-500/20 hover:text-red-400 w-full',
+              'group flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition-all duration-200 hover:scale-105 hover:bg-red-500/20 hover:text-red-400',
               collapsed ? 'justify-center px-2' : 'space-x-3',
             )}
           >

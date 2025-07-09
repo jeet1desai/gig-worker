@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { PrismaClient, SUBSCRIPTION_TYPE } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 

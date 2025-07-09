@@ -1,5 +1,5 @@
 import lodash from 'lodash';
-import { SUBSCRIPTION_STATUS } from '@prisma/client';
+import { SUBSCRIPTION_STATUS, SUBSCRIPTION_TYPE } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 import { getServerSession } from 'next-auth';
 
@@ -67,6 +67,7 @@ export const createPlan = async (
       description: paypal_plain_details.description || '',
       status: paypal_plain_details.status,
       price: new Decimal(plan_details.price),
+      type: plan_details.subscriptionType as SUBSCRIPTION_TYPE,
       currency: priceInfo.currency_code,
       interval: billing_cycles.frequency.interval_unit || 'MONTH',
       interval_count: billing_cycles.frequency.interval_count || 1,
