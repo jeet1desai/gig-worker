@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { PencilIcon, PlusIcon, XIcon } from "lucide-react"
 import { useState } from "react"
 import CommonModal from "@/components/CommonModal"
+import { HammerSvg, BulbSvg, DartSvg } from "@/components/icons"
 
 export default function EditProfileTagsModal() {
   const [open, setOpen] = useState(false)
@@ -68,7 +69,7 @@ export default function EditProfileTagsModal() {
 
         <div className="space-y-2 mt-4">
           <label className="text-sm font-semibold text-white flex items-center gap-1">
-            🛠️ Skills<span className="text-red-500">*</span>
+            <HammerSvg/> Skills
           </label>
           <div className="flex items-center gap-2">
             <Input
@@ -104,7 +105,7 @@ export default function EditProfileTagsModal() {
         </div>
 
         <div className="space-y-2 mt-6">
-          <label className="text-sm font-semibold text-white">🎯 Extracurricular</label>
+          <label className="text-sm font-semibold text-white flex items-center gap-1"><DartSvg/> Extracurricular</label>
           <div className="flex items-center gap-2">
             <Input
               value={extraInput}
@@ -139,7 +140,7 @@ export default function EditProfileTagsModal() {
         </div>
 
         <div className="space-y-2 mt-6">
-          <label className="text-sm font-semibold text-white">💡 Interests</label>
+          <label className="text-sm font-semibold text-white flex items-center gap-1"><BulbSvg/> Interests</label>
           <div className="flex items-center gap-2">
             <Input
               value={interestInput}

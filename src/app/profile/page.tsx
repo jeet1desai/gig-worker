@@ -10,6 +10,7 @@ import EditProfileModal from "./components/EditProfileModal";
 import EditProfileTagsModal from "./components/EditProfileTagModal";
 import EditEducationModal from "./components/EditEducationModal";
 import EditProfilePhotoModal from "./components/EditProfilePhotoModal";
+import { BulbSvg, HammerSvg, DartSvg } from "@/components/icons";
 
 export default function UserProfilePage() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -114,7 +115,7 @@ export default function UserProfilePage() {
                   <div className="bg-black rounded-xl px-4 py-5 space-y-6">
                     <div>
                       <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-gray-300">🛠️ Skills</h3>
+                        <h3 className="text-sm font-semibold text-gray-300 flex items-center gap-1.5"><HammerSvg/> Skills</h3>
                         <EditProfileTagsModal />
                       </div>
                       <div className="flex flex-wrap gap-2 mt-2">
@@ -131,7 +132,7 @@ export default function UserProfilePage() {
 
                     <div>
                       <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-gray-300">🎯 Extracurricular</h3>
+                        <h3 className="text-sm font-semibold text-gray-300 flex items-center gap-1.5"><DartSvg/> Extracurricular</h3>
                       </div>
                       <div className="flex flex-wrap gap-4 text-sm mt-2 underline text-white">
                         {extracurricular.map((item, index) => (
@@ -142,7 +143,7 @@ export default function UserProfilePage() {
 
                     <div>
                       <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-gray-300">💡 Interests</h3>
+                        <h3 className="text-sm font-semibold text-gray-300 flex items-center gap-1.5"><BulbSvg/> Interests</h3>
                       </div>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {interests.map((item, idx) => (
