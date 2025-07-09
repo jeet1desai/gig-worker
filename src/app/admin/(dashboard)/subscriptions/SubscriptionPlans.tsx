@@ -128,9 +128,7 @@ const SubscriptionPlans = () => {
   }, [plans]);
 
   useEffect(() => {
-    if (plans.length) {
-      getAvailablePlanTypeDetails();
-    }
+    getAvailablePlanTypeDetails();
   }, [plans, getAvailablePlanTypeDetails]);
 
   return (
