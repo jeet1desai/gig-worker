@@ -104,7 +104,7 @@ export default function SignupForm() {
 
   const renderField = (name: keyof SignupFormValues, label: string, type: string, Icon: React.ElementType) => (
     <div>
-      <Label htmlFor={name} className="mb-1 block text-[#FFF2E3]">
+      <Label htmlFor={name} className="mb-1 block text-base text-[#FFF2E3]">
         {label}
       </Label>
       <div className="relative">
@@ -113,7 +113,7 @@ export default function SignupForm() {
           id={name}
           type={type}
           {...register(name)}
-          className="!border !border-[#444] bg-transparent !pl-10 !text-white !placeholder-white"
+          className="!border !border-[#444] bg-transparent !pl-10 !text-white !placeholder-white placeholder:text-base"
           placeholder={`Enter your ${label.toLowerCase()}`}
         />
       </div>

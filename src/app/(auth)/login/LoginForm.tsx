@@ -79,14 +79,14 @@ export default function LoginForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <Label className="text-[#FFF2E3]">Email</Label>
+                <Label className="text-base text-[#FFF2E3]">Email</Label>
                 <FormControl>
                   <div className="relative">
                     <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#FFF2E3]" />
                     <Input
                       {...field}
                       placeholder="Enter your email"
-                      className="!border !border-[#444] bg-transparent pl-10 !text-white !placeholder-white"
+                      className="!border !border-[#444] bg-transparent pl-10 !text-white !placeholder-white placeholder:text-base"
                     />
                   </div>
                 </FormControl>
@@ -100,7 +100,7 @@ export default function LoginForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <Label className="text-[#FFF2E3]">Password</Label>
+                <Label className="text-base text-[#FFF2E3]">Password</Label>
                 <FormControl>
                   <div className="relative">
                     <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#FFF2E3]" />
@@ -108,7 +108,7 @@ export default function LoginForm() {
                       {...field}
                       placeholder="Enter your password"
                       type="password"
-                      className="!border !border-[#444] bg-transparent pl-10 !text-white !placeholder-white"
+                      className="!border !border-[#444] bg-transparent pl-10 !text-white !placeholder-white placeholder:text-base"
                     />
                   </div>
                 </FormControl>
