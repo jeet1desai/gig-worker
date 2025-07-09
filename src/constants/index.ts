@@ -1,4 +1,4 @@
-import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon } from 'lucide-react';
+import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard } from 'lucide-react';
 import { PRIVATE_ROUTE } from './app-routes';
 
 export const constant = 'CONST';
@@ -12,6 +12,11 @@ export const TOKEN = 'token';
 export const DASHBOARD_NAVIGATION_MENU = [{ name: 'Dashboard', icon: BarChart3, href: PRIVATE_ROUTE.DASHBOARD }];
 
 export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
+  {
+    name: 'Tier System',
+    icon: LayoutDashboard,
+    href: PRIVATE_ROUTE.ADMIN_TIER_SYSTEM_DASHBOARD_PATH,
+  },
   { name: 'Users', icon: Users2Icon, href: PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH },
   { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH },
   {
@@ -50,6 +55,81 @@ export const SUBSCRIPTION_PLANS_LIST = [
     features: ['Includes all Basic Plan features', 'Unlimited gig postings and bids', 'Eligible for Top Rated Seller badge'],
   },
 ];
+
+export const GIGS_LIST = [
+  {
+    id: 1,
+    title: 'Calculus Tutoring Session',
+    provider: 'Sarah Chen',
+    rating: 3.9,
+    price: 45,
+    status: 'Active',
+    completions: 28,
+    earnings: 1260,
+  },
+  {
+    id: 2,
+    title: 'Career Counseling',
+    provider: 'Mike Johnson',
+    rating: 4.7,
+    price: 35,
+    status: 'Active',
+    completions: 15,
+    earnings: 525,
+  },
+  {
+    id: 3,
+    title: 'Laundry Service',
+    provider: 'Emma Davis',
+    rating: 2.9,
+    price: 12,
+    status: 'Paused',
+    completions: 12,
+    earnings: 204,
+  },
+];
+
+export const TIER_DATA_LIST = {
+  basic: {
+    title: 'Basic Tier',
+    description: 'Simple tasks that require minimal skill but provide essential help to students.',
+    examples: 'Laundry, food pickup, move-in/move-out help, package delivery',
+    stats: {
+      totalGigs: 245,
+      avgRating: 4.6,
+      totalEarnings: 12450,
+      activeProviders: 78,
+    },
+    color: 'bg-emerald-900/30 text-emerald-300 border-emerald-700',
+    bgGradient: 'from-emerald-950/50 to-green-950/30 border-l-emerald-500',
+  },
+  advanced: {
+    title: 'Advanced Tier',
+    description: 'Knowledge-based services requiring experience and good judgment.',
+    examples: 'Academic advice, major selection guidance, career counseling, campus navigation',
+    stats: {
+      totalGigs: 189,
+      avgRating: 4.8,
+      totalEarnings: 28750,
+      activeProviders: 56,
+    },
+    color: 'bg-blue-900/30 text-blue-300 border-blue-700',
+    bgGradient: 'from-blue-950/50 to-indigo-950/30 border-l-blue-500',
+  },
+  expert: {
+    title: 'Expert Tier',
+    description: 'High-skill, specialized services requiring expertise and proven track record.',
+    examples: 'Tutoring, homework help, interview preparation, grad school applications, schedule optimization',
+    stats: {
+      totalGigs: 156,
+      avgRating: 4.9,
+      totalEarnings: 47890,
+      activeProviders: 34,
+    },
+    color: 'bg-purple-900/30 text-purple-300 border-purple-700',
+    bgGradient: 'from-purple-950/50 to-violet-950/30 border-l-purple-500',
+  },
+};
 
 export const DEFAULT_PAGINATION = {
   page: 1,

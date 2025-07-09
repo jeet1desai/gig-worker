@@ -26,6 +26,7 @@ export enum PRIVATE_ROUTE {
   ADMIN_USERS_DASHBOARD_PATH = '/admin/users',
   ADMIN_GIGS_DASHBOARD_PATH = '/admin/gigs',
   ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH = '/admin/subscriptions',
+  ADMIN_TIER_SYSTEM_DASHBOARD_PATH = '/admin/tier-system',
 }
 
 export enum PUBLIC_API_ROUTES {
