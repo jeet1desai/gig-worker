@@ -108,3 +108,5 @@ export const COMMON_ERROR_MESSAGES = {
   INVALID_REQUEST_PAYLOAD: 'Invalid request payload',
   VALIDATION_ERROR: 'Validation error occurred. Please check your input.',
 };
+
+export const SUBSCRIPTION_PLAN_TYPES = ['free', 'basic', 'pro'];
