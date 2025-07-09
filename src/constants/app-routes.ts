@@ -21,6 +21,7 @@ export enum PUBLIC_ROUTE {
 
 export enum PRIVATE_ROUTE {
   DASHBOARD = '/dashboard',
+  GIGS = '/gigs',
   USER_PROFILE = '/profile',
   ADMIN_DASHBOARD_PATH = '/admin',
   ADMIN_USERS_DASHBOARD_PATH = '/admin/users',

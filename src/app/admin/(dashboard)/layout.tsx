@@ -1,6 +1,6 @@
 'use client';
 import AdminProtectedRoute from '@/components/routing/AdminProtectedRoute';
-import { Sidebar } from '@/components/dashboard/sidebar';
+import { Sidebar } from '@/components/layouts/sidebar';
 import { ADMIN_DASHBOARD_NAVIGATION_MENU } from '@/constants';
 import { useState } from 'react';
 import { AdminHeader } from '@/components/admin/AdminHeader';
