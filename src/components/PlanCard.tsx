@@ -19,15 +19,17 @@ const intervalMap: Record<string, string> = {
 
 interface Props {
   plan: ISafePlan;
+  activePlanId?: number
   onChoosePlan: () => void;
 }
 
-const PlanCard: FC<Props> = ({ plan, onChoosePlan }) => {
+const PlanCard: FC<Props> = ({ plan, activePlanId, onChoosePlan }) => {
   const { name, price, currency, description, benefits, interval } = plan;
   const iconSrc = iconMap[name];
+  const isActivePlan = activePlanId === plan.id;
 
   return (
-    <div className="flex max-w-[380px] flex-col items-start justify-start gap-11 overflow-hidden rounded-[26px] bg-[#0D0C0C] p-8 shadow-[0px_26px_40px_0px_rgba(188,202,255,0.13)]">
+    <div className="flex min-h-[583px] w-full h-full max-w-[380px] flex-col items-start justify-start gap-11 overflow-hidden rounded-[26px] bg-[#0D0C0C] p-8 shadow-[0px_26px_40px_0px_rgba(188,202,255,0.13)]">
       <div className="mb-10 flex flex-1 flex-col items-start justify-start gap-3 self-stretch">
         <div className="mb-2 flex flex-col items-start justify-start gap-3 self-stretch">
           <div className="mb-2 flex h-[40px] w-[40px] items-center justify-center overflow-hidden rounded-[14px] bg-[#1E1E1E]">
@@ -77,11 +79,12 @@ const PlanCard: FC<Props> = ({ plan, onChoosePlan }) => {
       </div>
       <div className="flex w-full items-center justify-center">
         <Button
-          variant="secondary"
-          className="text-md h-12 w-full cursor-pointer rounded-xl bg-[#f1efff33] font-['Outfit'] leading-10 font-normal text-[#FFF2E3] hover:bg-[#f1efff33] hover:opacity-80"
+          variant={isActivePlan ? 'default' : 'secondary'}
+          disabled={isActivePlan}
+          className="text-md h-12 w-full cursor-pointer disabled:cursor-default rounded-xl font-['Outfit'] leading-10 font-normal"
           onClick={onChoosePlan}
         >
-          Choose plan
+          {isActivePlan ? 'Your current plan' : 'Choose plan'}
         </Button>
       </div>
     </div>

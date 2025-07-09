@@ -1,8 +1,8 @@
 import PricingClientWrapper from '@/app/plans/components/PricingClientWrapper';
-import PlanCard from '@/components/PlanCard';
-import { getPlans } from '@/lib/server/subscriptionPlans';
+import { getCurrentUserActiveSubscription, getPlans } from '@/lib/server/subscriptionPlans';
 
 export default async function PricingPage() {
+  const subscription = await getCurrentUserActiveSubscription();
   const plans = await getPlans();
 
   return (
@@ -18,7 +18,7 @@ export default async function PricingPage() {
           </p>
         </div>
 
-        <PricingClientWrapper plans={plans} />
+        <PricingClientWrapper plans={plans} activeSubscription={subscription} />
       </div>
     </div>
   );

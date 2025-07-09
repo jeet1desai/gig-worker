@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
-import { PayPalButtons, FUNDING, usePayPalScriptReducer } from '@paypal/react-paypal-js';
+import { PayPalButtons, FUNDING } from '@paypal/react-paypal-js';
 import type { OnApproveData } from '@paypal/paypal-js';
 
 import PlanCard from '@/components/PlanCard';
@@ -13,13 +13,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import apiService from '@/services/api';
 import { PRIVATE_API_ROUTES, PRIVATE_ROUTE } from '@/constants/app-routes';
 import { ApiResponse } from '@/types/shared/api-response';
-import { ISafePlan, ISubscriptionCreateResponse } from '@/types/fe/api-responses';
+import { ISafePlan, ISafeSubscription, ISubscriptionCreateResponse } from '@/types/fe/api-responses';
 import { PAYPAL_BUTTON_CONFIG } from '@/constants';
-import { publicEnv } from '@/lib/config/publicEnv';
 import { FREE_PLAN_ID } from '@/constants/plans';
 import Loader from '@/components/Loader';
 
 interface PricingClientWrapperProps {
+  activeSubscription: ISafeSubscription | null;
   plans: ISafePlan[];
 }
 
@@ -29,16 +29,20 @@ type PayPalSubscriptionActions = {
   };
 };
 
-const PricingClientWrapper = ({ plans }: PricingClientWrapperProps) => {
+const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrapperProps) => {
   const router = useRouter();
   const { data: session } = useSession();
-  const [{ isPending }] = usePayPalScriptReducer();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<ISafePlan | null>(null);
+
+  const navigateToDashboard = () => {
+    router.push(PRIVATE_ROUTE.DASHBOARD);
+  }
 
   const handleChoosePlan = (plan: ISafePlan) => {
     if (plan.plan_id === FREE_PLAN_ID) {
-      router.push(PRIVATE_ROUTE.DASHBOARD);
+      navigateToDashboard()
     } else {
       setSelectedPlan(plan);
       setIsDialogOpen(true);
@@ -66,14 +70,15 @@ const PricingClientWrapper = ({ plans }: PricingClientWrapperProps) => {
   };
 
   const handleSubscriptionApprove = async (data: OnApproveData): Promise<void> => {
+    setIsDialogOpen(false);
     if (!data.subscriptionID) {
-      throw new Error('Missing subscription ID in PayPal response.');
+      throw new Error('Something went wrong! Try again later');
     }
 
     try {
+      setIsLoading(true)
       const payload = {
-        subscriptionId: data.subscriptionID,
-        planId: selectedPlan?.plan_id
+        subscriptionId: data.subscriptionID
       };
 
       const response = await apiService.post<ApiResponse<ISubscriptionCreateResponse>>(
@@ -84,6 +89,7 @@ const PricingClientWrapper = ({ plans }: PricingClientWrapperProps) => {
 
       toast.success(response.data.message || 'Subscription created successfully!');
       setIsDialogOpen(false);
+      navigateToDashboard()
     } catch (err) {
       const error = err as AxiosError<ApiResponse<null>>;
       const apiErrorMessage =
@@ -91,11 +97,14 @@ const PricingClientWrapper = ({ plans }: PricingClientWrapperProps) => {
         error?.message ||
         'Something went wrong.';
       toast.error(apiErrorMessage);
+    } finally {
+      setIsLoading(false)
     }
   };
 
   const handleSubscriptionError = (error: any) => {
     const errorMessage = error.message || '';
+    setIsDialogOpen(false)
     if (errorMessage.includes('popup close')) return;
 
     if (
@@ -123,11 +132,12 @@ const PricingClientWrapper = ({ plans }: PricingClientWrapperProps) => {
 
   return (
     <div className="flex w-full flex-wrap justify-center gap-8">
-      <Loader isLoading={isPending} />
+      <Loader isLoading={isLoading} />
       {plans.map((plan) => (
         <PlanCard
           key={plan.plan_id}
           plan={plan}
+          activePlanId={activeSubscription?.plan_id || undefined}
           onChoosePlan={() => handleChoosePlan(plan)}
         />
       ))}
@@ -144,7 +154,7 @@ const PricingClientWrapper = ({ plans }: PricingClientWrapperProps) => {
                   <PayPalButtons
                     style={PAYPAL_BUTTON_CONFIG}
                     fundingSource={FUNDING.PAYPAL}
-                    // forceReRender={[selectedPlan.plan_id]}
+                    forceReRender={[selectedPlan.plan_id]}
                     createSubscription={handleSubscriptionCreate}
                     onApprove={handleSubscriptionApprove}
                     onError={handleSubscriptionError}
@@ -152,7 +162,7 @@ const PricingClientWrapper = ({ plans }: PricingClientWrapperProps) => {
                   <PayPalButtons
                     fundingSource={FUNDING.CARD}
                     style={PAYPAL_BUTTON_CONFIG}
-                    // forceReRender={[selectedPlan.plan_id]}
+                    forceReRender={[selectedPlan.plan_id]}
                     createSubscription={handleSubscriptionCreate}
                     onApprove={handleSubscriptionApprove}
                     onError={handleSubscriptionError}

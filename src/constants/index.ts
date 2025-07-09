@@ -12,7 +12,6 @@ export const APPLICATION_JSON = 'application/json';
 export const PAYPAL_CONFIG_OPTIONS = {
   vault: true,
   currency: 'USD',
-  debug: true,
   intent: 'subscription',
   enableFunding: ['paypal', 'card'],
   clientId: publicEnv.NEXT_PUBLIC_PAYPAL_CLIENT_ID

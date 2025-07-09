@@ -1,7 +1,9 @@
-import { SuperjsonSafe } from '@/lib/utils/safeJson';
-import { Plan } from '@prisma/client';
+import { Plan, Subscription } from '@prisma/client';
 
-export type ISafePlan = SuperjsonSafe<Plan>;
+import { JsonSafe } from '@/lib/utils/safeJson';
+
+export type ISafePlan = JsonSafe<Plan>;
+export type ISafeSubscription = JsonSafe<Subscription>;
 
 export interface ISubscriptionCreateResponse {
   subscriptionId: string;
