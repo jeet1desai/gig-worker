@@ -94,7 +94,7 @@ export default function VerifyOtpForm() {
             render={({ field }) => (
               <FormItem>
                 <div className="mb-1 flex items-center justify-between">
-                  <FormLabel className="font-medium text-[#FFF2E3]">
+                  <FormLabel className="text-base !text-[#FFF2E3]">
                     OTP <span className="text-red-500">*</span>
                   </FormLabel>
                   {canResend ? (
@@ -112,7 +112,7 @@ export default function VerifyOtpForm() {
                       {...field}
                       placeholder="Enter your OTP"
                       type="text"
-                      className="!border !border-[#444] bg-transparent pl-10 !text-white !placeholder-white"
+                      className="!border !border-[#444] bg-transparent pl-10 !text-white !placeholder-white placeholder:text-base"
                       autoComplete="one-time-code"
                     />
                   </div>
