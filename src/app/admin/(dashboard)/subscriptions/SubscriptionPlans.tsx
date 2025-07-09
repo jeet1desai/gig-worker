@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Check, Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -15,7 +15,7 @@ import CommonDeleteDialog from '@/components/CommonDeleteDialog';
 
 const SubscriptionPlans = () => {
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-
+  const [availablePlanTypes, setAvailablePlanTypes] = useState<string[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
@@ -122,6 +122,17 @@ const SubscriptionPlans = () => {
     getSubscriptionPlans();
   }, []);
 
+  const getAvailablePlanTypeDetails = useCallback(() => {
+    const available_type = plans.map((plan) => plan.type);
+    setAvailablePlanTypes(available_type);
+  }, [plans]);
+
+  useEffect(() => {
+    if (plans.length) {
+      getAvailablePlanTypeDetails();
+    }
+  }, [plans, getAvailablePlanTypeDetails]);
+
   return (
     <div className="min-h-screen bg-[#020d1a]">
       <Loader isLoading={isLoading} />
@@ -158,6 +169,7 @@ const SubscriptionPlans = () => {
               <CardHeader>
                 <div className="space-y-2">
                   <h3 className="text-xl font-bold text-white">{plan.name}</h3>
+                  <h6 className="text-xs font-medium text-white">{`Plan Type: ${plan.type.charAt(0).toUpperCase() + plan.type.slice(1)}`}</h6>
                   <h6 className="text-sm font-medium text-white">{plan.description}</h6>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-bold text-white">{`$ ${Number(plan.price).toFixed(1)} `}</span>
@@ -207,11 +219,20 @@ const SubscriptionPlans = () => {
         </div>
       </div>
 
-      {isAddModalOpen && <AddPlanModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onSave={handleSaveNewPlan} mode="add" />}
+      {isAddModalOpen && (
+        <AddPlanModal
+          isOpen={isAddModalOpen}
+          availablePlanTypes={availablePlanTypes}
+          onClose={() => setIsAddModalOpen(false)}
+          onSave={handleSaveNewPlan}
+          mode="add"
+        />
+      )}
 
       {isUpdateModalOpen && (
         <AddPlanModal
           isOpen={isUpdateModalOpen}
+          availablePlanTypes={availablePlanTypes}
           onClose={() => setIsUpdateModalOpen(false)}
           onSave={handleSaveUpdatedPlan}
           initialData={selectedPlan}

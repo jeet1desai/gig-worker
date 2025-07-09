@@ -4,6 +4,7 @@ import { Decimal } from '@prisma/client/runtime/library';
 import { safeJson } from '@/lib/utils/safeJson';
 import lodash from 'lodash';
 import { getPlanDetailsById } from '../paypal/plans';
+import { SUBSCRIPTION_TYPE } from '@prisma/client';
 
 export const getPlans = async () => {
   const plans = await prisma.plan.findMany({
@@ -30,6 +31,7 @@ export const createPlan = async (plan_details: SubscriptionPlanPayload, paypal_p
       description: paypal_plain_details.description || '',
       status: paypal_plain_details.status,
       price: new Decimal(plan_details.price),
+      type: plan_details.subscriptionType as SUBSCRIPTION_TYPE,
       currency: priceInfo.currency_code,
       interval: billing_cycles.frequency.interval_unit || 'MONTH',
       interval_count: billing_cycles.frequency.interval_count || 1,

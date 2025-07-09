@@ -26,6 +26,7 @@ export const signupSchema = Yup.object().shape({
 export const subscriptionsPlanValidationSchema = Yup.object().shape({
   name: Yup.string().trim().required('Name is required'),
   description: Yup.string().trim().required('Description is required'),
+  subscriptionType: Yup.string().oneOf(['free', 'basic', 'pro'], 'Invalid subscription type').required('Subscription type is required'),
   price: Yup.mixed()
     .required('Price is required')
     .test('is-valid-price', 'Must be a number >= 0', (val) => {

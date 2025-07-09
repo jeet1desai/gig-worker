@@ -5,19 +5,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X } from 'lucide-react';
 import { SubscriptionPlan, SubscriptionPlanPayload } from '@/types/fe';
 import { subscriptionsPlanValidationSchema } from '@/schemas/fe/auth';
 
 interface AddPlanModalProps {
   isOpen: boolean;
+  availablePlanTypes: string[];
   onClose: () => void;
   onSave: (planData: SubscriptionPlanPayload) => void;
   initialData?: SubscriptionPlan | null;
   mode?: 'add' | 'edit';
 }
 
-const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add' }: AddPlanModalProps) => {
+const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add', availablePlanTypes = [] }: AddPlanModalProps) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -25,6 +27,7 @@ const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add' }: Ad
     price: '0',
     maxGigs: '0',
     maxBids: '0',
+    subscriptionType: '',
   });
 
   const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -41,6 +44,7 @@ const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add' }: Ad
           price: initialData.price?.toString() || '0',
           maxGigs: initialData.maxGigs === -1 ? 'unlimited' : initialData.maxGigs?.toString() || '0',
           maxBids: initialData.maxBids === -1 ? 'unlimited' : initialData.maxBids?.toString() || '0',
+          subscriptionType: initialData.type || '',
         });
       } else {
         setFormData({
@@ -50,6 +54,7 @@ const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add' }: Ad
           maxGigs: '0',
           maxBids: '0',
           benefits: [''],
+          subscriptionType: '',
         });
       }
       setErrors({});
@@ -139,6 +144,7 @@ const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add' }: Ad
         price: formData.price,
         maxGigs: parseUnlimited(formData.maxGigs),
         maxBids: parseUnlimited(formData.maxBids),
+        subscriptionType: formData.subscriptionType,
       });
       handleCancel();
     }
@@ -152,6 +158,7 @@ const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add' }: Ad
       maxGigs: '0',
       maxBids: '0',
       benefits: [''],
+      subscriptionType: '',
     });
     setErrors({});
     onClose();
@@ -160,7 +167,7 @@ const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add' }: Ad
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="border-slate-700 bg-slate-800 text-white sm:max-w-md"
+        className="no-scrollbar max-h-[90vh] overflow-y-auto border-slate-700 bg-slate-800 text-white sm:max-w-md"
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
@@ -169,6 +176,32 @@ const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add' }: Ad
         </DialogHeader>
 
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Subscription Type</Label>
+            <Select
+              disabled={mode === 'edit'}
+              value={formData.subscriptionType}
+              onValueChange={(value) => handleInputChange('subscriptionType', value)}
+            >
+              <SelectTrigger className={`w-full border-slate-600 bg-slate-700 text-white ${errors.subscriptionType ? 'border-red-500' : ''}`}>
+                <SelectValue placeholder="Select subscription type" />
+              </SelectTrigger>
+              <SelectContent className="border-slate-600 bg-slate-700 text-white">
+                {['free', 'basic', 'pro'].map((option) => (
+                  <SelectItem key={option} value={option} disabled={availablePlanTypes.includes(option)} className="text-white hover:bg-slate-600">
+                    {option.charAt(0).toUpperCase() + option.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.subscriptionType && <p className="text-sm text-red-400">Subscription type is required</p>}
+            {mode === 'edit' && (
+              <p className="mt-1 text-sm text-red-400">
+                Subscription type cannot be changed for an existing plan. Create a new plan for updated subscription type.
+              </p>
+            )}
+          </div>
+
           <div className="space-y-2">
             <Label>Name</Label>
             <Input
