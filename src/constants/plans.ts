@@ -9,6 +9,7 @@ export const planBenefits: Record<string, string[]> = {
 export const FREE_PLAN = {
   plan_id: 'FREE-PLAN',
   name: 'Free',
+  type: 'free',
   description: 'Get started with essential features and explore our platform at no cost.',
   product_id: 'internal',
   price: new Decimal(0),
