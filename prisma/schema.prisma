@@ -46,11 +46,11 @@ model User {
 model UserProfile {
   id              BigInt   @id @default(autoincrement())
   user_id         BigInt   @unique
-  interests       String[]
-  extracurricular String[]
-  certifications  String[]
-  skills          String[]
-  educations      String[]
+  interests       Json?
+  extracurricular Json?
+  certifications  Json?
+  skills          Json?
+  educations      Json?
   badges          Json?
   bio             String?
   banner_url      String?
@@ -104,27 +104,28 @@ model CMS {
 }
 
 model Plan {
-  id                  Int      @id @default(autoincrement())
-  plan_id             String   @unique
+  id                  Int               @id @default(autoincrement())
+  plan_id             String            @unique
   product_id          String
+  type                SUBSCRIPTION_TYPE @default(free)
   name                String
   description         String?
   status              String
-  price               Decimal  @db.Decimal(8, 2)
+  price               Decimal           @db.Decimal(8, 2)
   currency            String
   interval            String
   interval_count      Int
-  billing_cycle_count Int      @default(0)
+  billing_cycle_count Int               @default(0)
   usage_type          String?
-  setup_fee           Decimal? @db.Decimal(8, 2)
-  tax_percentage      Decimal? @db.Decimal(5, 2)
+  setup_fee           Decimal?          @db.Decimal(8, 2)
+  tax_percentage      Decimal?          @db.Decimal(5, 2)
   merchant_id         String
-  benefits            String[] @default([])
-  isPublic            Boolean  @default(true)
-  maxGigs             Int      @default(0)
-  maxBids             Int      @default(0)
-  createdAt           DateTime @default(now())
-  lastSyncedAt        DateTime @updatedAt
+  benefits            String[]          @default([])
+  isPublic            Boolean           @default(true)
+  maxGigs             Int               @default(0)
+  maxBids             Int               @default(0)
+  createdAt           DateTime          @default(now())
+  lastSyncedAt        DateTime          @updatedAt
 
   // Relations
   Subscription Subscription[]

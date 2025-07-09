@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Plan" ADD COLUMN     "type" "SUBSCRIPTION_TYPE" NOT NULL DEFAULT 'free';
