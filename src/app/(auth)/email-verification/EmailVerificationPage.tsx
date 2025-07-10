@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { toast } from 'react-toastify';
+import { toast } from '@/lib/toast';
 import { PUBLIC_ROUTE, PUBLIC_API_ROUTES } from '@/constants/app-routes';
 import { MailCheck } from 'lucide-react';
 import { COMMON_ERROR_MESSAGES, EMAIL_VERIFICATION_MESSAGES, TOKEN, VERIFICATION_MESSAGES } from '@/constants';

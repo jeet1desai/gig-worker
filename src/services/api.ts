@@ -2,7 +2,7 @@ import { BASE_API_URL } from '@/constants';
 import { AUTH_TOKEN_KEY } from '@/constants/local-storage-keys';
 import { getStorage } from '@/lib/local-storage';
 import axios, { AxiosHeaders, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
-import { toast } from 'react-toastify';
+import { toast } from '@/lib/toast';
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   withAuth?: boolean;
 }

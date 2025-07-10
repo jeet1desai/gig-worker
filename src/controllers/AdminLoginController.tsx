@@ -1,4 +1,4 @@
-import { toast } from 'react-toastify';
+import { toast } from '@/lib/toast';
 import { loginSchema } from '@/schemas/auth';
 import { setStorage } from '@/lib/local-storage';
 import { ADMIN_AUTH_TOKEN_KEY, ADMIN_PROFILE_KEY, AUTH_TOKEN_KEY } from '@/constants/local-storage-keys';

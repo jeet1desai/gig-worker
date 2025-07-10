@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import { Form, Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import Image from 'next/image';
-import { toast } from 'react-toastify';
+import { toast } from '@/lib/toast';
 import { format } from 'date-fns';
 
 import { PRIVATE_ROUTE } from '@/constants/app-routes';

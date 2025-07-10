@@ -1,7 +1,7 @@
 'use client';
 import { ArrowDown, ArrowUp, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from '@/lib/toast';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {

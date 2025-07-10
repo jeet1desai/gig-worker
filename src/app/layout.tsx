@@ -1,11 +1,10 @@
 import { Geist, Geist_Mono, Outfit } from 'next/font/google';
-import { ToastContainer } from 'react-toastify';
+import { Toaster } from 'sonner'
 
 import './globals.css';
 import type { Metadata } from 'next';
 import { Providers } from '@/app/providers';
 import ClientSocketWrapper from '@/components/client-socket-wrapper';
-import 'react-toastify/dist/ReactToastify.css';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -44,7 +43,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <ClientSocketWrapper />
-          <ToastContainer position="top-right" autoClose={3000} />
+          <Toaster />
         </Providers>
       </body>
     </html>
