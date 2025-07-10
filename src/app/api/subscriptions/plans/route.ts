@@ -1,9 +1,12 @@
 import { errorResponse, successResponse } from '@/lib/api-response';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
-import { createSubscriptionPlan, updateSubscriptionPlanDetails } from '@/lib/paypal/plans';
+import {
+  createSubscriptionPlan,
+  updateSubscriptionPlanDetails
+} from '@/lib/paypal/plans';
 import { SubscriptionPlanPayload } from '@/types/fe';
 import lodash from 'lodash';
-import { FREE_PLAN } from '@/constants/plans';
+import { FREE_PLAN, FREE_PLAN_ID } from '@/constants/plans';
 import { createPlan, getPlans, updatePlan } from '@/lib/server/subscriptionPlans';
 
 export async function GET(_req: Request) {
@@ -12,14 +15,15 @@ export async function GET(_req: Request) {
 
     return successResponse({
       data: plans,
-      message: 'Subscription plans fetched successfully',
+      message: 'Subscription plans fetched successfully'
     });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Failed to fetch subscription plans';
+    const message =
+      err instanceof Error ? err.message : 'Failed to fetch subscription plans';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,
-      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
     });
   }
 }
@@ -27,21 +31,29 @@ export async function GET(_req: Request) {
 export async function POST(request: Request) {
   try {
     const body: SubscriptionPlanPayload = await request.json();
+    if (body.subscriptionType === 'free') {
+      const create_success_message = await createPlan(body, FREE_PLAN_ID);
+      return successResponse({
+        data: [],
+        message: create_success_message
+      });
+    }
     const create_plan: { [key: string]: any } = await createSubscriptionPlan(body);
 
     if (create_plan.data && create_plan.message) {
       const create_success_message = await createPlan(body, create_plan.data.id);
       return successResponse({
         data: create_plan.data,
-        message: create_success_message,
+        message: create_success_message
       });
     }
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Failed to create subscription plans';
+    const message =
+      err instanceof Error ? err.message : 'Failed to create subscription plans';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,
-      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
     });
   }
 }
@@ -63,7 +75,11 @@ export async function PATCH(request: Request) {
     }
 
     if (descriptionChanged) {
-      patchPayload.push({ op: 'replace', path: '/description', value: updated.description });
+      patchPayload.push({
+        op: 'replace',
+        path: '/description',
+        value: updated.description
+      });
     }
 
     const nameOrDescriptionChanged = patchPayload.length > 0;
@@ -78,7 +94,7 @@ export async function PATCH(request: Request) {
       const update_success_message = await updatePlan(plan_id, updated);
       return successResponse({
         data: [],
-        message: update_success_message,
+        message: update_success_message
       });
     }
 
@@ -86,15 +102,16 @@ export async function PATCH(request: Request) {
       const update_success_message = await updatePlan(plan_id, updated);
       return successResponse({
         data: [],
-        message: update_success_message,
+        message: update_success_message
       });
     }
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Failed to update subscription plans';
+    const message =
+      err instanceof Error ? err.message : 'Failed to update subscription plans';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,
-      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
     });
   }
 }
