@@ -16,17 +16,18 @@ export enum PUBLIC_ROUTE {
   RESET_PASSWORD_PAGE_PATH = '/reset-password',
   ADMIN_LOGIN_PATH = '/admin/login',
   EMAIL_VERIFICATION_PATH = '/email-verification',
-  NOT_FOUND = '*',
+  NOT_FOUND = '*'
 }
 
 export enum PRIVATE_ROUTE {
+  PLANS = '/plans',
   DASHBOARD = '/dashboard',
   GIGS = '/gigs',
   USER_PROFILE = '/profile',
   ADMIN_DASHBOARD_PATH = '/admin',
   ADMIN_USERS_DASHBOARD_PATH = '/admin/users',
   ADMIN_GIGS_DASHBOARD_PATH = '/admin/gigs',
-  ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH = '/admin/subscriptions',
+  ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH = '/admin/subscriptions'
 }
 
 export enum PUBLIC_API_ROUTES {
@@ -34,11 +35,12 @@ export enum PUBLIC_API_ROUTES {
   VERIFY_EMAIL_API = '/auth/verify-email',
   FORGOT_PASSWORD_API = '/auth/forgot-password',
   RESET_PASSWORD_API = '/auth/reset-password',
-  API_FORGOT_PASSWORD = '/auth/forgot-password',
+  API_FORGOT_PASSWORD = '/auth/forgot-password'
 }
 
 export enum PRIVATE_API_ROUTES {
   SUBSCRIPTION_PLANS_API = '/subscriptions/plans',
+  SUBSCRIPTION_CREATE_API = '/subscriptions/subscribe'
 }
 
 export const excludedPublicRoutes = [
@@ -47,5 +49,5 @@ export const excludedPublicRoutes = [
   PUBLIC_ROUTE.FORGOT_PASSWORD_PAGE_PATH,
   PUBLIC_ROUTE.VERIFY_OTP_PAGE_PATH,
   PUBLIC_ROUTE.RESET_PASSWORD_PAGE_PATH,
-  PUBLIC_ROUTE.EMAIL_VERIFICATION_PATH,
+  PUBLIC_ROUTE.EMAIL_VERIFICATION_PATH
 ];

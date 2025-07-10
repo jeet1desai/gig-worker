@@ -1,39 +1,34 @@
 import { paypalClient } from './paypalClient';
 import { getPayPalAccessToken } from './index';
 import { endpoints } from '@/lib/config/endpoints';
-import { CreateSubscriptionPayload } from '@/types/paypal';
 
-export async function createSubscription(httpBody: CreateSubscriptionPayload) {
+type QueryFields =
+  | ['last_failed_payment']
+  | ['plan']
+  | ['last_failed_payment', 'plan']
+  | ['plan', 'last_failed_payment'];
+
+export async function getSubscription(subscriptionId: string, fields?: QueryFields) {
   const accessToken = await getPayPalAccessToken();
 
   try {
-    const response = await paypalClient.post(endpoints.payPalSubscriptions, httpBody, {
+    let url = `${endpoints.payPalSubscriptions}/${subscriptionId}`;
+
+    if (fields && fields.length > 0) {
+      const params = new URLSearchParams();
+      params.append('fields', fields.join(','));
+      url += `?${params.toString()}`;
+    }
+
+    const res = await paypalClient.get(url.toString(), {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Prefer: 'return=representation',
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    const message = error.response?.data?.message || error.message || 'Failed to create PayPal subscription';
-    throw new Error(message);
-  }
-}
-
-export async function getSubscription(subscriptionId: string) {
-  const accessToken = await getPayPalAccessToken();
-
-  try {
-    const res = await paypalClient.get(`${endpoints.payPalSubscriptions}/${subscriptionId}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+        Authorization: `Bearer ${accessToken}`
+      }
     });
 
     return res.data;
   } catch (err: any) {
-    console.error('PayPal getSubscription error:', err.response?.data || err.message);
-    throw new Error(err.response?.data?.message || 'Failed to fetch PayPal subscription');
+    console.error('PayPal get subscription error:', err.response?.data || err.message);
+    return null;
   }
 }
