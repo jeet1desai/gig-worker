@@ -32,7 +32,6 @@ export const FREE_PLAN = {
   billing_cycle_count: 0,
   usage_type: 'INTERNAL',
   setup_fee: 0,
-  type: 'free',
   tax_percentage: 0,
   merchant_id: 'system',
   isPublic: true,
