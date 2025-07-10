@@ -8,6 +8,9 @@ import LinkedInIconSvg from './LinkedInIconSvg';
 import SafeIconSvg from './SafeIconSvg';
 import SearchIconSvg from './SearchIconSvg';
 import TwitterIconSvg from './TwitterIconSvg';
+import HammerSvg from './HammerSvg';
+import DartSvg from './DartSvg';
+import BulbSvg from './BulbSvg';
 
 export {
   AchievementIconSvg,
@@ -20,4 +23,7 @@ export {
   SafeIconSvg,
   SearchIconSvg,
   TwitterIconSvg,
+  HammerSvg,
+  DartSvg,
+  BulbSvg,
 };

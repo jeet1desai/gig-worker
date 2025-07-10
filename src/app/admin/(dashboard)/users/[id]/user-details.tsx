@@ -118,9 +118,9 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
+      <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-1">
-          <Card className="gap-0 border-gray-700 p-0">
+          <Card className="gap-0 border-gray-700/50 bg-inherit p-0">
             <div className="relative">
               <div className="h-32 w-full rounded-tl-lg rounded-tr-lg bg-gradient-to-r from-purple-600 to-blue-500">
                 {user.profile?.banner_url && (
@@ -205,7 +205,7 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
             </CardContent>
           </Card>
 
-          <Card className="gap-0 border-gray-700 p-0">
+          <Card className="gap-0 border-gray-700/50 bg-inherit p-0">
             <CardHeader className="p-4">
               <CardTitle className="text-lg font-semibold text-white">Subscription</CardTitle>
             </CardHeader>
@@ -250,7 +250,7 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
           </Card>
         </div>
 
-        <div className="space-y-6 lg:col-span-3">
+        <div className="space-y-6 lg:col-span-2">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3 bg-gray-800 p-1">
               <TabsTrigger value="overview" className="text-gray-100 data-[state=active]:text-black">
@@ -268,7 +268,7 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
-              <Card className="gap-0 border-gray-700 p-0">
+              <Card className="gap-0 border-gray-700/50 bg-inherit p-0">
                 <CardHeader className="p-6">
                   <CardTitle className="text-lg font-semibold text-gray-100">Account Information</CardTitle>
                 </CardHeader>
@@ -328,7 +328,7 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                 </CardContent>
               </Card>
 
-              <Card className="gap-0 border-gray-700 p-0">
+              <Card className="gap-0 border-gray-700/50 bg-inherit p-0">
                 <CardHeader className="p-6">
                   <CardTitle className="text-lg font-semibold text-gray-100">Account Statistics</CardTitle>
                 </CardHeader>
@@ -352,7 +352,7 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
             </TabsContent>
 
             <TabsContent value="profile">
-              <Card className="gap-0 border-gray-700 p-0">
+              <Card className="gap-0 border-gray-700/50 bg-inherit p-0">
                 <CardContent className="space-y-10 p-6">
                   <div>
                     <h3 className="mb-2 text-lg font-medium text-white">Skills</h3>
@@ -467,7 +467,7 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
             </TabsContent> */}
 
             <TabsContent value="settings">
-              <Card className="gap-0 border-gray-700 p-0">
+              <Card className="gap-0 border-gray-700/50 bg-inherit p-0">
                 <div className="space-y-6">
                   <CardContent className="m-0 p-6">
                     <Formik
@@ -489,7 +489,7 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                           <div className="space-y-4">
                             <h3 className="mb-4 text-lg font-medium text-white">Basic Information</h3>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2">
-                              <div>
+                              <div className="space-y-2">
                                 <Label htmlFor="firstName" className="text-gray-300">
                                   First Name
                                 </Label>
@@ -502,7 +502,7 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                                 />
                                 {errors.firstName && touched.firstName && <div className="text-sm text-red-500">{errors.firstName}</div>}
                               </div>
-                              <div>
+                              <div className="space-y-2">
                                 <Label htmlFor="lastName" className="text-gray-300">
                                   Last Name
                                 </Label>
@@ -515,7 +515,7 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                                 />
                                 {errors.lastName && touched.lastName && <div className="text-sm text-red-500">{errors.lastName}</div>}
                               </div>
-                              <div className="md:col-span-2">
+                              <div className="space-y-2 md:col-span-2">
                                 <Label htmlFor="email" className="text-gray-300">
                                   Email Address
                                 </Label>
@@ -548,7 +548,6 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                   <Separator className="m-0 bg-gray-700" />
 
                   <CardContent className="m-0 p-6">
-                    <h3 className="mb-4 text-lg font-medium text-white">Account Status</h3>
                     <div className="flex items-center justify-between rounded-lg bg-gray-800 p-4">
                       <div>
                         <h4 className="font-medium text-white">Account Verification</h4>
@@ -559,7 +558,7 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                         className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
                         onClick={() => handleVerifyAccount(user?.id)}
                       >
-                        {user?.is_verified ? 'Verified' : 'Verify Account'}
+                        {user?.is_verified ? <CheckCircle className="h-4 w-4" /> : 'Verify Account'}
                       </button>
                     </div>
                   </CardContent>

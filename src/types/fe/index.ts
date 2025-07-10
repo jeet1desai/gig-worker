@@ -20,6 +20,7 @@ export interface SubscriptionPlan {
   lastSyncedAt: string;
   maxGigs: number;
   maxBids: number;
+  subscriptionType: string;
   [key: string]: any;
 }
 
@@ -47,4 +48,5 @@ export interface SubscriptionPlanPayload {
   price: string;
   maxGigs: number;
   maxBids: number;
+  subscriptionType: string;
 }
