@@ -25,7 +25,8 @@ export const PAYPAL_BUTTON_CONFIG: PayPalButtonStyle = {
 export const TOKEN = 'token';
 
 export const DASHBOARD_NAVIGATION_MENU = [
-  { name: 'Dashboard', icon: BarChart3, href: PRIVATE_ROUTE.DASHBOARD }
+  { name: 'Dashboard', icon: BarChart3, href: PRIVATE_ROUTE.DASHBOARD },
+  { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.GIGS }
 ];
 
 export const ADMIN_DASHBOARD_NAVIGATION_MENU = [

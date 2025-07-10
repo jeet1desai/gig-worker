@@ -1,6 +1,6 @@
 'use client';
 
-import DashboardLayout from '@/components/dashboard/layout';
+import DashboardLayout from '@/components/layouts/layout';
 
 import { MetricsCards } from './components/matrics-card';
 import { AnalyticsChart } from './components/analytics-chart';

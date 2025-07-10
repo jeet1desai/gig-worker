@@ -42,7 +42,7 @@ const CommonDeleteDialog = ({
             type="button"
             disabled={isLoading}
             variant="secondary"
-            className="cursor-pointer border border-slate-500 dark:border-white dark:text-white outline-none focus:outline-none focus-visible:ring-0"
+            className="cursor-pointer border border-slate-500 outline-none focus:outline-none focus-visible:ring-0 dark:border-white dark:text-white"
           >
             {cancelLabel}
           </Button>

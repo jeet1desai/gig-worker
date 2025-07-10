@@ -4,7 +4,7 @@ import { Menu, MessageCircle, Search, User, Briefcase, LogOut } from 'lucide-rea
 import { useCallback, useState } from 'react';
 
 import { useIsMobile } from '@/hooks/use-mobile';
-import * as Popover from "@radix-ui/react-popover";
+import * as Popover from '@radix-ui/react-popover';
 
 import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { useRouter } from 'next/navigation';
@@ -65,8 +65,9 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                     <Button
                       variant="ghost"
                       size="icon"
-                      className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${role === 'user' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
-                        }`}
+                      className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
+                        role === 'user' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
+                      }`}
                       onClick={() => onRoleChange('user')}
                     >
                       <User className="h-4 w-4" />
@@ -80,8 +81,9 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                     <Button
                       variant="ghost"
                       size="icon"
-                      className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${role === 'provider' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
-                        }`}
+                      className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
+                        role === 'provider' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
+                      }`}
                       onClick={() => onRoleChange('provider')}
                     >
                       <Briefcase className="h-4 w-4" />
@@ -147,14 +149,15 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                 >
                   <Link
                     href={PRIVATE_ROUTE.USER_PROFILE}
-                    className="flex items-center space-x-2 cursor-pointer rounded-md px-3 py-2 text-sm hover:bg-slate-700 w-full outline-none focus:outline-none focus-visible:ring-0"
+                    className="flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-sm outline-none hover:bg-slate-700 focus:outline-none focus-visible:ring-0"
                   >
                     <User className="h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                   <button
                     onClick={() => setIsLoggingOut(true)}
-                    className="flex items-center space-x-2 cursor-pointer rounded-md px-3 py-2 text-sm hover:bg-slate-700 w-full outline-none focus:outline-none focus-visible:ring-0">
+                    className="flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-sm outline-none hover:bg-slate-700 focus:outline-none focus-visible:ring-0"
+                  >
                     <LogOut className="h-4 w-4" />
                     <span>Logout</span>
                   </button>
