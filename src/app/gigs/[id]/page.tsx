@@ -30,6 +30,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
+import { RootState, useSelector } from '@/store/store';
+import { cn } from '@/lib/utils';
+
 const mockGigRequest = {
   id: 1,
   title: 'Need help with calculus homework - derivatives and integrals',
@@ -157,6 +160,8 @@ export default function GigDetailPage() {
 
   useEffect(() => {}, []);
 
+  const user = useSelector((state: RootState) => state.user);
+
   return (
     <DashboardLayout>
       <main className="space-y-4 p-3 pl-5 sm:space-y-6 sm:p-4 md:p-6">
@@ -245,7 +250,7 @@ export default function GigDetailPage() {
             )}
 
             <Tabs defaultValue="description">
-              <TabsList className="grid w-full grid-cols-3 bg-gray-800 p-1">
+              <TabsList className={cn('grid w-full bg-gray-800 p-1', user.role === 'provider' ? 'grid-cols-3' : 'grid-cols-2')}>
                 <TabsTrigger value="description" className="text-gray-100 data-[state=active]:text-black">
                   <BookOpen className="mr-2 h-4 w-4" />
                   Description
@@ -254,10 +259,12 @@ export default function GigDetailPage() {
                   <Star className="mr-2 h-4 w-4" />
                   Ratings
                 </TabsTrigger>
-                <TabsTrigger value="bids" className="text-gray-100 data-[state=active]:text-black">
-                  <Briefcase className="mr-2 h-4 w-4" />
-                  Bids ({mockGigRequest.applicants})
-                </TabsTrigger>
+                {user.role === 'provider' && (
+                  <TabsTrigger value="bids" className="text-gray-100 data-[state=active]:text-black">
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    Bids ({mockGigRequest.applicants})
+                  </TabsTrigger>
+                )}
               </TabsList>
 
               <TabsContent value="description" className="space-y-4">
