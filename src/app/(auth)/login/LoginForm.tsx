@@ -2,13 +2,15 @@
 
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { getSession, signIn } from 'next-auth/react';
-import { toast } from '@/lib/toast';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Mail, Lock } from 'lucide-react';
+
+import { toast } from '@/lib/toast';
 import { loginSchema } from '@/schemas/auth';
 import { Images } from '@/lib/images';
-import Image from 'next/image';
 import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import Loader from '@/components/Loader';
 import { COMMON_ERROR_MESSAGES, LOGIN_MESSAGES } from '@/constants';
@@ -21,7 +23,6 @@ import {
   FormMessage,
   Form
 } from '@/components/ui/form';
-import { Mail, Lock } from 'lucide-react';
 
 type LoginFormValues = {
   email: string;
