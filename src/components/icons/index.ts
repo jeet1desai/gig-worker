@@ -25,5 +25,5 @@ export {
   TwitterIconSvg,
   HammerSvg,
   DartSvg,
-  BulbSvg,
+  BulbSvg
 };

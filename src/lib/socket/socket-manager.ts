@@ -45,7 +45,7 @@ class SocketManager {
         reconnectionDelayMax: 5000,
         timeout: 20000,
         autoConnect: true,
-        transports: ['websocket', 'polling'],
+        transports: ['websocket', 'polling']
       });
 
       this.setupEventListeners();

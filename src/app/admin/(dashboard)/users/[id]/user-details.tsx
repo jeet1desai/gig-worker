@@ -12,7 +12,7 @@ import {
   BookOpen,
   Ban,
   Fingerprint,
-  Loader2,
+  Loader2
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Form, Formik, FormikHelpers } from 'formik';
@@ -32,7 +32,14 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -42,7 +49,13 @@ import { UserDetails } from './page';
 import { adminService } from '@/services/admin.services';
 import { useDispatch } from '@/store/store';
 
-const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser: React.Dispatch<React.SetStateAction<Partial<UserDetails>>> }) => {
+const UserDetailPage = ({
+  user,
+  setUser
+}: {
+  user: Partial<UserDetails>;
+  setUser: React.Dispatch<React.SetStateAction<Partial<UserDetails>>>;
+}) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -81,8 +94,12 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
       const response = await dispatch(
         adminService.updateAdminUser({
           id: user.id?.toString() || '',
-          body: { first_name: values.firstName, last_name: values.lastName, email: values.email },
-        }) as any,
+          body: {
+            first_name: values.firstName,
+            last_name: values.lastName,
+            email: values.email
+          }
+        }) as any
       );
       if (response && response.data) {
         setSubmitting(false);
@@ -100,18 +117,30 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" className="cursor-pointer rounded-xl hover:bg-[#374151]" onClick={redirectToPreviousPage}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer rounded-xl hover:bg-[#374151]"
+            onClick={redirectToPreviousPage}
+          >
             <ArrowLeft className="h-4 w-4 text-white" />
           </Button>
           <h2 className="text-2xl font-bold text-white">User Details</h2>
         </div>
         <div className="flex space-x-2">
           {user.is_banned ? (
-            <Button variant="outline" className="cursor-pointer rounded-xl bg-green-600 !px-4 text-white hover:bg-green-700">
+            <Button
+              variant="outline"
+              className="cursor-pointer rounded-xl bg-green-600 !px-4 text-white hover:bg-green-700"
+            >
               <CheckCircle className="mr-2 h-4 w-4" /> Unban User
             </Button>
           ) : (
-            <Button onClick={handleBanUser} variant="destructive" className="cursor-pointer rounded-xl bg-red-600 !px-4 text-white hover:bg-red-700">
+            <Button
+              onClick={handleBanUser}
+              variant="destructive"
+              className="cursor-pointer rounded-xl bg-red-600 !px-4 text-white hover:bg-red-700"
+            >
               <Ban className="h-4 w-4" /> Ban User
             </Button>
           )}
@@ -159,13 +188,27 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                   {user.first_name} {user.last_name}
                 </h3>
                 <div className="mt-2 flex flex-wrap justify-center gap-2 text-white">
-                  <Badge className={user.is_verified ? 'bg-green-600 text-white' : 'bg-gray-600 text-gray-100'}>
+                  <Badge
+                    className={
+                      user.is_verified
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-600 text-gray-100'
+                    }
+                  >
                     {user.is_verified ? 'Verified' : 'Unverified'}
                   </Badge>
-                  <Badge className={user.is_banned ? 'bg-red-600 text-white' : 'bg-gray-600 text-gray-100'}>
+                  <Badge
+                    className={
+                      user.is_banned
+                        ? 'bg-red-600 text-white'
+                        : 'bg-gray-600 text-gray-100'
+                    }
+                  >
                     {user.is_banned ? 'Banned' : 'Active'}
                   </Badge>
-                  <Badge className="border-gray-700 text-gray-100 capitalize">{user.role === 'user' ? 'User' : 'Provider'}</Badge>
+                  <Badge className="border-gray-700 text-gray-100 capitalize">
+                    {user.role === 'user' ? 'User' : 'Provider'}
+                  </Badge>
                 </div>
               </div>
             </CardContent>
@@ -188,7 +231,9 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                 </div>
                 <div className="ml-2">
                   <p className="text-sm font-medium text-gray-400">Member Since</p>
-                  <p className="mt-0.5 text-sm text-gray-200">{formatDate(user.created_at)}</p>
+                  <p className="mt-0.5 text-sm text-gray-200">
+                    {formatDate(user.created_at)}
+                  </p>
                 </div>
               </div>
               {user.sign_up_type && (
@@ -198,7 +243,10 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                   </div>
                   <div className="ml-2">
                     <p className="text-sm font-medium text-gray-400">Sign Up Method</p>
-                    <p className="mt-0.5 text-sm text-gray-200">{user.sign_up_type.charAt(0).toUpperCase() + user.sign_up_type.slice(1)}</p>
+                    <p className="mt-0.5 text-sm text-gray-200">
+                      {user.sign_up_type.charAt(0).toUpperCase() +
+                        user.sign_up_type.slice(1)}
+                    </p>
                   </div>
                 </div>
               )}
@@ -207,7 +255,9 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
 
           <Card className="gap-0 border-gray-700/50 bg-inherit p-0">
             <CardHeader className="p-4">
-              <CardTitle className="text-lg font-semibold text-white">Subscription</CardTitle>
+              <CardTitle className="text-lg font-semibold text-white">
+                Subscription
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
               {user.subscription ? (
@@ -216,7 +266,9 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                     <span className="text-sm text-gray-300">Plan:</span>
                     <Badge
                       className={
-                        user.subscription.status === 'active' ? 'border-gray-700 text-gray-100 capitalize' : 'bg-gray-600 text-gray-100 capitalize'
+                        user.subscription.status === 'active'
+                          ? 'border-gray-700 text-gray-100 capitalize'
+                          : 'bg-gray-600 text-gray-100 capitalize'
                       }
                     >
                       {user.subscription.plan}
@@ -239,7 +291,9 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                   {user.subscription.end_date && (
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-300">Expires:</span>
-                      <span className="text-sm text-gray-400">{formatDate(user.subscription.end_date)}</span>
+                      <span className="text-sm text-gray-400">
+                        {formatDate(user.subscription.end_date)}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -253,16 +307,25 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
         <div className="space-y-6 lg:col-span-2">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3 bg-gray-800 p-1">
-              <TabsTrigger value="overview" className="text-gray-100 data-[state=active]:text-black">
+              <TabsTrigger
+                value="overview"
+                className="text-gray-100 data-[state=active]:text-black"
+              >
                 Overview
               </TabsTrigger>
-              <TabsTrigger value="profile" className="text-gray-100 data-[state=active]:text-black">
+              <TabsTrigger
+                value="profile"
+                className="text-gray-100 data-[state=active]:text-black"
+              >
                 Profile
               </TabsTrigger>
               {/* <TabsTrigger value="activity" className="text-gray-100 data-[state=active]:text-black">
                 Activity
               </TabsTrigger> */}
-              <TabsTrigger value="settings" className="text-gray-100 data-[state=active]:text-black">
+              <TabsTrigger
+                value="settings"
+                className="text-gray-100 data-[state=active]:text-black"
+              >
                 Settings
               </TabsTrigger>
             </TabsList>
@@ -270,7 +333,9 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
             <TabsContent value="overview" className="space-y-4">
               <Card className="gap-0 border-gray-700/50 bg-inherit p-0">
                 <CardHeader className="p-6">
-                  <CardTitle className="text-lg font-semibold text-gray-100">Account Information</CardTitle>
+                  <CardTitle className="text-lg font-semibold text-gray-100">
+                    Account Information
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 p-6 pt-0">
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -280,7 +345,9 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                       </div>
                       <div className="ml-3">
                         <p className="text-sm font-medium text-gray-400">First Name</p>
-                        <p className="mt-0.5 text-sm text-gray-200">{user.first_name || 'N/A'}</p>
+                        <p className="mt-0.5 text-sm text-gray-200">
+                          {user.first_name || 'N/A'}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start">
@@ -289,7 +356,9 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                       </div>
                       <div className="ml-3">
                         <p className="text-sm font-medium text-gray-400">Last Name</p>
-                        <p className="mt-0.5 text-sm text-gray-200">{user.last_name || 'N/A'}</p>
+                        <p className="mt-0.5 text-sm text-gray-200">
+                          {user.last_name || 'N/A'}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start">
@@ -306,11 +375,19 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                         <Shield className="size-4" />
                       </div>
                       <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-400">Account Status</p>
+                        <p className="text-sm font-medium text-gray-400">
+                          Account Status
+                        </p>
                         <p className="mt-0.5 text-sm text-gray-200">
-                          <span className={user.is_banned ? 'text-red-400' : 'text-green-400'}>{user.is_banned ? 'Banned' : 'Active'}</span>
+                          <span
+                            className={user.is_banned ? 'text-red-400' : 'text-green-400'}
+                          >
+                            {user.is_banned ? 'Banned' : 'Active'}
+                          </span>
                           {user.is_banned && user.user_ban?.reason && (
-                            <span className="mt-1 block text-xs text-gray-400">Reason: {user.user_ban.reason}</span>
+                            <span className="mt-1 block text-xs text-gray-400">
+                              Reason: {user.user_ban.reason}
+                            </span>
                           )}
                         </p>
                       </div>
@@ -322,7 +399,9 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                     </div>
                     <div className="ml-3">
                       <p className="text-sm font-medium text-gray-400">Bio</p>
-                      <p className="mt-0.5 text-sm text-gray-200">{user.profile?.bio || 'N/A'}</p>
+                      <p className="mt-0.5 text-sm text-gray-200">
+                        {user.profile?.bio || 'N/A'}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -330,7 +409,9 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
 
               <Card className="gap-0 border-gray-700/50 bg-inherit p-0">
                 <CardHeader className="p-6">
-                  <CardTitle className="text-lg font-semibold text-gray-100">Account Statistics</CardTitle>
+                  <CardTitle className="text-lg font-semibold text-gray-100">
+                    Account Statistics
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 pt-0">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
@@ -386,8 +467,11 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                   </div>
 
                   <div>
-                    <h3 className="mb-2 text-lg font-medium text-white">Certifications</h3>
-                    {user?.profile?.certifications && user.profile.certifications.length > 0 ? (
+                    <h3 className="mb-2 text-lg font-medium text-white">
+                      Certifications
+                    </h3>
+                    {user?.profile?.certifications &&
+                    user.profile.certifications.length > 0 ? (
                       <ul className="space-y-2">
                         {user.profile.certifications.map((cert, index) => (
                           <li key={index} className="flex items-start">
@@ -474,20 +558,35 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                       initialValues={{
                         firstName: user?.first_name || '',
                         lastName: user?.last_name || '',
-                        email: user?.email || '',
+                        email: user?.email || ''
                       }}
                       enableReinitialize
                       validationSchema={Yup.object().shape({
-                        firstName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Required'),
-                        lastName: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Required'),
-                        email: Yup.string().email('Invalid email').required('Required'),
+                        firstName: Yup.string()
+                          .min(2, 'Too Short!')
+                          .max(50, 'Too Long!')
+                          .required('Required'),
+                        lastName: Yup.string()
+                          .min(2, 'Too Short!')
+                          .max(50, 'Too Long!')
+                          .required('Required'),
+                        email: Yup.string().email('Invalid email').required('Required')
                       })}
                       onSubmit={handleUpdateUser}
                     >
-                      {({ isSubmitting, values, getFieldProps, errors, touched, handleSubmit }) => (
+                      {({
+                        isSubmitting,
+                        values,
+                        getFieldProps,
+                        errors,
+                        touched,
+                        handleSubmit
+                      }) => (
                         <Form className="space-y-8" onSubmit={handleSubmit}>
                           <div className="space-y-4">
-                            <h3 className="mb-4 text-lg font-medium text-white">Basic Information</h3>
+                            <h3 className="mb-4 text-lg font-medium text-white">
+                              Basic Information
+                            </h3>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2">
                               <div className="space-y-2">
                                 <Label htmlFor="firstName" className="text-gray-300">
@@ -500,7 +599,11 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                                   className="w-full rounded-lg border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
                                   {...getFieldProps('firstName')}
                                 />
-                                {errors.firstName && touched.firstName && <div className="text-sm text-red-500">{errors.firstName}</div>}
+                                {errors.firstName && touched.firstName && (
+                                  <div className="text-sm text-red-500">
+                                    {errors.firstName}
+                                  </div>
+                                )}
                               </div>
                               <div className="space-y-2">
                                 <Label htmlFor="lastName" className="text-gray-300">
@@ -513,7 +616,11 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                                   className="w-full rounded-lg border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
                                   {...getFieldProps('lastName')}
                                 />
-                                {errors.lastName && touched.lastName && <div className="text-sm text-red-500">{errors.lastName}</div>}
+                                {errors.lastName && touched.lastName && (
+                                  <div className="text-sm text-red-500">
+                                    {errors.lastName}
+                                  </div>
+                                )}
                               </div>
                               <div className="space-y-2 md:col-span-2">
                                 <Label htmlFor="email" className="text-gray-300">
@@ -527,7 +634,11 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                                   className="w-full rounded-lg border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
                                   {...getFieldProps('email')}
                                 />
-                                {errors.email && touched.email && <div className="text-sm text-red-500">{errors.email}</div>}
+                                {errors.email && touched.email && (
+                                  <div className="text-sm text-red-500">
+                                    {errors.email}
+                                  </div>
+                                )}
                               </div>
                             </div>
                             <div className="flex justify-end">
@@ -536,7 +647,11 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                                 disabled={isSubmitting}
                                 className="cursor-pointer rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
                               >
-                                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Save Changes'}
+                                {isSubmitting ? (
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                  'Save Changes'
+                                )}
                               </button>
                             </div>
                           </div>
@@ -551,14 +666,22 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                     <div className="flex items-center justify-between rounded-lg bg-gray-800 p-4">
                       <div>
                         <h4 className="font-medium text-white">Account Verification</h4>
-                        <p className="text-sm text-gray-400">{user?.is_verified ? 'Your account is verified' : 'Your account is not verified'}</p>
+                        <p className="text-sm text-gray-400">
+                          {user?.is_verified
+                            ? 'Your account is verified'
+                            : 'Your account is not verified'}
+                        </p>
                       </div>
                       <button
                         type="button"
                         className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
                         onClick={() => handleVerifyAccount(user?.id)}
                       >
-                        {user?.is_verified ? <CheckCircle className="h-4 w-4" /> : 'Verify Account'}
+                        {user?.is_verified ? (
+                          <CheckCircle className="h-4 w-4" />
+                        ) : (
+                          'Verify Account'
+                        )}
                       </button>
                     </div>
                   </CardContent>
@@ -574,18 +697,19 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
           <DialogHeader>
             <DialogTitle className="text-white">Ban User</DialogTitle>
             <DialogDescription className="text-gray-400">
-              Are you sure you want to ban this user? Please provide a reason and expiration date.
+              Are you sure you want to ban this user? Please provide a reason and
+              expiration date.
             </DialogDescription>
           </DialogHeader>
 
           <Formik
             initialValues={{
               banReason: '',
-              banExpiresAt: '',
+              banExpiresAt: ''
             }}
             validationSchema={Yup.object().shape({
               banReason: Yup.string().required('Required'),
-              banExpiresAt: Yup.date().required('Required'),
+              banExpiresAt: Yup.date().required('Required')
             })}
             onSubmit={handleBanSubmit}
           >
@@ -600,11 +724,15 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                           variant={'outline'}
                           className={cn(
                             'w-full justify-start border-gray-600 bg-gray-700 text-left font-normal !text-gray-300 hover:bg-gray-700',
-                            !banExpiresAt && 'text-muted-foreground',
+                            !banExpiresAt && 'text-muted-foreground'
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {banExpiresAt ? format(banExpiresAt, 'PPP') : <span>Pick a date</span>}
+                          {banExpiresAt ? (
+                            format(banExpiresAt, 'PPP')
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto border-gray-700 bg-gray-800 p-0">
@@ -617,7 +745,9 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                         />
                       </PopoverContent>
                     </Popover>
-                    <p className="text-xs text-gray-400">The ban will be automatically lifted on the selected date.</p>
+                    <p className="text-xs text-gray-400">
+                      The ban will be automatically lifted on the selected date.
+                    </p>
                   </div>
 
                   <div className="space-y-2">
@@ -633,8 +763,17 @@ const UserDetailPage = ({ user, setUser }: { user: Partial<UserDetails>; setUser
                 </div>
 
                 <DialogFooter className="sm:justify-end">
-                  <Button type="button" variant="destructive" onClick={handleBanSubmit} className="bg-red-600 text-white hover:bg-red-700">
-                    {false ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Confirm Ban'}
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={handleBanSubmit}
+                    className="bg-red-600 text-white hover:bg-red-700"
+                  >
+                    {false ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      'Confirm Ban'
+                    )}
                   </Button>
                 </DialogFooter>
               </Form>

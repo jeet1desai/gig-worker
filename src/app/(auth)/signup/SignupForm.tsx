@@ -40,7 +40,7 @@ export default function SignupForm() {
     setError,
     control,
     formState: { errors },
-    reset,
+    reset
   } = useForm<SignupFormValues>({
     resolver: yupResolver(signupSchema),
     defaultValues: {
@@ -49,8 +49,8 @@ export default function SignupForm() {
       email: '',
       password: '',
       confirmPassword: '',
-      terms: false,
-    },
+      terms: false
+    }
   });
 
   const pageRedirection = (path: string) => router.push(path);
@@ -62,21 +62,26 @@ export default function SignupForm() {
         first_name: values.first_name,
         last_name: values.last_name,
         email: values.email,
-        password: values.password,
+        password: values.password
       };
 
-      const { data } = await apiService.post<ApiResponse>(PUBLIC_API_ROUTES.SIGNUP_API, payload, {
-        withAuth: false,
-      });
+      const { data } = await apiService.post<ApiResponse>(
+        PUBLIC_API_ROUTES.SIGNUP_API,
+        payload,
+        {
+          withAuth: false
+        }
+      );
 
       if (data?.error) {
-        const apiErrorMessage = data?.error?.message || data?.message || SIGNUP_MESSAGES.failure;
+        const apiErrorMessage =
+          data?.error?.message || data?.message || SIGNUP_MESSAGES.failure;
 
         if (data?.error?.fieldErrors) {
           Object.entries(data.error.fieldErrors).forEach(([field, message]) => {
             setError(field as keyof SignupFormValues, {
               type: 'manual',
-              message: message as string,
+              message: message as string
             });
           });
         }
@@ -90,7 +95,10 @@ export default function SignupForm() {
       reset();
     } catch (err: any) {
       const apiErrorMessage =
-        err?.response?.data?.error?.message || err?.response?.data?.message || err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE;
+        err?.response?.data?.error?.message ||
+        err?.response?.data?.message ||
+        err?.message ||
+        COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE;
 
       toast.error(apiErrorMessage);
     } finally {
@@ -102,13 +110,21 @@ export default function SignupForm() {
     signIn('google', { callbackUrl: PRIVATE_ROUTE.DASHBOARD });
   }, []);
 
-  const renderField = (name: keyof SignupFormValues, label: string, type: string, Icon: React.ElementType) => (
+  const renderField = (
+    name: keyof SignupFormValues,
+    label: string,
+    type: string,
+    Icon: React.ElementType
+  ) => (
     <div>
       <Label htmlFor={name} className="mb-1 block text-base text-[#FFF2E3]">
         {label}
       </Label>
       <div className="relative">
-        <Icon className="absolute top-1/2 left-3 -translate-y-1/2 text-[#FFF2E3]" size={18} />
+        <Icon
+          className="absolute top-1/2 left-3 -translate-y-1/2 text-[#FFF2E3]"
+          size={18}
+        />
         <Input
           id={name}
           type={type}
@@ -117,7 +133,9 @@ export default function SignupForm() {
           placeholder={`Enter your ${label.toLowerCase()}`}
         />
       </div>
-      {errors[name] && <p className="mt-1 text-sm text-red-500">{errors[name]?.message}</p>}
+      {errors[name] && (
+        <p className="mt-1 text-sm text-red-500">{errors[name]?.message}</p>
+      )}
     </div>
   );
 
@@ -130,8 +148,12 @@ export default function SignupForm() {
         {success ? (
           <div className="flex flex-col items-center justify-center py-10">
             <div className="mb-6 rounded border border-green-700 bg-green-900/40 px-6 py-5 text-center">
-              <div className="mb-2 text-lg font-semibold text-[#FFF2E3]">Check your email</div>
-              <div className="text-[#FFF2E3]">Please verify your email address to complete your registration.</div>
+              <div className="mb-2 text-lg font-semibold text-[#FFF2E3]">
+                Check your email
+              </div>
+              <div className="text-[#FFF2E3]">
+                Please verify your email address to complete your registration.
+              </div>
             </div>
           </div>
         ) : (
@@ -147,7 +169,11 @@ export default function SignupForm() {
               control={control}
               render={({ field }) => (
                 <div className="flex items-start space-x-2">
-                  <Checkbox id="terms" checked={field.value} onCheckedChange={(checked) => field.onChange(checked)} />
+                  <Checkbox
+                    id="terms"
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(checked)}
+                  />
                   <Label htmlFor="terms" className="leading-snug text-[#FFF2E3]">
                     Accept{' '}
                     <Link href="#" className="underline">
@@ -157,10 +183,15 @@ export default function SignupForm() {
                 </div>
               )}
             />
-            {errors.terms && <p className="mt-1 text-sm text-red-500">{errors.terms.message}</p>}
+            {errors.terms && (
+              <p className="mt-1 text-sm text-red-500">{errors.terms.message}</p>
+            )}
 
             <div className="rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
-              <button type="submit" className="w-full rounded-lg px-5 py-2 font-bold text-[#383937] hover:opacity-90">
+              <button
+                type="submit"
+                className="w-full rounded-lg px-5 py-2 font-bold text-[#383937] hover:opacity-90"
+              >
                 Sign up
               </button>
             </div>
@@ -172,11 +203,22 @@ export default function SignupForm() {
         <>
           <div className="mt-6 mb-3 text-center text-[#fff2e3]">or sign in using</div>
           <div className="mb-4 flex justify-center">
-            <Image src={Images.googleIcon} alt="Google Icon" width={24} height={24} className="cursor-pointer" onClick={handleGoogleLogin} />
+            <Image
+              src={Images.googleIcon}
+              alt="Google Icon"
+              width={24}
+              height={24}
+              className="cursor-pointer"
+              onClick={handleGoogleLogin}
+            />
           </div>
           <div className="text-center text-[#fff2e3]">
             Already have an account?{' '}
-            <button type="button" onClick={() => pageRedirection(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH)} className="cursor-pointer font-medium underline">
+            <button
+              type="button"
+              onClick={() => pageRedirection(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH)}
+              className="cursor-pointer font-medium underline"
+            >
               Log In
             </button>
           </div>

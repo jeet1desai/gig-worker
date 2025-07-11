@@ -12,10 +12,10 @@ export const notificationHelper = {
     title?: string,
     message?: string,
     module?: NotificationModule,
-    relatedId?: string,
+    relatedId?: string
   ) {
     return sendNotification(io, userId, { title, message, type, module, relatedId });
-  },
+  }
 };
 
 export default notificationHelper;

@@ -12,19 +12,20 @@ export async function listSubscriptionPlans(): Promise<PayPalPlan[]> {
     const response = await paypalClient.get<PayPalPlansResponse>(endpoints.payPalPlans, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        Prefer: 'return=representation',
+        Prefer: 'return=representation'
       },
       params: {
         page_size: 20,
         status: 'ACTIVE',
         sort_by: 'create_time',
         sort_order: 'desc',
-        total_required: true,
-      },
+        total_required: true
+      }
     });
     return response.data.plans;
   } catch (error: any) {
-    const message = error.response?.data?.message || error.message || 'Failed to fetch PayPal plans';
+    const message =
+      error.response?.data?.message || error.message || 'Failed to fetch PayPal plans';
     throw new Error(message);
   }
 }
@@ -32,17 +33,23 @@ export async function listSubscriptionPlans(): Promise<PayPalPlan[]> {
 export const getProductId = async (): Promise<{ id: string; access_token: string }> => {
   const access_token = await getPayPalAccessToken();
   try {
-    const response = await paypalClient.get(`${endpoints.payPalProductList}?page_size=1&page=1&total_required=true`, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
+    const response = await paypalClient.get(
+      `${endpoints.payPalProductList}?page_size=1&page=1&total_required=true`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        }
+      }
+    );
 
     return { id: response.data.products[0].id, access_token: access_token };
   } catch (error: any) {
-    const message = error.response?.data?.message || error.message || 'Failed to fetch PayPal product list';
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to fetch PayPal product list';
     throw new Error(message);
   }
 };
@@ -54,15 +61,18 @@ export const getPlanDetailsById = async (id: string): Promise<any> => {
       headers: {
         Authorization: `Bearer ${access_token}`,
         'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     if (response.data && response.status === HttpStatusCode.OK) {
       return response.data;
     }
   } catch (error: any) {
-    const message = error.response?.data?.message || error.message || 'Failed to fetch PayPal product list';
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to fetch PayPal product list';
     throw new Error(message);
   }
 };
@@ -78,21 +88,24 @@ export async function deleteSubscriptionPlan(plan_id: string): Promise<boolean> 
         headers: {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      },
+          Accept: 'application/json'
+        }
+      }
     );
     if (response.status === HttpStatusCode.NO_CONTENT) {
       return true;
     }
     return false;
   } catch (error: any) {
-    const message = error.response?.data?.message || error.message || 'Failed to delete PayPal plan';
+    const message =
+      error.response?.data?.message || error.message || 'Failed to delete PayPal plan';
     throw new Error(message);
   }
 }
 
-export async function createSubscriptionPlan(create_plan_details: SubscriptionPlanPayload): Promise<any> {
+export async function createSubscriptionPlan(
+  create_plan_details: SubscriptionPlanPayload
+): Promise<any> {
   const details = await getProductId();
 
   try {
@@ -105,7 +118,7 @@ export async function createSubscriptionPlan(create_plan_details: SubscriptionPl
         {
           frequency: {
             interval_unit: 'MONTH',
-            interval_count: 1,
+            interval_count: 1
           },
           tenure_type: 'REGULAR',
           sequence: 1,
@@ -113,38 +126,39 @@ export async function createSubscriptionPlan(create_plan_details: SubscriptionPl
           pricing_scheme: {
             fixed_price: {
               value: create_plan_details.price,
-              currency_code: 'USD',
-            },
-          },
-        },
+              currency_code: 'USD'
+            }
+          }
+        }
       ],
       payment_preferences: {
         auto_bill_outstanding: true,
         setup_fee: {
           value: '0',
-          currency_code: 'USD',
+          currency_code: 'USD'
         },
         setup_fee_failure_action: 'CANCEL',
-        payment_failure_threshold: 2,
+        payment_failure_threshold: 2
       },
       taxes: {
         percentage: '0',
-        inclusive: true,
-      },
+        inclusive: true
+      }
     };
     const response = await paypalClient.post(`${endpoints.payPalPlans}`, payload, {
       headers: {
         Authorization: `Bearer ${details.access_token}`,
         'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+        Accept: 'application/json'
+      }
     });
 
     if (response.data && response.status === HttpStatusCode.CREATED) {
       return { data: response.data, message: 'Plan created successfully' };
     }
   } catch (error: any) {
-    const message = error.response?.data?.message || error.message || 'Failed to delete PayPal plan';
+    const message =
+      error.response?.data?.message || error.message || 'Failed to delete PayPal plan';
     throw new Error(message);
   }
 }
@@ -155,25 +169,30 @@ export async function updateSubscriptionPlanDetails(
     op: string;
     path: string;
     value: string;
-  }[],
+  }[]
 ) {
   const accessToken = await getPayPalAccessToken();
 
   try {
-    const response = await paypalClient.patch(`${endpoints.payPalPlans}/${plan_id}`, update_payload, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
+    const response = await paypalClient.patch(
+      `${endpoints.payPalPlans}/${plan_id}`,
+      update_payload,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        }
+      }
+    );
 
     if (response.status === HttpStatusCode.NO_CONTENT) {
       return true;
     }
     return false;
   } catch (error: any) {
-    const message = error.response?.data?.message || error.message || 'Failed to delete PayPal plan';
+    const message =
+      error.response?.data?.message || error.message || 'Failed to delete PayPal plan';
     throw new Error(message);
   }
 }

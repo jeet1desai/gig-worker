@@ -3,7 +3,14 @@ import { ArrowDown, ArrowUp, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
 import {
   Pagination,
   PaginationContent,
@@ -11,7 +18,7 @@ import {
   PaginationItem,
   PaginationLink,
   PaginationNext,
-  PaginationPrevious,
+  PaginationPrevious
 } from '@/components/Pagination';
 import { ColumnConfig, SortOrder } from '@/types/table_types';
 
@@ -36,12 +43,18 @@ export function DynamicTable<T extends { id: number | string }>({
   actions,
   totalPages,
   handlePageChange,
-  currentPage,
+  currentPage
 }: DynamicTableProps<T>) {
   const [copiedId, setCopiedId] = useState<string | number | null>(null);
 
   const getArrow = (key: keyof T) =>
-    sortKey === key ? sortOrder === 'asc' ? <ArrowUp size={18} strokeWidth={1} /> : <ArrowDown size={18} strokeWidth={1} /> : null;
+    sortKey === key ? (
+      sortOrder === 'asc' ? (
+        <ArrowUp size={18} strokeWidth={1} />
+      ) : (
+        <ArrowDown size={18} strokeWidth={1} />
+      )
+    ) : null;
 
   const getVisiblePages = (): (number | '...')[] => {
     if (totalPages <= 7) {
@@ -53,7 +66,15 @@ export function DynamicTable<T extends { id: number | string }>({
     }
 
     if (currentPage >= totalPages - 3) {
-      return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+      return [
+        1,
+        '...',
+        totalPages - 4,
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages
+      ];
     }
 
     return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
@@ -73,9 +94,16 @@ export function DynamicTable<T extends { id: number | string }>({
   const renderCell = (col: ColumnConfig<T>, value: T[keyof T], row: T, index: number) => {
     if (col.key === 'coupon_code' || col.key === 'code') {
       return (
-        <div className="hover:text-primary flex cursor-pointer items-center gap-2" onClick={() => handleCopyToClipboard(String(value), row.id)}>
+        <div
+          className="hover:text-primary flex cursor-pointer items-center gap-2"
+          onClick={() => handleCopyToClipboard(String(value), row.id)}
+        >
           <span>{String(value)}</span>
-          {copiedId === row.id ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+          {copiedId === row.id ? (
+            <Check size={16} className="text-green-500" />
+          ) : (
+            <Copy size={16} />
+          )}
         </div>
       );
     }
@@ -109,7 +137,10 @@ export function DynamicTable<T extends { id: number | string }>({
         <TableBody>
           {data.length === 0 ? (
             <TableRow className="!hover:bg-transparent">
-              <TableCell colSpan={columns.length + (actions ? 1 : 0)} className="h-30 py-6 text-center text-sm text-gray-500">
+              <TableCell
+                colSpan={columns.length + (actions ? 1 : 0)}
+                className="h-30 py-6 text-center text-sm text-gray-500"
+              >
                 No data available
               </TableCell>
             </TableRow>
@@ -132,7 +163,10 @@ export function DynamicTable<T extends { id: number | string }>({
         <Pagination className="mt-4">
           <PaginationContent>
             <PaginationItem>
-              <PaginationPrevious href="#" onClick={() => handlePageChange(Math.max(currentPage - 1, 1))} />
+              <PaginationPrevious
+                href="#"
+                onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+              />
             </PaginationItem>
 
             {getVisiblePages().map((page, index) =>
@@ -142,15 +176,20 @@ export function DynamicTable<T extends { id: number | string }>({
                 </PaginationItem>
               ) : (
                 <PaginationItem key={page}>
-                  <PaginationLink isActive={page === currentPage} onClick={() => handlePageChange(page)}>
+                  <PaginationLink
+                    isActive={page === currentPage}
+                    onClick={() => handlePageChange(page)}
+                  >
                     {page}
                   </PaginationLink>
                 </PaginationItem>
-              ),
+              )
             )}
 
             <PaginationItem>
-              <PaginationNext onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))} />
+              <PaginationNext
+                onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+              />
             </PaginationItem>
           </PaginationContent>
         </Pagination>

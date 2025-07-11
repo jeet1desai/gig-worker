@@ -3,7 +3,10 @@ type TemplateOptions = {
   actionLink: string;
 };
 
-export const getResetPasswordEmail = ({ userName = 'User', actionLink }: TemplateOptions) => {
+export const getResetPasswordEmail = ({
+  userName = 'User',
+  actionLink
+}: TemplateOptions) => {
   const content = `
     <div class="header">
       <h1>Reset Your Password</h1>
@@ -22,6 +25,6 @@ export const getResetPasswordEmail = ({ userName = 'User', actionLink }: Templat
 
   return {
     subject: 'Reset Your Password',
-    html: content,
+    html: content
   };
 };

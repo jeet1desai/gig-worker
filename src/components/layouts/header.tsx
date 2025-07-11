@@ -11,7 +11,12 @@ import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import NotificationBell from '../notification-bell';
 import Link from 'next/link';
 import { clearStorage } from '@/lib/local-storage';
@@ -66,7 +71,9 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                       variant="ghost"
                       size="icon"
                       className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
-                        role === 'user' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
+                        role === 'user'
+                          ? 'bg-slate-600 text-white shadow-md'
+                          : 'text-slate-400 hover:text-slate-300'
                       }`}
                       onClick={() => onRoleChange('user')}
                     >
@@ -82,7 +89,9 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                       variant="ghost"
                       size="icon"
                       className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
-                        role === 'provider' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
+                        role === 'provider'
+                          ? 'bg-slate-600 text-white shadow-md'
+                          : 'text-slate-400 hover:text-slate-300'
                       }`}
                       onClick={() => onRoleChange('provider')}
                     >
@@ -124,8 +133,12 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
               <Popover.Trigger asChild>
                 <div className="flex cursor-pointer items-center space-x-2 border-l border-slate-700 pl-4">
                   <div className="hidden text-right sm:block">
-                    <p className="max-w-[120px] truncate text-sm font-medium text-white">John Doe</p>
-                    <p className="hidden text-xs text-slate-400 md:block">Web Developer</p>
+                    <p className="max-w-[120px] truncate text-sm font-medium text-white">
+                      John Doe
+                    </p>
+                    <p className="hidden text-xs text-slate-400 md:block">
+                      Web Developer
+                    </p>
                   </div>
                   <div className="relative">
                     <img

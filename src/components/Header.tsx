@@ -10,7 +10,12 @@ function Header() {
       <div className="mx-auto flex w-full max-w-[1920px] flex-col items-center gap-4 px-4 py-4 sm:px-6 md:px-10 lg:flex-row lg:justify-between lg:gap-0">
         <div className="flex w-full justify-center lg:w-1/3 lg:justify-start">
           <div className="relative flex aspect-[120/60] w-[120px] items-center justify-center">
-            <Image src={Images.logo} alt="logo" fill className="object-contain object-center" />
+            <Image
+              src={Images.logo}
+              alt="logo"
+              fill
+              className="object-contain object-center"
+            />
           </div>
         </div>
 
@@ -30,7 +35,10 @@ function Header() {
           <Link href="#" className="text-base text-[#FFF2E3]">
             Contracts
           </Link>
-          <Link href={PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH} className="text-base text-[#FFF2E3]">
+          <Link
+            href={PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH}
+            className="text-base text-[#FFF2E3]"
+          >
             Login
           </Link>
           <Link href={PUBLIC_ROUTE.SIGNUP_PAGE_PATH} className="text-base text-[#FFF2E3]">

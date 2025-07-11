@@ -6,7 +6,7 @@ declare global {
 
 const createPrismaClient = () =>
   new PrismaClient({
-    log: ['query', 'info', 'warn', 'error'],
+    log: ['query', 'info', 'warn', 'error']
   });
 
 const prisma = global.prisma ?? createPrismaClient();

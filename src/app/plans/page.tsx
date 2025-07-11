@@ -1,5 +1,8 @@
 import PricingClientWrapper from '@/app/plans/components/PricingClientWrapper';
-import { getCurrentUserActiveSubscription, getPlans } from '@/lib/server/subscriptionPlans';
+import {
+  getCurrentUserActiveSubscription,
+  getPlans
+} from '@/lib/server/subscriptionPlans';
 
 export default async function PricingPage() {
   const subscription = await getCurrentUserActiveSubscription();

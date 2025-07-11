@@ -9,14 +9,18 @@ import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { generateEmailVerificationToken } from '@/lib/tokens';
 import { getResetPasswordEmail } from '@/lib/email/templates/resetPassword';
 import { forgotPasswordPayload } from '@/types/be/auth';
-import { COMMON_ERROR_MESSAGES, FORGOT_PASSWORD_MESSAGES, VERIFICATION_CODES } from '@/constants';
+import {
+  COMMON_ERROR_MESSAGES,
+  FORGOT_PASSWORD_MESSAGES,
+  VERIFICATION_CODES
+} from '@/constants';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { email } = (await forgotPasswordSchema.validate(body, {
       abortEarly: false,
-      stripUnknown: true,
+      stripUnknown: true
     })) as forgotPasswordPayload;
 
     const formattedEmail = email.toLowerCase().trim();
@@ -26,13 +30,13 @@ export async function POST(req: Request) {
       return errorResponse({
         code: VERIFICATION_CODES.USER_NOT_FOUND,
         message: COMMON_ERROR_MESSAGES.EMAIL_NOT_EXISTS,
-        statusCode: HttpStatusCode.BAD_REQUEST,
+        statusCode: HttpStatusCode.BAD_REQUEST
       });
     }
 
     const token = generateEmailVerificationToken({
       userId: user.id.toString(),
-      email: user.email,
+      email: user.email
     });
 
     const resetUrl = `${publicEnv.NEXT_PUBLIC_BASE_URL}${PUBLIC_ROUTE.RESET_PASSWORD_PAGE_PATH}?token=${token}`;
@@ -44,7 +48,7 @@ export async function POST(req: Request) {
     return successResponse({
       data: null,
       message: FORGOT_PASSWORD_MESSAGES.success,
-      statusCode: HttpStatusCode.OK,
+      statusCode: HttpStatusCode.OK
     });
   } catch (err) {
     if (err instanceof ValidationError) {
@@ -56,13 +60,13 @@ export async function POST(req: Request) {
         code: COMMON_ERROR_MESSAGES.VALIDATION_ERROR,
         message: COMMON_ERROR_MESSAGES.INVALID_REQUEST_PAYLOAD,
         statusCode: HttpStatusCode.BAD_REQUEST,
-        fieldErrors,
+        fieldErrors
       });
     }
     return errorResponse({
       code: VERIFICATION_CODES.INTERNAL_SERVER_ERROR,
       message: COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE,
-      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
     });
   }
 }

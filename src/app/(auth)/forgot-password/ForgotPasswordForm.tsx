@@ -7,7 +7,14 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 import { Mail } from 'lucide-react';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import Loader from '@/components/Loader';
 import { BackArrowIconSvg } from '@/components/icons';
@@ -17,7 +24,7 @@ import apiService from '@/services/api';
 import { ApiResponse } from '@/types/fe';
 
 const forgotPasswordSchema = Yup.object().shape({
-  email: Yup.string().email('Invalid email address').required('Email is required'),
+  email: Yup.string().email('Invalid email address').required('Email is required')
 });
 
 type ForgotPasswordValues = {
@@ -32,8 +39,8 @@ export default function ForgotPasswordForm() {
   const form = useForm<ForgotPasswordValues>({
     resolver: yupResolver(forgotPasswordSchema),
     defaultValues: {
-      email: '',
-    },
+      email: ''
+    }
   });
 
   const pageRedirection = (path: string) => {
@@ -45,20 +52,25 @@ export default function ForgotPasswordForm() {
       setServerError(null);
       setLoading(true);
 
-      const { data } = await apiService.post<ApiResponse>(PUBLIC_API_ROUTES.FORGOT_PASSWORD_API, values, { withAuth: false });
+      const { data } = await apiService.post<ApiResponse>(
+        PUBLIC_API_ROUTES.FORGOT_PASSWORD_API,
+        values,
+        { withAuth: false }
+      );
 
       toast.success(data?.message || FORGOT_PASSWORD_MESSAGES.success);
       form.reset();
     } catch (err: any) {
       if (err.response) {
         const data: ApiResponse = err.response.data;
-        const apiErrorMessage = data?.error?.message || data?.message || FORGOT_PASSWORD_MESSAGES.error;
+        const apiErrorMessage =
+          data?.error?.message || data?.message || FORGOT_PASSWORD_MESSAGES.error;
 
         if (data?.error?.fieldErrors) {
           Object.entries(data.error.fieldErrors).forEach(([key, message]) => {
             form.setError(key as keyof ForgotPasswordValues, {
               type: 'server',
-              message,
+              message
             });
           });
         }
@@ -66,7 +78,8 @@ export default function ForgotPasswordForm() {
         setServerError(apiErrorMessage);
         toast.error(apiErrorMessage);
       } else {
-        const message = err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE;
+        const message =
+          err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE;
         setServerError(message);
         toast.error(message);
       }
@@ -91,7 +104,9 @@ export default function ForgotPasswordForm() {
         <h3 className="text-2xl font-semibold text-[#FFF2E3]">Forgot password</h3>
       </div>
 
-      <p className="mb-6 text-center text-[#9d9893]">No worries, we’ll send you an OTP to your mail ID</p>
+      <p className="mb-6 text-center text-[#9d9893]">
+        No worries, we’ll send you an OTP to your mail ID
+      </p>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -122,7 +137,10 @@ export default function ForgotPasswordForm() {
           {serverError && <p className="text-sm text-red-400">{serverError}</p>}
 
           <div className="mt-12 rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
-            <button type="submit" className="w-full rounded-lg px-5 py-2 font-bold text-[#383937]">
+            <button
+              type="submit"
+              className="w-full rounded-lg px-5 py-2 font-bold text-[#383937]"
+            >
               Confirm
             </button>
           </div>
@@ -131,7 +149,11 @@ export default function ForgotPasswordForm() {
 
       <div className="mt-6 text-center text-sm text-[#FFF2E3]">
         Don&apos;t have an account?{' '}
-        <button type="button" onClick={() => pageRedirection(PUBLIC_ROUTE.SIGNUP_PAGE_PATH)} className="cursor-pointer text-[#FFF2E3] underline">
+        <button
+          type="button"
+          onClick={() => pageRedirection(PUBLIC_ROUTE.SIGNUP_PAGE_PATH)}
+          className="cursor-pointer text-[#FFF2E3] underline"
+        >
           Sign up
         </button>
       </div>

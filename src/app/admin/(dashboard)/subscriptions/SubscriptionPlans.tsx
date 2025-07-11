@@ -5,7 +5,11 @@ import { Check, Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import AddPlanModal from './AddPlanModal';
-import { SubscriptionPlan, SubscriptionPlanPayload, SubscriptionPlanResponse } from '@/types/fe';
+import {
+  SubscriptionPlan,
+  SubscriptionPlanPayload,
+  SubscriptionPlanResponse
+} from '@/types/fe';
 import apiService from '@/services/api';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { toast } from 'react-toastify';
@@ -26,16 +30,22 @@ const SubscriptionPlans = () => {
   const handleDeletePlan = async () => {
     setIsLoading(true);
     try {
-      const response = await apiService.delete<SubscriptionPlanResponse>(`${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}/${selectedPlanId}`, {
-        withAuth: true,
-      });
+      const response = await apiService.delete<SubscriptionPlanResponse>(
+        `${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}/${selectedPlanId}`,
+        {
+          withAuth: true
+        }
+      );
 
       if (response.data.message) {
         getSubscriptionPlans();
         toast.success(response.data.message);
       }
     } catch (error: any) {
-      const message = error?.response?.data?.error?.message || error?.message || 'Error deleting subscription plan';
+      const message =
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        'Error deleting subscription plan';
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -62,14 +72,21 @@ const SubscriptionPlans = () => {
   const handleSaveNewPlan = async (planData: SubscriptionPlanPayload) => {
     setIsLoading(true);
     try {
-      const response = await apiService.post<SubscriptionPlanResponse>(`${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}`, planData, { withAuth: true });
+      const response = await apiService.post<SubscriptionPlanResponse>(
+        `${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}`,
+        planData,
+        { withAuth: true }
+      );
 
       if (response.data.message) {
         getSubscriptionPlans();
         toast.success(response.data.message);
       }
     } catch (error: any) {
-      const message = error?.response?.data?.error?.message || error?.message || 'Error deleting subscription plan';
+      const message =
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        'Error deleting subscription plan';
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -81,20 +98,27 @@ const SubscriptionPlans = () => {
 
     const payload_data = {
       old_data: selectedPlan,
-      updated_data: planData,
+      updated_data: planData
     };
 
     try {
-      const response = await apiService.patch<SubscriptionPlanResponse>(`${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}`, payload_data, {
-        withAuth: true,
-      });
+      const response = await apiService.patch<SubscriptionPlanResponse>(
+        `${PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API}`,
+        payload_data,
+        {
+          withAuth: true
+        }
+      );
 
       if (response.data.message) {
         getSubscriptionPlans();
         toast.success(response.data.message);
       }
     } catch (error: any) {
-      const message = error?.response?.data?.error?.message || error?.message || 'Error deleting subscription plan';
+      const message =
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        'Error deleting subscription plan';
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -104,9 +128,16 @@ const SubscriptionPlans = () => {
   const getSubscriptionPlans = async () => {
     setIsLoading(true);
     try {
-      const response = await apiService.get<SubscriptionPlanResponse>(PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API, { withAuth: true });
+      const response = await apiService.get<SubscriptionPlanResponse>(
+        PRIVATE_API_ROUTES.SUBSCRIPTION_PLANS_API,
+        { withAuth: true }
+      );
 
-      if (response.data.data && response.status === HttpStatusCode.OK && response.data.message) {
+      if (
+        response.data.data &&
+        response.status === HttpStatusCode.OK &&
+        response.data.message
+      ) {
         setPlans(response.data.data);
         toast.success(response.data.message);
       }
@@ -209,8 +240,12 @@ const SubscriptionPlans = () => {
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-purple-600 transition-transform duration-200 group-hover:scale-110">
                   <Plus size={32} className="text-white" />
                 </div>
-                <h3 className="text-lg font-semibold text-slate-300 transition-colors duration-200 group-hover:text-white">Add New Plan</h3>
-                <p className="mt-1 text-sm text-slate-500">Create a custom subscription plan</p>
+                <h3 className="text-lg font-semibold text-slate-300 transition-colors duration-200 group-hover:text-white">
+                  Add New Plan
+                </h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  Create a custom subscription plan
+                </p>
               </div>
             </Card>
           )}

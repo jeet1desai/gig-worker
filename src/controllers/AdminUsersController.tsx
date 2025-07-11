@@ -17,8 +17,8 @@ export async function getUserDetails(id: string) {
       is_verified: true,
       sign_up_type: true,
       created_at: true,
-      subscriptions: true,
-    },
+      subscriptions: true
+    }
   });
 
   if (!user_details) {
@@ -29,6 +29,6 @@ export async function getUserDetails(id: string) {
 
   return {
     id: userId.toString(),
-    ...rest,
+    ...rest
   };
 }

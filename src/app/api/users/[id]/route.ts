@@ -38,12 +38,18 @@ export async function GET(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
     if (!id) {
-      return NextResponse.json(errorResponse('User ID is required', HttpStatusCode.BAD_REQUEST), { status: HttpStatusCode.BAD_REQUEST });
+      return NextResponse.json(
+        errorResponse('User ID is required', HttpStatusCode.BAD_REQUEST),
+        { status: HttpStatusCode.BAD_REQUEST }
+      );
     }
 
     const userId = parseInt(id, 10);
     if (isNaN(userId)) {
-      return NextResponse.json(errorResponse('Invalid user ID', HttpStatusCode.BAD_REQUEST), { status: HttpStatusCode.BAD_REQUEST });
+      return NextResponse.json(
+        errorResponse('Invalid user ID', HttpStatusCode.BAD_REQUEST),
+        { status: HttpStatusCode.BAD_REQUEST }
+      );
     }
 
     const existingUser = (await prisma.user.findUnique({
@@ -51,12 +57,15 @@ export async function GET(request: Request, { params }: RouteParams) {
       include: {
         profile: true,
         user_ban: true,
-        subscriptions: true,
-      },
+        subscriptions: true
+      }
     })) as UserWithRelations | null;
 
     if (!existingUser) {
-      return NextResponse.json(errorResponse('User not found', HttpStatusCode.NOT_FOUND), { status: HttpStatusCode.NOT_FOUND });
+      return NextResponse.json(
+        errorResponse('User not found', HttpStatusCode.NOT_FOUND),
+        { status: HttpStatusCode.NOT_FOUND }
+      );
     }
 
     const { password, ...userWithoutPassword } = existingUser;
@@ -68,36 +77,39 @@ export async function GET(request: Request, { params }: RouteParams) {
         ? {
             ...existingUser.profile,
             id: existingUser.profile.id.toString(),
-            user_id: existingUser.profile.user_id.toString(),
+            user_id: existingUser.profile.user_id.toString()
           }
         : null,
       user_ban: existingUser.user_ban
         ? {
             ...existingUser.user_ban,
             id: existingUser.user_ban.id.toString(),
-            user_id: existingUser.user_ban.user_id.toString(),
+            user_id: existingUser.user_ban.user_id.toString()
           }
         : null,
       subscriptions: existingUser.subscriptions.map((sub) => ({
         ...sub,
         id: sub.id.toString(),
         user_id: sub.user_id.toString(),
-        plan_id: sub.plan_id.toString(),
-      })),
+        plan_id: sub.plan_id.toString()
+      }))
     };
 
     return safeJsonResponse(
       {
         success: true,
         message: 'User fetched successfully',
-        data: userData,
+        data: userData
       },
-      { status: HttpStatusCode.OK },
+      { status: HttpStatusCode.OK }
     );
   } catch (error) {
-    return NextResponse.json(errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR), {
-      status: HttpStatusCode.INTERNAL_SERVER_ERROR,
-    });
+    return NextResponse.json(
+      errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR),
+      {
+        status: HttpStatusCode.INTERNAL_SERVER_ERROR
+      }
+    );
   }
 }
 
@@ -108,12 +120,18 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
     if (!id) {
-      return NextResponse.json(errorResponse('User ID is required', HttpStatusCode.BAD_REQUEST), { status: HttpStatusCode.BAD_REQUEST });
+      return NextResponse.json(
+        errorResponse('User ID is required', HttpStatusCode.BAD_REQUEST),
+        { status: HttpStatusCode.BAD_REQUEST }
+      );
     }
 
     const userId = parseInt(id, 10);
     if (isNaN(userId)) {
-      return NextResponse.json(errorResponse('Invalid user ID', HttpStatusCode.BAD_REQUEST), { status: HttpStatusCode.BAD_REQUEST });
+      return NextResponse.json(
+        errorResponse('Invalid user ID', HttpStatusCode.BAD_REQUEST),
+        { status: HttpStatusCode.BAD_REQUEST }
+      );
     }
 
     const body = await request.json();
@@ -121,28 +139,34 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
     const updateData: { first_name?: string; last_name?: string } = {
       first_name: first_name?.trim(),
-      last_name: last_name?.trim(),
+      last_name: last_name?.trim()
     };
 
     const updatedUser = await prisma.user.update({
       where: { id: BigInt(userId) },
       data: updateData,
-      select: { id: true, email: true, first_name: true, last_name: true },
+      select: { id: true, email: true, first_name: true, last_name: true }
     });
 
     return safeJsonResponse(
       {
         success: true,
         message: 'User profile updated successfully',
-        data: { ...updatedUser, id: updatedUser.id.toString() },
+        data: { ...updatedUser, id: updatedUser.id.toString() }
       },
-      { status: HttpStatusCode.OK },
+      { status: HttpStatusCode.OK }
     );
   } catch (error) {
     console.error('Error updating user profile:', error);
-    return NextResponse.json(errorResponse('Failed to update user profile', HttpStatusCode.INTERNAL_SERVER_ERROR), {
-      status: HttpStatusCode.INTERNAL_SERVER_ERROR,
-    });
+    return NextResponse.json(
+      errorResponse(
+        'Failed to update user profile',
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      ),
+      {
+        status: HttpStatusCode.INTERNAL_SERVER_ERROR
+      }
+    );
   }
 }
 
@@ -153,28 +177,43 @@ export async function DELETE(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
     if (!id) {
-      return NextResponse.json(errorResponse('User ID is required', HttpStatusCode.BAD_REQUEST), { status: HttpStatusCode.BAD_REQUEST });
+      return NextResponse.json(
+        errorResponse('User ID is required', HttpStatusCode.BAD_REQUEST),
+        { status: HttpStatusCode.BAD_REQUEST }
+      );
     }
 
     const userId = parseInt(id, 10);
     if (isNaN(userId)) {
-      return NextResponse.json(errorResponse('Invalid user ID', HttpStatusCode.BAD_REQUEST), { status: HttpStatusCode.BAD_REQUEST });
+      return NextResponse.json(
+        errorResponse('Invalid user ID', HttpStatusCode.BAD_REQUEST),
+        { status: HttpStatusCode.BAD_REQUEST }
+      );
     }
 
     const existingUser = await prisma.user.findUnique({
       where: { id: BigInt(userId) },
-      select: { id: true, email: true, first_name: true, last_name: true },
+      select: { id: true, email: true, first_name: true, last_name: true }
     });
     if (!existingUser) {
-      return NextResponse.json(errorResponse('User not found', HttpStatusCode.NOT_FOUND), { status: HttpStatusCode.NOT_FOUND });
+      return NextResponse.json(
+        errorResponse('User not found', HttpStatusCode.NOT_FOUND),
+        { status: HttpStatusCode.NOT_FOUND }
+      );
     }
 
     await prisma.user.delete({ where: { id: userId } });
 
-    return safeJsonResponse({ success: true, message: 'User deleted successfully', data: existingUser }, { status: HttpStatusCode.OK });
+    return safeJsonResponse(
+      { success: true, message: 'User deleted successfully', data: existingUser },
+      { status: HttpStatusCode.OK }
+    );
   } catch (error) {
-    return NextResponse.json(errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR), {
-      status: HttpStatusCode.INTERNAL_SERVER_ERROR,
-    });
+    return NextResponse.json(
+      errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR),
+      {
+        status: HttpStatusCode.INTERNAL_SERVER_ERROR
+      }
+    );
   }
 }
