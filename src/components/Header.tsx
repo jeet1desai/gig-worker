@@ -9,7 +9,7 @@ function Header() {
     <header className="w-full bg-[#1D1D1D]">
       <div className="mx-auto w-full max-w-[1920px] px-4 py-4 sm:px-6 md:px-10">
         <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
-          <div className="flex w-full flex-row items-center justify-between gap-4 lg:w-2/3 lg:justify-start">
+          <div className="flex w-full flex-row items-center justify-between gap-4 lg:w-2/3 lg:justify-between">
             <div className="relative flex aspect-[120/60] w-[120px] items-center justify-center">
               <Image
                 src={Images.logo}
