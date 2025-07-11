@@ -8,6 +8,7 @@ import { SubscriptionPlanPayload } from '@/types/fe';
 import lodash from 'lodash';
 import { FREE_PLAN, FREE_PLAN_ID } from '@/constants/plans';
 import { createPlan, getPlans, updatePlan } from '@/lib/server/subscriptionPlans';
+import { SUBSCRIPTION_TYPE } from '@prisma/client';
 
 export async function GET(_req: Request) {
   try {
@@ -31,7 +32,7 @@ export async function GET(_req: Request) {
 export async function POST(request: Request) {
   try {
     const body: SubscriptionPlanPayload = await request.json();
-    if (body.subscriptionType === 'free') {
+    if (body.subscriptionType === SUBSCRIPTION_TYPE.free) {
       const create_success_message = await createPlan(body, FREE_PLAN_ID);
       return successResponse({
         data: [],

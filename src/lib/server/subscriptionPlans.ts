@@ -53,29 +53,55 @@ export const createPlan = async (
   plan_id: string
 ) => {
   if (plan_id === FREE_PLAN_ID) {
-    await prisma.plan.create({
-      data: {
-        plan_id: FREE_PLAN_ID,
-        product_id: FREE_PLAN.product_id,
-        name: plan_details.name,
-        description: plan_details.description,
-        status: SUBSCRIPTION_STATUS.active,
-        price: new Decimal(FREE_PLAN.price),
-        type: plan_details.subscriptionType as SUBSCRIPTION_TYPE,
-        currency: FREE_PLAN.currency,
-        interval: FREE_PLAN.interval,
-        interval_count: FREE_PLAN.interval_count,
-        billing_cycle_count: FREE_PLAN.billing_cycle_count,
-        usage_type: FREE_PLAN.usage_type,
-        setup_fee: new Decimal(FREE_PLAN.setup_fee),
-        tax_percentage: new Decimal(FREE_PLAN.tax_percentage),
-        merchant_id: FREE_PLAN.merchant_id,
-        isPublic: FREE_PLAN.isPublic,
-        benefits: plan_details.benefits,
-        maxGigs: plan_details.maxGigs,
-        maxBids: plan_details.maxBids
+    const existingFreePlan = await prisma.plan.findUnique({
+      where: {
+        plan_id: FREE_PLAN_ID
       }
     });
+
+    if (existingFreePlan) {
+      await prisma.plan.update({
+        where: {
+          plan_id: FREE_PLAN_ID
+        },
+        data: {
+          plan_id: FREE_PLAN_ID,
+          product_id: FREE_PLAN.product_id,
+          name: plan_details.name,
+          description: plan_details.description,
+          status: SUBSCRIPTION_STATUS.active,
+          price: new Decimal(FREE_PLAN.price),
+          type: plan_details.subscriptionType as SUBSCRIPTION_TYPE,
+          benefits: plan_details.benefits,
+          maxGigs: plan_details.maxGigs,
+          maxBids: plan_details.maxBids
+        }
+      });
+    } else {
+      await prisma.plan.create({
+        data: {
+          plan_id: FREE_PLAN_ID,
+          product_id: FREE_PLAN.product_id,
+          name: plan_details.name,
+          description: plan_details.description,
+          status: SUBSCRIPTION_STATUS.active,
+          price: new Decimal(FREE_PLAN.price),
+          type: plan_details.subscriptionType as SUBSCRIPTION_TYPE,
+          currency: FREE_PLAN.currency,
+          interval: FREE_PLAN.interval,
+          interval_count: FREE_PLAN.interval_count,
+          billing_cycle_count: FREE_PLAN.billing_cycle_count,
+          usage_type: FREE_PLAN.usage_type,
+          setup_fee: new Decimal(FREE_PLAN.setup_fee),
+          tax_percentage: new Decimal(FREE_PLAN.tax_percentage),
+          merchant_id: FREE_PLAN.merchant_id,
+          isPublic: FREE_PLAN.isPublic,
+          benefits: plan_details.benefits,
+          maxGigs: plan_details.maxGigs,
+          maxBids: plan_details.maxBids
+        }
+      });
+    }
 
     return 'Subscription plan created successfully';
   }
