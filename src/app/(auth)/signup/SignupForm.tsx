@@ -6,7 +6,7 @@ import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useForm, Controller } from 'react-hook-form';
-import { toast } from 'react-toastify';
+import { toast } from '@/lib/toast';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';

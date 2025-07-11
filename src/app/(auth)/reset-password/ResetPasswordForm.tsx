@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Lock } from 'lucide-react';
-import { toast } from 'react-toastify';
+import { toast } from '@/lib/toast';
 import { PUBLIC_API_ROUTES, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { COMMON_ERROR_MESSAGES, RESET_PASSWORD_MESSAGES, TOKEN } from '@/constants';
 import apiService from '@/services/api';

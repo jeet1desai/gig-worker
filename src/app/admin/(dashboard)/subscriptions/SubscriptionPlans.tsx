@@ -12,7 +12,7 @@ import {
 } from '@/types/fe';
 import apiService from '@/services/api';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
-import { toast } from 'react-toastify';
+import { toast } from '@/lib/toast';
 import Loader from '@/components/Loader';
 import { PRIVATE_API_ROUTES } from '@/constants/app-routes';
 import CommonDeleteDialog from '@/components/CommonDeleteDialog';

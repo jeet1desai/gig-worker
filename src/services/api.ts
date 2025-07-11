@@ -6,7 +6,7 @@ import axios, {
   AxiosRequestConfig,
   InternalAxiosRequestConfig
 } from 'axios';
-import { toast } from 'react-toastify';
+import { toast } from '@/lib/toast';
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   withAuth?: boolean;
 }
