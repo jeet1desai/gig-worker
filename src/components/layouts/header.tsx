@@ -16,6 +16,7 @@ import NotificationBell from '../notification-bell';
 import Link from 'next/link';
 import { clearStorage } from '@/lib/local-storage';
 import CommonDeleteDialog from '../CommonDeleteDialog';
+import { useSession } from "next-auth/react";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -30,6 +31,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
+  const { data: session } = useSession();
 
   const handleLogout = useCallback(async () => {
     setIsLoading(true);
@@ -65,9 +67,8 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                     <Button
                       variant="ghost"
                       size="icon"
-                      className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
-                        role === 'user' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
-                      }`}
+                      className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${role === 'user' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
+                        }`}
                       onClick={() => onRoleChange('user')}
                     >
                       <User className="h-4 w-4" />
@@ -81,9 +82,8 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                     <Button
                       variant="ghost"
                       size="icon"
-                      className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
-                        role === 'provider' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
-                      }`}
+                      className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${role === 'provider' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
+                        }`}
                       onClick={() => onRoleChange('provider')}
                     >
                       <Briefcase className="h-4 w-4" />
@@ -124,7 +124,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
               <Popover.Trigger asChild>
                 <div className="flex cursor-pointer items-center space-x-2 border-l border-slate-700 pl-4">
                   <div className="hidden text-right sm:block">
-                    <p className="max-w-[120px] truncate text-sm font-medium text-white">John Doe</p>
+                    <p className="max-w-[120px] truncate text-sm font-medium text-white">{session?.user.name}</p>
                     <p className="hidden text-xs text-slate-400 md:block">Web Developer</p>
                   </div>
                   <div className="relative">

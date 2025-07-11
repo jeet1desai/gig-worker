@@ -113,6 +113,8 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.role = user.role || 'user';
+        token.first_name = user.first_name || '';
+        token.last_name = user.last_name || '';
 
         const payload = {
           id: user.id,
@@ -145,9 +147,13 @@ export const authOptions: NextAuthOptions = {
 
             token.id = String(newUser.id);
             token.role = newUser.role;
+            token.first_name = newUser.first_name || '';
+            token.last_name = newUser.last_name || '';
           } else {
             token.id = String(existingUser.id);
             token.role = existingUser.role;
+            token.first_name = existingUser.first_name || '';
+            token.last_name = existingUser.last_name || '';
           }
         }
         token.iat = Math.floor(Date.now() / 1000);
@@ -159,6 +165,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id;
+        session.user.name = token.first_name + ' ' + token.last_name;
         session.user.role = token.role;
         session.accessToken = token.customAccessToken;
         session.expires = new Date(token.exp * 1000).toISOString();

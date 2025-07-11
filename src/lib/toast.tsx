@@ -1,5 +1,5 @@
 import { toast as sonnerToast } from "sonner";
-import { X, Check, AlertTriangle, XCircle } from "lucide-react";
+import { X, CircleCheck, XCircle, CircleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const toast = Object.assign(sonnerToast, {
@@ -13,7 +13,7 @@ export const toast = Object.assign(sonnerToast, {
               boxShadow: '0 0 10px 3px rgba(34, 197, 94, 0.6), 0 0 30px 5px rgba(34, 197, 94, 0.3)',
             }}
           >
-            <Check className="h-4 w-4 text-white" />
+            <CircleCheck className="h-4 w-4 text-white" />
           </div>
           <span className="text-sm text-white">{message}</span>
         </div>
@@ -26,7 +26,7 @@ export const toast = Object.assign(sonnerToast, {
           <X className="h-4 w-4" />
         </Button>
       </div>
-    ),{duration: Infinity});
+    ));
   },
   warning: (message: string) => {
     sonnerToast.custom((t) => (
@@ -39,9 +39,7 @@ export const toast = Object.assign(sonnerToast, {
                 "0 0 10px 3px rgba(234, 179, 8, 0.6), 0 0 30px 5px rgba(234, 179, 8, 0.3)",
             }}
           >
-            <div className="bg-yellow-500 rounded-full p-1.5 flex items-center justify-center h-4 w-4">
-              <span className="text-white text-lg font-semibold">!</span>
-            </div>
+            <CircleAlert className="h-4 w-4 text-white" />
           </div>
           <span className="text-sm text-white">{message}</span>
         </div>
@@ -54,7 +52,7 @@ export const toast = Object.assign(sonnerToast, {
           <X className="h-4 w-4" />
         </Button>
       </div>
-    ),{duration: Infinity});
+    ));
   },
   error: (message: string) => {
     sonnerToast.custom((t) => (
@@ -80,7 +78,7 @@ export const toast = Object.assign(sonnerToast, {
           <X className="h-4 w-4" />
         </Button>
       </div>
-    ),{duration: Infinity});
+    ));
   },
 });
 
