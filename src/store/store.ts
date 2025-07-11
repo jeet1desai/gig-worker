@@ -1,17 +1,21 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
-import { useDispatch as useAppDispatch, useSelector as useAppSelector, type TypedUseSelectorHook } from 'react-redux';
+import {
+  useDispatch as useAppDispatch,
+  useSelector as useAppSelector,
+  type TypedUseSelectorHook
+} from 'react-redux';
 
 import userReducer from './slices/user';
 import adminUserReducer from './slices/admin-user';
 
 const rootReducer = combineReducers({
   user: userReducer,
-  adminUser: adminUserReducer,
+  adminUser: adminUserReducer
 });
 
 export const store = configureStore({
-  reducer: rootReducer,
+  reducer: rootReducer
 });
 
 export const useDispatch = () => useAppDispatch<AppDispatch>();

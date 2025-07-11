@@ -15,7 +15,7 @@ export default function EditProfileModal() {
     lastName: '',
     website: '',
     location: '',
-    about: '',
+    about: ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -24,7 +24,10 @@ export default function EditProfileModal() {
 
   return (
     <div>
-      <PencilIcon onClick={() => setOpen(true)} className="mb-2 h-4 w-4 cursor-pointer text-white hover:text-gray-300" />
+      <PencilIcon
+        onClick={() => setOpen(true)}
+        className="mb-2 h-4 w-4 cursor-pointer text-white hover:text-gray-300"
+      />
       <CommonModal
         open={open}
         onOpenChange={setOpen}
@@ -80,7 +83,11 @@ export default function EditProfileModal() {
         <div className="my-4 border-t border-[#333]" />
 
         <div className="flex justify-end gap-3">
-          <Button variant="ghost" onClick={() => setOpen(false)} className="cursor-pointer text-white">
+          <Button
+            variant="ghost"
+            onClick={() => setOpen(false)}
+            className="cursor-pointer text-white"
+          >
             Cancel
           </Button>
           <Button

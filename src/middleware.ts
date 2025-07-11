@@ -2,7 +2,12 @@ import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import type { NextRequest } from 'next/server';
 
-import { PUBLIC_ROUTE, PUBLIC_API_ROUTES, excludedPublicRoutes, PRIVATE_ROUTE } from '@/constants/app-routes';
+import {
+  PUBLIC_ROUTE,
+  PUBLIC_API_ROUTES,
+  excludedPublicRoutes,
+  PRIVATE_ROUTE
+} from '@/constants/app-routes';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 
 const publicRoutes = Object.values(PUBLIC_ROUTE) as string[];
@@ -16,7 +21,9 @@ export async function middleware(req: NextRequest) {
   const isApiRoute = pathname.startsWith('/api');
   const publicApiRoutes = Object.values(PUBLIC_API_ROUTES) as string[];
   const isPublicApiRoute = publicApiRoutes.includes(pathname);
-  const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
+  const isPublicRoute = publicRoutes.some(
+    (route) => pathname === route || pathname.startsWith(route + '/')
+  );
 
   if (isPublicApiRoute) {
     return NextResponse.next();
@@ -29,7 +36,9 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const now = Math.floor(Date.now() / 1000);
 
-  const isRestrictedPublicRoute = excludedPublicRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
+  const isRestrictedPublicRoute = excludedPublicRoutes.some(
+    (route) => pathname === route || pathname.startsWith(route + '/')
+  );
 
   if (isPublicRoute) {
     if (token && token.exp > now && isRestrictedPublicRoute) {
@@ -42,7 +51,10 @@ export async function middleware(req: NextRequest) {
 
   if (!token) {
     if (isApiRoute) {
-      return NextResponse.json({ message: 'Unauthorized: Token missing or expired' }, { status: HttpStatusCode.UNAUTHORIZED });
+      return NextResponse.json(
+        { message: 'Unauthorized: Token missing or expired' },
+        { status: HttpStatusCode.UNAUTHORIZED }
+      );
     } else {
       const redirectUrl = req.nextUrl.clone();
       redirectUrl.pathname = '/';
@@ -53,7 +65,7 @@ export async function middleware(req: NextRequest) {
   if (token.exp && token.exp < now) {
     if (isApiRoute) {
       return new NextResponse(JSON.stringify({ message: 'Token expired' }), {
-        status: HttpStatusCode.UNAUTHORIZED,
+        status: HttpStatusCode.UNAUTHORIZED
       });
     } else {
       const redirectUrl = req.nextUrl.clone();
@@ -68,11 +80,11 @@ export async function middleware(req: NextRequest) {
 
   return NextResponse.next({
     request: {
-      headers: requestHeaders,
-    },
+      headers: requestHeaders
+    }
   });
 }
 
 export const config = {
-  matcher: ['/((?!_next|favicon.ico|images|fonts|icons|auth|api/auth).*)'],
+  matcher: ['/((?!_next|favicon.ico|images|fonts|icons|auth|api/auth).*)']
 };

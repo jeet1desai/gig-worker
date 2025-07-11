@@ -31,14 +31,24 @@ const UsersList = () => {
   const [search, setSearch] = useState<string>('');
 
   const dispatch = useDispatch();
-  const { users, pagination, loading } = useSelector((state: RootState) => state.adminUser);
+  const { users, pagination, loading } = useSelector(
+    (state: RootState) => state.adminUser
+  );
 
   useDebouncedEffect(
     () => {
-      dispatch(adminService.getAdminUsers({ page: pagination.page, pageSize: pagination.pageSize, sortKey, sortOrder, search }) as any);
+      dispatch(
+        adminService.getAdminUsers({
+          page: pagination.page,
+          pageSize: pagination.pageSize,
+          sortKey,
+          sortOrder,
+          search
+        }) as any
+      );
     },
     500,
-    [pagination.page, sortOrder, sortKey, search],
+    [pagination.page, sortOrder, sortKey, search]
   );
 
   const handlePageChange = (page: number) => {

@@ -21,7 +21,7 @@ const CommonDeleteDialog = ({
   description = 'Are you sure you want to delete user?',
   confirmLabel = 'Delete',
   cancelLabel = 'Cancel',
-  onConfirm,
+  onConfirm
 }: ControlledConfirmDeleteDialogProps) => {
   const handleConfirm = () => {
     onConfirm();

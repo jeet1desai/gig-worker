@@ -1,7 +1,21 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import {
   Star,
   Clock,
@@ -16,41 +30,49 @@ import {
   BookOpen,
   ThumbsUp,
   ThumbsDown,
+  ChevronLeft,
+  Share2,
+  Flag,
+  Bookmark,
+  Check,
+  Sparkles,
+  FileText,
+  Zap,
+  Filter,
+  Download
 } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import DashboardLayout from '@/components/layouts/layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-
-import { RootState, useSelector } from '@/store/store';
-import { cn } from '@/lib/utils';
+import { RootState } from '@/store/store';
 
 const mockGigRequest = {
   id: 1,
   title: 'Need help with calculus homework - derivatives and integrals',
   images: [
     'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=500&h=300&fit=crop&crop=entropy&auto=format',
-    'https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=500&h=300&fit=crop&crop=entropy&auto=format',
+    'https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=500&h=300&fit=crop&crop=entropy&auto=format'
   ],
   client: {
     name: 'Sarah Johnson',
-    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face&auto=format',
+    avatar:
+      'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face&auto=format',
     rating: 4.8,
     reviews: 23,
     memberSince: '2023',
     location: 'New York, NY',
     verified: true,
     totalPosted: 12,
-    completionRate: 95,
+    completionRate: 95
   },
+  attachments: [
+    {
+      name: 'Calculus_Problems.pdf',
+      size: '2.4 MB'
+    },
+    {
+      name: 'Course_Syllabus.pdf',
+      size: '1.1 MB'
+    }
+  ],
   budget: '$50-80',
   budgetType: 'Fixed Price',
   timeframe: '2 days',
@@ -87,449 +109,413 @@ Assignment due in 2 days, so I need this completed within 48 hours. Flexible on 
 
 **Budget:**
 Willing to pay $50-80 depending on the quality of explanations and tutoring provided.`,
-
-  requirements: [
-    "Bachelor's degree in Mathematics or related field",
-    'Previous tutoring experience preferred',
-    'Available for video call sessions',
-    'Fluent in English',
-  ],
-
   bids: [
     {
       id: 1,
       provider: {
         name: 'Dr. Michael Chen',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face&auto=format',
+        avatar:
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face&auto=format',
         rating: 4.9,
         reviews: 156,
         expertise: 'Mathematics PhD, 8 years tutoring experience',
         verified: true,
         responseTime: 'within 2 hours',
-        completionRate: 98,
+        completionRate: 98
       },
       amount: 65,
       timeframe: '24 hours',
       proposal:
         "I have a PhD in Mathematics and 8+ years of tutoring experience. I specialize in calculus and have helped over 100 students master derivatives and integrals. I can provide step-by-step explanations, create visual aids, and offer a comprehensive 90-minute tutoring session via Zoom. I'm available to start immediately and can complete this within 24 hours.",
       postedAgo: '1 hour ago',
-      featured: true,
+      featured: true
     },
     {
       id: 2,
       provider: {
         name: 'Emma Rodriguez',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face&auto=format',
+        avatar:
+          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face&auto=format',
         rating: 4.7,
         reviews: 89,
         expertise: 'Math tutor specializing in calculus',
         verified: true,
         responseTime: 'within 4 hours',
-        completionRate: 94,
+        completionRate: 94
       },
       amount: 55,
       timeframe: '36 hours',
       proposal:
         'I specialize in calculus tutoring and have helped many students master derivatives and integrals. I use interactive methods and provide detailed written explanations along with practice problems. I can offer flexible scheduling and will provide all solutions with step-by-step breakdowns.',
-      postedAgo: '30 minutes ago',
+      postedAgo: '30 minutes ago'
     },
     {
       id: 3,
       provider: {
         name: 'Alex Kim',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face&auto=format',
+        avatar:
+          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face&auto=format',
         rating: 4.8,
         reviews: 67,
         expertise: 'Engineering student with strong math background',
         verified: false,
         responseTime: 'within 1 hour',
-        completionRate: 92,
+        completionRate: 92
       },
       amount: 45,
       timeframe: '48 hours',
       proposal:
         "As an engineering student, I use calculus daily and have tutored many peers. I can break down complex concepts into easy-to-understand steps and provide practical examples. I'm very responsive and can start working on this immediately.",
-      postedAgo: '45 minutes ago',
-    },
-  ],
+      postedAgo: '45 minutes ago'
+    }
+  ]
 };
 
 export default function GigDetailPage() {
-  const params = useParams();
   const router = useRouter();
-
-  useEffect(() => {}, []);
-
   const user = useSelector((state: RootState) => state.user);
 
   return (
     <DashboardLayout>
-      <main className="space-y-4 p-3 pl-5 sm:space-y-6 sm:p-4 md:p-6">
-        <div className="grid gap-4 lg:grid-cols-3">
-          <div className="space-y-6 lg:col-span-2">
-            <Card className="rounded-lg border-gray-700/50 bg-inherit">
-              <CardContent>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="mb-3 flex items-center gap-3">
-                      <Badge variant="default" className="bg-green-100 text-green-800">
-                        Open
-                      </Badge>
-                      <Badge variant="outline" className="border-blue-500/20 bg-blue-500/10 text-blue-400">
-                        High Priority
-                      </Badge>
-                    </div>
+      <main className="min-h-screen py-8">
+        <div className="container mx-auto px-4">
+          <div className="mb-6 flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.back()}
+              className="text-gray-400 hover:bg-gray-800 hover:text-white"
+            >
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              Back to Gigs
+            </Button>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gray-800 text-gray-400 hover:bg-gray-800"
+              >
+                <Share2 className="mr-2 h-4 w-4" />
+                Share
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gray-800 text-gray-400 hover:bg-gray-800"
+              >
+                <Flag className="mr-2 h-4 w-4" />
+                Report
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-gray-800 text-gray-400 hover:bg-gray-800"
+              >
+                <Bookmark className="mr-2 h-4 w-4" />
+                Save
+              </Button>
+            </div>
+          </div>
 
-                    <CardTitle className="mb-3 text-2xl text-white">{mockGigRequest.title}</CardTitle>
-
-                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 md:grid-cols-4">
-                      <div className="flex items-center space-x-2">
-                        <div className="rounded-lg bg-teal-100 p-1.5 dark:bg-teal-900/30">
-                          <DollarSign className="size-4" />
-                        </div>
-                        <div>
-                          <span className="font-semibold text-green-600">{mockGigRequest.budget}</span>
-                          <p className="text-xs text-gray-500">{mockGigRequest.budgetType}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="rounded-lg bg-purple-100 p-1.5 dark:bg-purple-900/30">
-                          <Clock className="size-4" />
-                        </div>
-                        <div>
-                          <span className="font-medium text-white">{mockGigRequest.timeframe}</span>
-                          <p className="text-xs text-gray-500">Timeline</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="rounded-lg bg-blue-100 p-1.5 dark:bg-blue-900/30">
-                          <Heart className="size-4" />
-                        </div>
-                        <div>
-                          <span className="font-medium text-white">{mockGigRequest.location}</span>
-                          <p className="text-xs text-gray-500">Location</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="rounded-lg bg-gray-100 p-1.5 dark:bg-gray-700">
-                          <MapPin className="size-4" />
-                        </div>
-                        <div>
-                          <span className="font-medium text-white">{mockGigRequest.applicants} bids</span>
-                          <p className="text-xs text-gray-500">Received</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {mockGigRequest.images && mockGigRequest.images.length > 0 && (
+          <div className="grid gap-8 lg:grid-cols-3">
+            <div className="space-y-6 lg:col-span-3">
               <Card className="rounded-lg border-gray-700/50 bg-inherit">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-white">
-                    <Briefcase className="size-4" />
-                    Attachments
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    {mockGigRequest.images.map((image, index) => (
-                      <div key={index} className="overflow-hidden rounded-lg border">
-                        <img
-                          src={image}
-                          alt={`Attachment ${index + 1}`}
-                          className="h-48 w-full cursor-pointer object-cover transition-transform hover:scale-105"
-                        />
-                      </div>
-                    ))}
+                <CardContent className="">
+                  <div className="mb-4 flex flex-wrap items-center gap-2">
+                    <Badge className="bg-green-900/30 text-green-400 hover:bg-green-900/40">
+                      <CheckCircle className="mr-1 h-3.5 w-3.5" />
+                      {mockGigRequest.status}
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="border-amber-500/20 bg-amber-500/10 text-amber-400"
+                    >
+                      <Zap className="mr-1 h-3.5 w-3.5" />
+                      {mockGigRequest.urgency} Priority
+                    </Badge>
+                    <span className="ml-auto text-sm text-gray-400">
+                      Posted {mockGigRequest.postedAgo} • Expires in{' '}
+                      {mockGigRequest.expires}
+                    </span>
                   </div>
-                </CardContent>
-              </Card>
-            )}
 
-            <Tabs defaultValue="description">
-              <TabsList className={cn('grid w-full bg-gray-800 p-1', user.role === 'provider' ? 'grid-cols-3' : 'grid-cols-2')}>
-                <TabsTrigger value="description" className="text-gray-100 data-[state=active]:text-black">
-                  <BookOpen className="mr-2 h-4 w-4" />
-                  Description
-                </TabsTrigger>
-                <TabsTrigger value="ratings" className="text-gray-100 data-[state=active]:text-black">
-                  <Star className="mr-2 h-4 w-4" />
-                  Ratings
-                </TabsTrigger>
-                {user.role === 'provider' && (
-                  <TabsTrigger value="bids" className="text-gray-100 data-[state=active]:text-black">
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    Bids ({mockGigRequest.applicants})
-                  </TabsTrigger>
-                )}
-              </TabsList>
+                  <h1 className="mb-4 text-2xl font-bold text-white">
+                    {mockGigRequest.title}
+                  </h1>
 
-              <TabsContent value="description" className="space-y-4">
-                <Card className="rounded-lg border-gray-700/50 bg-inherit">
-                  <CardContent className="text-white">
-                    <div className="prose max-w-none">
-                      <div className="leading-relaxed whitespace-pre-line">{mockGigRequest.description}</div>
-                    </div>
-
-                    <div className="mt-6">
-                      <h3 className="mb-3 flex items-center gap-2 font-semibold">
-                        <Briefcase className="h-4 w-4" />
-                        Skills Required
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {mockGigRequest.skills.map((skill) => (
-                          <Badge key={skill} variant="secondary" className="bg-purple-50 text-purple-700 hover:bg-purple-100">
-                            {skill}
-                          </Badge>
-                        ))}
+                  <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+                    <div className="rounded-lg bg-gray-700/50 p-4">
+                      <div className="flex items-center space-x-2">
+                        <DollarSign className="h-5 w-5 text-blue-400" />
+                        <div>
+                          <p className="text-sm text-gray-400">Budget</p>
+                          <p className="font-medium text-white">
+                            {mockGigRequest.budget}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                    <div className="rounded-lg bg-gray-700/50 p-4">
+                      <div className="flex items-center space-x-2">
+                        <Clock className="h-5 w-5 text-purple-400" />
+                        <div>
+                          <p className="text-sm text-gray-400">Timeline</p>
+                          <p className="font-medium text-white">
+                            {mockGigRequest.timeframe}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-lg bg-gray-700/50 p-4">
+                      <div className="flex items-center space-x-2">
+                        <MapPin className="h-5 w-5 text-green-400" />
+                        <div>
+                          <p className="text-sm text-gray-400">Location</p>
+                          <p className="font-medium text-white">
+                            {mockGigRequest.location}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-lg bg-gray-700/50 p-4">
+                      <div className="flex items-center space-x-2">
+                        <Briefcase className="h-5 w-5 text-amber-400" />
+                        <div>
+                          <p className="text-sm text-gray-400">Category</p>
+                          <p className="font-medium text-white">
+                            {mockGigRequest.category}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-              <TabsContent value="ratings" className="space-y-6">
-                <Card className="rounded-lg border-gray-700/50 bg-inherit">
-                  <CardContent className="text-white">
-                    <div className="mb-4 flex items-center sm:mb-0">
-                      <div className="mr-4 text-5xl font-bold">4.8</div>
-                      <div>
-                        <div className="flex">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star key={star} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                  <div className="mb-6">
+                    <h3 className="mb-3 text-lg font-semibold text-white">Description</h3>
+                    <div className="text-gray-300">{mockGigRequest.description}</div>
+                  </div>
+
+                  {mockGigRequest.attachments &&
+                    mockGigRequest.attachments.length > 0 && (
+                      <div className="">
+                        <h3 className="mb-3 text-lg font-semibold text-white">
+                          Attachments
+                        </h3>
+                        <div className="space-y-2">
+                          {mockGigRequest.attachments.map((file: any, i: any) => (
+                            <div
+                              key={i}
+                              className="group flex items-center justify-between rounded-lg border border-gray-700 bg-gray-700/30 p-3 transition-colors hover:bg-gray-700/50"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-900/20 text-blue-400">
+                                  <FileText className="h-5 w-5" />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-medium text-white">
+                                    {file.name}
+                                  </p>
+                                  <p className="text-xs text-gray-400">{file.size}</p>
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-gray-400"
+                                title="Download"
+                              >
+                                <Download className="h-4 w-4" />
+                              </Button>
+                            </div>
                           ))}
                         </div>
-                        <p className="text-sm text-gray-400">Based on 24 reviews</p>
                       </div>
-                    </div>
+                    )}
+                </CardContent>
+              </Card>
 
-                    <div className="mt-4 space-y-3">
-                      {[5, 4, 3, 2, 1].map((rating) => (
-                        <div key={rating} className="flex items-center">
-                          <div className="flex w-16 items-center">
-                            <span className="text-sm font-medium text-gray-300">{rating} star</span>
-                            <Star className="ml-1 h-4 w-4 text-yellow-400" />
-                          </div>
-                          <div className="mx-2 h-2 flex-1 overflow-hidden rounded-full bg-gray-700">
-                            <div className="h-full bg-yellow-400" style={{ width: `${[75, 17, 4, 3, 1][5 - rating]}%` }} />
-                          </div>
-                          <span className="ml-2 w-8 text-right text-sm text-gray-400">{[18, 4, 1, 1, 0][5 - rating]}</span>
-                        </div>
+              {user?.role === 'provider' && (
+                <Card className="rounded-lg border-gray-700/50 bg-inherit">
+                  <CardContent>
+                    <CardTitle className="text-white">
+                      Bids ({mockGigRequest.bids.length})
+                    </CardTitle>
+
+                    <div className="mt-6 space-y-4">
+                      {mockGigRequest.bids.map((bid) => (
+                        <Card
+                          key={bid.id}
+                          className={`relative overflow-hidden border border-gray-700/50 bg-gray-800/30 transition-all hover:border-gray-600/50 ${bid.featured ? 'ring-2 ring-blue-500/30' : ''}`}
+                        >
+                          {bid.featured && (
+                            <div className="absolute top-0 right-0 rounded-bl-md bg-blue-600 px-2 py-1 text-xs font-medium text-white">
+                              Featured
+                            </div>
+                          )}
+                          <CardContent className="pt-2">
+                            <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+                              <div className="flex items-start space-x-4">
+                                <Avatar className="h-14 w-14 border-2 border-blue-500/30">
+                                  <AvatarImage
+                                    src={bid.provider.avatar}
+                                    alt={bid.provider.name}
+                                  />
+                                  <AvatarFallback className="bg-gray-700">
+                                    {bid.provider.name
+                                      .split(' ')
+                                      .map((n) => n[0])
+                                      .join('')}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <div className="flex items-center space-x-2">
+                                    <h4 className="text-lg font-semibold text-white">
+                                      {bid.provider.name}
+                                    </h4>
+                                    {bid.provider.verified && (
+                                      <CheckCircle className="h-4 w-4 text-blue-400" />
+                                    )}
+                                  </div>
+                                  <div className="mt-1 flex items-center space-x-2">
+                                    <div className="flex items-center">
+                                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                      <span className="ml-1 text-sm font-medium text-white">
+                                        {bid.provider.rating}
+                                      </span>
+                                      <span className="mx-1 text-gray-500">•</span>
+                                      <span className="text-sm text-gray-400">
+                                        {bid.provider.reviews} reviews
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <p className="mt-1 text-sm text-gray-300">
+                                    {bid.provider.expertise}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col items-end space-y-2 sm:items-end">
+                                <div className="text-right">
+                                  <div className="text-2xl font-bold text-white">
+                                    ${bid.amount}
+                                  </div>
+                                  <div className="text-sm text-gray-400">
+                                    Delivery in {bid.timeframe}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="mt-4 border-t border-gray-700/50 pt-4">
+                              <h5 className="mb-2 text-sm font-medium text-gray-300">
+                                Proposal:
+                              </h5>
+                              <p className="text-gray-300">{bid.proposal}</p>
+                              <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
+                                <span className="flex items-center">
+                                  <Clock className="mr-1 h-3.5 w-3.5" />
+                                  Posted {bid.postedAgo}
+                                </span>
+                                <div className="flex space-x-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-blue-500/30 text-blue-400 hover:bg-blue-900/20 hover:text-blue-300"
+                                  >
+                                    <MessageCircle className="mr-2 h-4 w-4" />
+                                    Message
+                                  </Button>
+                                  <Button
+                                    variant="default"
+                                    size="sm"
+                                    className="bg-green-600 text-white hover:bg-green-700"
+                                  >
+                                    <Check className="mr-2 h-4 w-4" />
+                                    Accept Bid
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
                       ))}
                     </div>
                   </CardContent>
-
-                  <Separator className="bg-gray-700/50" />
-
-                  {[
-                    {
-                      id: 1,
-                      user: {
-                        name: 'Alex Johnson',
-                        avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-                        location: 'New York, USA',
-                        joinDate: '2022',
-                      },
-                      rating: 5,
-                      date: '2 days ago',
-                      comment:
-                        'Exceptional service! The provider went above and beyond to deliver high-quality work. Very professional and communicative throughout the entire process. I would definitely hire again.',
-                      likes: 8,
-                      isLiked: false,
-                      gig: 'Calculus Tutoring Session',
-                      gigPrice: 65,
-                    },
-                    {
-                      id: 2,
-                      user: {
-                        name: 'Sarah Williams',
-                        avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
-                        location: 'London, UK',
-                        joinDate: '2021',
-                      },
-                      rating: 4,
-                      date: '1 week ago',
-                      comment:
-                        'Good work overall. The delivery was a bit delayed but the quality was worth the wait. The tutor explained complex concepts in a simple way that was easy to understand.',
-                      likes: 5,
-                      isLiked: true,
-                      gig: 'Advanced Mathematics Help',
-                      gigPrice: 75,
-                    },
-                    {
-                      id: 3,
-                      user: {
-                        name: 'Michael Chen',
-                        avatar: 'https://randomuser.me/api/portraits/men/2.jpg',
-                        location: 'Toronto, Canada',
-                        joinDate: '2023',
-                      },
-                      rating: 5,
-                      date: '2 weeks ago',
-                      comment:
-                        'Absolutely brilliant! The tutor was extremely knowledgeable and patient. They provided detailed explanations and made sure I understood every concept before moving on. Highly recommended!',
-                      likes: 12,
-                      isLiked: false,
-                      gig: 'Calculus Homework Help',
-                      gigPrice: 55,
-                    },
-                  ].map((review) => (
-                    <>
-                      <Card key={review.id} className="rounded-none border-0 !border-b border-gray-700/50 bg-inherit p-0 pb-4">
-                        <CardContent className="text-white">
-                          <div className="mb-4 flex items-start justify-between">
-                            <div className="flex items-start space-x-4">
-                              <Avatar className="h-12 w-12">
-                                <AvatarImage src={review.user.avatar} />
-                                <AvatarFallback>
-                                  {review.user.name
-                                    .split(' ')
-                                    .map((n) => n[0])
-                                    .join('')}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <div className="flex items-center">
-                                  <h4 className="font-medium text-white">{review.user.name}</h4>
-                                  <CheckCircle className="ml-2 h-4 w-4 text-blue-500" />
-                                </div>
-                                <div className="mt-1 flex items-center text-sm text-gray-400">
-                                  <span>{review.user.location}</span>
-                                  <span className="mx-2">•</span>
-                                  <span>Member since {review.user.joinDate}</span>
-                                </div>
-                                <div className="mt-1 flex items-center">
-                                  <div className="flex">
-                                    {[...Array(5)].map((_, i) => (
-                                      <Star
-                                        key={i}
-                                        className={`h-4 w-4 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`}
-                                      />
-                                    ))}
-                                  </div>
-                                  <span className="ml-2 text-sm text-gray-400">{review.date}</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className={`h-8 w-8 rounded-full ${review.isLiked ? 'text-green-500' : 'text-gray-400 hover:text-green-500'}`}
-                              >
-                                <ThumbsUp className={`h-4 w-4 ${review.isLiked ? 'fill-current' : ''}`} />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className={`h-8 w-8 rounded-full ${review.isLiked === false ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
-                              >
-                                <ThumbsDown className={`h-4 w-4 ${review.isLiked === false ? 'fill-current' : ''}`} />
-                              </Button>
-                            </div>
-                          </div>
-
-                          <div className="mb-4">
-                            <div className="mb-2 flex items-center text-sm">
-                              <span className="font-medium text-gray-300">{review.gig}</span>
-                              <span className="mx-2 text-gray-500">•</span>
-                              <span className="text-blue-400">${review.gigPrice}</span>
-                            </div>
-                            <p className="text-gray-300">{review.comment}</p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </>
-                  ))}
                 </Card>
-              </TabsContent>
+              )}
 
-              <TabsContent value="bids" className="space-y-6">
-                {mockGigRequest.bids.map((bid) => (
-                  <Card key={bid.id} className="rounded-lg border-gray-700/50 bg-inherit">
-                    <CardContent className="text-white">
-                      {bid.featured && (
-                        <div className="mb-4 w-fit rounded-full bg-gradient-to-r from-purple-600 to-pink-600 px-3 py-1 text-xs font-medium text-white">
-                          ⭐ Featured Bid
+              <Card className="border-gray-700/50 bg-inherit">
+                <CardContent>
+                  <div className="mb-6">
+                    <h3 className="mb-4 text-xl font-semibold text-white">
+                      Client Reviews
+                    </h3>
+                    <div className="mt-2 flex items-center">
+                      <div className="mr-2 text-3xl font-bold text-white">4.8</div>
+                      <div className="mr-4">
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`h-5 w-5 ${star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`}
+                            />
+                          ))}
                         </div>
-                      )}
+                        <div className="text-sm text-gray-400">Based on 24 reviews</div>
+                      </div>
+                    </div>
+                  </div>
 
-                      <div className="mb-4 flex items-start justify-between">
-                        <div className="flex items-start space-x-4">
-                          <Avatar className="h-16 w-16">
-                            <AvatarImage src={bid.provider.avatar} />
-                            <AvatarFallback>
-                              {bid.provider.name
-                                .split(' ')
-                                .map((n) => n[0])
-                                .join('')}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="mb-1 flex items-center gap-2">
-                              <h4 className="text-lg font-semibold">{bid.provider.name}</h4>
-                              {bid.provider.verified && <CheckCircle className="h-4 w-4 text-blue-600" />}
-                            </div>
-                            <p className="mb-2 text-sm text-gray-600">{bid.provider.expertise}</p>
-                            <div className="flex items-center space-x-4 text-sm text-gray-500">
-                              <div className="flex items-center space-x-1">
-                                <Star className="h-4 w-4 fill-current text-yellow-500" />
-                                <span className="font-medium">{bid.provider.rating}</span>
-                                <span>({bid.provider.reviews} reviews)</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <Clock className="h-4 w-4" />
-                                <span>Responds {bid.provider.responseTime}</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <CheckCircle className="h-4 w-4" />
-                                <span>{bid.provider.completionRate}% completion</span>
+                  <div className="space-y-6">
+                    {[1, 2, 3].map((review) => (
+                      <div
+                        key={review}
+                        className="border-b border-gray-700/50 pb-6 last:border-0 last:pb-0"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-3">
+                            <Avatar className="h-10 w-10">
+                              <AvatarImage
+                                src={`https://randomuser.me/api/portraits/${review % 2 === 0 ? 'men' : 'women'}/${40 + review}.jpg`}
+                              />
+                              <AvatarFallback>U{review}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <h4 className="font-medium text-white">User {review}</h4>
+                              <div className="flex items-center">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <Star
+                                    key={star}
+                                    className={`h-4 w-4 ${star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`}
+                                  />
+                                ))}
                               </div>
                             </div>
                           </div>
+                          <span className="text-sm text-gray-400">2 weeks ago</span>
                         </div>
-
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-green-600">${bid.amount}</div>
-                          <div className="text-sm text-gray-500">in {bid.timeframe}</div>
-                        </div>
+                        <p className="mt-3 text-gray-300">
+                          {review === 1
+                            ? 'Great experience working with this client. Clear communication and prompt payment. Highly recommended!'
+                            : review === 2
+                              ? 'The work was completed on time and exceeded my expectations. Will definitely work with again.'
+                              : 'Professional and skilled worker. Delivered exactly what was promised.'}
+                        </p>
                       </div>
-
-                      <p className="mb-4 leading-relaxed text-white">{bid.proposal}</p>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500">Bid placed {bid.postedAgo}</span>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="border-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-gray-400"
-                          >
-                            <User className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="border-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-gray-400"
-                          >
-                            <MessageCircle className="h-4 w-4" />
-                          </Button>
-                          <Button size="default" className="bg-green-600 hover:bg-green-700">
-                            Accept Bid
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </TabsContent>
-            </Tabs>
+                    ))}
+                    <Button
+                      variant="outline"
+                      className="mt-4 w-full border-gray-600 bg-gray-700/50 text-gray-300 hover:bg-gray-700/50"
+                    >
+                      View All Reviews
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="mt-6 space-y-6">
             <Card className="rounded-lg border-gray-700/50 bg-inherit">
               <CardContent className="text-white">
                 <div className="mb-4 flex items-center space-x-4">
@@ -538,36 +524,48 @@ export default function GigDetailPage() {
                     <AvatarFallback>
                       {mockGigRequest.client.name
                         .split(' ')
-                        .map((n) => n[0])
+                        .map((n: any) => n[0])
                         .join('')}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <div className="mb-1 flex items-center gap-2">
-                      <h3 className="text-lg font-semibold">{mockGigRequest.client.name}</h3>
-                      {mockGigRequest.client.verified && <CheckCircle className="h-4 w-4 text-blue-600" />}
+                      <h3 className="text-lg font-semibold">
+                        {mockGigRequest.client.name}
+                      </h3>
+                      {mockGigRequest.client.verified && (
+                        <CheckCircle className="h-4 w-4 text-blue-600" />
+                      )}
                     </div>
                     <div className="mb-1 flex items-center space-x-1 text-sm text-gray-600">
                       <Star className="h-4 w-4 fill-current text-yellow-500" />
                       <span className="font-medium">{mockGigRequest.client.rating}</span>
                       <span>({mockGigRequest.client.reviews} reviews)</span>
                     </div>
-                    <p className="text-sm text-gray-500">{mockGigRequest.client.location}</p>
+                    <p className="text-sm text-gray-500">
+                      {mockGigRequest.client.location}
+                    </p>
                   </div>
                 </div>
 
                 <div className="mb-6 space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Member since:</span>
-                    <span className="font-medium">{mockGigRequest.client.memberSince}</span>
+                    <span className="font-medium">
+                      {mockGigRequest.client.memberSince}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Total posted:</span>
-                    <span className="font-medium">{mockGigRequest.client.totalPosted} gigs</span>
+                    <span className="font-medium">
+                      {mockGigRequest.client.totalPosted} gigs
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Completion rate:</span>
-                    <span className="font-medium text-green-600">{mockGigRequest.client.completionRate}%</span>
+                    <span className="font-medium text-green-600">
+                      {mockGigRequest.client.completionRate}%
+                    </span>
                   </div>
                 </div>
 
@@ -592,12 +590,20 @@ export default function GigDetailPage() {
                 </div>
 
                 <div>
-                  <Label className="mb-2 block text-sm font-medium">Your Bid Amount</Label>
+                  <Label className="mb-2 block text-sm font-medium">
+                    Your Bid Amount
+                  </Label>
                   <div className="relative">
                     <DollarSign className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-                    <Input type="number" placeholder="Enter your bid (50-80)" className="h-10 w-full rounded-lg border-gray-600 py-2 pr-4 pl-10" />
+                    <Input
+                      type="number"
+                      placeholder="Enter your bid (50-80)"
+                      className="h-10 w-full rounded-lg border-gray-600 py-2 pr-4 pl-10"
+                    />
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">Budget range: {mockGigRequest.budget}</p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Budget range: {mockGigRequest.budget}
+                  </p>
                 </div>
 
                 <div>
@@ -622,7 +628,9 @@ export default function GigDetailPage() {
                     placeholder="Explain why you're the perfect fit for this project..."
                     className="w-full rounded-lg border-gray-600 bg-inherit px-4 py-2"
                   />
-                  <p className="mt-1 text-xs text-gray-500">Min. 100 characters recommended</p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Min. 100 characters recommended
+                  </p>
                 </div>
 
                 <div className="border-t border-gray-700/50 pt-4">
@@ -636,7 +644,9 @@ export default function GigDetailPage() {
                   </div>
                 </div>
 
-                <Button className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800">Submit Bid</Button>
+                <Button className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800">
+                  Submit Bid
+                </Button>
               </CardContent>
             </Card>
 

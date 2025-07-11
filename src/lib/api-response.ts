@@ -6,7 +6,7 @@ export function successResponse<T, S = undefined>({
   data,
   message,
   statusCode = 200,
-  meta,
+  meta
 }: {
   data: T;
   message?: string;
@@ -17,11 +17,11 @@ export function successResponse<T, S = undefined>({
     success: true,
     data,
     message,
-    ...(meta && { meta }),
+    ...(meta && { meta })
   };
 
   return NextResponse.json<ApiResponse<T, S>>(response, {
-    status: statusCode,
+    status: statusCode
   });
 }
 
@@ -30,7 +30,7 @@ export function errorResponse({
   message,
   statusCode = 400,
   details,
-  fieldErrors,
+  fieldErrors
 }: {
   code: string;
   message: string;
@@ -44,11 +44,11 @@ export function errorResponse({
       code,
       message,
       details,
-      fieldErrors,
-    },
+      fieldErrors
+    }
   };
 
   return NextResponse.json<ApiResponse<null>>(response, {
-    status: statusCode,
+    status: statusCode
   });
 }

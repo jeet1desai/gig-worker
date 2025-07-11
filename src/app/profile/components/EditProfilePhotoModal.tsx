@@ -15,7 +15,10 @@ function getInitials(name: string) {
   return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
 }
 
-export default function EditProfilePhotoModal({ avatarSrc, name }: EditProfilePhotoModalProps) {
+export default function EditProfilePhotoModal({
+  avatarSrc,
+  name
+}: EditProfilePhotoModalProps) {
   const [open, setOpen] = useState(false);
   const initials = getInitials(name);
   const isImageAvailable = !!avatarSrc;
@@ -48,7 +51,13 @@ export default function EditProfilePhotoModal({ avatarSrc, name }: EditProfilePh
       <div className="flex justify-center">
         {isImageAvailable ? (
           <div className="h-40 w-40 overflow-hidden rounded-full border-4 border-[#0d0d0d] shadow">
-            <Image src={avatarSrc!} alt="Profile" width={160} height={160} className="h-full w-full object-cover" />
+            <Image
+              src={avatarSrc!}
+              alt="Profile"
+              width={160}
+              height={160}
+              className="h-full w-full object-cover"
+            />
           </div>
         ) : (
           <div className="flex h-40 w-40 items-center justify-center rounded-full border-4 border-[#0d0d0d] bg-yellow-500 text-4xl font-semibold text-black shadow">
@@ -58,11 +67,23 @@ export default function EditProfilePhotoModal({ avatarSrc, name }: EditProfilePh
       </div>
 
       <div className="mt-8 flex justify-center gap-4">
-        <button className="cursor-pointer rounded-md bg-black px-5 py-2 text-white transition hover:bg-gray-900" onClick={handleProfileClick}>
+        <button
+          className="cursor-pointer rounded-md bg-black px-5 py-2 text-white transition hover:bg-gray-900"
+          onClick={handleProfileClick}
+        >
           Add photo
         </button>
-        <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
-        <button onClick={() => setOpen(false)} className="cursor-pointer rounded-md bg-[#FFF2E0] px-5 py-2 text-black transition hover:bg-[#f7e8d1]">
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+          className="hidden"
+        />
+        <button
+          onClick={() => setOpen(false)}
+          className="cursor-pointer rounded-md bg-[#FFF2E0] px-5 py-2 text-black transition hover:bg-[#f7e8d1]"
+        >
           Delete
         </button>
       </div>

@@ -12,11 +12,11 @@ export const signupSchema = yup.object({
     .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
     .matches(/\d/, 'Password must contain at least one number')
-    .matches(/[@$!%*?&]/, 'Password must contain at least one special character'),
+    .matches(/[@$!%*?&]/, 'Password must contain at least one special character')
 });
 
 export const forgotPasswordSchema = yup.object({
-  email: yup.string().email('Invalid email address').required('Email is required'),
+  email: yup.string().email('Invalid email address').required('Email is required')
 });
 
 export const resetPasswordSchema = yup.object({
@@ -32,5 +32,5 @@ export const resetPasswordSchema = yup.object({
   confirmPassword: yup
     .string()
     .required('Confirm password is required')
-    .oneOf([yup.ref('password')], 'Passwords must match'),
+    .oneOf([yup.ref('password')], 'Passwords must match')
 });

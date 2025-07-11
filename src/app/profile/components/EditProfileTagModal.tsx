@@ -13,7 +13,10 @@ export default function EditProfileTagsModal() {
   const [skills, setSkills] = useState<string[]>(['Graphic Design', 'Typography']);
   const [skillInput, setSkillInput] = useState('');
 
-  const [extracurricular, setExtracurricular] = useState<string[]>(['Photography', 'Public Speaking']);
+  const [extracurricular, setExtracurricular] = useState<string[]>([
+    'Photography',
+    'Public Speaking'
+  ]);
   const [extraInput, setExtraInput] = useState('');
 
   const [interests, setInterests] = useState<string[]>(['UI/UX Design', 'Animation']);
@@ -21,7 +24,14 @@ export default function EditProfileTagsModal() {
 
   // Add item helper
   const handleAdd = (type: 'skill' | 'extra' | 'interest') => {
-    const trimmed = type === 'skill' ? skillInput.trim() : type === 'extra' ? extraInput.trim() : type === 'interest' ? interestInput.trim() : '';
+    const trimmed =
+      type === 'skill'
+        ? skillInput.trim()
+        : type === 'extra'
+          ? extraInput.trim()
+          : type === 'interest'
+            ? interestInput.trim()
+            : '';
 
     if (!trimmed) return;
 
@@ -39,7 +49,8 @@ export default function EditProfileTagsModal() {
 
   const removeItem = (type: 'skill' | 'extra' | 'interest', item: string) => {
     if (type === 'skill') setSkills((prev) => prev.filter((i) => i !== item));
-    else if (type === 'extra') setExtracurricular((prev) => prev.filter((i) => i !== item));
+    else if (type === 'extra')
+      setExtracurricular((prev) => prev.filter((i) => i !== item));
     else if (type === 'interest') setInterests((prev) => prev.filter((i) => i !== item));
   };
 
@@ -52,7 +63,10 @@ export default function EditProfileTagsModal() {
 
   return (
     <div>
-      <PencilIcon onClick={() => setOpen(true)} className="h-4 w-4 cursor-pointer text-white hover:text-gray-300" />
+      <PencilIcon
+        onClick={() => setOpen(true)}
+        className="h-4 w-4 cursor-pointer text-white hover:text-gray-300"
+      />
       <CommonModal
         open={open}
         onOpenChange={setOpen}
@@ -72,15 +86,26 @@ export default function EditProfileTagsModal() {
               placeholder="Enter skill"
               className="border border-[#333] bg-[#1a1a1a] text-white"
             />
-            <Button size="icon" className="border border-[#333] bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]" onClick={() => handleAdd('skill')}>
+            <Button
+              size="icon"
+              className="border border-[#333] bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]"
+              onClick={() => handleAdd('skill')}
+            >
               <PlusIcon size={18} />
             </Button>
           </div>
           <div className="mt-2 flex flex-wrap gap-2">
             {skills.map((item, idx) => (
-              <span key={idx} className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm text-white">
+              <span
+                key={idx}
+                className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm text-white"
+              >
                 {item}
-                <XIcon size={14} className="cursor-pointer hover:text-red-400" onClick={() => removeItem('skill', item)} />
+                <XIcon
+                  size={14}
+                  className="cursor-pointer hover:text-red-400"
+                  onClick={() => removeItem('skill', item)}
+                />
               </span>
             ))}
           </div>
@@ -98,15 +123,26 @@ export default function EditProfileTagsModal() {
               placeholder="Enter extracurricular"
               className="border border-[#333] bg-[#1a1a1a] text-white"
             />
-            <Button size="icon" className="border border-[#333] bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]" onClick={() => handleAdd('extra')}>
+            <Button
+              size="icon"
+              className="border border-[#333] bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]"
+              onClick={() => handleAdd('extra')}
+            >
               <PlusIcon size={18} />
             </Button>
           </div>
           <div className="mt-2 flex flex-wrap gap-2">
             {extracurricular.map((item, idx) => (
-              <span key={idx} className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm text-white">
+              <span
+                key={idx}
+                className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm text-white"
+              >
                 {item}
-                <XIcon size={14} className="cursor-pointer hover:text-red-400" onClick={() => removeItem('extra', item)} />
+                <XIcon
+                  size={14}
+                  className="cursor-pointer hover:text-red-400"
+                  onClick={() => removeItem('extra', item)}
+                />
               </span>
             ))}
           </div>
@@ -124,25 +160,43 @@ export default function EditProfileTagsModal() {
               placeholder="Enter interest"
               className="border border-[#333] bg-[#1a1a1a] text-white"
             />
-            <Button size="icon" className="border border-[#333] bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]" onClick={() => handleAdd('interest')}>
+            <Button
+              size="icon"
+              className="border border-[#333] bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]"
+              onClick={() => handleAdd('interest')}
+            >
               <PlusIcon size={18} />
             </Button>
           </div>
           <div className="mt-2 flex flex-wrap gap-2">
             {interests.map((item, idx) => (
-              <span key={idx} className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1a1a1a] px-3 py-1 text-sm text-white">
+              <span
+                key={idx}
+                className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1a1a1a] px-3 py-1 text-sm text-white"
+              >
                 {item}
-                <XIcon size={14} className="cursor-pointer hover:text-red-400" onClick={() => removeItem('interest', item)} />
+                <XIcon
+                  size={14}
+                  className="cursor-pointer hover:text-red-400"
+                  onClick={() => removeItem('interest', item)}
+                />
               </span>
             ))}
           </div>
         </div>
 
         <div className="mt-6 flex justify-end gap-2 border-t border-[#333] pt-4">
-          <Button variant="ghost" onClick={() => setOpen(false)} className="cursor-pointer text-white">
+          <Button
+            variant="ghost"
+            onClick={() => setOpen(false)}
+            className="cursor-pointer text-white"
+          >
             Cancel
           </Button>
-          <Button onClick={handleSave} className="cursor-pointer bg-white text-black hover:bg-gray-200">
+          <Button
+            onClick={handleSave}
+            className="cursor-pointer bg-white text-black hover:bg-gray-200"
+          >
             Save Changes
           </Button>
         </div>

@@ -4,7 +4,16 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Formik, Form, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import { ArrowUpDown, ChevronLeft, ChevronRight, Loader2, Plus, Search, Trash, View } from 'lucide-react';
+import {
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Plus,
+  Search,
+  Trash,
+  View
+} from 'lucide-react';
 
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
 import { cn } from '@/lib/utils';
@@ -12,9 +21,30 @@ import { cn } from '@/lib/utils';
 import { useDispatch } from '@/store/store';
 import { adminService } from '@/services/admin.services';
 
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,10 +59,10 @@ const userSchema = Yup.object().shape({
     .min(8, 'Password must be at least 8 characters')
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-      'Must contain at least one uppercase letter, one lowercase letter, one number and one special character',
+      'Must contain at least one uppercase letter, one lowercase letter, one number and one special character'
     )
     .required('Required'),
-  role: Yup.string().oneOf(['user', 'provider'], 'Invalid role').required('Required'),
+  role: Yup.string().oneOf(['user', 'provider'], 'Invalid role').required('Required')
 });
 
 const initialValues = {
@@ -40,7 +70,7 @@ const initialValues = {
   lastName: '',
   email: '',
   password: '',
-  role: 'user',
+  role: 'user'
 };
 
 type FormValues = typeof initialValues;
@@ -60,7 +90,7 @@ const UsersListingPage = ({
   sortKey,
   sortOrder,
   search,
-  setSearch,
+  setSearch
 }: {
   users: any[];
   pagination: any;
@@ -89,15 +119,22 @@ const UsersListingPage = ({
 
   const handleDeleteConfirm = async () => {
     setIsDeleteOpen(false);
-    const response = await dispatch(adminService.deleteAdminUsers({ id: selectedUserId }) as any);
+    const response = await dispatch(
+      adminService.deleteAdminUsers({ id: selectedUserId }) as any
+    );
     if (response && response.data) {
       setSelectedUserId('');
     }
   };
 
-  const handleCreateUser = async (values: FormValues, { setSubmitting, resetForm }: FormikHelpers<FormValues>) => {
+  const handleCreateUser = async (
+    values: FormValues,
+    { setSubmitting, resetForm }: FormikHelpers<FormValues>
+  ) => {
     try {
-      const response = await dispatch(adminService.createAdminUsers({ body: values }) as any);
+      const response = await dispatch(
+        adminService.createAdminUsers({ body: values }) as any
+      );
       if (response && response.data) {
         setIsCreateDialogOpen(false);
         resetForm();
@@ -114,39 +151,40 @@ const UsersListingPage = ({
       key: 'id',
       label: 'Id',
       sortable: true,
-      render: (_value, row) => row.id ?? '-',
+      render: (_value, row) => row.id ?? '-'
     },
     {
       key: 'first_name',
       label: 'First Name',
       sortable: true,
-      render: (_value, row) => row.first_name ?? '-',
+      render: (_value, row) => row.first_name ?? '-'
     },
     {
       key: 'last_name',
       label: 'Last Name',
       sortable: true,
-      render: (_value, row) => row.last_name ?? '-',
+      render: (_value, row) => row.last_name ?? '-'
     },
     { key: 'email', label: 'Email', sortable: true },
     {
       key: 'role',
       label: 'Role',
       sortable: true,
-      render: (_value, row) => (row?.role ? row.role.charAt(0).toUpperCase() + row.role.slice(1) : '-'),
+      render: (_value, row) =>
+        row?.role ? row.role.charAt(0).toUpperCase() + row.role.slice(1) : '-'
     },
     {
       key: 'is_verified',
       label: 'Status',
       sortable: true,
-      render: (_value, row) => (row?.is_verified ? 'Verified' : 'Non verified'),
+      render: (_value, row) => (row?.is_verified ? 'Verified' : 'Non verified')
     },
     {
       key: 'is_banned',
       label: 'Is Banned',
       sortable: true,
-      render: (_value, row) => (row?.is_banned ? 'Yes' : 'No'),
-    },
+      render: (_value, row) => (row?.is_banned ? 'Yes' : 'No')
+    }
   ];
 
   const renderSortIcon = (key: keyof IUser) => {
@@ -167,7 +205,9 @@ const UsersListingPage = ({
                 placeholder="Search users..."
                 className="h-9 w-full rounded-lg border border-[#374151] bg-[#1F2A37] pr-4 pl-10 text-white placeholder-gray-400 focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/50 focus:ring-offset-0 focus:ring-offset-transparent sm:w-64"
                 value={search}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setSearch(e.target.value)
+                }
               />
             </div>
             <Button
@@ -188,7 +228,10 @@ const UsersListingPage = ({
               {columns.map((column) => (
                 <TableHead
                   key={column.key as string}
-                  className={cn('font-medium text-white', column.sortable && 'cursor-pointer hover:bg-[#1F2A37]')}
+                  className={cn(
+                    'font-medium text-white',
+                    column.sortable && 'cursor-pointer hover:bg-[#1F2A37]'
+                  )}
                   onClick={() => column.sortable && handleSort(column.key)}
                 >
                   <div className="flex items-center">
@@ -205,7 +248,10 @@ const UsersListingPage = ({
               users.map((row) => (
                 <TableRow key={row.id} className="border-[#374151] hover:bg-[#1F2A37]">
                   {columns.map((column) => (
-                    <TableCell key={`${row.id}-${column.key as string}`} className="text-[#D9D9D9]">
+                    <TableCell
+                      key={`${row.id}-${column.key as string}`}
+                      className="text-[#D9D9D9]"
+                    >
                       {column.render ? column.render(null, row) : row[column.key] || '-'}
                     </TableCell>
                   ))}
@@ -233,7 +279,10 @@ const UsersListingPage = ({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length + 1} className="h-24 text-center text-gray-400">
+                <TableCell
+                  colSpan={columns.length + 1}
+                  className="h-24 text-center text-gray-400"
+                >
                   No users found.
                 </TableCell>
               </TableRow>
@@ -272,16 +321,27 @@ const UsersListingPage = ({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Delete User</DialogTitle>
-            <DialogDescription>Are you sure you want to delete this user? This action cannot be undone.</DialogDescription>
+            <DialogDescription>
+              Are you sure you want to delete this user? This action cannot be undone.
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter className="">
             <DialogClose asChild>
-              <Button type="button" variant="secondary" className="cursor-pointer border border-[#5750F1] dark:border-white dark:text-white">
+              <Button
+                type="button"
+                variant="secondary"
+                className="cursor-pointer border border-[#5750F1] dark:border-white dark:text-white"
+              >
                 Cancel
               </Button>
             </DialogClose>
             <DialogClose asChild>
-              <Button type="button" variant="destructive" className="cursor-pointer bg-[#5750F1] text-white" onClick={handleDeleteConfirm}>
+              <Button
+                type="button"
+                variant="destructive"
+                className="cursor-pointer bg-[#5750F1] text-white"
+                onClick={handleDeleteConfirm}
+              >
                 Delete
               </Button>
             </DialogClose>
@@ -294,8 +354,20 @@ const UsersListingPage = ({
           <DialogHeader>
             <DialogTitle className="text-white">Create New User</DialogTitle>
           </DialogHeader>
-          <Formik initialValues={initialValues} validationSchema={userSchema} onSubmit={handleCreateUser}>
-            {({ errors, touched, isSubmitting, setFieldValue, values, handleSubmit, getFieldProps }) => {
+          <Formik
+            initialValues={initialValues}
+            validationSchema={userSchema}
+            onSubmit={handleCreateUser}
+          >
+            {({
+              errors,
+              touched,
+              isSubmitting,
+              setFieldValue,
+              values,
+              handleSubmit,
+              getFieldProps
+            }) => {
               return (
                 <Form className="space-y-4" onSubmit={handleSubmit}>
                   <div className="grid grid-cols-2 gap-4">
@@ -311,7 +383,9 @@ const UsersListingPage = ({
                           errors.firstName && touched.firstName ? 'border-red-500' : ''
                         }`}
                       />
-                      {errors.firstName && touched.firstName && <div className="text-sm text-red-500">{errors.firstName}</div>}
+                      {errors.firstName && touched.firstName && (
+                        <div className="text-sm text-red-500">{errors.firstName}</div>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="lastName" className="text-gray-300">
@@ -325,7 +399,9 @@ const UsersListingPage = ({
                           errors.lastName && touched.lastName ? 'border-red-500' : ''
                         }`}
                       />
-                      {errors.lastName && touched.lastName && <div className="text-sm text-red-500">{errors.lastName}</div>}
+                      {errors.lastName && touched.lastName && (
+                        <div className="text-sm text-red-500">{errors.lastName}</div>
+                      )}
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
@@ -342,7 +418,9 @@ const UsersListingPage = ({
                           errors.email && touched.email ? 'border-red-500' : ''
                         }`}
                       />
-                      {errors.email && touched.email && <div className="text-sm text-red-500">{errors.email}</div>}
+                      {errors.email && touched.email && (
+                        <div className="text-sm text-red-500">{errors.email}</div>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="password" className="text-gray-300">
@@ -357,14 +435,19 @@ const UsersListingPage = ({
                           errors.password && touched.password ? 'border-red-500' : ''
                         }`}
                       />
-                      {errors.password && touched.password && <div className="text-sm text-red-500">{errors.password}</div>}
+                      {errors.password && touched.password && (
+                        <div className="text-sm text-red-500">{errors.password}</div>
+                      )}
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="role" className="text-gray-300">
                       Role
                     </Label>
-                    <Select value={values.role} onValueChange={(value) => setFieldValue('role', value)}>
+                    <Select
+                      value={values.role}
+                      onValueChange={(value) => setFieldValue('role', value)}
+                    >
                       <SelectTrigger className="w-full border-slate-700/50 bg-[#374151] text-white">
                         <SelectValue placeholder="Select a role" />
                       </SelectTrigger>
@@ -377,7 +460,9 @@ const UsersListingPage = ({
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    {errors.role && touched.role && <div className="text-sm text-red-500">{errors.role}</div>}
+                    {errors.role && touched.role && (
+                      <div className="text-sm text-red-500">{errors.role}</div>
+                    )}
                   </div>
 
                   <DialogFooter className="mt-6">
@@ -394,7 +479,11 @@ const UsersListingPage = ({
                       className="bg-[#4F46E5] text-white hover:bg-[#4338CA] focus:ring-2 focus:ring-[#4F46E5] focus:ring-offset-2"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Create User'}
+                      {isSubmitting ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        'Create User'
+                      )}
                     </Button>
                   </DialogFooter>
                 </Form>

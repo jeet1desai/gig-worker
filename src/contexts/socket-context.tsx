@@ -10,12 +10,12 @@ interface SocketContextType {
 
 export const SocketContext = createContext<SocketContextType>({
   socket: null,
-  isConnected: false,
+  isConnected: false
 });
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<Omit<SocketContextType, 'socket'>>({
-    isConnected: false,
+    isConnected: false
   });
   const [socket, setSocket] = useState<ReturnType<typeof socketManager.getSocket>>(null);
 
@@ -25,13 +25,13 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
     setState((prev) => ({
       ...prev,
-      isConnected: socketManager.getIsConnected(),
+      isConnected: socketManager.getIsConnected()
     }));
 
     const unsubscribe = socketManager.subscribe(() => {
       setState((prev) => ({
         ...prev,
-        isConnected: socketManager.getIsConnected(),
+        isConnected: socketManager.getIsConnected()
       }));
     });
 
@@ -40,7 +40,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  return <SocketContext.Provider value={{ socket, ...state }}>{children}</SocketContext.Provider>;
+  return (
+    <SocketContext.Provider value={{ socket, ...state }}>
+      {children}
+    </SocketContext.Provider>
+  );
 }
 
 export const useSocket = () => {
