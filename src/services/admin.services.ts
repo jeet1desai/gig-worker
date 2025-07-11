@@ -8,7 +8,7 @@ import { AppDispatch } from '@/store/store';
 
 import apiService from './api';
 
-import { toast } from 'react-toastify';
+import { toast } from '@/lib/toast';
 
 export const adminService = {
   getAdminUsers({
