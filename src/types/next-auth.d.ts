@@ -13,7 +13,7 @@ declare module 'next-auth' {
       profile_url?: string;
       sign_up_type?: string;
       is_verified: boolean;
-      is_first_login: boolean;
+      subscription?: string | null;
     } & DefaultSession['user'];
   }
 
@@ -26,7 +26,7 @@ declare module 'next-auth' {
     profile_url?: string;
     sign_up_type?: string;
     is_verified: boolean;
-    is_first_login?: boolean;
+    subscription?: string | null;
   }
 }
 

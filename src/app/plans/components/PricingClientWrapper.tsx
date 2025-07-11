@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
+import { toast } from '@/lib/toast';
 import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
 import { PayPalButtons, FUNDING } from '@paypal/react-paypal-js';

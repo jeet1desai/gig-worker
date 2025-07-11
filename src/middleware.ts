@@ -74,6 +74,16 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  if (token && token.exp > now) {
+    const isAccessingPlanPage = pathname === PRIVATE_ROUTE.PLANS || pathname.startsWith(PRIVATE_ROUTE.PLANS + '/');
+    const isActiveSubscription = token.subscription;
+    if (!isApiRoute && !isActiveSubscription && !isAccessingPlanPage && !isPublicRoute) {
+      const url = req.nextUrl.clone();
+      url.pathname = PRIVATE_ROUTE.PLANS;
+      return NextResponse.redirect(url);
+    }
+  }
+
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set('x-user-id', token.sub || '');
   requestHeaders.set('x-user-role', token.role || '');
