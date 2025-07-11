@@ -2,13 +2,15 @@
 
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
-import { toast } from '@/lib/toast'
+import Image from 'next/image';
+import { getSession, signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Mail, Lock } from 'lucide-react';
+
+import { toast } from '@/lib/toast';
 import { loginSchema } from '@/schemas/auth';
 import { Images } from '@/lib/images';
-import Image from 'next/image';
 import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import Loader from '@/components/Loader';
 import { COMMON_ERROR_MESSAGES, LOGIN_MESSAGES } from '@/constants';
@@ -21,7 +23,6 @@ import {
   FormMessage,
   Form
 } from '@/components/ui/form';
-import { Mail, Lock } from 'lucide-react';
 
 type LoginFormValues = {
   email: string;
@@ -64,8 +65,13 @@ export default function LoginForm() {
         toast.error(LOGIN_MESSAGES.invalidCredentials);
         setLoading(false);
       } else {
-        router.replace(PRIVATE_ROUTE.DASHBOARD);
-        router.refresh();
+        const session = await getSession();
+
+        if (session?.user?.is_first_login) {
+          router.replace(PRIVATE_ROUTE.PLANS);
+        } else {
+          router.replace(PRIVATE_ROUTE.DASHBOARD);
+        }
       }
     } catch (err: any) {
       toast.error(err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE);
