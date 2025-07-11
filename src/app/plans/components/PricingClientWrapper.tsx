@@ -9,12 +9,7 @@ import { PayPalButtons, FUNDING } from '@paypal/react-paypal-js';
 import type { OnApproveData } from '@paypal/paypal-js';
 
 import PlanCard from '@/components/PlanCard';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import apiService from '@/services/api';
 import { PRIVATE_API_ROUTES, PRIVATE_ROUTE } from '@/constants/app-routes';
 import { ApiResponse } from '@/types/shared/api-response';
@@ -82,9 +77,7 @@ const PricingClientWrapper = ({
     }
   };
 
-  const handleSubscriptionApprove = async (
-    data: OnApproveData
-  ): Promise<void> => {
+  const handleSubscriptionApprove = async (data: OnApproveData): Promise<void> => {
     setIsDialogOpen(false);
     if (!data.subscriptionID) {
       throw new Error('Something went wrong! Try again later');
@@ -96,15 +89,15 @@ const PricingClientWrapper = ({
         subscriptionId: data.subscriptionID
       };
 
-      const response = await apiService.post<
-        ApiResponse<ISubscriptionCreateResponse>
-      >(PRIVATE_API_ROUTES.SUBSCRIPTION_CREATE_API, payload, {
-        withAuth: true
-      });
-
-      toast.success(
-        response.data.message || 'Subscription created successfully!'
+      const response = await apiService.post<ApiResponse<ISubscriptionCreateResponse>>(
+        PRIVATE_API_ROUTES.SUBSCRIPTION_CREATE_API,
+        payload,
+        {
+          withAuth: true
+        }
       );
+
+      toast.success(response.data.message || 'Subscription created successfully!');
       setIsDialogOpen(false);
       navigateToDashboard();
     } catch (err) {
@@ -134,9 +127,7 @@ const PricingClientWrapper = ({
       errorMessage.includes('currency_not_supported') ||
       errorMessage.includes('country_not_supported')
     ) {
-      toast.error(
-        'This payment option is not supported. Please choose a different one.'
-      );
+      toast.error('This payment option is not supported. Please choose a different one.');
     } else if (
       errorMessage.includes('INVALID_REQUEST') ||
       errorMessage.includes('system_config_error') ||

@@ -11,7 +11,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -22,7 +28,7 @@ import { formatDate, formatDateInternational } from '@/lib/date-format';
 const TIER_OPTIONS = [
   { value: 'basic', label: 'Basic' },
   { value: 'standard', label: 'Standard' },
-  { value: 'premium', label: 'Premium' },
+  { value: 'premium', label: 'Premium' }
 ];
 
 const NewGigPage = () => {
@@ -53,10 +59,13 @@ const NewGigPage = () => {
 
     keywords: [],
 
-    attachments: [],
+    attachments: []
   });
 
-  const handleSubmit = async (values: any, { setSubmitting, resetForm }: FormikHelpers<any>) => {};
+  const handleSubmit = async (
+    values: any,
+    { setSubmitting, resetForm }: FormikHelpers<any>
+  ) => {};
 
   return (
     <DashboardLayout>
@@ -79,11 +88,19 @@ const NewGigPage = () => {
 
             keywords: Yup.array(),
 
-            attachments: Yup.array(),
+            attachments: Yup.array()
           })}
           onSubmit={handleSubmit}
         >
-          {({ isSubmitting, values, getFieldProps, errors, touched, setFieldValue, handleSubmit }) => {
+          {({
+            isSubmitting,
+            values,
+            getFieldProps,
+            errors,
+            touched,
+            setFieldValue,
+            handleSubmit
+          }) => {
             return (
               <Form className="space-y-8" onSubmit={handleSubmit}>
                 <Card className="rounded-lg border-gray-700/50 bg-inherit text-white">
@@ -99,11 +116,13 @@ const NewGigPage = () => {
                           placeholder="e.g., Need help with calculus homework"
                           className={cn(
                             '!h-10 w-full rounded-lg border-gray-700/50 bg-inherit px-4 py-2',
-                            errors.title && touched.title && 'border-red-500',
+                            errors.title && touched.title && 'border-red-500'
                           )}
                           {...getFieldProps('title')}
                         />
-                        {errors.title && touched.title && <div className="text-sm text-red-500">{errors.title}</div>}
+                        {errors.title && touched.title && (
+                          <div className="text-sm text-red-500">{errors.title}</div>
+                        )}
                       </div>
 
                       <div className="space-y-2">
@@ -115,20 +134,25 @@ const NewGigPage = () => {
                           rows={5}
                           className={cn(
                             '!h-10 w-full rounded-lg border-gray-700/50 bg-inherit px-4 py-2',
-                            errors.description && touched.description && 'border-red-500',
+                            errors.description && touched.description && 'border-red-500'
                           )}
                         />
-                        {errors.description && touched.description && <div className="text-sm text-red-500">{errors.description}</div>}
+                        {errors.description && touched.description && (
+                          <div className="text-sm text-red-500">{errors.description}</div>
+                        )}
                       </div>
 
                       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                           <Label htmlFor="tier">Tier</Label>
-                          <Select value={values.tier} onValueChange={(value) => setFieldValue('tier', value)}>
+                          <Select
+                            value={values.tier}
+                            onValueChange={(value) => setFieldValue('tier', value)}
+                          >
                             <SelectTrigger
                               className={cn(
                                 '!h-10 rounded-lg border-gray-700/50 bg-inherit px-4 py-2',
-                                errors.tier && touched.tier && 'border-red-500',
+                                errors.tier && touched.tier && 'border-red-500'
                               )}
                             >
                               <SelectValue placeholder="Select tier" />
@@ -141,7 +165,9 @@ const NewGigPage = () => {
                               ))}
                             </SelectContent>
                           </Select>
-                          {errors.tier && touched.tier && <div className="text-sm text-red-500">{errors.tier}</div>}
+                          {errors.tier && touched.tier && (
+                            <div className="text-sm text-red-500">{errors.tier}</div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -164,11 +190,13 @@ const NewGigPage = () => {
                           placeholder="0.00"
                           className={cn(
                             '!h-10 w-full rounded-lg border-gray-700/50 bg-inherit px-4 py-2',
-                            errors.min_price && touched.min_price && 'border-red-500',
+                            errors.min_price && touched.min_price && 'border-red-500'
                           )}
                           {...getFieldProps('min_price')}
                         />
-                        {errors.min_price && touched.min_price && <div className="text-sm text-red-500">{errors.min_price}</div>}
+                        {errors.min_price && touched.min_price && (
+                          <div className="text-sm text-red-500">{errors.min_price}</div>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="max_price">Maximum Price ($)</Label>
@@ -180,11 +208,13 @@ const NewGigPage = () => {
                           placeholder="0.00"
                           className={cn(
                             '!h-10 w-full rounded-lg border-gray-700/50 bg-inherit px-4 py-2',
-                            errors.max_price && touched.max_price && 'border-red-500',
+                            errors.max_price && touched.max_price && 'border-red-500'
                           )}
                           {...getFieldProps('max_price')}
                         />
-                        {errors.max_price && touched.max_price && <div className="text-sm text-red-500">{errors.max_price}</div>}
+                        {errors.max_price && touched.max_price && (
+                          <div className="text-sm text-red-500">{errors.max_price}</div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -204,11 +234,18 @@ const NewGigPage = () => {
                               variant={'outline'}
                               className={cn(
                                 'w-full rounded-lg border-gray-700/50 bg-inherit px-4 py-2 text-left font-normal text-white hover:bg-inherit hover:text-white',
-                                !values.start_date && 'text-muted-foreground hover:text-muted-foreground',
-                                errors.start_date && touched.start_date && 'border-red-500',
+                                !values.start_date &&
+                                  'text-muted-foreground hover:text-muted-foreground',
+                                errors.start_date &&
+                                  touched.start_date &&
+                                  'border-red-500'
                               )}
                             >
-                              {values.start_date ? formatDate(values.start_date) : <span>Pick a date</span>}
+                              {values.start_date ? (
+                                formatDate(values.start_date)
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </PopoverTrigger>
@@ -216,12 +253,20 @@ const NewGigPage = () => {
                             <Calendar
                               mode="single"
                               captionLayout="dropdown"
-                              selected={values.start_date ? new Date(values.start_date) : undefined}
-                              onSelect={(date: any) => setFieldValue('start_date', formatDateInternational(date))}
+                              selected={
+                                values.start_date
+                                  ? new Date(values.start_date)
+                                  : undefined
+                              }
+                              onSelect={(date: any) =>
+                                setFieldValue('start_date', formatDateInternational(date))
+                              }
                             />
                           </PopoverContent>
                         </Popover>
-                        {errors.start_date && touched.start_date && <div className="text-sm text-red-500">{errors.start_date}</div>}
+                        {errors.start_date && touched.start_date && (
+                          <div className="text-sm text-red-500">{errors.start_date}</div>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="end_date">End Date</Label>
@@ -231,11 +276,16 @@ const NewGigPage = () => {
                               variant={'outline'}
                               className={cn(
                                 'w-full rounded-lg border-gray-700/50 bg-inherit px-4 py-2 text-left font-normal text-white hover:bg-inherit hover:text-white',
-                                !values.end_date && 'text-muted-foreground hover:text-muted-foreground',
-                                errors.end_date && touched.end_date && 'border-red-500',
+                                !values.end_date &&
+                                  'text-muted-foreground hover:text-muted-foreground',
+                                errors.end_date && touched.end_date && 'border-red-500'
                               )}
                             >
-                              {values.end_date ? formatDate(values.end_date) : <span>Pick a date</span>}
+                              {values.end_date ? (
+                                formatDate(values.end_date)
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </PopoverTrigger>
@@ -243,12 +293,18 @@ const NewGigPage = () => {
                             <Calendar
                               mode="single"
                               captionLayout="dropdown"
-                              selected={values.end_date ? new Date(values.end_date) : undefined}
-                              onSelect={(date: any) => setFieldValue('end_date', formatDateInternational(date))}
+                              selected={
+                                values.end_date ? new Date(values.end_date) : undefined
+                              }
+                              onSelect={(date: any) =>
+                                setFieldValue('end_date', formatDateInternational(date))
+                              }
                             />
                           </PopoverContent>
                         </Popover>
-                        {errors.end_date && touched.end_date && <div className="text-sm text-red-500">{errors.end_date}</div>}
+                        {errors.end_date && touched.end_date && (
+                          <div className="text-sm text-red-500">{errors.end_date}</div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -267,7 +323,10 @@ const NewGigPage = () => {
                           if (e.key === 'Enter' && keywordInput.trim()) {
                             e.preventDefault();
                             if (!values.keywords.includes(keywordInput.trim())) {
-                              setFieldValue('keywords', [...values.keywords, keywordInput.trim()]);
+                              setFieldValue('keywords', [
+                                ...values.keywords,
+                                keywordInput.trim()
+                              ]);
                               setKeywordInput('');
                             }
                           }
@@ -278,12 +337,17 @@ const NewGigPage = () => {
                       />
                       <div className="mt-2 flex flex-wrap gap-2">
                         {values.keywords.map((keyword) => (
-                          <div key={keyword} className="flex items-center rounded-full bg-white px-3 py-1 text-sm text-black">
+                          <div
+                            key={keyword}
+                            className="flex items-center rounded-full bg-white px-3 py-1 text-sm text-black"
+                          >
                             {keyword}
                             <button
                               type="button"
                               onClick={() => {
-                                const keywords = values.keywords.filter((kw: string) => kw !== keyword);
+                                const keywords = values.keywords.filter(
+                                  (kw: string) => kw !== keyword
+                                );
                                 setFieldValue('keywords', keywords);
                               }}
                               className="text-muted-foreground hover:text-muted-foreground ml-2 rounded-full"
@@ -293,7 +357,9 @@ const NewGigPage = () => {
                           </div>
                         ))}
                       </div>
-                      {errors.keywords && touched.keywords && <div className="text-sm text-red-500">{errors.keywords}</div>}
+                      {errors.keywords && touched.keywords && (
+                        <div className="text-sm text-red-500">{errors.keywords}</div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -312,7 +378,8 @@ const NewGigPage = () => {
                           <div className="flex flex-col items-center justify-center pt-5 pb-6">
                             <Upload className="text-muted-foreground mb-2 h-8 w-8" />
                             <p className="text-muted-foreground text-sm">
-                              <span className="font-semibold">Click to upload</span> or drag and drop
+                              <span className="font-semibold">Click to upload</span> or
+                              drag and drop
                             </p>
                           </div>
                           <input
@@ -324,7 +391,10 @@ const NewGigPage = () => {
                             onChange={(e) => {
                               if (e.target.files) {
                                 const files = Array.from(e.target.files);
-                                setFieldValue('attachments', [...values.attachments, ...files]);
+                                setFieldValue('attachments', [
+                                  ...values.attachments,
+                                  ...files
+                                ]);
                               }
                             }}
                           />
@@ -336,18 +406,25 @@ const NewGigPage = () => {
                           <h4 className="text-sm font-medium">Uploaded Files</h4>
                           <div className="space-y-2">
                             {values.attachments.map((file, index) => (
-                              <div key={index} className="flex items-center justify-between rounded-lg border border-gray-700/50 p-2">
+                              <div
+                                key={index}
+                                className="flex items-center justify-between rounded-lg border border-gray-700/50 p-2"
+                              >
                                 <div className="flex items-center space-x-2">
                                   <FileText className="text-muted-foreground h-4 w-4" />
-                                  <span className="max-w-xs truncate text-sm">{file.name}</span>
-                                  <span className="text-muted-foreground text-xs">{(file.size / 1024).toFixed(1)} KB</span>
+                                  <span className="max-w-xs truncate text-sm">
+                                    {file.name}
+                                  </span>
+                                  <span className="text-muted-foreground text-xs">
+                                    {(file.size / 1024).toFixed(1)} KB
+                                  </span>
                                 </div>
                                 <button
                                   type="button"
                                   onClick={() =>
                                     setFieldValue(
                                       'attachments',
-                                      values.attachments.filter((_, i) => i !== index),
+                                      values.attachments.filter((_, i) => i !== index)
                                     )
                                   }
                                   className="text-muted-foreground hover:text-destructive"
@@ -364,11 +441,20 @@ const NewGigPage = () => {
                 </Card>
 
                 <div className="mb-10 flex justify-end space-x-4">
-                  <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => router.back()}
+                    disabled={isSubmitting}
+                  >
                     Cancel
                   </Button>
                   <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? <Loader className="h-4 w-4 animate-spin" /> : 'Create Gig'}
+                    {isSubmitting ? (
+                      <Loader className="h-4 w-4 animate-spin" />
+                    ) : (
+                      'Create Gig'
+                    )}
                   </Button>
                 </div>
               </Form>

@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 
 function Layout({
-  children,
+  children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
@@ -14,17 +14,24 @@ function Layout({
 
   return (
     <AdminProtectedRoute>
-      <div className="flex min-h-screen w-full bg-[#020d1a]">
+      <div className="bg-foreground flex min-h-screen w-full">
         <Sidebar
           collapsed={sidebarCollapsed}
           onToggle={(collapsed) => setSidebarCollapsed(collapsed)}
           navigation_menu={ADMIN_DASHBOARD_NAVIGATION_MENU}
         />
 
-        <div className={`w-full flex-1 overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
-          <AdminHeader collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
+        <div
+          className={`w-full flex-1 overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}
+        >
+          <AdminHeader
+            collapsed={sidebarCollapsed}
+            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+          />
 
-          <main className="space-y-4 p-3 pl-5 sm:space-y-6 sm:p-4 md:p-6">{children}</main>
+          <main className="space-y-4 p-3 pl-5 sm:space-y-6 sm:p-4 md:p-6">
+            {children}
+          </main>
         </div>
       </div>
     </AdminProtectedRoute>

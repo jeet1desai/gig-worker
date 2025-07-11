@@ -1,6 +1,13 @@
 'use client';
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
 
 const weeklyData = [
   {
@@ -9,7 +16,7 @@ const weeklyData = [
     tier: 'Tier 3: Expert',
     hours: '2:30',
     amount: '$75',
-    status: 'Completed',
+    status: 'Completed'
   },
   {
     date: 'Tue, Dec 24 2024',
@@ -17,7 +24,7 @@ const weeklyData = [
     tier: 'Tier 1: Basic',
     hours: '1:45',
     amount: '$25',
-    status: 'Completed',
+    status: 'Completed'
   },
   {
     date: 'Wed, Dec 25 2024',
@@ -25,8 +32,8 @@ const weeklyData = [
     tier: 'Tier 2: Advanced',
     hours: '1:00',
     amount: '$40',
-    status: 'In Progress',
-  },
+    status: 'In Progress'
+  }
 ];
 
 export function WeeklySummary() {
@@ -40,7 +47,9 @@ export function WeeklySummary() {
         <Table className="min-w-full border-spacing-2 !border-slate-700/50">
           <TableHeader>
             <TableRow className="border-b !border-slate-700/50">
-              <TableHead className="text-md font-semibold text-white">Gig Details</TableHead>
+              <TableHead className="text-md font-semibold text-white">
+                Gig Details
+              </TableHead>
               <TableHead className="text-md font-semibold text-white">Hours</TableHead>
               <TableHead className="text-md font-semibold text-white">Earnings</TableHead>
               <TableHead className="text-md font-semibold text-white">Status</TableHead>
@@ -48,14 +57,21 @@ export function WeeklySummary() {
           </TableHeader>
           <TableBody>
             {weeklyData.map((item, index) => (
-              <TableRow key={index} className="border-b border-slate-700/50 hover:bg-slate-700/10">
+              <TableRow
+                key={index}
+                className="border-b border-slate-700/50 hover:bg-slate-700/10"
+              >
                 <TableCell className="py-3">
                   <div className="mb-1 text-sm text-slate-400">{item.date}</div>
                   <div className="text-sm font-medium text-white">{item.gig}</div>
                   <div className="text-xs text-blue-400">{item.tier}</div>
                 </TableCell>
-                <TableCell className="py-3 text-sm text-slate-400">{item.hours}</TableCell>
-                <TableCell className="py-3 text-sm font-semibold text-white">{item.amount}</TableCell>
+                <TableCell className="py-3 text-sm text-slate-400">
+                  {item.hours}
+                </TableCell>
+                <TableCell className="py-3 text-sm font-semibold text-white">
+                  {item.amount}
+                </TableCell>
                 <TableCell className="py-3">
                   <span
                     className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${

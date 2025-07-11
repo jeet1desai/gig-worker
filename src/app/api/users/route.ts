@@ -31,7 +31,7 @@ const createUserSchema = yup.object({
   certifications: yup.array().of(yup.string()).optional(),
   skills: yup.array().of(yup.string()).optional(),
   educations: yup.array().of(yup.string()).optional(),
-  badges: yup.array().of(yup.string()).optional(),
+  badges: yup.array().of(yup.string()).optional()
 });
 
 export async function POST(req: Request) {
@@ -46,9 +46,12 @@ export async function POST(req: Request) {
     } catch (validationError: any) {
       const errors = validationError.inner.map((err: any) => ({
         field: err.path,
-        message: err.message,
+        message: err.message
       }));
-      return NextResponse.json(errorResponse('Validation failed', HttpStatusCode.BAD_REQUEST, { errors }), { status: HttpStatusCode.BAD_REQUEST });
+      return NextResponse.json(
+        errorResponse('Validation failed', HttpStatusCode.BAD_REQUEST, { errors }),
+        { status: HttpStatusCode.BAD_REQUEST }
+      );
     }
 
     const {
@@ -66,12 +69,15 @@ export async function POST(req: Request) {
       certifications = [],
       skills = [],
       educations = [],
-      badges = [],
+      badges = []
     } = body;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return NextResponse.json(errorResponse('User with this email already exists', HttpStatusCode.CONFLICT), { status: HttpStatusCode.CONFLICT });
+      return NextResponse.json(
+        errorResponse('User with this email already exists', HttpStatusCode.CONFLICT),
+        { status: HttpStatusCode.CONFLICT }
+      );
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -88,7 +94,7 @@ export async function POST(req: Request) {
           profile_url: profileUrl,
           sign_up_type: signUpType,
           is_verified: true,
-          is_banned: false,
+          is_banned: false
         },
         select: {
           id: true,
@@ -98,8 +104,8 @@ export async function POST(req: Request) {
           role: true,
           is_verified: true,
           is_banned: true,
-          created_at: true,
-        },
+          created_at: true
+        }
       }),
       prisma.userProfile.create({
         data: {
@@ -113,9 +119,9 @@ export async function POST(req: Request) {
           badges,
           user: {
             connect: {
-              email: email,
-            },
-          },
+              email: email
+            }
+          }
         },
         select: {
           bio: true,
@@ -125,24 +131,27 @@ export async function POST(req: Request) {
           certifications: true,
           skills: true,
           educations: true,
-          badges: true,
-        },
-      }),
+          badges: true
+        }
+      })
     ]);
 
     return safeJsonResponse(
       {
         success: true,
         message: 'User and profile created successfully',
-        data: { ...user, ...profile },
+        data: { ...user, ...profile }
       },
-      { status: HttpStatusCode.CREATED },
+      { status: HttpStatusCode.CREATED }
     );
   } catch (error) {
     console.error('Error creating user:', error);
-    return NextResponse.json(errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR), {
-      status: HttpStatusCode.INTERNAL_SERVER_ERROR,
-    });
+    return NextResponse.json(
+      errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR),
+      {
+        status: HttpStatusCode.INTERNAL_SERVER_ERROR
+      }
+    );
   }
 }
 
@@ -169,8 +178,8 @@ export async function GET(req: Request) {
           OR: [
             { email: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
             { first_name: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
-            { last_name: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
-          ],
+            { last_name: { contains: searchParam, mode: Prisma.QueryMode.insensitive } }
+          ]
         }
       : {};
 
@@ -180,7 +189,7 @@ export async function GET(req: Request) {
         skip,
         take: pageSize,
         orderBy: {
-          [sortBy]: order,
+          [sortBy]: order
         },
         select: {
           id: true,
@@ -192,17 +201,20 @@ export async function GET(req: Request) {
           is_verified: true,
           sign_up_type: true,
           created_at: true,
-          subscriptions: true,
-        },
+          subscriptions: true
+        }
       }),
-      prisma.user.count({ where: whereClause }),
+      prisma.user.count({ where: whereClause })
     ]);
 
     return paginatedResponse(users, page, pageSize, total, { status: HttpStatusCode.OK });
   } catch (error) {
     console.error('Error fetching paginated users:', error);
-    return NextResponse.json(errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR), {
-      status: HttpStatusCode.INTERNAL_SERVER_ERROR,
-    });
+    return NextResponse.json(
+      errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR),
+      {
+        status: HttpStatusCode.INTERNAL_SERVER_ERROR
+      }
+    );
   }
 }

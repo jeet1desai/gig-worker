@@ -46,6 +46,6 @@ export const useSocketConnection = () => {
   return {
     isConnected,
     socketId: socket?.id,
-    registerUser,
+    registerUser
   };
 };

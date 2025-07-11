@@ -5,7 +5,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from '@/lib/toast';
 import { PUBLIC_ROUTE, PUBLIC_API_ROUTES } from '@/constants/app-routes';
 import { MailCheck } from 'lucide-react';
-import { COMMON_ERROR_MESSAGES, EMAIL_VERIFICATION_MESSAGES, TOKEN, VERIFICATION_MESSAGES } from '@/constants';
+import {
+  COMMON_ERROR_MESSAGES,
+  EMAIL_VERIFICATION_MESSAGES,
+  TOKEN,
+  VERIFICATION_MESSAGES
+} from '@/constants';
 import apiService from '@/services/api';
 import { ApiResponse } from '@/types/fe';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -33,7 +38,9 @@ export default function EmailVerificationPage() {
     const verifyEmail = async () => {
       try {
         const token = searchParams.get(TOKEN);
-        const { data, status } = await apiService.get<ApiResponse>(`${PUBLIC_API_ROUTES.VERIFY_EMAIL_API}?token=${token}`);
+        const { data, status } = await apiService.get<ApiResponse>(
+          `${PUBLIC_API_ROUTES.VERIFY_EMAIL_API}?token=${token}`
+        );
 
         if (status === 200 || status === 201) {
           setVerified(true);
@@ -44,7 +51,11 @@ export default function EmailVerificationPage() {
         }
       } catch (err: any) {
         setVerified(false);
-        setMessage(err?.response?.data?.message || err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE);
+        setMessage(
+          err?.response?.data?.message ||
+            err?.message ||
+            COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE
+        );
       } finally {
         setLoading(false);
       }
@@ -66,7 +77,9 @@ export default function EmailVerificationPage() {
             <MailCheck className="mr-2 h-6 w-6" />
             Email Verified
           </h2>
-          <p className="my-4 text-sm text-[#FFF2E3]">Your email address is verified successfully.</p>
+          <p className="my-4 text-sm text-[#FFF2E3]">
+            Your email address is verified successfully.
+          </p>
           <div className="inline-block rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
             <button
               className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg px-5 py-2 font-semibold text-[#383937] transition"
@@ -79,7 +92,9 @@ export default function EmailVerificationPage() {
       ) : (
         <>
           <h2 className="text-2xl font-semibold text-[#FFF2E3]">Verification Failed</h2>
-          <p className="my-4 text-sm text-[#FFF2E3]">{message || 'Please try again to verify your email address.'}</p>
+          <p className="my-4 text-sm text-[#FFF2E3]">
+            {message || 'Please try again to verify your email address.'}
+          </p>
           <div className="inline-block rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
             <button
               className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg px-5 py-2 font-semibold text-[#383937] transition"

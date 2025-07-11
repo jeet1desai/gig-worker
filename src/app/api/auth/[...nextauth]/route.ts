@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
-    maxAge: 60 * 60 * 24,
+    maxAge: 60 * 60 * 24
   },
   providers: [
     CredentialsProvider({
@@ -19,13 +19,13 @@ export const authOptions: NextAuthOptions = {
       name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'text' },
-        password: { label: 'Password', type: 'password' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: { email: credentials.email }
         });
 
         if (!user || !user.password) return null;
@@ -45,16 +45,16 @@ export const authOptions: NextAuthOptions = {
           profile_url: user.profile_url || '',
           role: user.role,
           sign_up_type: user.sign_up_type || 'email',
-          is_verified: user.is_verified ?? false,
+          is_verified: user.is_verified ?? false
         };
-      },
+      }
     }),
     CredentialsProvider({
       id: 'admin-credentials',
       name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'text' },
-        password: { label: 'Password', type: 'password' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         const admin = await prisma.admin.findUnique({
-          where: { email: credentials.email },
+          where: { email: credentials.email }
         });
 
         if (!admin) {
@@ -82,9 +82,9 @@ export const authOptions: NextAuthOptions = {
           last_name: admin.last_name || '',
           image: admin.profile_url || '',
           is_verified: true,
-          role: 'admin',
+          role: 'admin'
         };
-      },
+      }
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -101,10 +101,10 @@ export const authOptions: NextAuthOptions = {
           profile_url: profile.picture,
           role: 'user',
           is_verified: true,
-          sign_up_type: 'google',
+          sign_up_type: 'google'
         };
-      },
-    }),
+      }
+    })
   ],
 
   callbacks: {
@@ -119,17 +119,17 @@ export const authOptions: NextAuthOptions = {
         const payload = {
           id: user.id,
           email: user.email,
-          role: user.role || 'user',
+          role: user.role || 'user'
         };
 
         token.customAccessToken = jwt.sign(payload, process.env.NEXTAUTH_SECRET!, {
-          expiresIn: '1d',
+          expiresIn: '1d'
         });
 
         // If Google login
         if (account?.provider === 'google' && user.email) {
           const existingUser = await prisma.user.findUnique({
-            where: { email: user.email },
+            where: { email: user.email }
           });
           if (!existingUser) {
             const newUser: any = await prisma.user.create({
@@ -141,8 +141,8 @@ export const authOptions: NextAuthOptions = {
                 sign_up_type: 'google',
                 is_verified: true,
                 role: 'user',
-                password: '',
-              },
+                password: ''
+              }
             });
 
             token.id = String(newUser.id);
@@ -171,18 +171,18 @@ export const authOptions: NextAuthOptions = {
         session.expires = new Date(token.exp * 1000).toISOString();
       }
       return session;
-    },
+    }
   },
 
   jwt: {
-    maxAge: 60 * 60 * 24,
+    maxAge: 60 * 60 * 24
   },
   pages: {
     signIn: PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH,
     error: PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH,
-    newUser: PRIVATE_ROUTE.DASHBOARD,
+    newUser: PRIVATE_ROUTE.DASHBOARD
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET
 };
 
 const handler = NextAuth(authOptions);

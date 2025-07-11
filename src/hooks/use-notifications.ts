@@ -30,7 +30,7 @@ export function useNotifications(userId?: string) {
     page: 1,
     limit: 10,
     total: 0,
-    totalPages: 1,
+    totalPages: 1
   });
 
   const fetchNotifications = useCallback(
@@ -44,13 +44,15 @@ export function useNotifications(userId?: string) {
         setIsLoading(false);
       }
     },
-    [userId],
+    [userId]
   );
 
   const markAsRead = useCallback(
     (notificationId: string) => {
       if (!userId) return;
-      const notificationIndex = notifications.findIndex((item) => BigInt(item.id) === BigInt(notificationId));
+      const notificationIndex = notifications.findIndex(
+        (item) => BigInt(item.id) === BigInt(notificationId)
+      );
       if (notificationIndex !== -1) {
         const updatedNotifications = [...notifications];
         updatedNotifications[notificationIndex].is_read = true;
@@ -58,14 +60,14 @@ export function useNotifications(userId?: string) {
       }
       socketManager.emit('notification:mark_as_read', { userId, notificationId });
     },
-    [notifications],
+    [notifications]
   );
 
   const markAllAsRead = useCallback(() => {
     if (!userId) return;
     const updatedNotifications = notifications.map((item) => ({
       ...item,
-      is_read: true,
+      is_read: true
     }));
     setNotifications(updatedNotifications);
     socketManager.emit('notification:mark_all_as_read', { userId });
@@ -78,7 +80,7 @@ export function useNotifications(userId?: string) {
     socketManager.emit('notification:get_notification_list', {
       userId,
       page: pagination.page,
-      limit: pagination.limit,
+      limit: pagination.limit
     });
 
     const onUnreadCount = (data: { count: number }) => {
@@ -91,7 +93,9 @@ export function useNotifications(userId?: string) {
     };
 
     const onNotificationList = (data: NotificationListResponse) => {
-      setNotifications((prev) => (data.pagination.page === 1 ? data.data : [...prev, ...data.data]));
+      setNotifications((prev) =>
+        data.pagination.page === 1 ? data.data : [...prev, ...data.data]
+      );
       setPagination(data.pagination);
     };
 
@@ -115,6 +119,6 @@ export function useNotifications(userId?: string) {
     pagination,
     fetchNotifications,
     markAsRead,
-    markAllAsRead,
+    markAllAsRead
   };
 }

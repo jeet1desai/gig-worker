@@ -13,5 +13,5 @@ export const Images = {
   photographer_image: '/images/photographer_image.png',
   hero_image: '/images/hero_image.png',
   round_arrow: '/images/round_arrow.png',
-  reviewers_image: '/images/reviewers_image.png',
+  reviewers_image: '/images/reviewers_image.png'
 };

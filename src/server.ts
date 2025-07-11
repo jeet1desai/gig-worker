@@ -19,7 +19,11 @@ export const io = new SocketIOServer({ path: '/api/socket', cors: { origin: '*' 
 io.attach(httpServer);
 initializeSocket(io);
 
-app.prepare().then(() => httpServer.listen(PORT, () => console.log(`> Ready on http://localhost:${PORT}`)));
+app
+  .prepare()
+  .then(() =>
+    httpServer.listen(PORT, () => console.log(`> Ready on http://localhost:${PORT}`))
+  );
 
 const shutdown = async () => {
   console.log('Shutting down gracefully...');

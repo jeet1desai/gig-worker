@@ -13,8 +13,8 @@ const initializeSocketIO = (req: any, res: any) => {
         addTrailingSlash: false,
         cors: {
           origin: '*',
-          methods: ['GET', 'POST'],
-        },
+          methods: ['GET', 'POST']
+        }
       });
 
       initializeSocket(io);
@@ -36,16 +36,16 @@ export async function GET(req: NextRequest) {
     return new NextResponse(JSON.stringify({ status: 'success' }), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   } catch (error) {
     console.error('Socket.IO error:', error);
     return new NextResponse(JSON.stringify({ error: 'Failed to initialize Socket.IO' }), {
       status: 500,
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     });
   }
 }

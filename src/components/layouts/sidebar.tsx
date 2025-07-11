@@ -9,7 +9,13 @@ import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ForwardRefExoticComponent, RefAttributes, useCallback, useEffect, useState } from 'react';
+import {
+  ForwardRefExoticComponent,
+  RefAttributes,
+  useCallback,
+  useEffect,
+  useState
+} from 'react';
 import CommonDeleteDialog from '../CommonDeleteDialog';
 import { clearStorage } from '@/lib/local-storage';
 
@@ -18,7 +24,9 @@ interface SidebarProps {
   onToggle: (collapsed: boolean) => void;
   navigation_menu: Array<{
     name: string;
-    icon: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>;
+    icon: ForwardRefExoticComponent<
+      Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+    >;
     href: string;
   }>;
 }
@@ -58,20 +66,36 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
     <div
       className={cn(
         'fixed inset-y-0 left-0 z-50 border-r border-slate-700/50 text-white shadow-2xl backdrop-blur-xl transition-all duration-300',
-        collapsed ? 'w-18' : 'w-64',
+        collapsed ? 'w-18' : 'w-64'
       )}
     >
       <div className="flex h-full w-full flex-col">
         <div className="relative flex items-center justify-between border-b border-slate-700/50 p-4">
-          <div className={cn('flex cursor-pointer items-center space-x-3', collapsed && 'justify-center')} onClick={redirectToHome}>
+          <div
+            className={cn(
+              'flex cursor-pointer items-center space-x-3',
+              collapsed && 'justify-center'
+            )}
+            onClick={redirectToHome}
+          >
             <div className="flex h-10 w-10 items-center justify-center rounded-xl font-bold text-white shadow-lg">
               <div className="relative flex aspect-[200/113] w-[200px] items-center justify-center">
-                <Image src={Images.logo} alt="logo" fill className="object-contain object-center" />
+                <Image
+                  src={Images.logo}
+                  alt="logo"
+                  fill
+                  className="object-contain object-center"
+                />
               </div>
             </div>
             {!collapsed && (
               <div className="max-w-auto relative flex aspect-[150/25] w-[150px] items-center justify-center">
-                <Image src={Images.big_logo_icon} alt="big_logo" fill className="object-contain object-center" />
+                <Image
+                  src={Images.big_logo_icon}
+                  alt="big_logo"
+                  fill
+                  className="object-contain object-center"
+                />
               </div>
             )}
           </div>
@@ -79,7 +103,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
             onClick={() => onToggle(!collapsed)}
             className={cn(
               'absolute top-5 -right-4 cursor-pointer rounded-full bg-slate-700/50 p-2.5 transition-all duration-200 hover:scale-110',
-              collapsed && 'hidden',
+              collapsed && 'hidden'
             )}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -96,7 +120,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
                 isPathMatch(item.href)
                   ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
                   : 'text-slate-300 hover:scale-105 hover:bg-slate-700/50 hover:text-white hover:shadow-lg',
-                collapsed ? 'justify-center px-2' : 'space-x-3',
+                collapsed ? 'justify-center px-2' : 'space-x-3'
               )}
             >
               <item.icon className="relative z-10 h-5 w-5 flex-shrink-0" />
@@ -113,7 +137,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
             onClick={() => setIsLoggingOut(true)}
             className={cn(
               'group flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition-all duration-200 hover:scale-105 hover:bg-red-500/20 hover:text-red-400',
-              collapsed ? 'justify-center px-2' : 'space-x-3',
+              collapsed ? 'justify-center px-2' : 'space-x-3'
             )}
           >
             <LogOut className="h-5 w-5 flex-shrink-0 transition-transform group-hover:rotate-12" />

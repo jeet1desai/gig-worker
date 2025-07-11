@@ -11,7 +11,7 @@ interface UserState {
 const initialState: UserState = {
   loading: false,
   users: [],
-  pagination: DEFAULT_PAGINATION,
+  pagination: DEFAULT_PAGINATION
 };
 
 const adminUserSlice = createSlice({
@@ -36,10 +36,11 @@ const adminUserSlice = createSlice({
     },
     setPage: (state, action: PayloadAction<{ page: number }>) => {
       state.pagination.page = action.payload.page;
-    },
-  },
+    }
+  }
 });
 
-export const { setLoading, setAdminUsers, deleteAdminUsers, createAdminUsers, setPage } = adminUserSlice.actions;
+export const { setLoading, setAdminUsers, deleteAdminUsers, createAdminUsers, setPage } =
+  adminUserSlice.actions;
 
 export default adminUserSlice.reducer;

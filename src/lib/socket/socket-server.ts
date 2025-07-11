@@ -27,7 +27,8 @@ export function initializeSocket(io: IOServer) {
 
       if (userId) {
         const unreadCount = await notificationService.getUnreadCount(userId);
-        const recentNotifications = await notificationService.getUserNotifications(userId);
+        const recentNotifications =
+          await notificationService.getUserNotifications(userId);
         socket.emit('notification:unread_count', { count: unreadCount });
         socket.emit('notification:list', recentNotifications);
       }
@@ -40,12 +41,15 @@ export function initializeSocket(io: IOServer) {
       socket.emit('notification:unread_count', { count });
     });
 
-    socket.on('notification:mark_as_read', async ({ userId, notificationId }: { userId: string; notificationId: string }) => {
-      if (!userId) return;
-      await notificationService.markAsRead(notificationId);
-      const count = await notificationService.getUnreadCount(userId);
-      socket.emit('notification:unread_count', { count });
-    });
+    socket.on(
+      'notification:mark_as_read',
+      async ({ userId, notificationId }: { userId: string; notificationId: string }) => {
+        if (!userId) return;
+        await notificationService.markAsRead(notificationId);
+        const count = await notificationService.getUnreadCount(userId);
+        socket.emit('notification:unread_count', { count });
+      }
+    );
 
     socket.on('notification:mark_all_as_read', async ({ userId }: { userId: string }) => {
       if (!userId) return;
@@ -53,14 +57,25 @@ export function initializeSocket(io: IOServer) {
       socket.emit('notification:unread_count', { count: 0 });
     });
 
-    socket.on('notification:get_notification_list', async ({ userId, page, limit }: { userId: string; page: number; limit: number }) => {
-      if (!userId) return;
-      const result = await notificationService.getUserNotifications(userId, {
+    socket.on(
+      'notification:get_notification_list',
+      async ({
+        userId,
         page,
-        limit,
-      });
-      socket.emit('notification:list', result);
-    });
+        limit
+      }: {
+        userId: string;
+        page: number;
+        limit: number;
+      }) => {
+        if (!userId) return;
+        const result = await notificationService.getUserNotifications(userId, {
+          page,
+          limit
+        });
+        socket.emit('notification:list', result);
+      }
+    );
 
     socket.on('disconnect', () => {
       if (userId && users.has(userId)) {
@@ -76,16 +91,23 @@ export function initializeSocket(io: IOServer) {
   });
 }
 
-export async function sendNotification(io: IOServer, userId: string, notificationData: any) {
+export async function sendNotification(
+  io: IOServer,
+  userId: string,
+  notificationData: any
+) {
   try {
-    const notification = await notificationService.createNotification(userId, notificationData);
+    const notification = await notificationService.createNotification(
+      userId,
+      notificationData
+    );
     const unreadCount = await notificationService.getUnreadCount(userId);
 
     emitToUser(io, userId, 'notification:new', {
       ...notification,
       id: notification.id.toString(),
       user_id: notification.user_id.toString(),
-      related_id: notification.related_id?.toString(),
+      related_id: notification.related_id?.toString()
     });
 
     emitToUser(io, userId, 'notification:unread_count', { count: unreadCount });
