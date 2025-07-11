@@ -173,15 +173,16 @@ export async function GET(req: Request) {
     const sortBy = sortByParam || 'created_at';
     const order = orderParam === 'asc' || orderParam === 'desc' ? orderParam : 'desc';
 
-    const whereClause = searchParam
-      ? {
-          OR: [
-            { email: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
-            { first_name: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
-            { last_name: { contains: searchParam, mode: Prisma.QueryMode.insensitive } }
-          ]
-        }
-      : {};
+    const whereClause = {
+      is_deleted: false,
+      ...(searchParam && {
+        OR: [
+          { email: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
+          { first_name: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
+          { last_name: { contains: searchParam, mode: Prisma.QueryMode.insensitive } }
+        ]
+      })
+    };
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({

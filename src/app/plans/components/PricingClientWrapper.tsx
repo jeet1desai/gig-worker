@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
 import { PayPalButtons, FUNDING } from '@paypal/react-paypal-js';
@@ -17,6 +16,7 @@ import { FREE_PLAN_ID } from '@/constants/plans';
 import Loader from '@/components/Loader';
 import CommonModal from '@/components/CommonModal';
 import { createSubscription } from '@/services/subscription.services';
+import { toast } from '@/lib/toast';
 
 interface PricingClientWrapperProps {
   activeSubscription: ISafeSubscription | null;

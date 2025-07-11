@@ -21,7 +21,8 @@ import NotificationBell from '../notification-bell';
 import Link from 'next/link';
 import { clearStorage } from '@/lib/local-storage';
 import CommonDeleteDialog from '../CommonDeleteDialog';
-import { useSession } from "next-auth/react";
+import { useSession } from 'next-auth/react';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -139,18 +140,24 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                       {session?.user.name}
                     </p>
                     <p className="hidden text-xs text-slate-400 md:block">
-                      Web Developer
+                      {session?.user.role.charAt(0).toUpperCase() +
+                        session?.user.role.slice(1) || 'Web Developer'}
                     </p>
                   </div>
                   <div className="relative">
-                    <img
-                      className="h-7 w-7 rounded-xl object-cover ring-2 ring-blue-500/20 transition-all duration-200 hover:scale-105 hover:ring-blue-500/40 sm:h-8 sm:w-8"
-                      src="https://images.unsplash.com/profile-1704991443592-a7f79d25ffb1image?w=150&dpr=2&crop=faces&bg=%23fff&h=150&auto=format&fit=crop&q=60&ixlib=rb-4.1.0"
-                      alt="Profile"
-                      width={32}
-                      height={32}
-                      loading="lazy"
-                    />
+                    <Avatar className="h-8 w-8 rounded-xl object-cover ring-2 ring-blue-500/20 transition-all duration-200 hover:scale-105 hover:ring-blue-500/40">
+                      <AvatarImage
+                        src={session?.user.image}
+                        alt={session?.user.name || 'User Profile'}
+                      />
+                      <AvatarFallback className="bg-transparent text-white">
+                        {session?.user.name
+                          ?.split(' ')
+                          .map((n: string) => n[0])
+                          .join('')
+                          .slice(0, 2) || 'AD'}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full border-2 border-slate-800 bg-green-500"></div>
                   </div>
                 </div>
