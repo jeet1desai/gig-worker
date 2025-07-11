@@ -5,14 +5,17 @@ import { ValidationError } from 'yup';
 
 import prisma from '@/lib/prisma';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { getSubscription } from '@/lib/paypal/subscriptions';
+import { getSubscription, cancelSubscription } from '@/lib/paypal/subscriptions'; // make sure you have this!
 import { errorResponse, successResponse } from '@/lib/api-response';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { getPlanByPlanId } from '@/lib/server/subscriptionPlans';
 import { subscribeSchema } from '@/schemas/be/subscription';
 import { COMMON_ERROR_MESSAGES, VERIFICATION_CODES } from '@/constants';
 import { FREE_PLAN_ID } from '@/constants/plans';
-import { PAYPAL_SUBSCRIPTION_STATUS } from '@/enums/be/paypal';
+import {
+  PAYPAL_SUBSCRIPTION_CANCEL_REASON,
+  PAYPAL_SUBSCRIPTION_STATUS
+} from '@/enums/be/paypal';
 
 export async function POST(req: Request) {
   try {
@@ -25,6 +28,38 @@ export async function POST(req: Request) {
     const { subscriptionId, planId } = validatedData;
     const session = await getServerSession(authOptions);
     const { user } = session as { user: User };
+
+    const existingSubscription = await prisma.subscription.findFirst({
+      where: {
+        user_id: BigInt(user.id),
+        status: SUBSCRIPTION_STATUS.active
+      },
+      include: {
+        plan: true
+      }
+    });
+
+    if (existingSubscription) {
+      const isSamePlan = existingSubscription.plan.plan_id === planId;
+
+      if (isSamePlan) {
+        return successResponse({
+          message: 'Subscription already active for this plan',
+          data: safeJson(existingSubscription)
+        });
+      }
+      await prisma.subscription.update({
+        where: { id: existingSubscription.id },
+        data: { status: SUBSCRIPTION_STATUS.inactive }
+      });
+
+      if (existingSubscription.subscription_id) {
+        await cancelSubscription(
+          existingSubscription.subscription_id,
+          PAYPAL_SUBSCRIPTION_CANCEL_REASON.SWITCHING_PLAN
+        );
+      }
+    }
 
     let planDetails;
     let subscriptionRes;
@@ -127,75 +162,6 @@ export async function POST(req: Request) {
       message: 'Subscription created successfully',
       data: safeJson(subscriptionRes[0])
     });
-
-    // if (!subscription) {
-    //   return errorResponse({
-    //     code: 'NOT_FOUND',
-    //     message: 'Subscription not found',
-    //     statusCode: HttpStatusCode.NOT_FOUND
-    //   });
-    // }
-
-    // if (subscription.status !== 'ACTIVE') {
-    //   return errorResponse({
-    //     code: 'INVALID_STATUS',
-    //     message: 'Subscription is not active',
-    //     statusCode: HttpStatusCode.BAD_REQUEST
-    //   });
-    // }
-
-    // const session = await getServerSession(authOptions);
-    // const { user } = session as { user: User };
-
-    // if (user.id !== subscription.custom_id) {
-    //   return errorResponse({
-    //     code: 'UNAUTHORIZED_USER_SUBSCRIPTION',
-    //     message: 'Subscription does not belong to this user',
-    //     statusCode: HttpStatusCode.UNAUTHORIZED
-    //   });
-    // }
-
-    // const planDetails = await getPlanByPlanId(subscription.plan_id);
-    // if (!planDetails) {
-    //   return errorResponse({
-    //     code: 'INVALID_PLAN',
-    //     message: 'Invalid subscription plan',
-    //     statusCode: HttpStatusCode.BAD_REQUEST
-    //   });
-    // }
-
-    // const price = subscription.billing_info.last_payment.amount.value ?? '0.00';
-    // const subscription_expires_at = subscription.billing_info.next_billing_time;
-
-    // const subscriptionRes = await prisma.$transaction([
-    //   prisma.subscription.upsert({
-    //     where: { subscription_id: subscription.id },
-    //     update: {
-    //       amount: parseFloat(price),
-    //       status: SUBSCRIPTION_STATUS.active,
-    //       subscription_expires_at,
-    //       plan_id: planDetails.id
-    //     },
-    //     create: {
-    //       user_id: BigInt(user.id),
-    //       type: planDetails.type,
-    //       amount: parseFloat(price),
-    //       status: SUBSCRIPTION_STATUS.active,
-    //       subscription_expires_at,
-    //       subscription_id: subscription.id,
-    //       plan_id: planDetails.id
-    //     }
-    //   }),
-    //   prisma.user.update({
-    //     where: { id: BigInt(user.id) },
-    //     data: { role: ROLE.provider }
-    //   })
-    // ]);
-
-    // return successResponse({
-    //   message: 'Subscription created successfully',
-    //   data: subscriptionRes[0]
-    // });
   } catch (error: any) {
     if (error instanceof ValidationError) {
       const fieldErrors: Record<string, string> = {};
