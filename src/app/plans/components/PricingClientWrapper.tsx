@@ -6,22 +6,17 @@ import { toast } from 'react-toastify';
 import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
 import { PayPalButtons, FUNDING } from '@paypal/react-paypal-js';
-import type { OnApproveData } from '@paypal/paypal-js';
 
+import type { OnApproveData } from '@paypal/paypal-js';
 import PlanCard from '@/components/PlanCard';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import apiService from '@/services/api';
-import { PRIVATE_API_ROUTES, PRIVATE_ROUTE } from '@/constants/app-routes';
+import { PRIVATE_ROUTE } from '@/constants/app-routes';
 import { ApiResponse } from '@/types/shared/api-response';
-import {
-  ISafePlan,
-  ISafeSubscription,
-  ISubscriptionCreateResponse
-} from '@/types/fe/api-responses';
+import { ISafePlan, ISafeSubscription } from '@/types/fe/api-responses';
 import { PAYPAL_BUTTON_CONFIG } from '@/constants';
 import { FREE_PLAN_ID } from '@/constants/plans';
 import Loader from '@/components/Loader';
 import CommonModal from '@/components/CommonModal';
+import { createSubscription } from '@/services/subscription.services';
 
 interface PricingClientWrapperProps {
   activeSubscription: ISafeSubscription | null;
@@ -48,9 +43,32 @@ const PricingClientWrapper = ({
     router.push(PRIVATE_ROUTE.DASHBOARD);
   };
 
+  const handleCloseDialog = (isOpen?: boolean) => {
+    setIsDialogOpen(isOpen || false);
+    setSelectedPlan(null);
+  };
+
+  const handleCreateFreeSubscription = async (planId: string) => {
+    try {
+      setIsLoading(true);
+      const response = await createSubscription(null, planId);
+      toast.success(response.message);
+      navigateToDashboard();
+    } catch (err) {
+      const error = err as AxiosError<ApiResponse<null>>;
+      const apiErrorMessage =
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        'Something went wrong.';
+      toast.error(apiErrorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleChoosePlan = (plan: ISafePlan) => {
     if (plan.plan_id === FREE_PLAN_ID) {
-      navigateToDashboard();
+      handleCreateFreeSubscription(plan.plan_id);
     } else {
       setSelectedPlan(plan);
       setIsDialogOpen(true);
@@ -62,7 +80,7 @@ const PricingClientWrapper = ({
     actions: PayPalSubscriptionActions
   ): Promise<string> => {
     try {
-      if (!selectedPlan?.plan_id) {
+      if (!selectedPlan) {
         throw new Error('No plan selected for subscription.');
       }
 
@@ -79,25 +97,18 @@ const PricingClientWrapper = ({
 
   const handleSubscriptionApprove = async (data: OnApproveData): Promise<void> => {
     setIsDialogOpen(false);
-    if (!data.subscriptionID) {
+    if (!data.subscriptionID || !selectedPlan) {
       throw new Error('Something went wrong! Try again later');
     }
 
     try {
       setIsLoading(true);
-      const payload = {
-        subscriptionId: data.subscriptionID
-      };
-
-      const response = await apiService.post<ApiResponse<ISubscriptionCreateResponse>>(
-        PRIVATE_API_ROUTES.SUBSCRIPTION_CREATE_API,
-        payload,
-        {
-          withAuth: true
-        }
+      const response = await createSubscription(
+        data.subscriptionID,
+        selectedPlan.plan_id
       );
 
-      toast.success(response.data.message || 'Subscription created successfully!');
+      toast.success(response.message);
       setIsDialogOpen(false);
       navigateToDashboard();
     } catch (err) {
@@ -154,7 +165,7 @@ const PricingClientWrapper = ({
 
       <CommonModal
         open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
+        onOpenChange={handleCloseDialog}
         className="py-6"
         title={`Subscribe to the ${selectedPlan?.name} plan?`}
       >

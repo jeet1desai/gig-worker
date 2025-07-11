@@ -37,6 +37,13 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email not verified');
         }
 
+        if (user.is_first_login) {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { is_first_login: false }
+          });
+        }
+
         return {
           id: String(user.id),
           email: user.email,
@@ -45,7 +52,8 @@ export const authOptions: NextAuthOptions = {
           profile_url: user.profile_url || '',
           role: user.role,
           sign_up_type: user.sign_up_type || 'email',
-          is_verified: user.is_verified ?? false
+          is_verified: user.is_verified ?? false,
+          is_first_login: user.is_first_login ?? false
         };
       }
     }),
@@ -101,7 +109,8 @@ export const authOptions: NextAuthOptions = {
           profile_url: profile.picture,
           role: 'user',
           is_verified: true,
-          sign_up_type: 'google'
+          sign_up_type: 'google',
+          is_first_login: true
         };
       }
     })
@@ -113,6 +122,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.role = user.role || 'user';
+        token.is_first_login = user.is_first_login ?? false;
 
         const payload = {
           id: user.id,
@@ -139,15 +149,25 @@ export const authOptions: NextAuthOptions = {
                 sign_up_type: 'google',
                 is_verified: true,
                 role: 'user',
-                password: ''
+                password: '',
+                is_first_login: false
               }
             });
 
             token.id = String(newUser.id);
             token.role = newUser.role;
+            token.is_first_login = true;
           } else {
             token.id = String(existingUser.id);
             token.role = existingUser.role;
+            token.is_first_login = false;
+          }
+
+          if (existingUser && existingUser.is_first_login) {
+            await prisma.user.update({
+              where: { id: existingUser.id },
+              data: { is_first_login: false }
+            });
           }
         }
         token.iat = Math.floor(Date.now() / 1000);
@@ -162,6 +182,7 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role;
         session.accessToken = token.customAccessToken;
         session.expires = new Date(token.exp * 1000).toISOString();
+        session.user.is_first_login = token.is_first_login;
       }
       return session;
     }

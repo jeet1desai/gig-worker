@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { getSession, signIn } from 'next-auth/react';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -64,8 +64,13 @@ export default function LoginForm() {
         toast.error(LOGIN_MESSAGES.invalidCredentials);
         setLoading(false);
       } else {
-        router.replace(PRIVATE_ROUTE.DASHBOARD);
-        router.refresh();
+        const session = await getSession();
+
+        if (session?.user?.is_first_login) {
+          router.replace(PRIVATE_ROUTE.PLANS);
+        } else {
+          router.replace(PRIVATE_ROUTE.DASHBOARD);
+        }
       }
     } catch (err: any) {
       toast.error(err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE);
