@@ -197,3 +197,13 @@ input:-webkit-autofill:active {
   background-color: transparent !important;
   transition: background-color 5000s ease-in-out 0s;
 }
+
+::selection {
+  background: #3399ff;
+  color: #fff;
+}
+
+::-moz-selection {
+  background: #3399ff;
+  color: #fff;
+}
