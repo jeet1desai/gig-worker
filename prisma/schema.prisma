@@ -383,6 +383,7 @@ enum SUBSCRIPTION_TYPE {
 
 enum SUBSCRIPTION_STATUS {
   active
+  inactive
   cancelled
 }
 

@@ -1,8 +1,7 @@
 import { errorResponse, successResponse } from '@/lib/api-response';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { deleteSubscriptionPlan } from '@/lib/paypal/plans';
-import { NextResponse } from 'next/server';
-import { FREE_PLAN } from '@/constants/plans';
+import { FREE_PLAN_ID } from '@/constants/plans';
 import { deletePlan } from '@/lib/server/subscriptionPlans';
 
 export async function DELETE(
@@ -22,11 +21,11 @@ export async function DELETE(
   try {
     let delete_response;
 
-    if (plan_id !== FREE_PLAN.plan_id) {
+    if (plan_id !== FREE_PLAN_ID) {
       delete_response = await deleteSubscriptionPlan(plan_id);
     }
 
-    if (delete_response || plan_id === FREE_PLAN.plan_id) {
+    if (delete_response || plan_id === FREE_PLAN_ID) {
       const delete_message = await deletePlan(plan_id);
       return successResponse({
         data: [],

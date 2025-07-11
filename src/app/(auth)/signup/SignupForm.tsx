@@ -113,6 +113,7 @@ export default function SignupForm() {
   const renderField = (
     name: keyof SignupFormValues,
     label: string,
+    placeholder: string,
     type: string,
     Icon: React.ElementType
   ) => (
@@ -120,7 +121,7 @@ export default function SignupForm() {
       <Label htmlFor={name} className="mb-1 block text-base text-[#FFF2E3]">
         {label}
       </Label>
-      <div className="relative">
+      <div className="relative mt-2">
         <Icon
           className="absolute top-1/2 left-3 -translate-y-1/2 text-[#FFF2E3]"
           size={18}
@@ -130,7 +131,7 @@ export default function SignupForm() {
           type={type}
           {...register(name)}
           className="!border !border-[#444] bg-transparent !pl-10 !text-white !placeholder-white placeholder:text-base"
-          placeholder={`Enter your ${label.toLowerCase()}`}
+          placeholder={placeholder}
         />
       </div>
       {errors[name] && (
@@ -158,11 +159,23 @@ export default function SignupForm() {
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {renderField('first_name', 'First name', 'text', User)}
-            {renderField('last_name', 'Last name', 'text', User)}
-            {renderField('email', 'Email', 'email', Mail)}
-            {renderField('password', 'Password', 'password', Lock)}
-            {renderField('confirmPassword', 'Confirm Password', 'password', Lock)}
+            <div className="flex flex-col gap-4 md:flex-row md:gap-6">
+              <div className="w-full md:w-1/2">
+                {renderField('first_name', 'First name', 'First name', 'text', User)}
+              </div>
+              <div className="w-full md:w-1/2">
+                {renderField('last_name', 'Last name', 'Last name', 'text', User)}
+              </div>
+            </div>
+            {renderField('email', 'Email', 'Enter your email', 'email', Mail)}
+            {renderField('password', 'Password', 'Enter your password', 'password', Lock)}
+            {renderField(
+              'confirmPassword',
+              'Confirm Password',
+              'Enter your confirm password',
+              'password',
+              Lock
+            )}
 
             <Controller
               name="terms"

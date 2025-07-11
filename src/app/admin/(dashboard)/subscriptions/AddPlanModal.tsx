@@ -16,6 +16,7 @@ import { SubscriptionPlan, SubscriptionPlanPayload } from '@/types/fe';
 import { subscriptionsPlanValidationSchema } from '@/schemas/fe/auth';
 import { SUBSCRIPTION_PLAN_TYPES } from '@/constants';
 import CommonModal from '@/components/CommonModal';
+import { SUBSCRIPTION_TYPE } from '@prisma/client';
 
 interface AddPlanModalProps {
   isOpen: boolean;
@@ -84,6 +85,9 @@ const AddPlanModal = ({
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    if (field === 'subscriptionType' && value === SUBSCRIPTION_TYPE.free) {
+      setFormData((prev) => ({ ...prev, price: '0' }));
+    }
     if (errors[field]) {
       setErrors((prev) => {
         const updated = { ...prev };
@@ -325,7 +329,7 @@ const AddPlanModal = ({
         <div className="space-y-2">
           <Label>Plan Price</Label>
           <div className="relative">
-            <span className="absolute top-2 left-3 transform text-slate-400">$</span>
+            <span className="absolute top-[6px] left-3 transform text-slate-400">$</span>
             <Input
               placeholder="Enter plan price"
               value={formData.price}
@@ -333,7 +337,9 @@ const AddPlanModal = ({
               className={`border-slate-600 bg-slate-700 pl-8 text-white ${errors.price ? 'border-red-500' : ''} ${mode === 'edit' ? 'cursor-not-allowed opacity-50' : ''}`}
               type="number"
               min="0"
-              disabled={mode === 'edit'}
+              disabled={
+                mode === 'edit' || formData.subscriptionType === SUBSCRIPTION_TYPE.free
+              }
             />
             {errors.price && (
               <p className="text-sm text-red-400">Valid price (0 or more) required</p>

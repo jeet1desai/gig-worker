@@ -139,7 +139,6 @@ const SubscriptionPlans = () => {
         response.data.message
       ) {
         setPlans(response.data.data);
-        toast.success(response.data.message);
       }
     } catch (error: unknown) {
       console.error('Error fetching subscription plans', error);
@@ -163,23 +162,18 @@ const SubscriptionPlans = () => {
   }, [plans, getAvailablePlanTypeDetails]);
 
   return (
-    <div className="min-h-screen bg-[#020d1a]">
+    <div className="min-h-screen">
       <Loader isLoading={isLoading} />
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="mb-2 text-3xl font-bold text-white">Subscription Plans</h1>
-            <p className="text-slate-400">Manage your subscription plans and pricing</p>
+            <h1 className="mb-2 text-lg font-bold text-white sm:text-xl md:text-2xl lg:text-3xl">
+              Subscription Plans
+            </h1>
+            <p className="text-xs text-slate-400 sm:text-sm md:text-base lg:text-lg">
+              Manage your subscription plans and pricing
+            </p>
           </div>
-          {plans.length < 3 && (
-            <Button
-              onClick={handleAddPlan}
-              className="font-base flex cursor-pointer items-center gap-2 rounded-lg border-0 bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-purple-700 hover:shadow-xl"
-            >
-              <Plus size={20} />
-              Add Plan
-            </Button>
-          )}
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

@@ -14,9 +14,7 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:seed": "prisma db seed",
     "prisma:update": "npx prisma migrate dev --name update_table",
-    "prisma:reset": "npx prisma migrate reset",
-    "seed:dev:paypal-plans": "tsx src/scripts/seed-paypal-plans.ts",
-    "seed:prod:paypal-plans": "node dist/scripts/seed-paypal-plans.ts"
+    "prisma:reset": "npx prisma migrate reset"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",

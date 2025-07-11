@@ -14,7 +14,7 @@ function Layout({
 
   return (
     <AdminProtectedRoute>
-      <div className="flex min-h-screen w-full bg-[#020d1a]">
+      <div className="bg-foreground flex min-h-screen w-full">
         <Sidebar
           collapsed={sidebarCollapsed}
           onToggle={(collapsed) => setSidebarCollapsed(collapsed)}

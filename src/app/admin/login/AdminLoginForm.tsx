@@ -42,10 +42,10 @@ export default function AdminLoginForm() {
     Icon: React.ElementType
   ) => (
     <div>
-      <Label htmlFor={name} className="mb-1 block text-[#FFF2E3]">
+      <Label htmlFor={name} className="mb-1 block text-base text-[#FFF2E3]">
         {label}
       </Label>
-      <div className="relative">
+      <div className="relative mt-2">
         <Icon
           className="absolute top-1/2 left-3 -translate-y-1/2 text-[#FFF2E3]"
           size={18}
