@@ -100,7 +100,7 @@ export default function ForgotPasswordForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[#FFF2E3]">Email</FormLabel>
+                <FormLabel className="text-base !text-[#FFF2E3]">Email</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#FFF2E3]" />
@@ -110,7 +110,7 @@ export default function ForgotPasswordForm() {
                       placeholder="Enter your email"
                       className={`!border !pl-9 ${
                         form.formState.errors.email ? '!border-red-500' : '!border-[#444]'
-                      } bg-transparent !text-white !placeholder-white`}
+                      } bg-transparent !text-white !placeholder-white placeholder:text-base`}
                     />
                   </div>
                 </FormControl>

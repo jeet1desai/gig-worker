@@ -15,3 +15,14 @@ export const formatDate = (dateString?: string | Date | null): string => {
     return 'Date error';
   }
 };
+
+export const formatDateInternational = (dateString?: string | Date | null): string => {
+  if (!dateString) return 'N/A';
+  try {
+    const date = new Date(dateString);
+    return date.toISOString();
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return 'Date error';
+  }
+};

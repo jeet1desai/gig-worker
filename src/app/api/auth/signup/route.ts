@@ -22,7 +22,7 @@ import {
   NOTIFICATION_MODULES,
   NOTIFICATION_TYPES,
   SIGNUP_MESSAGES,
-  VERIFICATION_CODES,
+  VERIFICATION_CODES
 } from '@/constants';
 const io = getSocketServer();
 
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 
     const validatedData: SignupPayload = await signupSchema.validate(body, {
       abortEarly: false,
-      stripUnknown: true,
+      stripUnknown: true
     });
 
     const { email, first_name, last_name, password } = validatedData;
@@ -40,13 +40,13 @@ export async function POST(req: Request) {
     const formattedEmail = email.toLowerCase().trim();
 
     const existingUser = await prisma.user.findUnique({
-      where: { email: formattedEmail },
+      where: { email: formattedEmail }
     });
     if (existingUser) {
       return errorResponse({
         code: VERIFICATION_CODES.USER_ALREADY_EXISTS,
         message: SIGNUP_MESSAGES.USER_ALREADY_EXISTS,
-        statusCode: HttpStatusCode.BAD_REQUEST,
+        statusCode: HttpStatusCode.BAD_REQUEST
       });
     }
 
@@ -58,34 +58,34 @@ export async function POST(req: Request) {
         first_name,
         last_name,
         password: hashedPassword,
-        sign_up_type: USER_SIGNUP_TYPE.EMAIL,
+        sign_up_type: USER_SIGNUP_TYPE.EMAIL
       },
       select: {
         id: true,
         email: true,
         first_name: true,
-        last_name: true,
-      },
+        last_name: true
+      }
     });
 
     const safeUser = safeJson(user);
     const token = generateEmailVerificationToken({
       userId: safeUser.id,
-      email: user.email,
+      email: user.email
     });
 
     await sendNotification(io, user.id.toString(), {
       title: NOTIFICATION_MESSAGES.USER_CREATED_TITLE,
       message: NOTIFICATION_MESSAGES.USER_CREATED,
       module: NOTIFICATION_MODULES.SYSTEM,
-      type: NOTIFICATION_TYPES.SUCCESS,
+      type: NOTIFICATION_TYPES.SUCCESS
     });
 
     const userName = `${first_name} ${last_name}`;
     const verificationUrl = `${publicEnv.NEXT_PUBLIC_BASE_URL}${PUBLIC_ROUTE.EMAIL_VERIFICATION_PATH}?token=${token}`;
     const { subject, html } = getVerificationEmail({
       userName,
-      actionLink: verificationUrl,
+      actionLink: verificationUrl
     });
 
     sendEmail({ to: email, subject, html });
@@ -93,7 +93,7 @@ export async function POST(req: Request) {
     return successResponse({
       data: safeUser,
       message: SIGNUP_MESSAGES.USER_CREATED_SUCCESS,
-      statusCode: HttpStatusCode.CREATED,
+      statusCode: HttpStatusCode.CREATED
     });
   } catch (err) {
     if (err instanceof ValidationError) {
@@ -106,7 +106,7 @@ export async function POST(req: Request) {
         code: VERIFICATION_CODES.VALIDATION_ERROR,
         message: COMMON_ERROR_MESSAGES.VALIDATION_ERROR,
         statusCode: HttpStatusCode.BAD_REQUEST,
-        fieldErrors,
+        fieldErrors
       });
     }
 
@@ -114,7 +114,7 @@ export async function POST(req: Request) {
       code: VERIFICATION_CODES.INTERNAL_SERVER_ERROR,
       message: SIGNUP_MESSAGES.INTERNAL_SERVER_ERROR,
       statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
-      details: err instanceof Error ? err.message : 'Unknown error',
+      details: err instanceof Error ? err.message : 'Unknown error'
     });
   }
 }

@@ -1,5 +1,4 @@
-import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, SUBSCRIPTION_TYPE } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 
 import { listSubscriptionPlans } from '@/lib/paypal/plans';
@@ -30,7 +29,8 @@ const seedPayPalPlans = async () => {
         product_id: plan.product_id,
         price: new Decimal(priceInfo.value),
         currency: priceInfo.currency_code,
-        status: plan.status,
+        status: plan.status.toLowerCase(),
+        type: plan.name === 'Basic' ? SUBSCRIPTION_TYPE.basic : SUBSCRIPTION_TYPE.pro,
         interval: billing.frequency.interval_unit || 'MONTH',
         interval_count: billing.frequency.interval_count || 1,
         billing_cycle_count: billing.total_cycles || 0,
@@ -41,25 +41,23 @@ const seedPayPalPlans = async () => {
         benefits: planBenefits[plan.id] || planBenefits[0],
         isPublic: true,
         maxGigs: 0,
-        maxBids: 0,
+        maxBids: 0
       };
 
       await prisma.plan.upsert({
         where: { plan_id: plan.id },
         update: sharedData,
-        create: sharedData,
+        create: sharedData
       });
     }
 
-    const FREE_PLAN_ID = 'FREE-PLAN';
-
     const existingFree = await prisma.plan.findUnique({
-      where: { plan_id: FREE_PLAN_ID },
+      where: { plan_id: 'FREE-PLAN' }
     });
 
     if (!existingFree) {
       await prisma.plan.create({
-        data: FREE_PLAN,
+        data: FREE_PLAN as any
       });
     }
 

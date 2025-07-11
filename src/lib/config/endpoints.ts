@@ -1,9 +1,7 @@
 export const endpoints = {
-  getPlans: '/api/paypal/plans',
-  createSubscription: '/api/paypal/subscribe',
-
   payPalAccessToken: '/oauth2/token',
   payPalPlans: '/billing/plans',
   payPalSubscriptions: '/billing/subscriptions',
-  payPalProductList: 'catalogs/products',
+  payPalProductList: '/catalogs/products',
+  payPalWebhook: '/notifications/verify-webhook-signature'
 };

@@ -1,20 +1,57 @@
-import prisma from '@/lib/prisma';
-import { SubscriptionPlanPayload } from '@/types/fe';
-import { Decimal } from '@prisma/client/runtime/library';
-import { safeJson } from '@/lib/utils/safeJson';
 import lodash from 'lodash';
-import { getPlanDetailsById } from '../paypal/plans';
+import { SUBSCRIPTION_STATUS, SUBSCRIPTION_TYPE } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/library';
+import { getServerSession } from 'next-auth';
+
+import { SubscriptionPlanPayload } from '@/types/fe';
+import { safeJson } from '@/lib/utils/safeJson';
+import { getPlanDetailsById } from '@/lib/paypal/plans';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import prisma from '@/lib/prisma';
+
+export async function getCurrentUserActiveSubscription() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return null;
+  }
+
+  const userId = BigInt(session.user.id);
+
+  const subscription = await prisma.subscription.findFirst({
+    where: {
+      user_id: userId,
+      status: SUBSCRIPTION_STATUS.active
+    },
+    include: {
+      plan: true
+    }
+  });
+
+  return safeJson(subscription);
+}
 
 export const getPlans = async () => {
   const plans = await prisma.plan.findMany({
-    where: { isPublic: true, status: 'ACTIVE' },
-    orderBy: { price: 'asc' },
+    where: { isPublic: true, status: SUBSCRIPTION_STATUS.active },
+    orderBy: { price: 'asc' }
   });
 
   return safeJson(plans);
 };
 
-export const createPlan = async (plan_details: SubscriptionPlanPayload, paypal_plan_id: string) => {
+export const getPlanByPlanId = async (id: string) => {
+  const plan = await prisma.plan.findUnique({
+    where: { plan_id: id, isPublic: true, status: SUBSCRIPTION_STATUS.active }
+  });
+
+  return safeJson(plan);
+};
+
+export const createPlan = async (
+  plan_details: SubscriptionPlanPayload,
+  paypal_plan_id: string
+) => {
   const paypal_plain_details = await getPlanDetailsById(paypal_plan_id);
 
   const billing_cycles = paypal_plain_details.billing_cycles[0];
@@ -30,6 +67,7 @@ export const createPlan = async (plan_details: SubscriptionPlanPayload, paypal_p
       description: paypal_plain_details.description || '',
       status: paypal_plain_details.status,
       price: new Decimal(plan_details.price),
+      type: plan_details.subscriptionType as SUBSCRIPTION_TYPE,
       currency: priceInfo.currency_code,
       interval: billing_cycles.frequency.interval_unit || 'MONTH',
       interval_count: billing_cycles.frequency.interval_count || 1,
@@ -41,16 +79,19 @@ export const createPlan = async (plan_details: SubscriptionPlanPayload, paypal_p
       benefits: plan_details.benefits,
       isPublic: true,
       maxGigs: plan_details.maxGigs,
-      maxBids: plan_details.maxBids,
-    },
+      maxBids: plan_details.maxBids
+    }
   });
 
   return 'Subscription plan created successfully';
 };
 
-export const updatePlan = async (paypal_plan_id: string, plan_details: SubscriptionPlanPayload) => {
+export const updatePlan = async (
+  paypal_plan_id: string,
+  plan_details: SubscriptionPlanPayload
+) => {
   const existingPlan = await prisma.plan.findUnique({
-    where: { plan_id: paypal_plan_id },
+    where: { plan_id: paypal_plan_id }
   });
 
   if (!existingPlan) {
@@ -86,7 +127,7 @@ export const updatePlan = async (paypal_plan_id: string, plan_details: Subscript
   if (Object.keys(data).length > 0) {
     await prisma.plan.update({
       where: { plan_id: paypal_plan_id },
-      data,
+      data
     });
   }
 
@@ -97,8 +138,8 @@ export const deletePlan = async (plan_id: string) => {
   await prisma.plan.update({
     where: { plan_id: plan_id },
     data: {
-      status: 'INACTIVE',
-    },
+      status: 'INACTIVE'
+    }
   });
 
   return 'Subscription plan deleted successfully';

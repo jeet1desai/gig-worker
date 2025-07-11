@@ -106,7 +106,7 @@ export default function ResetPasswordForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[#FFF2E3]">
+                <FormLabel className="text-base !text-[#FFF2E3]">
                   Password <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
@@ -116,7 +116,7 @@ export default function ResetPasswordForm() {
                       {...field}
                       type="password"
                       placeholder="Enter your password"
-                      className="!border !border-[#444] bg-transparent pl-10 !text-white !placeholder-white"
+                      className="!border !border-[#444] bg-transparent pl-10 !text-white !placeholder-white placeholder:text-base"
                       autoComplete="new-password"
                     />
                   </div>
@@ -131,7 +131,7 @@ export default function ResetPasswordForm() {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[#FFF2E3]">
+                <FormLabel className="text-base !text-[#FFF2E3]">
                   Confirm Password <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
@@ -141,7 +141,7 @@ export default function ResetPasswordForm() {
                       {...field}
                       type="password"
                       placeholder="Enter your confirm password"
-                      className="!border !border-[#444] bg-transparent pl-10 !text-white !placeholder-white"
+                      className="!border !border-[#444] bg-transparent pl-10 !text-white !placeholder-white placeholder:text-base"
                       autoComplete="new-password"
                     />
                   </div>
