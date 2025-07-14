@@ -2,10 +2,7 @@ import { checkAdminRole } from '@/utils/checkAdminRole';
 import { NextResponse } from 'next/server';
 import { errorResponse, safeJsonResponse } from '@/utils/apiResponse';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
+import prisma from '@/lib/prisma';
 interface RouteParams {
   params: {
     id: string;

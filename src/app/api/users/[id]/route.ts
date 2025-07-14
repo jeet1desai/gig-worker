@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient, User, UserProfile, UserBan, Subscription } from '@prisma/client';
+import { User, UserProfile, UserBan, Subscription } from '@prisma/client';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { errorResponse, safeJsonResponse } from '@/utils/apiResponse';
 import { checkAdminRole } from '@/utils/checkAdminRole';
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 interface RouteParams {
   params: {
