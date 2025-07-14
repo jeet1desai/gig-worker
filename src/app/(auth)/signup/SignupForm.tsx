@@ -17,7 +17,7 @@ import apiService from '@/services/api';
 import { PRIVATE_ROUTE, PUBLIC_API_ROUTES, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { COMMON_ERROR_MESSAGES, SIGNUP_MESSAGES } from '@/constants';
 import { ApiResponse } from '@/types/fe';
-import { Mail, Lock, User } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { signupSchema } from '@/schemas/fe/auth';
 
 interface SignupFormValues {
@@ -33,6 +33,8 @@ export default function SignupForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -116,29 +118,46 @@ export default function SignupForm() {
     placeholder: string,
     type: string,
     Icon: React.ElementType
-  ) => (
-    <div>
-      <Label htmlFor={name} className="mb-1 block text-base text-[#FFF2E3]">
-        {label}
-      </Label>
-      <div className="relative mt-2">
-        <Icon
-          className="absolute top-1/2 left-3 -translate-y-1/2 text-[#FFF2E3]"
-          size={18}
-        />
-        <Input
-          id={name}
-          type={type}
-          {...register(name)}
-          className="!border !border-[#444] bg-transparent !pl-10 !text-white !placeholder-white placeholder:text-base"
-          placeholder={placeholder}
-        />
+  ) => {
+    const isPasswordField = name === 'password' || name === 'confirmPassword';
+    const isVisible = name === 'password' ? showPassword : showConfirmPassword;
+
+    return (
+      <div>
+        <Label htmlFor={name} className="mb-1 block text-base text-[#FFF2E3]">
+          {label}
+        </Label>
+        <div className="relative mt-2">
+          <Icon
+            className="absolute top-1/2 left-3 -translate-y-1/2 text-[#FFF2E3]"
+            size={18}
+          />
+          <Input
+            id={name}
+            type={isPasswordField && !isVisible ? 'password' : 'text'}
+            {...register(name)}
+            className="!border !border-[#444] bg-transparent !pr-10 !pl-10 !text-white !placeholder-white placeholder:text-base"
+            placeholder={placeholder}
+          />
+          {isPasswordField && (
+            <div
+              className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-[#FFF2E3]"
+              onClick={() =>
+                name === 'password'
+                  ? setShowPassword((prev) => !prev)
+                  : setShowConfirmPassword((prev) => !prev)
+              }
+            >
+              {isVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+            </div>
+          )}
+        </div>
+        {errors[name] && (
+          <p className="mt-1 text-sm text-red-500">{errors[name]?.message}</p>
+        )}
       </div>
-      {errors[name] && (
-        <p className="mt-1 text-sm text-red-500">{errors[name]?.message}</p>
-      )}
-    </div>
-  );
+    );
+  };
 
   return (
     <>
