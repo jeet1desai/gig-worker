@@ -35,6 +35,7 @@ declare module 'next-auth/jwt' {
     id: string;
     role: string;
     exp: number;
+    iat: number;
     customAccessToken: string;
   }
 }

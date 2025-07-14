@@ -9,7 +9,7 @@ import { PayPalButtons, FUNDING } from '@paypal/react-paypal-js';
 
 import type { OnApproveData } from '@paypal/paypal-js';
 import PlanCard from '@/components/PlanCard';
-import { PRIVATE_ROUTE } from '@/constants/app-routes';
+import { PRIVATE_API_ROUTES, PRIVATE_ROUTE } from '@/constants/app-routes';
 import { ApiResponse } from '@/types/shared/api-response';
 import { ISafePlan, ISafeSubscription } from '@/types/fe/api-responses';
 import { PAYPAL_BUTTON_CONFIG } from '@/constants';
@@ -17,7 +17,7 @@ import { FREE_PLAN_ID } from '@/constants/plans';
 import Loader from '@/components/Loader';
 import CommonModal from '@/components/CommonModal';
 import { createSubscription } from '@/services/subscription.services';
-import { toast } from '@/lib/toast';
+import apiService from '@/services/api';
 
 interface PricingClientWrapperProps {
   activeSubscription: ISafeSubscription | null;
@@ -30,12 +30,17 @@ type PayPalSubscriptionActions = {
   };
 };
 
+type SessionUpdatePayload = {
+    message: string;
+    subscription: string;
+};
+
 const PricingClientWrapper = ({
   plans,
   activeSubscription
 }: PricingClientWrapperProps) => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { update, data: session } = useSession();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<ISafePlan | null>(null);
@@ -53,6 +58,14 @@ const PricingClientWrapper = ({
     try {
       setIsLoading(true);
       const response = await createSubscription(null, planId);
+      const sessionUpdate = await apiService.get<ApiResponse<SessionUpdatePayload>>(
+        PRIVATE_API_ROUTES.SESSION_UPDATE
+      );
+      const payload = sessionUpdate.data;
+
+      if (payload && payload.data) {
+        await update({ subscription: payload.data.subscription });
+      }
       toast.success(response.message);
       navigateToDashboard();
     } catch (err) {

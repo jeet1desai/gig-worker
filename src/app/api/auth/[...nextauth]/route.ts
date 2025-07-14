@@ -23,10 +23,11 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email }, include: {
+          where: { email: credentials.email },
+          include: {
             subscriptions: {
               where: {
-                status: 'active',
+                status: 'active'
               },
               take: 1,
               select: {
@@ -117,7 +118,7 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
@@ -139,10 +140,11 @@ export const authOptions: NextAuthOptions = {
         // If Google login
         if (account?.provider === 'google' && user.email) {
           const existingUser = await prisma.user.findUnique({
-            where: { email: user.email }, include: {
+            where: { email: user.email },
+            include: {
               subscriptions: {
                 where: {
-                  status: 'active',
+                  status: 'active'
                 },
                 take: 1,
                 select: {
@@ -182,6 +184,10 @@ export const authOptions: NextAuthOptions = {
         }
         token.iat = Math.floor(Date.now() / 1000);
         token.exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
+      }
+
+      if (trigger === 'update' && session?.subscription) {
+        token.subscription = session.subscription;
       }
       return token;
     },
