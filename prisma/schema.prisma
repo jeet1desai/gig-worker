@@ -385,6 +385,7 @@ enum SUBSCRIPTION_TYPE {
 
 enum SUBSCRIPTION_STATUS {
   active
+  pending
   inactive
   cancelled
 }
