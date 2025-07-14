@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient, Prisma, ROLE } from '@prisma/client';
+import { Prisma, ROLE } from '@prisma/client';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { errorResponse, paginatedResponse, safeJsonResponse } from '@/utils/apiResponse';
 import { checkAdminRole } from '@/utils/checkAdminRole';
 import * as yup from 'yup';
+import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
-
-const prisma = new PrismaClient();
 
 const createUserSchema = yup.object({
   email: yup.string().email('Invalid email format').required('Email is required'),
@@ -173,15 +172,16 @@ export async function GET(req: Request) {
     const sortBy = sortByParam || 'created_at';
     const order = orderParam === 'asc' || orderParam === 'desc' ? orderParam : 'desc';
 
-    const whereClause = searchParam
-      ? {
-          OR: [
-            { email: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
-            { first_name: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
-            { last_name: { contains: searchParam, mode: Prisma.QueryMode.insensitive } }
-          ]
-        }
-      : {};
+    const whereClause = {
+      is_deleted: false,
+      ...(searchParam && {
+        OR: [
+          { email: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
+          { first_name: { contains: searchParam, mode: Prisma.QueryMode.insensitive } },
+          { last_name: { contains: searchParam, mode: Prisma.QueryMode.insensitive } }
+        ]
+      })
+    };
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({

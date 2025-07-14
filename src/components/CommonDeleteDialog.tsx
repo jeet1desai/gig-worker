@@ -32,7 +32,7 @@ const CommonDeleteDialog = ({
     <CommonModal
       open={open}
       onOpenChange={onOpenChange}
-      className="sborder-slate-700 bg-slate-800 text-white sm:max-w-md"
+      className="border-slate-700 bg-slate-800 text-white sm:max-w-md"
       title={title}
       subtitle={description}
     >

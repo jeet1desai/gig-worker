@@ -318,7 +318,7 @@ const UsersListingPage = ({
       )}
 
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="border-slate-700 bg-slate-800 text-white sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Delete User</DialogTitle>
             <DialogDescription>
@@ -330,7 +330,7 @@ const UsersListingPage = ({
               <Button
                 type="button"
                 variant="secondary"
-                className="cursor-pointer border border-[#5750F1] dark:border-white dark:text-white"
+                className="cursor-pointer border border-white dark:border-white dark:text-white"
               >
                 Cancel
               </Button>

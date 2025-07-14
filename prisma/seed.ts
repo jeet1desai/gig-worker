@@ -1,15 +1,13 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
-
-const prisma = new PrismaClient();
 
 async function main() {
   const hashedPassword = await bcrypt.hash('Admin@123', 10);
 
   const existingAdmin = await prisma.admin.findUnique({
     where: {
-      email: 'admin@gigworker.com',
-    },
+      email: 'admin@gigworker.com'
+    }
   });
 
   if (!existingAdmin) {
@@ -21,8 +19,8 @@ async function main() {
         first_name: 'Super',
         last_name: 'Admin',
         password: hashedPassword,
-        profile_url: '',
-      },
+        profile_url: ''
+      }
     });
   }
 }
