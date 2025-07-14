@@ -141,21 +141,18 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                     </p>
                     <p className="hidden text-xs text-slate-400 md:block">
                       {session?.user.role.charAt(0).toUpperCase() +
-                        session?.user.role.slice(1) || 'Web Developer'}
+                        session?.user.role.slice(1)}
                     </p>
                   </div>
                   <div className="relative">
                     <Avatar className="h-8 w-8 rounded-xl object-cover ring-2 ring-blue-500/20 transition-all duration-200 hover:scale-105 hover:ring-blue-500/40">
-                      <AvatarImage
-                        src={session?.user.image}
-                        alt={session?.user.name || 'User Profile'}
-                      />
+                      <AvatarImage src={session?.user.image} alt={session?.user.name} />
                       <AvatarFallback className="bg-transparent text-white">
                         {session?.user.name
                           ?.split(' ')
                           .map((n: string) => n[0])
                           .join('')
-                          .slice(0, 2) || 'AD'}
+                          .slice(0, 2)}
                       </AvatarFallback>
                     </Avatar>
                     <div className="absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full border-2 border-slate-800 bg-green-500"></div>
