@@ -113,6 +113,12 @@ const UserDetailPage = ({
     }
   };
 
+  const user_status = user.is_banned
+    ? 'Banned'
+    : user.is_deleted
+      ? 'Deactivated'
+      : 'Active';
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -204,9 +210,9 @@ const UserDetailPage = ({
                         : 'bg-gray-600 text-gray-100'
                     }
                   >
-                    {user.is_banned ? 'Banned' : 'Active'}
+                    {user_status}
                   </Badge>
-                  <Badge className="border-gray-700 text-gray-100 capitalize">
+                  <Badge className="border-gray-700 text-gray-600 capitalize">
                     {user.role === 'user' ? 'User' : 'Provider'}
                   </Badge>
                 </div>
@@ -380,9 +386,13 @@ const UserDetailPage = ({
                         </p>
                         <p className="mt-0.5 text-sm text-gray-200">
                           <span
-                            className={user.is_banned ? 'text-red-400' : 'text-green-400'}
+                            className={
+                              user.is_banned || user.is_deleted
+                                ? 'text-red-400'
+                                : 'text-green-400'
+                            }
                           >
-                            {user.is_banned ? 'Banned' : 'Active'}
+                            {user_status}
                           </span>
                           {user.is_banned && user.user_ban?.reason && (
                             <span className="mt-1 block text-xs text-gray-400">

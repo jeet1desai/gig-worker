@@ -1,6 +1,5 @@
 import juice from 'juice';
-
-import { transporter, fromEmail } from './config';
+import { sgMail as sendGridMail, fromEmail } from './config';
 import { emailLayout } from '@/lib/email/templates/emailLayout';
 
 type SendEmailParams = {
@@ -20,16 +19,18 @@ export const sendEmail = async ({
     const htmlWithLayout = emailLayout(html, extraStyles);
     const inlinedHtml = juice(htmlWithLayout);
 
-    await transporter.sendMail({
-      from: fromEmail,
+    const msg = {
       to,
+      from: fromEmail,
       subject,
       html: inlinedHtml
-    });
+    };
+
+    await sendGridMail.send(msg);
 
     return { success: true };
-  } catch (error) {
-    console.log('Error in sendEmail:', error);
+  } catch (error: any) {
+    console.error('Error in sendEmail:', error?.response?.body || error);
     return { success: false, error };
   }
 };
