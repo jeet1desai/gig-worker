@@ -1,12 +1,10 @@
 import NextAuth, { NextAuthOptions, User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
-
-const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
   session: {

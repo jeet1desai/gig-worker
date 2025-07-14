@@ -19,6 +19,7 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form';
+import { Eye, EyeOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { resetPasswordSchema } from '@/schemas/auth';
 
@@ -30,6 +31,8 @@ type ResetPasswordFormType = {
 export default function ResetPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get(TOKEN);
@@ -133,11 +136,17 @@ export default function ResetPasswordForm() {
                     <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#FFF2E3]" />
                     <Input
                       {...field}
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       placeholder="Enter your password"
-                      className="!border !border-[#444] bg-transparent pl-10 !text-white !placeholder-white placeholder:text-base"
+                      className="!border !border-[#444] bg-transparent pr-10 pl-10 !text-white !placeholder-white placeholder:text-base"
                       autoComplete="new-password"
                     />
+                    <div
+                      className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-[#FFF2E3]"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </div>
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -158,11 +167,17 @@ export default function ResetPasswordForm() {
                     <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#FFF2E3]" />
                     <Input
                       {...field}
-                      type="password"
+                      type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="Enter your confirm password"
-                      className="!border !border-[#444] bg-transparent pl-10 !text-white !placeholder-white placeholder:text-base"
+                      className="!border !border-[#444] bg-transparent pr-10 pl-10 !text-white !placeholder-white placeholder:text-base"
                       autoComplete="new-password"
                     />
+                    <div
+                      className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-[#FFF2E3]"
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    >
+                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </div>
                   </div>
                 </FormControl>
                 <FormMessage />

@@ -53,6 +53,7 @@ export interface UserDetails {
   profile?: UserProfile;
   subscription: UserSubscription | null;
   user_ban: UserBan | null;
+  is_deleted: boolean;
   _count: UserCounts;
 }
 

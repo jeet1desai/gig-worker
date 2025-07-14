@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient, User, UserProfile, UserBan, Subscription } from '@prisma/client';
+import { User, UserProfile, UserBan, Subscription } from '@prisma/client';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { errorResponse, safeJsonResponse } from '@/utils/apiResponse';
 import { checkAdminRole } from '@/utils/checkAdminRole';
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 interface RouteParams {
   params: {
@@ -191,8 +190,8 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       );
     }
 
-    const existingUser = await prisma.user.findUnique({
-      where: { id: BigInt(userId) },
+    const existingUser = await prisma.user.findFirst({
+      where: { id: BigInt(userId), is_deleted: false },
       select: { id: true, email: true, first_name: true, last_name: true }
     });
     if (!existingUser) {
@@ -202,13 +201,14 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       );
     }
 
-    await prisma.user.delete({ where: { id: userId } });
+    await prisma.user.update({ where: { id: userId }, data: { is_deleted: true } });
 
     return safeJsonResponse(
       { success: true, message: 'User deleted successfully', data: existingUser },
       { status: HttpStatusCode.OK }
     );
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR),
       {

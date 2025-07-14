@@ -17,6 +17,7 @@ import { FREE_PLAN_ID } from '@/constants/plans';
 import Loader from '@/components/Loader';
 import CommonModal from '@/components/CommonModal';
 import { createSubscription } from '@/services/subscription.services';
+import { toast } from '@/lib/toast';
 
 interface PricingClientWrapperProps {
   activeSubscription: ISafeSubscription | null;

@@ -88,7 +88,7 @@ export async function POST(req: Request) {
       actionLink: verificationUrl
     });
 
-    sendEmail({ to: email, subject, html });
+    await sendEmail({ to: email, subject, html });
 
     return successResponse({
       data: safeUser,

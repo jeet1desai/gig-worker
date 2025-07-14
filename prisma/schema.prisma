@@ -17,6 +17,7 @@ model User {
   role           ROLE     @default(user)
   is_verified    Boolean  @default(false)
   is_banned      Boolean  @default(false)
+  is_deleted     Boolean  @default(false)
   sign_up_type   String?
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt

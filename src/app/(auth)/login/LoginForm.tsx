@@ -6,8 +6,7 @@ import Image from 'next/image';
 import { getSession, signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Mail, Lock } from 'lucide-react';
-
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { toast } from '@/lib/toast';
 import { loginSchema } from '@/schemas/auth';
 import { Images } from '@/lib/images';
@@ -32,6 +31,7 @@ type LoginFormValues = {
 export default function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginFormValues>({
     resolver: yupResolver(loginSchema),
@@ -121,9 +121,15 @@ export default function LoginForm() {
                     <Input
                       {...field}
                       placeholder="Enter your password"
-                      type="password"
-                      className="!border !border-[#444] bg-transparent pl-10 !text-white !placeholder-white placeholder:text-base"
+                      type={showPassword ? 'text' : 'password'}
+                      className="!border !border-[#444] bg-transparent pr-10 pl-10 !text-white !placeholder-white placeholder:text-base"
                     />
+                    <div
+                      className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-[#FFF2E3]"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </div>
                   </div>
                 </FormControl>
                 <FormMessage className="mt-1 text-sm text-red-500" />

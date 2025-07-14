@@ -5,14 +5,15 @@ import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { Images } from '@/lib/images';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSession } from "next-auth/react";
+import { useSession } from 'next-auth/react';
 import * as Popover from '@radix-ui/react-popover';
-import { LogOut, User } from 'lucide-react';
+import { LayoutDashboardIcon, LogOut, User } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import CommonDeleteDialog from './CommonDeleteDialog';
 import { signOut } from 'next-auth/react';
 import { clearStorage } from '@/lib/local-storage';
 import { useRouter } from 'next/navigation';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 function Header() {
   const { data: session } = useSession();
@@ -53,7 +54,8 @@ function Header() {
               <SearchIconSvg className="absolute top-3 left-4 text-sm text-gray-400" />
             </div>
           </div>
-          <nav className="flex w-full items-center flex-wrap justify-center gap-x-6 gap-y-2 text-sm lg:w-1/3 lg:justify-end">
+
+          <nav className="flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm lg:w-1/3 lg:justify-end">
             <Link href="#" className="text-base text-[#FFF2E3]">
               Find Work
             </Link>
@@ -65,18 +67,25 @@ function Header() {
                 <Popover.Trigger asChild>
                   <div className="flex cursor-pointer items-center space-x-2 border-l border-slate-700 pl-4">
                     <div className="hidden text-right sm:block">
-                      <p className="max-w-[120px] truncate text-sm font-medium text-white">{session?.user.name}</p>
-                      <p className="hidden text-xs text-slate-400 md:block">Web Developer</p>
+                      <p className="max-w-[120px] truncate text-sm font-medium text-white">
+                        {session?.user.name}
+                      </p>
+                      <p className="hidden text-xs text-slate-400 md:block">
+                        {session?.user.role.charAt(0).toUpperCase() +
+                          session?.user.role.slice(1)}
+                      </p>
                     </div>
                     <div className="relative">
-                      <img
-                        className="h-7 w-7 rounded-xl object-cover ring-2 ring-blue-500/20 transition-all duration-200 hover:scale-105 hover:ring-blue-500/40 sm:h-8 sm:w-8"
-                        src="https://images.unsplash.com/profile-1704991443592-a7f79d25ffb1image?w=150&dpr=2&crop=faces&bg=%23fff&h=150&auto=format&fit=crop&q=60&ixlib=rb-4.1.0"
-                        alt="Profile"
-                        width={32}
-                        height={32}
-                        loading="lazy"
-                      />
+                      <Avatar className="h-8 w-8 rounded-xl object-cover ring-2 ring-blue-500/20 transition-all duration-200 hover:scale-105 hover:ring-blue-500/40">
+                        <AvatarImage src={session?.user.image} alt={session?.user.name} />
+                        <AvatarFallback className="bg-transparent text-white">
+                          {session?.user.name
+                            ?.split(' ')
+                            .map((n: string) => n[0])
+                            .join('')
+                            .slice(0, 2)}
+                        </AvatarFallback>
+                      </Avatar>
                       <div className="absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full border-2 border-slate-800 bg-green-500"></div>
                     </div>
                   </div>
@@ -88,13 +97,19 @@ function Header() {
                     align="end"
                     className="z-50 mt-2 w-44 rounded-md border border-slate-700 bg-slate-800 p-1 text-white shadow-lg"
                   >
-                    <Link
-                      href={PRIVATE_ROUTE.USER_PROFILE}
-                      className="flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-sm outline-none hover:bg-slate-700 focus:outline-none focus-visible:ring-0"
-                    >
-                      <User className="h-4 w-4" />
-                      <span>Profile</span>
-                    </Link>
+                    {
+                      <Link
+                        href={
+                          session?.user.role === 'admin'
+                            ? PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH
+                            : PRIVATE_ROUTE.DASHBOARD
+                        }
+                        className="flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-sm outline-none hover:bg-slate-700 focus:outline-none focus-visible:ring-0"
+                      >
+                        <LayoutDashboardIcon className="h-4 w-4" />
+                        <span>Dashboard</span>
+                      </Link>
+                    }
                     <button
                       onClick={() => setIsLoggingOut(true)}
                       className="flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-sm outline-none hover:bg-slate-700 focus:outline-none focus-visible:ring-0"
@@ -107,10 +122,16 @@ function Header() {
               </Popover.Root>
             ) : (
               <>
-                <Link href={PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH} className="text-base text-[#FFF2E3]">
+                <Link
+                  href={PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH}
+                  className="text-base text-[#FFF2E3]"
+                >
                   Login
                 </Link>
-                <Link href={PUBLIC_ROUTE.SIGNUP_PAGE_PATH} className="text-base text-[#FFF2E3]">
+                <Link
+                  href={PUBLIC_ROUTE.SIGNUP_PAGE_PATH}
+                  className="text-base text-[#FFF2E3]"
+                >
                   Signup
                 </Link>
               </>
