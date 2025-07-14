@@ -58,14 +58,7 @@ const PricingClientWrapper = ({
     try {
       setIsLoading(true);
       const response = await createSubscription(null, planId);
-      const sessionUpdate = await apiService.get<ApiResponse<SessionUpdatePayload>>(
-        PRIVATE_API_ROUTES.SESSION_UPDATE
-      );
-      const payload = sessionUpdate.data;
-
-      if (payload && payload.data) {
-        await update({ subscription: payload.data.subscription });
-      }
+      await update({ subscription: response.data?.type });
       toast.success(response.message);
       navigateToDashboard();
     } catch (err) {
