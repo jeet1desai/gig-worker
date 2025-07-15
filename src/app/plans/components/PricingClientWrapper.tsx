@@ -108,7 +108,7 @@ const PricingClientWrapper = ({
     try {
       setIsLoading(true);
       const response = await createSubscription(data.subscriptionID, selectedPlan.plan_id);
-      await update({ 
+      await update({
         subscription: response.data?.subscription.type,
         role: response.data?.user.role
       });

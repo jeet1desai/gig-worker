@@ -186,8 +186,9 @@ export const authOptions: NextAuthOptions = {
         token.exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
       }
 
-      if (trigger === 'update' && session?.subscription) {
-        token.subscription = session.subscription;
+      if (trigger === 'update') {
+        if (session?.subscription) token.subscription = session.subscription;
+        if (session?.role) token.role = session.role;
       }
       return token;
     },
