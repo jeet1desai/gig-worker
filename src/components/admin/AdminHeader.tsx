@@ -64,20 +64,14 @@ export function AdminHeader({ collapsed, onToggle }: SidebarProps) {
           <Popover.Trigger asChild>
             <div className="flex cursor-pointer items-center space-x-2 pl-2 sm:space-x-3 sm:pl-3 md:pl-4">
               <div className="hidden text-right sm:block">
-                <p className="max-w-[120px] truncate text-sm font-medium text-white md:max-w-none">
-                  {userDetails?.user.name}
-                </p>
+                <p className="max-w-[120px] truncate text-sm font-medium text-white md:max-w-none">{userDetails?.user.name}</p>
                 <p className="hidden text-xs text-slate-400 md:block">
-                  {userDetails?.user.role.charAt(0).toUpperCase() +
-                    userDetails?.user.role.slice(1)}
+                  {userDetails?.user.role.charAt(0).toUpperCase() + userDetails?.user.role.slice(1)}
                 </p>
               </div>
               <div className="relative">
                 <Avatar className="h-8 w-8 rounded-xl object-cover ring-2 ring-blue-500/20 transition-all duration-200 hover:scale-105 hover:ring-blue-500/40">
-                  <AvatarImage
-                    src={userDetails?.user.image}
-                    alt={userDetails?.user.name}
-                  />
+                  <AvatarImage src={userDetails?.user.image} alt={userDetails?.user.name} />
                   <AvatarFallback className="bg-transparent text-white">
                     {userDetails?.user.name
                       ?.split(' ')

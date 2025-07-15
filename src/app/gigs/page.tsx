@@ -1,30 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import {
-  Clock,
-  DollarSign,
-  Filter,
-  Heart,
-  MapPin,
-  Plus,
-  Search,
-  Star,
-  Trash2
-} from 'lucide-react';
+import { Clock, DollarSign, Filter, Heart, MapPin, Plus, Search, Star, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 import DashboardLayout from '@/components/layouts/layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 
 import { RootState, useSelector } from '@/store/store';
@@ -75,17 +59,9 @@ export const GigCard = ({
   return (
     <div className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-gray-700/50 bg-gray-800/50 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-gray-900/20">
       <div className="relative h-48 overflow-hidden">
-        <Image
-          src={imageUrl}
-          alt={title}
-          fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+        <Image src={imageUrl} alt={title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
         <div className="absolute top-3 right-3">
-          <Badge
-            variant="outline"
-            className={`${tierColors[tier]} border-2 font-medium backdrop-blur-sm`}
-          >
+          <Badge variant="outline" className={`${tierColors[tier]} border-2 font-medium backdrop-blur-sm`}>
             {tierLabels[tier]} Tier
           </Badge>
         </div>
@@ -94,9 +70,7 @@ export const GigCard = ({
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-3 flex items-start justify-between">
           <Link href={`/gigs/${id}`} className="group-hover:text-blue-400">
-            <h3 className="mb-2 line-clamp-2 text-lg font-bold text-white transition-colors">
-              {title}
-            </h3>
+            <h3 className="mb-2 line-clamp-2 text-lg font-bold text-white transition-colors">{title}</h3>
           </Link>
           <Button
             variant="ghost"
@@ -104,17 +78,13 @@ export const GigCard = ({
             className="text-gray-400 hover:bg-transparent hover:text-rose-500"
             onClick={() => onFavoriteToggle?.(id)}
           >
-            <Heart
-              className={`h-5 w-5 ${isFavorite ? 'fill-rose-500 text-rose-500' : ''}`}
-            />
+            <Heart className={`h-5 w-5 ${isFavorite ? 'fill-rose-500 text-rose-500' : ''}`} />
           </Button>
         </div>
 
         <p className="mb-4 line-clamp-3 text-gray-300">
-          I'm a college student struggling with my calculus assignment and need help
-          understanding derivatives and integrals. The assignment is due in 2 days and I
-          really need someone who can explain the concepts clearly and help me solve the
-          problems.
+          I'm a college student struggling with my calculus assignment and need help understanding derivatives and integrals. The assignment is due in
+          2 days and I really need someone who can explain the concepts clearly and help me solve the problems.
         </p>
 
         <div className="mt-auto grid grid-cols-2 gap-4 border-t border-gray-700/50 pt-4">
@@ -143,13 +113,7 @@ export const GigCard = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-blue-500">
-              <Image
-                src={imageUrl}
-                alt={providerName}
-                width={36}
-                height={36}
-                className="h-full w-full object-cover"
-              />
+              <Image src={imageUrl} alt={providerName} width={36} height={36} className="h-full w-full object-cover" />
             </div>
             <div>
               <p className="text-sm font-medium text-white">{providerName}</p>
@@ -163,14 +127,9 @@ export const GigCard = ({
           </div>
 
           {role === 'user' ? (
-            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500">
-              Place Bid
-            </Button>
+            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500">Place Bid</Button>
           ) : (
-            <Button
-              variant="outline"
-              className="border-red-500 text-red-500 hover:bg-red-900/20 hover:text-red-400"
-            >
+            <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-900/20 hover:text-red-400">
               <Trash2 className="mr-2 h-4 w-4" /> Remove
             </Button>
           )}
@@ -198,8 +157,7 @@ const GigsPage = () => {
       providerId: '1',
       rating: 4.5,
       reviewCount: 24,
-      imageUrl:
-        'https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=1974&auto=format&fit=crop',
+      imageUrl: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=1974&auto=format&fit=crop',
       deliveryTime: '3 Days',
       isFavorite: false,
       onFavoriteToggle: toggleFavorite
@@ -213,8 +171,7 @@ const GigsPage = () => {
       providerId: '2',
       rating: 4.8,
       reviewCount: 156,
-      imageUrl:
-        'https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop',
+      imageUrl: 'https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop',
       deliveryTime: '7 Days',
       isFavorite: true,
       onFavoriteToggle: toggleFavorite
@@ -228,8 +185,7 @@ const GigsPage = () => {
       providerId: '3',
       rating: 4.9,
       reviewCount: 89,
-      imageUrl:
-        'https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop',
+      imageUrl: 'https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop',
       deliveryTime: '14 Days',
       isFavorite: false,
       onFavoriteToggle: toggleFavorite
@@ -270,12 +226,9 @@ const GigsPage = () => {
         <div className="container mx-auto px-4">
           {/* Hero Section */}
           <div className="mb-12 text-center">
-            <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">
-              Find Your Next Gig
-            </h1>
+            <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">Find Your Next Gig</h1>
             <p className="mx-auto max-w-2xl text-lg text-gray-300">
-              Discover and bid on exciting projects from clients worldwide. Grow your
-              portfolio and earn money doing what you love.
+              Discover and bid on exciting projects from clients worldwide. Grow your portfolio and earn money doing what you love.
             </p>
           </div>
 
@@ -330,12 +283,7 @@ const GigsPage = () => {
           {/* Gig Grid */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {gigs.map((gig, index) => (
-              <GigCard
-                key={`${gig.id}-${index}`}
-                role={user?.role}
-                {...gig}
-                onFavoriteToggle={toggleFavorite}
-              />
+              <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} onFavoriteToggle={toggleFavorite} />
             ))}
           </div>
 
@@ -347,14 +295,10 @@ const GigsPage = () => {
               </div>
               <h3 className="mb-2 text-xl font-semibold text-white">No gigs found</h3>
               <p className="max-w-md text-gray-400">
-                We couldn't find any gigs matching your search. Try adjusting your filters
-                or check back later.
+                We couldn't find any gigs matching your search. Try adjusting your filters or check back later.
               </p>
               {user?.role === 'provider' && (
-                <Button
-                  className="mt-4 bg-gradient-to-r from-blue-600 to-purple-600"
-                  onClick={() => router.push('/gigs/new')}
-                >
+                <Button className="mt-4 bg-gradient-to-r from-blue-600 to-purple-600" onClick={() => router.push('/gigs/new')}>
                   <Plus className="mr-2 h-4 w-4" />
                   Create Your First Gig
                 </Button>

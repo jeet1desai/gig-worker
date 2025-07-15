@@ -22,7 +22,7 @@ const TierSystem = () => {
   const [editedData, setEditedData] = useState({
     title: '',
     description: '',
-    examples: '',
+    examples: ''
   });
 
   const getStatusBadge = (status: string) => {

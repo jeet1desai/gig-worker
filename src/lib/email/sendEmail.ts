@@ -9,12 +9,7 @@ type SendEmailParams = {
   extraStyles?: string;
 };
 
-export const sendEmail = async ({
-  to,
-  subject,
-  html,
-  extraStyles = ''
-}: SendEmailParams) => {
+export const sendEmail = async ({ to, subject, html, extraStyles = '' }: SendEmailParams) => {
   try {
     const htmlWithLayout = emailLayout(html, extraStyles);
     const inlinedHtml = juice(htmlWithLayout);

@@ -175,10 +175,10 @@ model Gig {
   end_date     DateTime?
   tier         TIER      @default(basic)
   price_range  Json
-  keywords     String[]
+  keywords     Json?
   completed_at DateTime?
   thumbnail    String?
-  attachments  String[]
+  attachments  Json?
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
 

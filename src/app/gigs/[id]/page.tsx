@@ -9,13 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Star,
   Clock,
@@ -53,8 +47,7 @@ const mockGigRequest = {
   ],
   client: {
     name: 'Sarah Johnson',
-    avatar:
-      'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face&auto=format',
+    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face&auto=format',
     rating: 4.8,
     reviews: 23,
     memberSince: '2023',
@@ -114,8 +107,7 @@ Willing to pay $50-80 depending on the quality of explanations and tutoring prov
       id: 1,
       provider: {
         name: 'Dr. Michael Chen',
-        avatar:
-          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face&auto=format',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face&auto=format',
         rating: 4.9,
         reviews: 156,
         expertise: 'Mathematics PhD, 8 years tutoring experience',
@@ -134,8 +126,7 @@ Willing to pay $50-80 depending on the quality of explanations and tutoring prov
       id: 2,
       provider: {
         name: 'Emma Rodriguez',
-        avatar:
-          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face&auto=format',
+        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face&auto=format',
         rating: 4.7,
         reviews: 89,
         expertise: 'Math tutor specializing in calculus',
@@ -153,8 +144,7 @@ Willing to pay $50-80 depending on the quality of explanations and tutoring prov
       id: 3,
       provider: {
         name: 'Alex Kim',
-        avatar:
-          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face&auto=format',
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face&auto=format',
         rating: 4.8,
         reviews: 67,
         expertise: 'Engineering student with strong math background',
@@ -180,37 +170,20 @@ export default function GigDetailPage() {
       <main className="min-h-screen py-8">
         <div className="container mx-auto px-4">
           <div className="mb-6 flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.back()}
-              className="text-gray-400 hover:bg-gray-800 hover:text-white"
-            >
+            <Button variant="ghost" size="sm" onClick={() => router.back()} className="text-gray-400 hover:bg-gray-800 hover:text-white">
               <ChevronLeft className="mr-2 h-4 w-4" />
               Back to Gigs
             </Button>
             <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-gray-800 text-gray-400 hover:bg-gray-800"
-              >
+              <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
                 <Share2 className="mr-2 h-4 w-4" />
                 Share
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-gray-800 text-gray-400 hover:bg-gray-800"
-              >
+              <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
                 <Flag className="mr-2 h-4 w-4" />
                 Report
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-gray-800 text-gray-400 hover:bg-gray-800"
-              >
+              <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
                 <Bookmark className="mr-2 h-4 w-4" />
                 Save
               </Button>
@@ -226,22 +199,16 @@ export default function GigDetailPage() {
                       <CheckCircle className="mr-1 h-3.5 w-3.5" />
                       {mockGigRequest.status}
                     </Badge>
-                    <Badge
-                      variant="outline"
-                      className="border-amber-500/20 bg-amber-500/10 text-amber-400"
-                    >
+                    <Badge variant="outline" className="border-amber-500/20 bg-amber-500/10 text-amber-400">
                       <Zap className="mr-1 h-3.5 w-3.5" />
                       {mockGigRequest.urgency} Priority
                     </Badge>
                     <span className="ml-auto text-sm text-gray-400">
-                      Posted {mockGigRequest.postedAgo} • Expires in{' '}
-                      {mockGigRequest.expires}
+                      Posted {mockGigRequest.postedAgo} • Expires in {mockGigRequest.expires}
                     </span>
                   </div>
 
-                  <h1 className="mb-4 text-2xl font-bold text-white">
-                    {mockGigRequest.title}
-                  </h1>
+                  <h1 className="mb-4 text-2xl font-bold text-white">{mockGigRequest.title}</h1>
 
                   <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
                     <div className="rounded-lg bg-gray-700/50 p-4">
@@ -249,9 +216,7 @@ export default function GigDetailPage() {
                         <DollarSign className="h-5 w-5 text-blue-400" />
                         <div>
                           <p className="text-sm text-gray-400">Budget</p>
-                          <p className="font-medium text-white">
-                            {mockGigRequest.budget}
-                          </p>
+                          <p className="font-medium text-white">{mockGigRequest.budget}</p>
                         </div>
                       </div>
                     </div>
@@ -260,9 +225,7 @@ export default function GigDetailPage() {
                         <Clock className="h-5 w-5 text-purple-400" />
                         <div>
                           <p className="text-sm text-gray-400">Timeline</p>
-                          <p className="font-medium text-white">
-                            {mockGigRequest.timeframe}
-                          </p>
+                          <p className="font-medium text-white">{mockGigRequest.timeframe}</p>
                         </div>
                       </div>
                     </div>
@@ -271,9 +234,7 @@ export default function GigDetailPage() {
                         <MapPin className="h-5 w-5 text-green-400" />
                         <div>
                           <p className="text-sm text-gray-400">Location</p>
-                          <p className="font-medium text-white">
-                            {mockGigRequest.location}
-                          </p>
+                          <p className="font-medium text-white">{mockGigRequest.location}</p>
                         </div>
                       </div>
                     </div>
@@ -282,9 +243,7 @@ export default function GigDetailPage() {
                         <Briefcase className="h-5 w-5 text-amber-400" />
                         <div>
                           <p className="text-sm text-gray-400">Category</p>
-                          <p className="font-medium text-white">
-                            {mockGigRequest.category}
-                          </p>
+                          <p className="font-medium text-white">{mockGigRequest.category}</p>
                         </div>
                       </div>
                     </div>
@@ -295,51 +254,39 @@ export default function GigDetailPage() {
                     <div className="text-gray-300">{mockGigRequest.description}</div>
                   </div>
 
-                  {mockGigRequest.attachments &&
-                    mockGigRequest.attachments.length > 0 && (
-                      <div className="">
-                        <h3 className="mb-3 text-lg font-semibold text-white">
-                          Attachments
-                        </h3>
-                        <div className="space-y-2">
-                          {mockGigRequest.attachments.map((file: any, i: any) => (
-                            <div
-                              key={i}
-                              className="group flex items-center justify-between rounded-lg border border-gray-700 bg-gray-700/30 p-3 transition-colors hover:bg-gray-700/50"
-                            >
-                              <div className="flex items-center space-x-3">
-                                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-900/20 text-blue-400">
-                                  <FileText className="h-5 w-5" />
-                                </div>
-                                <div className="min-w-0">
-                                  <p className="truncate text-sm font-medium text-white">
-                                    {file.name}
-                                  </p>
-                                  <p className="text-xs text-gray-400">{file.size}</p>
-                                </div>
+                  {mockGigRequest.attachments && mockGigRequest.attachments.length > 0 && (
+                    <div className="">
+                      <h3 className="mb-3 text-lg font-semibold text-white">Attachments</h3>
+                      <div className="space-y-2">
+                        {mockGigRequest.attachments.map((file: any, i: any) => (
+                          <div
+                            key={i}
+                            className="group flex items-center justify-between rounded-lg border border-gray-700 bg-gray-700/30 p-3 transition-colors hover:bg-gray-700/50"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-900/20 text-blue-400">
+                                <FileText className="h-5 w-5" />
                               </div>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-gray-400"
-                                title="Download"
-                              >
-                                <Download className="h-4 w-4" />
-                              </Button>
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-medium text-white">{file.name}</p>
+                                <p className="text-xs text-gray-400">{file.size}</p>
+                              </div>
                             </div>
-                          ))}
-                        </div>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400" title="Download">
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
                       </div>
-                    )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
               {user?.role === 'provider' && (
                 <Card className="rounded-lg border-gray-700/50 bg-inherit">
                   <CardContent>
-                    <CardTitle className="text-white">
-                      Bids ({mockGigRequest.bids.length})
-                    </CardTitle>
+                    <CardTitle className="text-white">Bids ({mockGigRequest.bids.length})</CardTitle>
 
                     <div className="mt-6 space-y-4">
                       {mockGigRequest.bids.map((bid) => (
@@ -348,18 +295,13 @@ export default function GigDetailPage() {
                           className={`relative overflow-hidden border border-gray-700/50 bg-gray-800/30 transition-all hover:border-gray-600/50 ${bid.featured ? 'ring-2 ring-blue-500/30' : ''}`}
                         >
                           {bid.featured && (
-                            <div className="absolute top-0 right-0 rounded-bl-md bg-blue-600 px-2 py-1 text-xs font-medium text-white">
-                              Featured
-                            </div>
+                            <div className="absolute top-0 right-0 rounded-bl-md bg-blue-600 px-2 py-1 text-xs font-medium text-white">Featured</div>
                           )}
                           <CardContent className="pt-2">
                             <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
                               <div className="flex items-start space-x-4">
                                 <Avatar className="h-14 w-14 border-2 border-blue-500/30">
-                                  <AvatarImage
-                                    src={bid.provider.avatar}
-                                    alt={bid.provider.name}
-                                  />
+                                  <AvatarImage src={bid.provider.avatar} alt={bid.provider.name} />
                                   <AvatarFallback className="bg-gray-700">
                                     {bid.provider.name
                                       .split(' ')
@@ -369,47 +311,31 @@ export default function GigDetailPage() {
                                 </Avatar>
                                 <div>
                                   <div className="flex items-center space-x-2">
-                                    <h4 className="text-lg font-semibold text-white">
-                                      {bid.provider.name}
-                                    </h4>
-                                    {bid.provider.verified && (
-                                      <CheckCircle className="h-4 w-4 text-blue-400" />
-                                    )}
+                                    <h4 className="text-lg font-semibold text-white">{bid.provider.name}</h4>
+                                    {bid.provider.verified && <CheckCircle className="h-4 w-4 text-blue-400" />}
                                   </div>
                                   <div className="mt-1 flex items-center space-x-2">
                                     <div className="flex items-center">
                                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                      <span className="ml-1 text-sm font-medium text-white">
-                                        {bid.provider.rating}
-                                      </span>
+                                      <span className="ml-1 text-sm font-medium text-white">{bid.provider.rating}</span>
                                       <span className="mx-1 text-gray-500">•</span>
-                                      <span className="text-sm text-gray-400">
-                                        {bid.provider.reviews} reviews
-                                      </span>
+                                      <span className="text-sm text-gray-400">{bid.provider.reviews} reviews</span>
                                     </div>
                                   </div>
-                                  <p className="mt-1 text-sm text-gray-300">
-                                    {bid.provider.expertise}
-                                  </p>
+                                  <p className="mt-1 text-sm text-gray-300">{bid.provider.expertise}</p>
                                 </div>
                               </div>
 
                               <div className="flex flex-col items-end space-y-2 sm:items-end">
                                 <div className="text-right">
-                                  <div className="text-2xl font-bold text-white">
-                                    ${bid.amount}
-                                  </div>
-                                  <div className="text-sm text-gray-400">
-                                    Delivery in {bid.timeframe}
-                                  </div>
+                                  <div className="text-2xl font-bold text-white">${bid.amount}</div>
+                                  <div className="text-sm text-gray-400">Delivery in {bid.timeframe}</div>
                                 </div>
                               </div>
                             </div>
 
                             <div className="mt-4 border-t border-gray-700/50 pt-4">
-                              <h5 className="mb-2 text-sm font-medium text-gray-300">
-                                Proposal:
-                              </h5>
+                              <h5 className="mb-2 text-sm font-medium text-gray-300">Proposal:</h5>
                               <p className="text-gray-300">{bid.proposal}</p>
                               <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
                                 <span className="flex items-center">
@@ -425,11 +351,7 @@ export default function GigDetailPage() {
                                     <MessageCircle className="mr-2 h-4 w-4" />
                                     Message
                                   </Button>
-                                  <Button
-                                    variant="default"
-                                    size="sm"
-                                    className="bg-green-600 text-white hover:bg-green-700"
-                                  >
+                                  <Button variant="default" size="sm" className="bg-green-600 text-white hover:bg-green-700">
                                     <Check className="mr-2 h-4 w-4" />
                                     Accept Bid
                                   </Button>
@@ -447,18 +369,13 @@ export default function GigDetailPage() {
               <Card className="border-gray-700/50 bg-inherit">
                 <CardContent>
                   <div className="mb-6">
-                    <h3 className="mb-4 text-xl font-semibold text-white">
-                      Client Reviews
-                    </h3>
+                    <h3 className="mb-4 text-xl font-semibold text-white">Client Reviews</h3>
                     <div className="mt-2 flex items-center">
                       <div className="mr-2 text-3xl font-bold text-white">4.8</div>
                       <div className="mr-4">
                         <div className="flex">
                           {[1, 2, 3, 4, 5].map((star) => (
-                            <Star
-                              key={star}
-                              className={`h-5 w-5 ${star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`}
-                            />
+                            <Star key={star} className={`h-5 w-5 ${star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`} />
                           ))}
                         </div>
                         <div className="text-sm text-gray-400">Based on 24 reviews</div>
@@ -468,26 +385,18 @@ export default function GigDetailPage() {
 
                   <div className="space-y-6">
                     {[1, 2, 3].map((review) => (
-                      <div
-                        key={review}
-                        className="border-b border-gray-700/50 pb-6 last:border-0 last:pb-0"
-                      >
+                      <div key={review} className="border-b border-gray-700/50 pb-6 last:border-0 last:pb-0">
                         <div className="flex items-start justify-between">
                           <div className="flex items-center space-x-3">
                             <Avatar className="h-10 w-10">
-                              <AvatarImage
-                                src={`https://randomuser.me/api/portraits/${review % 2 === 0 ? 'men' : 'women'}/${40 + review}.jpg`}
-                              />
+                              <AvatarImage src={`https://randomuser.me/api/portraits/${review % 2 === 0 ? 'men' : 'women'}/${40 + review}.jpg`} />
                               <AvatarFallback>U{review}</AvatarFallback>
                             </Avatar>
                             <div>
                               <h4 className="font-medium text-white">User {review}</h4>
                               <div className="flex items-center">
                                 {[1, 2, 3, 4, 5].map((star) => (
-                                  <Star
-                                    key={star}
-                                    className={`h-4 w-4 ${star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`}
-                                  />
+                                  <Star key={star} className={`h-4 w-4 ${star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`} />
                                 ))}
                               </div>
                             </div>
@@ -503,10 +412,7 @@ export default function GigDetailPage() {
                         </p>
                       </div>
                     ))}
-                    <Button
-                      variant="outline"
-                      className="mt-4 w-full border-gray-600 bg-gray-700/50 text-gray-300 hover:bg-gray-700/50"
-                    >
+                    <Button variant="outline" className="mt-4 w-full border-gray-600 bg-gray-700/50 text-gray-300 hover:bg-gray-700/50">
                       View All Reviews
                     </Button>
                   </div>
@@ -530,42 +436,30 @@ export default function GigDetailPage() {
                   </Avatar>
                   <div>
                     <div className="mb-1 flex items-center gap-2">
-                      <h3 className="text-lg font-semibold">
-                        {mockGigRequest.client.name}
-                      </h3>
-                      {mockGigRequest.client.verified && (
-                        <CheckCircle className="h-4 w-4 text-blue-600" />
-                      )}
+                      <h3 className="text-lg font-semibold">{mockGigRequest.client.name}</h3>
+                      {mockGigRequest.client.verified && <CheckCircle className="h-4 w-4 text-blue-600" />}
                     </div>
                     <div className="mb-1 flex items-center space-x-1 text-sm text-gray-600">
                       <Star className="h-4 w-4 fill-current text-yellow-500" />
                       <span className="font-medium">{mockGigRequest.client.rating}</span>
                       <span>({mockGigRequest.client.reviews} reviews)</span>
                     </div>
-                    <p className="text-sm text-gray-500">
-                      {mockGigRequest.client.location}
-                    </p>
+                    <p className="text-sm text-gray-500">{mockGigRequest.client.location}</p>
                   </div>
                 </div>
 
                 <div className="mb-6 space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Member since:</span>
-                    <span className="font-medium">
-                      {mockGigRequest.client.memberSince}
-                    </span>
+                    <span className="font-medium">{mockGigRequest.client.memberSince}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Total posted:</span>
-                    <span className="font-medium">
-                      {mockGigRequest.client.totalPosted} gigs
-                    </span>
+                    <span className="font-medium">{mockGigRequest.client.totalPosted} gigs</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Completion rate:</span>
-                    <span className="font-medium text-green-600">
-                      {mockGigRequest.client.completionRate}%
-                    </span>
+                    <span className="font-medium text-green-600">{mockGigRequest.client.completionRate}%</span>
                   </div>
                 </div>
 
@@ -590,20 +484,12 @@ export default function GigDetailPage() {
                 </div>
 
                 <div>
-                  <Label className="mb-2 block text-sm font-medium">
-                    Your Bid Amount
-                  </Label>
+                  <Label className="mb-2 block text-sm font-medium">Your Bid Amount</Label>
                   <div className="relative">
                     <DollarSign className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-                    <Input
-                      type="number"
-                      placeholder="Enter your bid (50-80)"
-                      className="h-10 w-full rounded-lg border-gray-600 py-2 pr-4 pl-10"
-                    />
+                    <Input type="number" placeholder="Enter your bid (50-80)" className="h-10 w-full rounded-lg border-gray-600 py-2 pr-4 pl-10" />
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">
-                    Budget range: {mockGigRequest.budget}
-                  </p>
+                  <p className="mt-1 text-xs text-gray-500">Budget range: {mockGigRequest.budget}</p>
                 </div>
 
                 <div>
@@ -628,9 +514,7 @@ export default function GigDetailPage() {
                     placeholder="Explain why you're the perfect fit for this project..."
                     className="w-full rounded-lg border-gray-600 bg-inherit px-4 py-2"
                   />
-                  <p className="mt-1 text-xs text-gray-500">
-                    Min. 100 characters recommended
-                  </p>
+                  <p className="mt-1 text-xs text-gray-500">Min. 100 characters recommended</p>
                 </div>
 
                 <div className="border-t border-gray-700/50 pt-4">
@@ -644,9 +528,7 @@ export default function GigDetailPage() {
                   </div>
                 </div>
 
-                <Button className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800">
-                  Submit Bid
-                </Button>
+                <Button className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800">Submit Bid</Button>
               </CardContent>
             </Card>
 

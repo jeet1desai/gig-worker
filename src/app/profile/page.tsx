@@ -15,14 +15,7 @@ import { BulbSvg, HammerSvg, DartSvg } from '@/components/icons';
 export default function UserProfilePage() {
   const [activeTab, setActiveTab] = useState('profile');
   const skills = ['UI Design', 'Wireframe', 'User Research', 'Figma', 'Prototyping'];
-  const extracurricular = [
-    'Public Speaking',
-    'Team Leadership',
-    'Hackathons',
-    'Public Speaking',
-    'Team Leadership',
-    'Hackathons'
-  ];
+  const extracurricular = ['Public Speaking', 'Team Leadership', 'Hackathons', 'Public Speaking', 'Team Leadership', 'Hackathons'];
   const interests = ['Photography', 'Traveling', 'Gaming'];
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -38,25 +31,14 @@ export default function UserProfilePage() {
 
   return (
     <DashboardLayout>
-      <main
-        className={`min-h-screen w-full overflow-x-hidden bg-[#111111] font-sans text-white ${inter.className}`}
-      >
+      <main className={`min-h-screen w-full overflow-x-hidden bg-[#111111] font-sans text-white ${inter.className}`}>
         <div className="grid grid-cols-1 gap-6 px-4 py-6 md:px-8 lg:grid-cols-4 lg:px-16">
           <div className="rounded-xl bg-gradient-to-br from-[#1f2937] via-[#111827] to-[#0f172a] shadow-lg lg:col-span-1">
             <div className="relative mb-4 h-32 rounded-lg rounded-b-none bg-gradient-to-r from-[#6366f1] via-[#ec4899] to-[#0ea5e9] shadow-md">
               <div className="absolute top-2 right-2">
-                <PencilIcon
-                  className="h-4 w-4 cursor-pointer text-white hover:text-gray-300"
-                  onClick={handleBannerClick}
-                />
+                <PencilIcon className="h-4 w-4 cursor-pointer text-white hover:text-gray-300" onClick={handleBannerClick} />
               </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept="image/*"
-                className="hidden"
-              />
+              <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
             </div>
 
             <div className="-mt-20 flex flex-col items-center gap-2 px-4">
@@ -65,18 +47,14 @@ export default function UserProfilePage() {
               <p className="text-xs text-gray-400">DK Member Since 2019</p>
 
               <div className="mt-4 flex gap-4">
-                <button className="rounded-md bg-gray-700 px-4 py-1 text-sm text-white shadow hover:bg-gray-600">
-                  Message
-                </button>
+                <button className="rounded-md bg-gray-700 px-4 py-1 text-sm text-white shadow hover:bg-gray-600">Message</button>
               </div>
             </div>
 
             <div className="mt-6 space-y-2 px-4">
               <button
                 className={`flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm font-medium transition ${
-                  activeTab === 'profile'
-                    ? 'bg-gray-700 text-white'
-                    : 'bg-gray-900 text-gray-400 hover:bg-gray-800'
+                  activeTab === 'profile' ? 'bg-gray-700 text-white' : 'bg-gray-900 text-gray-400 hover:bg-gray-800'
                 }`}
                 onClick={() => setActiveTab('profile')}
               >
@@ -84,9 +62,7 @@ export default function UserProfilePage() {
               </button>
               <button
                 className={`flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left text-sm font-medium transition ${
-                  activeTab === 'opportunities'
-                    ? 'bg-gray-700 text-white'
-                    : 'bg-gray-900 text-gray-400 hover:bg-gray-800'
+                  activeTab === 'opportunities' ? 'bg-gray-700 text-white' : 'bg-gray-900 text-gray-400 hover:bg-gray-800'
                 }`}
                 onClick={() => setActiveTab('opportunities')}
               >
@@ -100,10 +76,7 @@ export default function UserProfilePage() {
                   <h3 className="mb-2 font-semibold text-white">Languages</h3>
                   <div className="flex flex-wrap gap-2">
                     {['English', 'Hindi', 'French'].map((lang) => (
-                      <Badge
-                        key={lang}
-                        className="bg-gray-700 px-2 py-1 text-xs text-white"
-                      >
+                      <Badge key={lang} className="bg-gray-700 px-2 py-1 text-xs text-white">
                         {lang}
                       </Badge>
                     ))}
@@ -136,8 +109,7 @@ export default function UserProfilePage() {
                       <EditProfileModal />
                     </div>
                     <p className="text-sm text-white">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                      eiusmod tempor incididunt ut labpr.
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labpr.
                     </p>
                   </div>
 
@@ -151,10 +123,7 @@ export default function UserProfilePage() {
                       </div>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {skills.map((item, idx) => (
-                          <span
-                            key={idx}
-                            className="mt-1 rounded-full bg-[#1b1b1b] px-3 py-1 text-sm text-white"
-                          >
+                          <span key={idx} className="mt-1 rounded-full bg-[#1b1b1b] px-3 py-1 text-sm text-white">
                             {item}
                           </span>
                         ))}
@@ -184,10 +153,7 @@ export default function UserProfilePage() {
                       </div>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {interests.map((item, idx) => (
-                          <span
-                            key={idx}
-                            className="mt-1 rounded-full bg-[#1a1a1a] px-3 py-1 text-sm text-white"
-                          >
+                          <span key={idx} className="mt-1 rounded-full bg-[#1a1a1a] px-3 py-1 text-sm text-white">
                             {item}
                           </span>
                         ))}
@@ -209,18 +175,11 @@ export default function UserProfilePage() {
                     {[1, 2].map((_, i) => (
                       <div key={i} className="border-t border-gray-800 pt-4">
                         <p className="mb-2 text-sm text-gray-300">
-                          Efficient to work with Lorem ipsum dolor sit amet, consectetur
-                          adipiscing elit, sed do eiusmod tempor incididunt ut labpr...
+                          Efficient to work with Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labpr...
                         </p>
                         <div className="flex items-center gap-2">
-                          <img
-                            src="/avatar.jpg"
-                            alt="Anil"
-                            className="h-6 w-6 rounded-full"
-                          />
-                          <span className="text-xs text-gray-500">
-                            Anil Mishra (Senior UI/UX Designer)
-                          </span>
+                          <img src="/avatar.jpg" alt="Anil" className="h-6 w-6 rounded-full" />
+                          <span className="text-xs text-gray-500">Anil Mishra (Senior UI/UX Designer)</span>
                         </div>
                       </div>
                     ))}

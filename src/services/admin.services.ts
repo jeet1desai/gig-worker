@@ -1,9 +1,4 @@
-import {
-  setLoading,
-  setAdminUsers,
-  deleteAdminUsers,
-  createAdminUsers
-} from '@/store/slices/admin-user';
+import { setLoading, setAdminUsers, deleteAdminUsers, createAdminUsers } from '@/store/slices/admin-user';
 import { AppDispatch } from '@/store/store';
 
 import apiService from './api';
@@ -27,12 +22,9 @@ export const adminService = {
     return async (dispatch: AppDispatch) => {
       dispatch(setLoading({ loading: true }));
       try {
-        const response = await apiService.get(
-          `/users?page=${page}&pageSize=${pageSize}&sortBy=${sortKey}&order=${sortOrder}&search=${search}`,
-          {
-            withAuth: true
-          }
-        );
+        const response = await apiService.get(`/users?page=${page}&pageSize=${pageSize}&sortBy=${sortKey}&order=${sortOrder}&search=${search}`, {
+          withAuth: true
+        });
         if (response.data && response.status === 200) {
           const { items, meta }: any = response.data;
           dispatch(setAdminUsers({ users: items, pagination: meta }));
