@@ -30,8 +30,12 @@ api.interceptors.request.use(
     }
     const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData;
 
-    if (config.headers instanceof AxiosHeaders && !isFormData && !config.headers.has('Content-Type')) {
-      config.headers.set('Content-Type', 'application/json');
+    if (config.headers instanceof AxiosHeaders) {
+      if (isFormData) {
+        config.headers.delete('Content-Type');
+      } else if (!config.headers.has('Content-Type')) {
+        config.headers.set('Content-Type', 'application/json');
+      }
     }
 
     return config;

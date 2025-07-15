@@ -9,7 +9,7 @@ export default function EditGigPage() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-6 py-8">
         <div className="mx-auto max-w-3xl">
           <h1 className="mb-8 text-3xl font-bold">Edit Gig</h1>
           <div className="rounded-lg bg-white p-6 shadow"></div>
