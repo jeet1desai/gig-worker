@@ -223,28 +223,38 @@ const GigsPage = () => {
   return (
     <DashboardLayout>
       <div className="min-h-screen py-8">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6">
           {/* Hero Section */}
-          <div className="mb-12 text-center">
-            <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">Find Your Next Gig</h1>
-            <p className="mx-auto max-w-2xl text-lg text-gray-300">
-              Discover and bid on exciting projects from clients worldwide. Grow your portfolio and earn money doing what you love.
-            </p>
-          </div>
+          {user?.role === 'provider' ? (
+            <div className="mb-8 text-center">
+              <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">Create Your Next Gig</h1>
+              <p className="mx-auto max-w-2xl text-lg text-gray-300">
+                Create and sell your services to clients worldwide. Grow your portfolio and earn money doing what you love.
+              </p>
+            </div>
+          ) : (
+            <div className="mb-8 text-center">
+              <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">Find Your Next Gig</h1>
+              <p className="mx-auto max-w-2xl text-lg text-gray-300">
+                Discover and bid on exciting projects from clients worldwide. Grow your portfolio and earn money doing what you love.
+              </p>
+            </div>
+          )}
 
           {/* Search and Filter Bar */}
-          <div className="mb-8 rounded-xl bg-gray-800/50 p-6 backdrop-blur-sm">
-            <div className="flex flex-col items-center gap-4 md:flex-row">
-              <div className="relative flex-1">
-                <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <div className="mb-8 rounded-xl bg-gray-800/50 p-4 backdrop-blur-sm sm:p-6">
+            <div className="flex flex-col gap-4">
+              <div className="relative w-full">
+                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400 sm:left-4 sm:h-5 sm:w-5" />
                 <Input
                   placeholder="Search gigs by keyword, skill, or category..."
-                  className="w-full rounded-lg border-gray-700 bg-gray-700/50 py-6 pr-4 pl-12 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50"
+                  className="w-full rounded-lg border-gray-700 bg-gray-700/50 py-4 pr-3 pl-10 text-sm text-white placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 sm:py-6 sm:pr-4 sm:pl-12 sm:text-base"
                 />
               </div>
-              <div className="flex w-full items-center gap-2 md:w-auto">
+
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
                 <Select>
-                  <SelectTrigger className="min-w-[180px] border-gray-700 bg-gray-700/50 py-6 text-white">
+                  <SelectTrigger className="w-full border-gray-700 bg-gray-700/50 py-4 text-sm text-white sm:min-w-[180px] sm:py-6 sm:text-base">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent className="border-gray-700 bg-gray-800">
@@ -256,29 +266,29 @@ const GigsPage = () => {
                   </SelectContent>
                 </Select>
 
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-6 text-base font-medium hover:from-blue-500 hover:to-purple-500"
-                >
-                  <Search className="mr-2 h-5 w-5" />
-                  Search
-                </Button>
+                <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
+                  <Button
+                    size="lg"
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-4 text-sm font-medium text-white hover:from-blue-500 hover:to-purple-500 sm:w-auto sm:px-6 sm:py-6 sm:text-base"
+                  >
+                    <Search className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    Search
+                  </Button>
+
+                  {user?.role === 'provider' && (
+                    <Button
+                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-4 text-sm font-medium text-white hover:from-blue-500 hover:to-purple-500 sm:w-auto sm:px-6 sm:py-6 sm:text-base"
+                      onClick={() => router.push('/gigs/new')}
+                    >
+                      <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                      <span className="sm:hidden">Create Gig</span>
+                      <span className="hidden sm:inline">Create New Gig</span>
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-
-          {/* Create New Gig Button - Only show for providers */}
-          {user?.role === 'provider' && (
-            <div className="mb-6 flex justify-end">
-              <Button
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
-                onClick={() => router.push('/gigs/new')}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Create New Gig
-              </Button>
-            </div>
-          )}
 
           {/* Gig Grid */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
