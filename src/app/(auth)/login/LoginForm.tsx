@@ -15,13 +15,7 @@ import Loader from '@/components/Loader';
 import { COMMON_ERROR_MESSAGES, LOGIN_MESSAGES } from '@/constants';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  FormField,
-  FormItem,
-  FormControl,
-  FormMessage,
-  Form
-} from '@/components/ui/form';
+import { FormField, FormItem, FormControl, FormMessage, Form } from '@/components/ui/form';
 
 type LoginFormValues = {
   email: string;
@@ -82,9 +76,7 @@ export default function LoginForm() {
   return (
     <>
       <Loader isLoading={loading} />
-      <h3 className="mb-6 text-center text-2xl font-semibold text-[#FFF2E3]">
-        Welcome back
-      </h3>
+      <h3 className="mb-6 text-center text-2xl font-semibold text-[#FFF2E3]">Welcome back</h3>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
@@ -148,10 +140,7 @@ export default function LoginForm() {
           </div>
 
           <div className="rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
-            <button
-              type="submit"
-              className="h-full w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937]"
-            >
+            <button type="submit" className="h-full w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937]">
               Sign in
             </button>
           </div>
@@ -160,14 +149,7 @@ export default function LoginForm() {
 
       <div className="mt-6 mb-3 text-center text-sm text-[#FFF2E3]">or sign in using</div>
       <div className="mb-4 flex justify-center">
-        <Image
-          src={Images.googleIcon}
-          alt="Google Icon"
-          width={36}
-          height={36}
-          className="cursor-pointer"
-          onClick={handleGoogleLogin}
-        />
+        <Image src={Images.googleIcon} alt="Google Icon" width={36} height={36} className="cursor-pointer" onClick={handleGoogleLogin} />
       </div>
 
       <div className="text-center text-sm text-[#FFF2E3]">

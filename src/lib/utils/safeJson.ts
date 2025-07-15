@@ -23,12 +23,7 @@ export function safeJson<T>(input: T): JsonSafe<T> {
     return null as JsonSafe<T>;
   }
 
-  if (
-    typeof input === 'object' &&
-    input !== null &&
-    'toNumber' in input &&
-    typeof (input as any).toNumber === 'function'
-  ) {
+  if (typeof input === 'object' && input !== null && 'toNumber' in input && typeof (input as any).toNumber === 'function') {
     return (input as any).toNumber() as JsonSafe<T>;
   }
 

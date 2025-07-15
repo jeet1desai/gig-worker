@@ -18,14 +18,7 @@ function Layout({
     >
       <div className="no-scrollbar flex max-h-[85vh] w-full max-w-lg flex-col items-center overflow-y-auto rounded-3xl bg-[#181820eb] px-6 py-10 shadow-xl sm:px-10 sm:py-12">
         <div className="mb-6 flex cursor-pointer items-center justify-center">
-          <Image
-            src={Images.logo}
-            alt="Company Logo"
-            width={80}
-            height={80}
-            priority
-            onClick={() => pageRedirection(PUBLIC_ROUTE.HOME)}
-          />
+          <Image src={Images.logo} alt="Company Logo" width={80} height={80} priority onClick={() => pageRedirection(PUBLIC_ROUTE.HOME)} />
         </div>
         {children}
       </div>

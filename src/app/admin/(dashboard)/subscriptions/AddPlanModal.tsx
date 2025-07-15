@@ -4,13 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X } from 'lucide-react';
 import { SubscriptionPlan, SubscriptionPlanPayload } from '@/types/fe';
 import { subscriptionsPlanValidationSchema } from '@/schemas/fe/auth';
@@ -27,14 +21,7 @@ interface AddPlanModalProps {
   mode?: 'add' | 'edit';
 }
 
-const AddPlanModal = ({
-  isOpen,
-  onClose,
-  onSave,
-  initialData,
-  mode = 'add',
-  availablePlanTypes = []
-}: AddPlanModalProps) => {
+const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add', availablePlanTypes = [] }: AddPlanModalProps) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -47,8 +34,7 @@ const AddPlanModal = ({
 
   const [errors, setErrors] = useState<Record<string, boolean>>({});
 
-  const parseUnlimited = (value: string): number =>
-    value.trim().toLowerCase() === 'unlimited' ? -1 : Number(value);
+  const parseUnlimited = (value: string): number => (value.trim().toLowerCase() === 'unlimited' ? -1 : Number(value));
 
   useEffect(() => {
     if (isOpen) {
@@ -58,14 +44,8 @@ const AddPlanModal = ({
           description: initialData.description || '',
           benefits: initialData.benefits?.length ? initialData.benefits : [''],
           price: initialData.price?.toString() || '0',
-          maxGigs:
-            initialData.maxGigs === -1
-              ? 'unlimited'
-              : initialData.maxGigs?.toString() || '0',
-          maxBids:
-            initialData.maxBids === -1
-              ? 'unlimited'
-              : initialData.maxBids?.toString() || '0',
+          maxGigs: initialData.maxGigs === -1 ? 'unlimited' : initialData.maxGigs?.toString() || '0',
+          maxBids: initialData.maxBids === -1 ? 'unlimited' : initialData.maxBids?.toString() || '0',
           subscriptionType: initialData.type || ''
         });
       } else {
@@ -205,31 +185,21 @@ const AddPlanModal = ({
             value={formData.subscriptionType}
             onValueChange={(value) => handleInputChange('subscriptionType', value)}
           >
-            <SelectTrigger
-              className={`w-full border-slate-600 bg-slate-700 text-white ${errors.subscriptionType ? 'border-red-500' : ''}`}
-            >
+            <SelectTrigger className={`w-full border-slate-600 bg-slate-700 text-white ${errors.subscriptionType ? 'border-red-500' : ''}`}>
               <SelectValue placeholder="Select subscription type" />
             </SelectTrigger>
             <SelectContent className="border-slate-600 bg-slate-700 text-white">
               {SUBSCRIPTION_PLAN_TYPES.map((option) => (
-                <SelectItem
-                  key={option}
-                  value={option}
-                  disabled={availablePlanTypes.includes(option)}
-                  className="text-white hover:bg-slate-600"
-                >
+                <SelectItem key={option} value={option} disabled={availablePlanTypes.includes(option)} className="text-white hover:bg-slate-600">
                   {option.charAt(0).toUpperCase() + option.slice(1)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {errors.subscriptionType && (
-            <p className="text-sm text-red-400">Subscription type is required</p>
-          )}
+          {errors.subscriptionType && <p className="text-sm text-red-400">Subscription type is required</p>}
           {mode === 'edit' && (
             <p className="mt-1 text-sm text-red-400">
-              Subscription type cannot be changed for an existing plan. Create a new plan
-              for updated subscription type.
+              Subscription type cannot be changed for an existing plan. Create a new plan for updated subscription type.
             </p>
           )}
         </div>
@@ -253,9 +223,7 @@ const AddPlanModal = ({
             onChange={(e) => handleInputChange('description', e.target.value)}
             className={`border-slate-600 bg-slate-700 text-white ${errors.description ? 'border-red-500' : ''}`}
           />
-          {errors.description && (
-            <p className="text-sm text-red-400">Description is required</p>
-          )}
+          {errors.description && <p className="text-sm text-red-400">Description is required</p>}
         </div>
 
         <div className="space-y-2">
@@ -269,29 +237,18 @@ const AddPlanModal = ({
                 className={`border-slate-600 bg-slate-700 text-white ${errors[`benefits[${index}]`] ? 'border-red-500' : ''}`}
               />
               {formData.benefits.length > 1 && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="text-red-400 hover:text-red-600"
-                  onClick={() => handleRemoveFeature(index)}
-                >
+                <Button type="button" variant="ghost" className="text-red-400 hover:text-red-600" onClick={() => handleRemoveFeature(index)}>
                   <X size={16} />
                 </Button>
               )}
             </div>
           ))}
           {formData.benefits.length < 5 && (
-            <Button
-              type="button"
-              onClick={handleAddFeature}
-              className="cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-            >
+            <Button type="button" onClick={handleAddFeature} className="cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white">
               + Add Feature
             </Button>
           )}
-          {Object.keys(errors).some((k) => k.startsWith('benefits')) && (
-            <p className="text-sm text-red-400">Enter 1 to 5 non-empty features</p>
-          )}
+          {Object.keys(errors).some((k) => k.startsWith('benefits')) && <p className="text-sm text-red-400">Enter 1 to 5 non-empty features</p>}
         </div>
 
         <div className="space-y-2">
@@ -303,11 +260,7 @@ const AddPlanModal = ({
             className={`border-slate-600 bg-slate-700 text-white ${errors.maxBids ? 'border-red-500' : ''}`}
             type="text"
           />
-          {errors.maxBids && (
-            <p className="text-sm text-red-400">
-              Must be 0, positive number, or "unlimited"
-            </p>
-          )}
+          {errors.maxBids && <p className="text-sm text-red-400">Must be 0, positive number, or "unlimited"</p>}
         </div>
 
         <div className="space-y-2">
@@ -319,11 +272,7 @@ const AddPlanModal = ({
             className={`border-slate-600 bg-slate-700 text-white ${errors.maxGigs ? 'border-red-500' : ''}`}
             type="text"
           />
-          {errors.maxGigs && (
-            <p className="text-sm text-red-400">
-              Must be 0, positive number, or "unlimited"
-            </p>
-          )}
+          {errors.maxGigs && <p className="text-sm text-red-400">Must be 0, positive number, or "unlimited"</p>}
         </div>
 
         <div className="space-y-2">
@@ -337,18 +286,11 @@ const AddPlanModal = ({
               className={`border-slate-600 bg-slate-700 pl-8 text-white ${errors.price ? 'border-red-500' : ''} ${mode === 'edit' ? 'cursor-not-allowed opacity-50' : ''}`}
               type="number"
               min="0"
-              disabled={
-                mode === 'edit' || formData.subscriptionType === SUBSCRIPTION_TYPE.free
-              }
+              disabled={mode === 'edit' || formData.subscriptionType === SUBSCRIPTION_TYPE.free}
             />
-            {errors.price && (
-              <p className="text-sm text-red-400">Valid price (0 or more) required</p>
-            )}
+            {errors.price && <p className="text-sm text-red-400">Valid price (0 or more) required</p>}
             {mode === 'edit' && (
-              <p className="mt-1 text-sm text-red-400">
-                Price cannot be changed for an existing plan. Create a new plan for
-                updated pricing.
-              </p>
+              <p className="mt-1 text-sm text-red-400">Price cannot be changed for an existing plan. Create a new plan for updated pricing.</p>
             )}
           </div>
         </div>
@@ -362,10 +304,7 @@ const AddPlanModal = ({
         >
           Cancel
         </Button>
-        <Button
-          onClick={handleSave}
-          className="cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-        >
+        <Button onClick={handleSave} className="cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white">
           {mode === 'edit' ? 'Update' : 'Save'}
         </Button>
       </div>

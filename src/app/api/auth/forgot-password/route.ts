@@ -9,11 +9,7 @@ import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { generateEmailVerificationToken } from '@/lib/tokens';
 import { getResetPasswordEmail } from '@/lib/email/templates/resetPassword';
 import { forgotPasswordPayload } from '@/types/be/auth';
-import {
-  COMMON_ERROR_MESSAGES,
-  FORGOT_PASSWORD_MESSAGES,
-  VERIFICATION_CODES
-} from '@/constants';
+import { COMMON_ERROR_MESSAGES, FORGOT_PASSWORD_MESSAGES, VERIFICATION_CODES } from '@/constants';
 
 export async function POST(req: Request) {
   try {

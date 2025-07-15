@@ -4,10 +4,7 @@ import { deleteSubscriptionPlan } from '@/lib/paypal/plans';
 import { FREE_PLAN_ID } from '@/constants/plans';
 import { deletePlan } from '@/lib/server/subscriptionPlans';
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: { plan_id: string } }
-) {
+export async function DELETE(_request: Request, { params }: { params: { plan_id: string } }) {
   const { plan_id } = await params;
 
   if (!plan_id) {

@@ -14,16 +14,12 @@ export const getPayPalAccessToken = async (): Promise<string> => {
   const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
   try {
-    const response = await paypalClient.post(
-      endpoints.payPalAccessToken,
-      'grant_type=client_credentials',
-      {
-        headers: {
-          Authorization: `Basic ${auth}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
+    const response = await paypalClient.post(endpoints.payPalAccessToken, 'grant_type=client_credentials', {
+      headers: {
+        Authorization: `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
       }
-    );
+    });
 
     return response.data.access_token;
   } catch (error: any) {

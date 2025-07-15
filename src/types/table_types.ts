@@ -15,8 +15,6 @@ export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElem
   textAlign?: 'left' | 'center' | 'right';
 }
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }

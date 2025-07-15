@@ -7,12 +7,7 @@ import { safeJson } from '@/lib/utils/safeJson';
 import { verifyEmailVerificationToken } from '@/lib/tokens';
 import { sendNotification } from '@/lib/socket/socket-server';
 import { getSocketServer } from '@/app/api/socket/route';
-import {
-  COMMON_ERROR_MESSAGES,
-  TOKEN,
-  VERIFICATION_CODES,
-  VERIFICATION_MESSAGES
-} from '@/constants';
+import { COMMON_ERROR_MESSAGES, TOKEN, VERIFICATION_CODES, VERIFICATION_MESSAGES } from '@/constants';
 
 const io = getSocketServer();
 
