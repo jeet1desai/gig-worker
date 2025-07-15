@@ -4,10 +4,12 @@ import { useDispatch as useAppDispatch, useSelector as useAppSelector, type Type
 
 import userReducer from './slices/user';
 import adminUserReducer from './slices/admin-user';
+import gigsReducer from './slices/gigs';
 
 const rootReducer = combineReducers({
   user: userReducer,
-  adminUser: adminUserReducer
+  adminUser: adminUserReducer,
+  gigs: gigsReducer
 });
 
 export const store = configureStore({

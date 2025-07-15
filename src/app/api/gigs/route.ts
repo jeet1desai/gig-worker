@@ -1,19 +1,19 @@
-import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 
 import prisma from '@/lib/prisma';
 import { authOptions } from '../auth/[...nextauth]/route';
 import { ROLE, GIG_STATUS, TIER } from '@prisma/client';
 import { uploadFile } from '@/lib/utils/file-upload';
-import { errorResponse, safeJsonResponse } from '@/utils/apiResponse';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
+import { errorResponse, successResponse } from '@/lib/api-response';
+import { safeJsonResponse } from '@/utils/apiResponse';
 
 // POST /api/gigs - Create a new gig
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
-      return errorResponse('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return errorResponse({ code: 'UNAUTHORIZED', message: 'Unauthorized', statusCode: HttpStatusCode.UNAUTHORIZED });
     }
 
     const user = await prisma.user.findUnique({
@@ -22,11 +22,11 @@ export async function POST(request: Request) {
     });
 
     if (!user) {
-      return errorResponse('User not found', HttpStatusCode.NOT_FOUND);
+      return errorResponse({ code: 'USER_NOT_FOUND', message: 'User not found', statusCode: HttpStatusCode.NOT_FOUND });
     }
 
     if (user?.role !== ROLE.provider) {
-      return errorResponse('Only providers can create gigs', HttpStatusCode.FORBIDDEN);
+      return errorResponse({ code: 'FORBIDDEN', message: 'Only providers can create gigs', statusCode: HttpStatusCode.FORBIDDEN });
     }
 
     const formData = await request.formData();
@@ -47,7 +47,11 @@ export async function POST(request: Request) {
     const tier = formData.get('tier')?.toString();
 
     if (!title || !price_min || !price_max || !tier || !description || !start_date) {
-      return errorResponse('Title, price range, tier, and description are required', HttpStatusCode.BAD_REQUEST);
+      return errorResponse({
+        code: 'BAD_REQUEST',
+        message: 'Title, price range, tier, and description are required',
+        statusCode: HttpStatusCode.BAD_REQUEST
+      });
     }
 
     const thumbnailFile = formData.get('thumbnail') as File | null;
@@ -63,7 +67,11 @@ export async function POST(request: Request) {
         });
         thumbnailUrl = uploadResult.secure_url;
       } catch (error) {
-        return errorResponse('Failed to upload thumbnail', HttpStatusCode.INTERNAL_SERVER_ERROR);
+        return errorResponse({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to upload thumbnail',
+          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
+        });
       }
     }
 
@@ -81,7 +89,11 @@ export async function POST(request: Request) {
           });
           attachmentUrls.push(uploadResult.secure_url);
         } catch (error) {
-          return errorResponse('Failed to upload attachment', HttpStatusCode.INTERNAL_SERVER_ERROR);
+          return errorResponse({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to upload attachment',
+            statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
+          });
         }
       }
     }
@@ -120,12 +132,10 @@ export async function POST(request: Request) {
         message: 'Gig created successfully',
         data: gig
       },
-      { status: HttpStatusCode.OK }
+      { status: HttpStatusCode.CREATED }
     );
   } catch (error) {
-    console.log(error);
-    return NextResponse.json(errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR), {
-      status: HttpStatusCode.INTERNAL_SERVER_ERROR
-    });
+    console.error('Error creating gig:', error);
+    return errorResponse({ code: 'INTERNAL_SERVER_ERROR', message: 'Internal server error', statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR });
   }
 }
