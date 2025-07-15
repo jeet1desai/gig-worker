@@ -163,28 +163,27 @@ Willing to pay $50-80 depending on the quality of explanations and tutoring prov
 
 export default function GigDetailPage() {
   const router = useRouter();
-  const user = useSelector((state: RootState) => state.user);
 
   return (
     <DashboardLayout>
       <main className="min-h-screen py-8">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6">
           <div className="mb-6 flex items-center justify-between">
             <Button variant="ghost" size="sm" onClick={() => router.back()} className="text-gray-400 hover:bg-gray-800 hover:text-white">
-              <ChevronLeft className="mr-2 h-4 w-4" />
+              <ChevronLeft className="h-4 w-4" />
               Back to Gigs
             </Button>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
-                <Share2 className="mr-2 h-4 w-4" />
+                <Share2 className="h-4 w-4" />
                 Share
               </Button>
               <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
-                <Flag className="mr-2 h-4 w-4" />
+                <Flag className="h-4 w-4" />
                 Report
               </Button>
               <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
-                <Bookmark className="mr-2 h-4 w-4" />
+                <Bookmark className="h-4 w-4" />
                 Save
               </Button>
             </div>
@@ -283,138 +282,83 @@ export default function GigDetailPage() {
                 </CardContent>
               </Card>
 
-              {user?.role === 'provider' && (
-                <Card className="rounded-lg border-gray-700/50 bg-inherit">
-                  <CardContent>
-                    <CardTitle className="text-white">Bids ({mockGigRequest.bids.length})</CardTitle>
-
-                    <div className="mt-6 space-y-4">
-                      {mockGigRequest.bids.map((bid) => (
-                        <Card
-                          key={bid.id}
-                          className={`relative overflow-hidden border border-gray-700/50 bg-gray-800/30 transition-all hover:border-gray-600/50 ${bid.featured ? 'ring-2 ring-blue-500/30' : ''}`}
-                        >
-                          {bid.featured && (
-                            <div className="absolute top-0 right-0 rounded-bl-md bg-blue-600 px-2 py-1 text-xs font-medium text-white">Featured</div>
-                          )}
-                          <CardContent className="pt-2">
-                            <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
-                              <div className="flex items-start space-x-4">
-                                <Avatar className="h-14 w-14 border-2 border-blue-500/30">
-                                  <AvatarImage src={bid.provider.avatar} alt={bid.provider.name} />
-                                  <AvatarFallback className="bg-gray-700">
-                                    {bid.provider.name
-                                      .split(' ')
-                                      .map((n) => n[0])
-                                      .join('')}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <div className="flex items-center space-x-2">
-                                    <h4 className="text-lg font-semibold text-white">{bid.provider.name}</h4>
-                                    {bid.provider.verified && <CheckCircle className="h-4 w-4 text-blue-400" />}
-                                  </div>
-                                  <div className="mt-1 flex items-center space-x-2">
-                                    <div className="flex items-center">
-                                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                      <span className="ml-1 text-sm font-medium text-white">{bid.provider.rating}</span>
-                                      <span className="mx-1 text-gray-500">•</span>
-                                      <span className="text-sm text-gray-400">{bid.provider.reviews} reviews</span>
-                                    </div>
-                                  </div>
-                                  <p className="mt-1 text-sm text-gray-300">{bid.provider.expertise}</p>
-                                </div>
-                              </div>
-
-                              <div className="flex flex-col items-end space-y-2 sm:items-end">
-                                <div className="text-right">
-                                  <div className="text-2xl font-bold text-white">${bid.amount}</div>
-                                  <div className="text-sm text-gray-400">Delivery in {bid.timeframe}</div>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="mt-4 border-t border-gray-700/50 pt-4">
-                              <h5 className="mb-2 text-sm font-medium text-gray-300">Proposal:</h5>
-                              <p className="text-gray-300">{bid.proposal}</p>
-                              <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
-                                <span className="flex items-center">
-                                  <Clock className="mr-1 h-3.5 w-3.5" />
-                                  Posted {bid.postedAgo}
-                                </span>
-                                <div className="flex space-x-2">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="border-blue-500/30 text-blue-400 hover:bg-blue-900/20 hover:text-blue-300"
-                                  >
-                                    <MessageCircle className="mr-2 h-4 w-4" />
-                                    Message
-                                  </Button>
-                                  <Button variant="default" size="sm" className="bg-green-600 text-white hover:bg-green-700">
-                                    <Check className="mr-2 h-4 w-4" />
-                                    Accept Bid
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              <Card className="border-gray-700/50 bg-inherit">
+              <Card className="rounded-lg border-gray-700/50 bg-inherit">
                 <CardContent>
-                  <div className="mb-6">
-                    <h3 className="mb-4 text-xl font-semibold text-white">Client Reviews</h3>
-                    <div className="mt-2 flex items-center">
-                      <div className="mr-2 text-3xl font-bold text-white">4.8</div>
-                      <div className="mr-4">
-                        <div className="flex">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star key={star} className={`h-5 w-5 ${star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`} />
-                          ))}
-                        </div>
-                        <div className="text-sm text-gray-400">Based on 24 reviews</div>
-                      </div>
-                    </div>
-                  </div>
+                  <CardTitle className="text-white">Bids ({mockGigRequest.bids.length})</CardTitle>
 
-                  <div className="space-y-6">
-                    {[1, 2, 3].map((review) => (
-                      <div key={review} className="border-b border-gray-700/50 pb-6 last:border-0 last:pb-0">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center space-x-3">
-                            <Avatar className="h-10 w-10">
-                              <AvatarImage src={`https://randomuser.me/api/portraits/${review % 2 === 0 ? 'men' : 'women'}/${40 + review}.jpg`} />
-                              <AvatarFallback>U{review}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <h4 className="font-medium text-white">User {review}</h4>
-                              <div className="flex items-center">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <Star key={star} className={`h-4 w-4 ${star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`} />
-                                ))}
+                  <div className="mt-6 space-y-4">
+                    {mockGigRequest.bids.map((bid) => (
+                      <Card
+                        key={bid.id}
+                        className={`relative overflow-hidden border border-gray-700/50 bg-gray-800/30 transition-all hover:border-gray-600/50 ${bid.featured ? 'ring-2 ring-blue-500/30' : ''}`}
+                      >
+                        {bid.featured && (
+                          <div className="absolute top-0 right-0 rounded-bl-md bg-blue-600 px-2 py-1 text-xs font-medium text-white">Featured</div>
+                        )}
+                        <CardContent className="pt-2">
+                          <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+                            <div className="flex items-start space-x-4">
+                              <Avatar className="h-14 w-14 border-2 border-blue-500/30">
+                                <AvatarImage src={bid.provider.avatar} alt={bid.provider.name} />
+                                <AvatarFallback className="bg-gray-700">
+                                  {bid.provider.name
+                                    .split(' ')
+                                    .map((n) => n[0])
+                                    .join('')}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="flex items-center space-x-2">
+                                  <h4 className="text-lg font-semibold text-white">{bid.provider.name}</h4>
+                                  {bid.provider.verified && <CheckCircle className="h-4 w-4 text-blue-400" />}
+                                </div>
+                                <div className="mt-1 flex items-center space-x-2">
+                                  <div className="flex items-center">
+                                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                    <span className="ml-1 text-sm font-medium text-white">{bid.provider.rating}</span>
+                                    <span className="mx-1 text-gray-500">•</span>
+                                    <span className="text-sm text-gray-400">{bid.provider.reviews} reviews</span>
+                                  </div>
+                                </div>
+                                <p className="mt-1 text-sm text-gray-300">{bid.provider.expertise}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col items-end space-y-2 sm:items-end">
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-white">${bid.amount}</div>
+                                <div className="text-sm text-gray-400">Delivery in {bid.timeframe}</div>
                               </div>
                             </div>
                           </div>
-                          <span className="text-sm text-gray-400">2 weeks ago</span>
-                        </div>
-                        <p className="mt-3 text-gray-300">
-                          {review === 1
-                            ? 'Great experience working with this client. Clear communication and prompt payment. Highly recommended!'
-                            : review === 2
-                              ? 'The work was completed on time and exceeded my expectations. Will definitely work with again.'
-                              : 'Professional and skilled worker. Delivered exactly what was promised.'}
-                        </p>
-                      </div>
+
+                          <div className="mt-4 border-t border-gray-700/50 pt-4">
+                            <h5 className="mb-2 text-sm font-medium text-gray-300">Proposal:</h5>
+                            <p className="text-gray-300">{bid.proposal}</p>
+                            <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
+                              <span className="flex items-center">
+                                <Clock className="mr-1 h-3.5 w-3.5" />
+                                Posted {bid.postedAgo}
+                              </span>
+                              <div className="flex space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-blue-500/30 text-blue-400 hover:bg-blue-900/20 hover:text-blue-300"
+                                >
+                                  <MessageCircle className="mr-2 h-4 w-4" />
+                                  Message
+                                </Button>
+                                <Button variant="default" size="sm" className="bg-green-600 text-white hover:bg-green-700">
+                                  <Check className="mr-2 h-4 w-4" />
+                                  Accept Bid
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     ))}
-                    <Button variant="outline" className="mt-4 w-full border-gray-600 bg-gray-700/50 text-gray-300 hover:bg-gray-700/50">
-                      View All Reviews
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -467,6 +411,59 @@ export default function GigDetailPage() {
                   <MessageCircle className="h-4 w-4" />
                   Message Client
                 </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-gray-700/50 bg-inherit">
+              <CardContent>
+                <div className="mb-6">
+                  <h3 className="mb-4 text-xl font-semibold text-white">Client Reviews</h3>
+                  <div className="mt-2 flex items-center">
+                    <div className="mr-2 text-3xl font-bold text-white">4.8</div>
+                    <div className="mr-4">
+                      <div className="flex">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star key={star} className={`h-5 w-5 ${star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`} />
+                        ))}
+                      </div>
+                      <div className="text-sm text-gray-400">Based on 24 reviews</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {[1, 2, 3].map((review) => (
+                    <div key={review} className="border-b border-gray-700/50 pb-6 last:border-0 last:pb-0">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={`https://randomuser.me/api/portraits/${review % 2 === 0 ? 'men' : 'women'}/${40 + review}.jpg`} />
+                            <AvatarFallback>U{review}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h4 className="font-medium text-white">User {review}</h4>
+                            <div className="flex items-center">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star key={star} className={`h-4 w-4 ${star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`} />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <span className="text-sm text-gray-400">2 weeks ago</span>
+                      </div>
+                      <p className="mt-3 text-gray-300">
+                        {review === 1
+                          ? 'Great experience working with this client. Clear communication and prompt payment. Highly recommended!'
+                          : review === 2
+                            ? 'The work was completed on time and exceeded my expectations. Will definitely work with again.'
+                            : 'Professional and skilled worker. Delivered exactly what was promised.'}
+                      </p>
+                    </div>
+                  ))}
+                  <Button variant="outline" className="mt-4 w-full border-gray-600 bg-gray-700/50 text-gray-300 hover:bg-gray-700/50">
+                    View All Reviews
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
