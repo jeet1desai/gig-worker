@@ -15,15 +15,6 @@ export const stats = [
   ['256M', 'Projects Completed']
 ];
 
-export const faqs = [
-  'How does it work?',
-  'How can designers effectively seek out new opportunities?',
-  'How do I Send Proposals?',
-  'How can Clients find Designers?',
-  'How Can I Join?',
-  'What if I have more questions?'
-];
-
 export const steps = [
   {
     step: '01.',

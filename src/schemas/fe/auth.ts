@@ -51,3 +51,14 @@ export const subscriptionsPlanValidationSchema = Yup.object().shape({
     .min(1, 'Enter at least 1 benefit')
     .max(5, 'Max 5 benefits allowed')
 });
+
+export const faqSchema = Yup.object().shape({
+  question: Yup.string().trim().required('Question is required'),
+  answer: Yup.string().trim().required('Answer is required')
+});
+
+export const workingStepSchema = Yup.object().shape({
+  title: Yup.string().trim().required('Title is required'),
+  description: Yup.string().trim().required('Description is required'),
+  color: Yup.string().trim().required('Color is required')
+});

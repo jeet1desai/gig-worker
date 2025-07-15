@@ -50,3 +50,43 @@ export interface SubscriptionPlanPayload {
   maxBids: number;
   subscriptionType: string;
 }
+export interface FAQsPayload {
+  id?: string;
+  question: string;
+  answer: string;
+}
+
+export interface FAQ {
+  id: string;
+  question: string;
+  answer: string;
+  [key: string]: any;
+}
+
+export interface FAQsPlanResponse {
+  success: boolean;
+  data: FAQ[];
+  message: string;
+  [key: string]: any;
+}
+
+export interface WorkingStepPayload {
+  id?: string;
+  title: string;
+  description: string;
+  order: number;
+}
+export interface WorkingStep {
+  id: string;
+  title: string;
+  description: string;
+  order: number;
+  color: string;
+  [key: string]: any;
+}
+export interface WorkingStepsResponse {
+  success: boolean;
+  data: WorkingStep[];
+  message: string;
+  [key: string]: any;
+}

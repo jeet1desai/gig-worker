@@ -105,6 +105,24 @@ model CMS {
   updated_at  DateTime @updatedAt
 }
 
+model FAQs {
+  id          BigInt   @id @default(autoincrement())
+  question    String
+  answer      String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model WorkingSteps {
+  id            BigInt   @id @default(autoincrement())
+  title         String
+  description   String
+  color         String
+  order         Int
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+}
+
 model Plan {
   id                  Int               @id @default(autoincrement())
   plan_id             String            @unique

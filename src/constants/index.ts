@@ -1,4 +1,4 @@
-import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard } from 'lucide-react';
+import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelRight, CircleHelp, List } from 'lucide-react';
 import { PayPalButtonStyle } from '@paypal/paypal-js';
 import { PRIVATE_ROUTE } from './app-routes';
 import { publicEnv } from '@/lib/config/publicEnv';
@@ -25,22 +25,56 @@ export const PAYPAL_BUTTON_CONFIG: PayPalButtonStyle = {
 export const TOKEN = 'token';
 
 export const DASHBOARD_NAVIGATION_MENU = [
-  { name: 'Dashboard', icon: BarChart3, href: PRIVATE_ROUTE.DASHBOARD },
-  { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.GIGS }
+  {
+    name: 'Dashboard',
+    icon: BarChart3,
+    href: PRIVATE_ROUTE.DASHBOARD,
+    sub_navigation: []
+  },
+  { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.GIGS, sub_navigation: [] }
 ];
 
 export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
   {
     name: 'Tier System',
     icon: LayoutDashboard,
-    href: PRIVATE_ROUTE.ADMIN_TIER_SYSTEM_DASHBOARD_PATH
+    href: PRIVATE_ROUTE.ADMIN_TIER_SYSTEM_DASHBOARD_PATH,
+    sub_navigation: []
   },
-  { name: 'Users', icon: Users2Icon, href: PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH },
-  { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH },
+  {
+    name: 'Users',
+    icon: Users2Icon,
+    href: PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH,
+    sub_navigation: []
+  },
+  {
+    name: 'Gigs',
+    icon: Briefcase,
+    href: PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH,
+    sub_navigation: []
+  },
   {
     name: 'Subscription Plans',
     icon: PackagePlusIcon,
-    href: PRIVATE_ROUTE.ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH
+    href: PRIVATE_ROUTE.ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH,
+    sub_navigation: []
+  },
+  {
+    name: 'Landing Page CMS',
+    icon: PanelRight,
+    href: PRIVATE_ROUTE.ADMIN_CMS_PATH,
+    sub_navigation: [
+      {
+        name: 'FAQs',
+        icon: CircleHelp,
+        href: PRIVATE_ROUTE.ADMIN_CMS_FAQS_PATH
+      },
+      {
+        name: 'Working Steps',
+        icon: List,
+        href: PRIVATE_ROUTE.ADMIN_CMS_STEPS_PATH
+      }
+    ]
   }
 ];
 
