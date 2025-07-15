@@ -1,6 +1,5 @@
 import bcrypt from 'bcryptjs';
 import { ValidationError } from 'yup';
-
 import prisma from '@/lib/prisma';
 import { signupSchema } from '@/schemas/be/auth';
 import { errorResponse, successResponse } from '@/lib/api-response';
@@ -25,6 +24,8 @@ import {
   VERIFICATION_CODES
 } from '@/constants';
 const io = getSocketServer();
+
+export const runtime = 'nodejs';
 
 export async function POST(req: Request) {
   try {
