@@ -9,13 +9,7 @@ import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { verifyEmailVerificationToken } from '@/lib/tokens';
 import { sendNotification } from '@/lib/socket/socket-server';
 import { getSocketServer } from '@/app/api/socket/route';
-import {
-  COMMON_ERROR_MESSAGES,
-  NOTIFICATION_MODULES,
-  NOTIFICATION_TYPES,
-  RESET_PASSWORD_MESSAGES,
-  VERIFICATION_CODES
-} from '@/constants';
+import { COMMON_ERROR_MESSAGES, NOTIFICATION_MODULES, NOTIFICATION_TYPES, RESET_PASSWORD_MESSAGES, VERIFICATION_CODES } from '@/constants';
 
 const io = getSocketServer();
 

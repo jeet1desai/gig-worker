@@ -61,8 +61,7 @@ export async function POST(req: Request) {
   }
 
   const nextBillingTime = body.resource.billing_info?.next_billing_time ?? null;
-  const lastPaymentValue =
-    body.resource.billing_info?.last_payment?.amount?.value ?? null;
+  const lastPaymentValue = body.resource.billing_info?.last_payment?.amount?.value ?? null;
 
   const updateData: Partial<Subscription> = {
     status: newStatus

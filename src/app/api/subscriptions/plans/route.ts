@@ -1,9 +1,6 @@
 import { errorResponse, successResponse } from '@/lib/api-response';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
-import {
-  createSubscriptionPlan,
-  updateSubscriptionPlanDetails
-} from '@/lib/paypal/plans';
+import { createSubscriptionPlan, updateSubscriptionPlanDetails } from '@/lib/paypal/plans';
 import { SubscriptionPlanPayload } from '@/types/fe';
 import lodash from 'lodash';
 import { FREE_PLAN, FREE_PLAN_ID } from '@/constants/plans';
@@ -19,8 +16,7 @@ export async function GET(_req: Request) {
       message: 'Subscription plans fetched successfully'
     });
   } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : 'Failed to fetch subscription plans';
+    const message = err instanceof Error ? err.message : 'Failed to fetch subscription plans';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,
@@ -49,8 +45,7 @@ export async function POST(request: Request) {
       });
     }
   } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : 'Failed to create subscription plans';
+    const message = err instanceof Error ? err.message : 'Failed to create subscription plans';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,
@@ -107,8 +102,7 @@ export async function PATCH(request: Request) {
       });
     }
   } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : 'Failed to update subscription plans';
+    const message = err instanceof Error ? err.message : 'Failed to update subscription plans';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,

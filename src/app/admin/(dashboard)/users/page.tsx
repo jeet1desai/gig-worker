@@ -31,9 +31,7 @@ const UsersList = () => {
   const [search, setSearch] = useState<string>('');
 
   const dispatch = useDispatch();
-  const { users, pagination, loading } = useSelector(
-    (state: RootState) => state.adminUser
-  );
+  const { users, pagination, loading } = useSelector((state: RootState) => state.adminUser);
 
   useDebouncedEffect(
     () => {

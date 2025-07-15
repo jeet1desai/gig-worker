@@ -38,10 +38,8 @@ function FAQs() {
               </button>
               {openIndex === index && (
                 <div className="mt-2 text-sm text-[#FFFFFF]">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis iste
-                  eveniet exercitationem ipsum voluptates quod impedit assumenda qui
-                  voluptatibus pariatur beatae, numquam inventore, esse sunt placeat
-                  consequatur rerum alias quibusdam.
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis iste eveniet exercitationem ipsum voluptates quod impedit assumenda
+                  qui voluptatibus pariatur beatae, numquam inventore, esse sunt placeat consequatur rerum alias quibusdam.
                 </div>
               )}
             </div>
@@ -50,9 +48,7 @@ function FAQs() {
 
         <div className="mt-10 text-center">
           <h3 className="text-lg font-semibold">Still have questions?</h3>
-          <p className="mb-4 text-sm text-[#FFF2E3]">
-            Contact our Support team for assistance
-          </p>
+          <p className="mb-4 text-sm text-[#FFF2E3]">Contact our Support team for assistance</p>
           <div className="inline-block rounded-lg bg-gradient-to-r from-[#A8E5EC] via-[#AB9EF5] to-[#FFC29F] p-[1px]">
             <button className="hover:bg-opacity-80 h-full w-full cursor-pointer rounded-lg bg-[#111111] px-5 py-2 text-[#FFF2E3] transition">
               Contact

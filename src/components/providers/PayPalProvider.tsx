@@ -8,11 +8,7 @@ interface Props {
 }
 
 const PayPalProvider = ({ children }: Props) => {
-  return (
-    <PayPalScriptProvider options={PAYPAL_CONFIG_OPTIONS}>
-      {children}
-    </PayPalScriptProvider>
-  );
+  return <PayPalScriptProvider options={PAYPAL_CONFIG_OPTIONS}>{children}</PayPalScriptProvider>;
 };
 
 export default PayPalProvider;

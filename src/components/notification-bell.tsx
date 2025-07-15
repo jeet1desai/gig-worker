@@ -6,27 +6,13 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 const NotificationBell = ({ userId }: { userId: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const {
-    unreadCount,
-    notifications,
-    markAsRead,
-    markAllAsRead,
-    fetchNotifications,
-    isLoading,
-    pagination
-  } = useNotifications(userId);
+  const { unreadCount, notifications, markAsRead, markAllAsRead, fetchNotifications, isLoading, pagination } = useNotifications(userId);
 
   const loadMore = useCallback(() => {
     if (!isLoading && pagination.page < pagination.totalPages) {
       fetchNotifications(pagination.page + 1, pagination.limit);
     }
-  }, [
-    isLoading,
-    pagination.page,
-    pagination.totalPages,
-    pagination.limit,
-    fetchNotifications
-  ]);
+  }, [isLoading, pagination.page, pagination.totalPages, pagination.limit, fetchNotifications]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -95,10 +81,7 @@ const NotificationBell = ({ userId }: { userId: string }) => {
           <div className="flex items-center justify-between border-b border-slate-700/50 p-3">
             <h3 className="text-sm font-medium text-white">Notifications</h3>
             <div className="flex items-center space-x-2">
-              <button
-                onClick={markAllAsRead}
-                className="cursor-pointer text-xs text-blue-400 transition-colors hover:text-blue-300"
-              >
+              <button onClick={markAllAsRead} className="cursor-pointer text-xs text-blue-400 transition-colors hover:text-blue-300">
                 Mark all as read
               </button>
               <button
@@ -115,11 +98,7 @@ const NotificationBell = ({ userId }: { userId: string }) => {
               dataLength={notifications.length}
               next={loadMore}
               hasMore={pagination.page < pagination.totalPages}
-              loader={
-                <div className="p-4 text-center text-sm text-slate-400">
-                  Loading more...
-                </div>
-              }
+              loader={<div className="p-4 text-center text-sm text-slate-400">Loading more...</div>}
               scrollableTarget="scrollableDiv"
               scrollThreshold={0.9}
             >
@@ -130,26 +109,14 @@ const NotificationBell = ({ userId }: { userId: string }) => {
                   onClick={() => handleNotificationClick(notification.id)}
                 >
                   <div className="flex items-start space-x-3">
-                    <div
-                      className={`rounded-lg p-1.5 ${getNotificationIconBg(notification.type)}`}
-                    >
-                      {getNotificationIcon(notification.type)}
-                    </div>
+                    <div className={`rounded-lg p-1.5 ${getNotificationIconBg(notification.type)}`}>{getNotificationIcon(notification.type)}</div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-white">
-                        {notification.title}
-                      </p>
-                      <p className="mt-0.5 text-xs text-slate-400">
-                        {notification.message}
-                      </p>
+                      <p className="truncate text-sm font-medium text-white">{notification.title}</p>
+                      <p className="mt-0.5 text-xs text-slate-400">{notification.message}</p>
                       <div className="mt-1.5 flex items-center space-x-2">
                         <Clock className="h-3 w-3 text-slate-500" />
-                        <span className="text-xs text-slate-500">
-                          {formatDate(notification.created_at)}
-                        </span>
-                        {!notification.is_read && (
-                          <span className="ml-auto h-2 w-2 rounded-full bg-blue-500"></span>
-                        )}
+                        <span className="text-xs text-slate-500">{formatDate(notification.created_at)}</span>
+                        {!notification.is_read && <span className="ml-auto h-2 w-2 rounded-full bg-blue-500"></span>}
                       </div>
                     </div>
                   </div>

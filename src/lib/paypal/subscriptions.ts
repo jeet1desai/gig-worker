@@ -2,11 +2,7 @@ import { paypalClient } from './paypalClient';
 import { getPayPalAccessToken } from './index';
 import { endpoints } from '@/lib/config/endpoints';
 
-type QueryFields =
-  | ['last_failed_payment']
-  | ['plan']
-  | ['last_failed_payment', 'plan']
-  | ['plan', 'last_failed_payment'];
+type QueryFields = ['last_failed_payment'] | ['plan'] | ['last_failed_payment', 'plan'] | ['plan', 'last_failed_payment'];
 
 export async function getSubscription(subscriptionId: string, fields?: QueryFields) {
   const accessToken = await getPayPalAccessToken();

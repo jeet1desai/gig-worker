@@ -48,10 +48,7 @@ export const getPlanByPlanId = async (id: string) => {
   return safeJson(plan);
 };
 
-export const createPlan = async (
-  plan_details: SubscriptionPlanPayload,
-  plan_id: string
-) => {
+export const createPlan = async (plan_details: SubscriptionPlanPayload, plan_id: string) => {
   if (plan_id === FREE_PLAN_ID) {
     const existingFreePlan = await prisma.plan.findUnique({
       where: {
@@ -139,10 +136,7 @@ export const createPlan = async (
   return 'Subscription plan created successfully';
 };
 
-export const updatePlan = async (
-  plan_id: string,
-  plan_details: SubscriptionPlanPayload
-) => {
+export const updatePlan = async (plan_id: string, plan_details: SubscriptionPlanPayload) => {
   const existingPlan = await prisma.plan.findUnique({
     where: { plan_id: plan_id }
   });

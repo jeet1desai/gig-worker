@@ -9,14 +9,7 @@ import { Lock } from 'lucide-react';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { COMMON_ERROR_MESSAGES } from '@/constants';
 import { BackArrowIconSvg } from '@/components/icons';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
 const verifyOtpSchema = Yup.object().shape({
@@ -93,9 +86,7 @@ export default function VerifyOtpForm() {
         Verify OTP
       </h3>
 
-      <p className="mb-6 block text-center text-[#9d9893]">
-        Kindly enter the confirmation code sent to the following email: xyz@gmail.com
-      </p>
+      <p className="mb-6 block text-center text-[#9d9893]">Kindly enter the confirmation code sent to the following email: xyz@gmail.com</p>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full space-y-6">
@@ -109,11 +100,7 @@ export default function VerifyOtpForm() {
                     OTP <span className="text-red-500">*</span>
                   </FormLabel>
                   {canResend ? (
-                    <button
-                      type="button"
-                      onClick={handleResend}
-                      className="text-sm font-medium text-[#FFF2E3] underline"
-                    >
+                    <button type="button" onClick={handleResend} className="text-sm font-medium text-[#FFF2E3] underline">
                       Resend OTP
                     </button>
                   ) : (
@@ -138,10 +125,7 @@ export default function VerifyOtpForm() {
           />
 
           <div className="mt-12 w-full rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
-            <button
-              type="submit"
-              className="h-full w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937]"
-            >
+            <button type="submit" className="h-full w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937]">
               Submit
             </button>
           </div>

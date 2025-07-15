@@ -50,9 +50,7 @@ export function useNotifications(userId?: string) {
   const markAsRead = useCallback(
     (notificationId: string) => {
       if (!userId) return;
-      const notificationIndex = notifications.findIndex(
-        (item) => BigInt(item.id) === BigInt(notificationId)
-      );
+      const notificationIndex = notifications.findIndex((item) => BigInt(item.id) === BigInt(notificationId));
       if (notificationIndex !== -1) {
         const updatedNotifications = [...notifications];
         updatedNotifications[notificationIndex].is_read = true;
@@ -93,9 +91,7 @@ export function useNotifications(userId?: string) {
     };
 
     const onNotificationList = (data: NotificationListResponse) => {
-      setNotifications((prev) =>
-        data.pagination.page === 1 ? data.data : [...prev, ...data.data]
-      );
+      setNotifications((prev) => (data.pagination.page === 1 ? data.data : [...prev, ...data.data]));
       setPagination(data.pagination);
     };
 
