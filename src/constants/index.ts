@@ -1,10 +1,4 @@
-import {
-  BarChart3,
-  Briefcase,
-  PackagePlusIcon,
-  Users2Icon,
-  LayoutDashboard
-} from 'lucide-react';
+import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard } from 'lucide-react';
 import { PayPalButtonStyle } from '@paypal/paypal-js';
 import { PRIVATE_ROUTE } from './app-routes';
 import { publicEnv } from '@/lib/config/publicEnv';
@@ -86,8 +80,7 @@ export const GIGS_LIST = [
 export const TIER_DATA_LIST = {
   basic: {
     title: 'Basic Tier',
-    description:
-      'Simple tasks that require minimal skill but provide essential help to students.',
+    description: 'Simple tasks that require minimal skill but provide essential help to students.',
     examples: 'Laundry, food pickup, move-in/move-out help, package delivery',
     stats: {
       totalGigs: 245,
@@ -101,8 +94,7 @@ export const TIER_DATA_LIST = {
   advanced: {
     title: 'Advanced Tier',
     description: 'Knowledge-based services requiring experience and good judgment.',
-    examples:
-      'Academic advice, major selection guidance, career counseling, campus navigation',
+    examples: 'Academic advice, major selection guidance, career counseling, campus navigation',
     stats: {
       totalGigs: 189,
       avgRating: 4.8,
@@ -114,10 +106,8 @@ export const TIER_DATA_LIST = {
   },
   expert: {
     title: 'Expert Tier',
-    description:
-      'High-skill, specialized services requiring expertise and proven track record.',
-    examples:
-      'Tutoring, homework help, interview preparation, grad school applications, schedule optimization',
+    description: 'High-skill, specialized services requiring expertise and proven track record.',
+    examples: 'Tutoring, homework help, interview preparation, grad school applications, schedule optimization',
     stats: {
       totalGigs: 156,
       avgRating: 4.9,

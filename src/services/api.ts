@@ -1,11 +1,7 @@
 import { BASE_API_URL } from '@/constants';
 import { AUTH_TOKEN_KEY } from '@/constants/local-storage-keys';
 import { getStorage } from '@/lib/local-storage';
-import axios, {
-  AxiosHeaders,
-  AxiosRequestConfig,
-  InternalAxiosRequestConfig
-} from 'axios';
+import axios, { AxiosHeaders, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 import { toast } from '@/lib/toast';
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   withAuth?: boolean;
@@ -34,11 +30,7 @@ api.interceptors.request.use(
     }
     const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData;
 
-    if (
-      config.headers instanceof AxiosHeaders &&
-      !isFormData &&
-      !config.headers.has('Content-Type')
-    ) {
+    if (config.headers instanceof AxiosHeaders && !isFormData && !config.headers.has('Content-Type')) {
       config.headers.set('Content-Type', 'application/json');
     }
 
@@ -58,49 +50,31 @@ api.interceptors.response.use(
 );
 
 const apiService = {
-  get: <T>(
-    url: string,
-    config?: CustomAxiosRequestConfig
-  ): Promise<{ data: T; status: number }> =>
+  get: <T>(url: string, config?: CustomAxiosRequestConfig): Promise<{ data: T; status: number }> =>
     api.get<T>(url, config).then((res) => ({
       data: res.data,
       status: res.status
     })),
 
-  post: <T>(
-    url: string,
-    data?: any,
-    config?: CustomAxiosRequestConfig
-  ): Promise<{ data: T; status: number }> =>
+  post: <T>(url: string, data?: any, config?: CustomAxiosRequestConfig): Promise<{ data: T; status: number }> =>
     api.post<T>(url, data, config).then((res) => ({
       data: res.data,
       status: res.status
     })),
 
-  put: <T>(
-    url: string,
-    data?: any,
-    config?: CustomAxiosRequestConfig
-  ): Promise<{ data: T; status: number }> =>
+  put: <T>(url: string, data?: any, config?: CustomAxiosRequestConfig): Promise<{ data: T; status: number }> =>
     api.put<T>(url, data, config).then((res) => ({
       data: res.data,
       status: res.status
     })),
 
-  delete: <T>(
-    url: string,
-    config?: CustomAxiosRequestConfig
-  ): Promise<{ data: T; status: number }> =>
+  delete: <T>(url: string, config?: CustomAxiosRequestConfig): Promise<{ data: T; status: number }> =>
     api.delete<T>(url, config).then((res) => ({
       data: res.data,
       status: res.status
     })),
 
-  patch: <T>(
-    url: string,
-    data?: any,
-    config?: CustomAxiosRequestConfig
-  ): Promise<{ data: T; status: number }> =>
+  patch: <T>(url: string, data?: any, config?: CustomAxiosRequestConfig): Promise<{ data: T; status: number }> =>
     api.patch<T>(url, data, config).then((res) => ({
       data: res.data,
       status: res.status

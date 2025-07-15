@@ -1,11 +1,7 @@
 import prisma, { NOTIFICATION_TYPE } from '@/lib/prisma';
 
 export function serializeBigInt(obj: any): any {
-  return JSON.parse(
-    JSON.stringify(obj, (key, value) =>
-      typeof value === 'bigint' ? value.toString() : value
-    )
-  );
+  return JSON.parse(JSON.stringify(obj, (key, value) => (typeof value === 'bigint' ? value.toString() : value)));
 }
 
 type CreateNotificationInput = {
@@ -36,9 +32,7 @@ export const notificationService = {
       });
       return serializeBigInt(result);
     } catch (error) {
-      throw new Error(
-        `Failed to create notification: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      throw new Error(`Failed to create notification: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   },
 
@@ -51,9 +45,7 @@ export const notificationService = {
         }
       });
     } catch (error) {
-      throw new Error(
-        `Failed to get unread count: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      throw new Error(`Failed to get unread count: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   },
 
@@ -64,9 +56,7 @@ export const notificationService = {
         data: { is_read: true }
       });
     } catch (error) {
-      throw new Error(
-        `Failed to mark notification as read: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      throw new Error(`Failed to mark notification as read: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   },
 
@@ -80,9 +70,7 @@ export const notificationService = {
         data: { is_read: true }
       });
     } catch (error) {
-      throw new Error(
-        `Failed to mark all notifications as read: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      throw new Error(`Failed to mark all notifications as read: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   },
 
@@ -126,9 +114,7 @@ export const notificationService = {
         }
       };
     } catch (error) {
-      throw new Error(
-        `Failed to fetch notifications: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      throw new Error(`Failed to fetch notifications: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   },
 
@@ -138,9 +124,7 @@ export const notificationService = {
         where: { id: BigInt(notificationId) }
       });
     } catch (error) {
-      throw new Error(
-        `Failed to delete notification: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      throw new Error(`Failed to delete notification: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 };

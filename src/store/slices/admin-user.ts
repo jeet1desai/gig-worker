@@ -40,7 +40,6 @@ const adminUserSlice = createSlice({
   }
 });
 
-export const { setLoading, setAdminUsers, deleteAdminUsers, createAdminUsers, setPage } =
-  adminUserSlice.actions;
+export const { setLoading, setAdminUsers, deleteAdminUsers, createAdminUsers, setPage } = adminUserSlice.actions;
 
 export default adminUserSlice.reducer;

@@ -29,29 +29,16 @@ function WorkOpportunities() {
       <div className="relative">
         <div ref={scrollRef} className="no-scrollbar flex gap-6 overflow-x-auto pb-4">
           {workOpportunities.map((item, i) => (
-            <div
-              key={i}
-              className="min-w-[300px] rounded-xl border border-[#3E3E3E] bg-transparent p-5 sm:min-w-[320px]"
-            >
+            <div key={i} className="min-w-[300px] rounded-xl border border-[#3E3E3E] bg-transparent p-5 sm:min-w-[320px]">
               <h3 className="mb-1 text-lg font-[600] text-[#FFF2E3]">{item.title}</h3>
               <p className="mt-2 text-sm text-gray-400">
-                <span className="mr-2 rounded-3xl bg-[#1D1D1D] px-2 py-1 text-[#1CBAE0]">
-                  {item.price}
-                </span>
-                <span className="rounded-3xl bg-[#1D1D1D] px-2 py-1 text-[#FFB9C7]">
-                  {item.duration}
-                </span>
+                <span className="mr-2 rounded-3xl bg-[#1D1D1D] px-2 py-1 text-[#1CBAE0]">{item.price}</span>
+                <span className="rounded-3xl bg-[#1D1D1D] px-2 py-1 text-[#FFB9C7]">{item.duration}</span>
               </p>
               <p className="mt-2 text-xs text-[#FFF2E3]">{item.description}</p>
               <div className="mt-2 flex items-center justify-between border-t border-[#3E3E3E] py-3 text-sm text-gray-300">
                 <div className="flex w-1/2">
-                  <Image
-                    src={Images.avatar}
-                    alt="vein_diagram"
-                    height={44}
-                    width={44}
-                    className="mr-2"
-                  />
+                  <Image src={Images.avatar} alt="vein_diagram" height={44} width={44} className="mr-2" />
                   <div>
                     <div className="text-sm text-[#FFF2E3]">{item.provider}</div>
                     <div className="mt-2 text-xs text-[#FFF2E3]">{item.place}</div>

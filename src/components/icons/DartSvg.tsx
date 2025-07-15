@@ -1,8 +1,6 @@
 import { JSX, SVGProps } from 'react';
 
-export default function DartIconSvg(
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-) {
+export default function DartIconSvg(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 36 36">
       <circle fill="#DD2E44" cx="18" cy="18" r="18" />
@@ -10,10 +8,7 @@ export default function DartIconSvg(
       <circle fill="#DD2E44" cx="18" cy="18" r="10" />
       <circle fill="#FFF" cx="18" cy="18" r="6" />
       <circle fill="#DD2E44" cx="18" cy="18" r="3" />
-      <path
-        opacity=".2"
-        d="M18.24 18.282l13.144 11.754s-2.647 3.376-7.89 5.109L17.579 18.42l.661-.138z"
-      />
+      <path opacity=".2" d="M18.24 18.282l13.144 11.754s-2.647 3.376-7.89 5.109L17.579 18.42l.661-.138z" />
       <path
         fill="#FFAC33"
         d="M18.294 19c-.255 0-.509-.097-.704-.292-.389-.389-.389-1.018 0-1.407l.563-.563c.389-.389 1.018-.389 1.408 0 .388.389.388 1.018 0 1.407l-.564.563c-.194.195-.448.292-.703.292z"
