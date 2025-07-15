@@ -46,11 +46,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (isNumeric) {
       const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
-      if (
-        !/^\d$/.test(event.key) &&
-        !allowedKeys.includes(event.key) &&
-        ['e', 'E', '+', '-'].includes(event.key)
-      ) {
+      if (!/^\d$/.test(event.key) && !allowedKeys.includes(event.key) && ['e', 'E', '+', '-'].includes(event.key)) {
         event.preventDefault();
       }
     }
@@ -79,9 +75,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
           defaultValue={props.defaultValue}
           className={cn(
             'disabled:bg-gray-2 disabled:bg-dark w-full rounded-lg border-[1.5px] border-[#374151] bg-[#1F2A37] transition outline-none focus:border-[#5750F1] disabled:cursor-default data-[active=true]:border-[#5750F1]',
-            type === 'file'
-              ? getFileStyles(props.fileStyleVariant!)
-              : 'text-dark placeholder:text-dark-6 px-5.5 py-3 text-white',
+            type === 'file' ? getFileStyles(props.fileStyleVariant!) : 'text-dark placeholder:text-dark-6 px-5.5 py-3 text-white',
             props.iconPosition === 'left' && 'pl-12.5',
             props.height === 'sm' && 'py-2.5'
           )}

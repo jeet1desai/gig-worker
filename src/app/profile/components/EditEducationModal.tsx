@@ -22,9 +22,7 @@ export default function EditEducationModal() {
   ]);
 
   const handleChange = (index: number, field: keyof EducationItem, value: string) => {
-    setEducationList((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value, error: '' } : item))
-    );
+    setEducationList((prev) => prev.map((item, i) => (i === index ? { ...item, [field]: value, error: '' } : item)));
   };
 
   const handleAdd = () => {
@@ -62,10 +60,7 @@ export default function EditEducationModal() {
 
   return (
     <div>
-      <PencilIcon
-        onClick={() => setOpen(true)}
-        className="h-4 w-4 cursor-pointer text-white hover:text-gray-300"
-      />
+      <PencilIcon onClick={() => setOpen(true)} className="h-4 w-4 cursor-pointer text-white hover:text-gray-300" />
 
       <CommonModal
         open={open}
@@ -85,10 +80,7 @@ export default function EditEducationModal() {
                   className="flex-1 border border-[#333] bg-[#1a1a1a] text-white"
                 />
                 {educationList.length > 1 && (
-                  <Trash2Icon
-                    className="h-4 w-4 cursor-pointer text-red-400 hover:text-red-500"
-                    onClick={() => handleRemove(idx)}
-                  />
+                  <Trash2Icon className="h-4 w-4 cursor-pointer text-red-400 hover:text-red-500" onClick={() => handleRemove(idx)} />
                 )}
               </div>
               <div className="flex gap-2">
@@ -117,28 +109,17 @@ export default function EditEducationModal() {
         </div>
 
         <div className="mt-4 flex justify-start">
-          <Button
-            variant="ghost"
-            onClick={handleAdd}
-            className="border border-[#333] text-white hover:bg-[#1b1b1b]"
-          >
+          <Button variant="ghost" onClick={handleAdd} className="border border-[#333] text-white hover:bg-[#1b1b1b]">
             <PlusIcon className="mr-2 h-4 w-4" />
             Add Education
           </Button>
         </div>
 
         <div className="mt-6 flex justify-end gap-2 border-t border-[#333] pt-4">
-          <Button
-            variant="ghost"
-            onClick={() => setOpen(false)}
-            className="cursor-pointer text-white"
-          >
+          <Button variant="ghost" onClick={() => setOpen(false)} className="cursor-pointer text-white">
             Cancel
           </Button>
-          <Button
-            onClick={handleSave}
-            className="cursor-pointer bg-white text-black hover:bg-gray-200"
-          >
+          <Button onClick={handleSave} className="cursor-pointer bg-white text-black hover:bg-gray-200">
             Save Changes
           </Button>
         </div>

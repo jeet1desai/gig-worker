@@ -47,10 +47,7 @@ export async function POST(req: Request) {
         field: err.path,
         message: err.message
       }));
-      return NextResponse.json(
-        errorResponse('Validation failed', HttpStatusCode.BAD_REQUEST, { errors }),
-        { status: HttpStatusCode.BAD_REQUEST }
-      );
+      return NextResponse.json(errorResponse('Validation failed', HttpStatusCode.BAD_REQUEST, { errors }), { status: HttpStatusCode.BAD_REQUEST });
     }
 
     const {
@@ -73,10 +70,7 @@ export async function POST(req: Request) {
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return NextResponse.json(
-        errorResponse('User with this email already exists', HttpStatusCode.CONFLICT),
-        { status: HttpStatusCode.CONFLICT }
-      );
+      return NextResponse.json(errorResponse('User with this email already exists', HttpStatusCode.CONFLICT), { status: HttpStatusCode.CONFLICT });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -145,12 +139,9 @@ export async function POST(req: Request) {
     );
   } catch (error) {
     console.error('Error creating user:', error);
-    return NextResponse.json(
-      errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR),
-      {
-        status: HttpStatusCode.INTERNAL_SERVER_ERROR
-      }
-    );
+    return NextResponse.json(errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR), {
+      status: HttpStatusCode.INTERNAL_SERVER_ERROR
+    });
   }
 }
 
@@ -210,11 +201,8 @@ export async function GET(req: Request) {
     return paginatedResponse(users, page, pageSize, total, { status: HttpStatusCode.OK });
   } catch (error) {
     console.error('Error fetching paginated users:', error);
-    return NextResponse.json(
-      errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR),
-      {
-        status: HttpStatusCode.INTERNAL_SERVER_ERROR
-      }
-    );
+    return NextResponse.json(errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR), {
+      status: HttpStatusCode.INTERNAL_SERVER_ERROR
+    });
   }
 }

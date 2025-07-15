@@ -1,21 +1,9 @@
 export const FREE_PLAN_ID = 'FREE-PLAN';
 
 export const planBenefits: Record<string, string[]> = {
-  [FREE_PLAN_ID]: [
-    'Access as a User only',
-    'Rate and review providers after gigs',
-    'Only request a gig'
-  ],
-  'P-2CR825628R976200XNBV4CIY': [
-    'Post up to 3 gigs/month',
-    'Place up to 5 bids/month',
-    'No access to “Top Rated Seller” badge'
-  ],
-  'P-8HB33956RE3059147NBV4CDY': [
-    'Includes all Basic Plan features',
-    'Unlimited gig postings and bids',
-    'Eligible for Top Rated Seller badge'
-  ]
+  [FREE_PLAN_ID]: ['Access as a User only', 'Rate and review providers after gigs', 'Only request a gig'],
+  'P-2CR825628R976200XNBV4CIY': ['Post up to 3 gigs/month', 'Place up to 5 bids/month', 'No access to “Top Rated Seller” badge'],
+  'P-8HB33956RE3059147NBV4CDY': ['Includes all Basic Plan features', 'Unlimited gig postings and bids', 'Eligible for Top Rated Seller badge']
 };
 
 export const FREE_PLAN = {

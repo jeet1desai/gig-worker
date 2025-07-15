@@ -16,18 +16,12 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
     if (!id) {
-      return NextResponse.json(
-        errorResponse('User ID is required', HttpStatusCode.BAD_REQUEST),
-        { status: HttpStatusCode.BAD_REQUEST }
-      );
+      return NextResponse.json(errorResponse('User ID is required', HttpStatusCode.BAD_REQUEST), { status: HttpStatusCode.BAD_REQUEST });
     }
 
     const userId = parseInt(id, 10);
     if (isNaN(userId)) {
-      return NextResponse.json(
-        errorResponse('Invalid user ID', HttpStatusCode.BAD_REQUEST),
-        { status: HttpStatusCode.BAD_REQUEST }
-      );
+      return NextResponse.json(errorResponse('Invalid user ID', HttpStatusCode.BAD_REQUEST), { status: HttpStatusCode.BAD_REQUEST });
     }
 
     const body = await request.json();
@@ -55,14 +49,8 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     );
   } catch (error) {
     console.error('Error updating user verification status:', error);
-    return NextResponse.json(
-      errorResponse(
-        'Failed to update user verification status',
-        HttpStatusCode.INTERNAL_SERVER_ERROR
-      ),
-      {
-        status: HttpStatusCode.INTERNAL_SERVER_ERROR
-      }
-    );
+    return NextResponse.json(errorResponse('Failed to update user verification status', HttpStatusCode.INTERNAL_SERVER_ERROR), {
+      status: HttpStatusCode.INTERNAL_SERVER_ERROR
+    });
   }
 }

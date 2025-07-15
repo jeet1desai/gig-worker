@@ -1,8 +1,6 @@
 import { JSX, SVGProps } from 'react';
 
-export default function BulbIconSvg(
-  props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>
-) {
+export default function BulbIconSvg(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 36 36">
       <path
@@ -17,10 +15,7 @@ export default function BulbIconSvg(
         fill="#FFCC4D"
         d="M22.707 10.293c-.391-.391-1.023-.391-1.414 0L18 13.586l-3.293-3.293c-.391-.391-1.023-.391-1.414 0s-.391 1.023 0 1.414L17 15.414V26c0 .553.448 1 1 1s1-.447 1-1V15.414l3.707-3.707c.391-.391.391-1.023 0-1.414z"
       />
-      <path
-        fill="#99AAB5"
-        d="M24 31c0 1.104-.896 2-2 2h-8c-1.104 0-2-.896-2-2v-6h12v6z"
-      />
+      <path fill="#99AAB5" d="M24 31c0 1.104-.896 2-2 2h-8c-1.104 0-2-.896-2-2v-6h12v6z" />
       <path
         fill="#CCD6DD"
         d="M11.999 32c-.48 0-.904-.347-.985-.836-.091-.544.277-1.06.822-1.15l12-2c.544-.098 1.06.277 1.15.822.091.544-.277 1.06-.822 1.15l-12 2c-.055.01-.111.014-.165.014zm0-4c-.48 0-.904-.347-.985-.836-.091-.544.277-1.06.822-1.15l12-2c.544-.097 1.06.277 1.15.822.091.544-.277 1.06-.822 1.15l-12 2c-.055.01-.111.014-.165.014z"

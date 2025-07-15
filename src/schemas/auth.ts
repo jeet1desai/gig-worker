@@ -6,10 +6,7 @@ export const loginSchema = Yup.object().shape({
     .required('Password is required')
     .min(8, 'Password must be at least 8 characters')
     .max(15, 'Password must not exceed 15 characters')
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-      'Password must include upper, lower, number, and special character'
-    )
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, 'Password must include upper, lower, number, and special character')
 });
 
 export const signupSchema = Yup.object().shape({
