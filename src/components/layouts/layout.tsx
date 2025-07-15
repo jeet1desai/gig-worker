@@ -28,10 +28,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="bg-foreground flex min-h-screen w-full">
       <Sidebar collapsed={sidebarCollapsed} onToggle={(collapsed) => setSidebarCollapsed(collapsed)} navigation_menu={DASHBOARD_NAVIGATION_MENU} />
 
-      <div className={`w-full flex-1 overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+      <div className={`w-full flex-1 overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'ml-18' : 'ml-64'}`}>
         <Header collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} role={role} onRoleChange={handleRoleChange} />
 
-        {children}
+        <div className="mt-18">{children}</div>
       </div>
     </div>
   );

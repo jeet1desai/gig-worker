@@ -36,7 +36,8 @@ export enum PUBLIC_API_ROUTES {
   VERIFY_EMAIL_API = '/auth/verify-email',
   FORGOT_PASSWORD_API = '/auth/forgot-password',
   RESET_PASSWORD_API = '/auth/reset-password',
-  API_FORGOT_PASSWORD = '/auth/forgot-password'
+  API_FORGOT_PASSWORD = '/auth/forgot-password',
+  WEBHOOK_PAYPAL = '/api/webhook/paypal'
 }
 
 export enum PRIVATE_API_ROUTES {

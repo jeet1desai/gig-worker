@@ -2,21 +2,21 @@
 
 import { Menu, MessageCircle, Search, User, Briefcase, LogOut } from 'lucide-react';
 import { useCallback, useState } from 'react';
-
-import { useIsMobile } from '@/hooks/use-mobile';
-import * as Popover from '@radix-ui/react-popover';
-
-import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
+import * as Popover from '@radix-ui/react-popover';
+
+import Link from 'next/link';
+import { useIsMobile } from '@/hooks/use-mobile';
+
+import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
+import { clearStorage } from '@/lib/local-storage';
 
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import NotificationBell from '../notification-bell';
-import Link from 'next/link';
-import { clearStorage } from '@/lib/local-storage';
 import CommonDeleteDialog from '../CommonDeleteDialog';
-import { useSession } from 'next-auth/react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 interface SidebarProps {
@@ -46,7 +46,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
 
   return (
     <TooltipProvider>
-      <header className="border-b border-slate-700/50 p-4 pl-6 shadow-sm">
+      <header className="bg-foreground fixed right-0 left-0 z-[1] ml-18 border-b border-slate-700/50 p-4 pl-6 shadow-sm">
         <div className="flex h-10 items-center justify-between">
           <div className="flex items-center">
             {collapsed && !isMobile && (
@@ -61,7 +61,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
           </div>
 
           <div className="flex items-center space-x-4">
-            {role !== 'admin' && (
+            {session?.user.role === 'provider' && (
               <div className="flex items-center gap-1 rounded-xl bg-slate-700/50 p-1">
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -121,7 +121,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
               <TooltipContent>Messages</TooltipContent>
             </Tooltip>
 
-            <NotificationBell userId="5" />
+            <NotificationBell userId={session?.user.id} />
 
             <Popover.Root open={open} onOpenChange={setOpen} modal={false}>
               <Popover.Trigger asChild>
