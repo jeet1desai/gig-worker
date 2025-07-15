@@ -46,7 +46,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
 
   return (
     <TooltipProvider>
-      <header className="border-b border-slate-700/50 p-4 pl-6 shadow-sm">
+      <header className="bg-foreground fixed right-0 left-0 z-[1] ml-18 border-b border-slate-700/50 p-4 pl-6 shadow-sm">
         <div className="flex h-10 items-center justify-between">
           <div className="flex items-center">
             {collapsed && !isMobile && (

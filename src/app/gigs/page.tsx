@@ -225,12 +225,21 @@ const GigsPage = () => {
       <div className="min-h-screen py-8">
         <div className="container mx-auto px-4">
           {/* Hero Section */}
-          <div className="mb-12 text-center">
-            <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">Find Your Next Gig</h1>
-            <p className="mx-auto max-w-2xl text-lg text-gray-300">
-              Discover and bid on exciting projects from clients worldwide. Grow your portfolio and earn money doing what you love.
-            </p>
-          </div>
+          {user?.role === 'provider' ? (
+            <div className="mb-12 text-center">
+              <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">Create Your Next Gig</h1>
+              <p className="mx-auto max-w-2xl text-lg text-gray-300">
+                Create and sell your services to clients worldwide. Grow your portfolio and earn money doing what you love.
+              </p>
+            </div>
+          ) : (
+            <div className="mb-12 text-center">
+              <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">Find Your Next Gig</h1>
+              <p className="mx-auto max-w-2xl text-lg text-gray-300">
+                Discover and bid on exciting projects from clients worldwide. Grow your portfolio and earn money doing what you love.
+              </p>
+            </div>
+          )}
 
           {/* Search and Filter Bar */}
           <div className="mb-8 rounded-xl bg-gray-800/50 p-6 backdrop-blur-sm">
@@ -263,22 +272,19 @@ const GigsPage = () => {
                   <Search className="mr-2 h-5 w-5" />
                   Search
                 </Button>
+
+                {user?.role === 'provider' && (
+                  <Button
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-6 text-base font-medium hover:from-blue-500 hover:to-purple-500"
+                    onClick={() => router.push('/gigs/new')}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create New Gig
+                  </Button>
+                )}
               </div>
             </div>
           </div>
-
-          {/* Create New Gig Button - Only show for providers */}
-          {user?.role === 'provider' && (
-            <div className="mb-6 flex justify-end">
-              <Button
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
-                onClick={() => router.push('/gigs/new')}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Create New Gig
-              </Button>
-            </div>
-          )}
 
           {/* Gig Grid */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
