@@ -242,3 +242,8 @@ export const COMMON_ERROR_MESSAGES = {
 };
 
 export const SUBSCRIPTION_PLAN_TYPES = ['free', 'basic', 'pro'];
+
+export const WORKING_STEPS_MOVE_DIRECTION = {
+  up: 'up',
+  down: 'down'
+};

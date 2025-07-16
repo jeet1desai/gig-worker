@@ -75,6 +75,7 @@ export interface WorkingStepPayload {
   title: string;
   description: string;
   order: number;
+  color: string;
 }
 export interface WorkingStep {
   id: string;
@@ -90,3 +91,5 @@ export interface WorkingStepsResponse {
   message: string;
   [key: string]: any;
 }
+
+export type WorkingStepDirectionType = 'up' | 'down';

@@ -1,11 +1,43 @@
+'use client';
+
 import { DoubleDotIconSvg } from '@/components/icons';
-import { steps } from '@/constants/LandingPage';
+import Loader from '@/components/Loader';
+import { PUBLIC_API_ROUTES } from '@/constants/app-routes';
+import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { Images } from '@/lib/images';
+import { toast } from '@/lib/toast';
+import apiService from '@/services/api';
+import { WorkingStep, WorkingStepsResponse } from '@/types/fe';
 import Image from 'next/image';
+import { useCallback, useEffect, useState } from 'react';
 
 function HowItWorks() {
+  const [steps, setSteps] = useState<WorkingStep[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const getAllWorkingSteps = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiService.get<WorkingStepsResponse>(PUBLIC_API_ROUTES.CMS_STEPS_API, { withAuth: true });
+
+      if (response.data.data && response.status === HttpStatusCode.OK && response.data.message) {
+        setSteps(response.data.data);
+      }
+    } catch (error: unknown) {
+      console.error('Error fetching working steps', error);
+      toast.error('Error fetching working steps');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    getAllWorkingSteps();
+  }, []);
+
   return (
     <section className="w-full bg-[#111111] py-16">
+      <Loader isLoading={isLoading} />
       <div className="mx-auto max-w-[1920px] px-10">
         <h2 className="mb-2 flex items-center text-3xl font-semibold">
           <DoubleDotIconSvg />
@@ -16,16 +48,16 @@ function HowItWorks() {
         <div className="mx-auto grid max-w-[1920px] grid-cols-1 items-start gap-8 px-4 md:grid-cols-2">
           <ul className="w-full max-w-full space-y-8 place-self-center text-gray-300">
             {steps.map((step, i) => (
-              <li key={i} className="flex h-full max-h-20 rounded-tr-2xl rounded-br-2xl bg-[#0A0502]">
+              <li key={i} className="flex h-full max-h-20 rounded-tr-2xl rounded-br-2xl bg-[#0A0502] md:max-h-24">
                 <div
-                  className="mr-4 flex h-20 min-w-20 items-center justify-center rounded-md bg-[#FFFFFF] text-2xl font-bold"
+                  className="mr-4 flex h-20 min-w-20 items-center justify-center rounded-md bg-[#FFFFFF] text-2xl font-bold md:h-24"
                   style={{ color: step.color }}
                 >
-                  {step.step}
+                  {step.order < 10 ? `0${step.order}.` : `${step.order}.`}
                 </div>
                 <div className="flex flex-col justify-evenly p-2">
                   <p className="text-sm font-semibold text-[#CECECE] sm:text-base md:text-lg">{step.title}</p>
-                  <p className="text-[10px] font-semibold text-[#A0A0A0] sm:text-xs md:text-sm">{step.desc}</p>
+                  <p className="text-[10px] font-semibold text-[#A0A0A0] sm:text-xs md:text-[13px]">{step.description}</p>
                 </div>
               </li>
             ))}

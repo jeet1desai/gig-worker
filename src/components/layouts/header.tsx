@@ -129,7 +129,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                   <div className="hidden text-right sm:block">
                     <p className="max-w-[120px] truncate text-sm font-medium text-white">{session?.user.name}</p>
                     <p className="hidden text-xs text-slate-400 md:block">
-                      {session?.user.role.charAt(0).toUpperCase() + session?.user.role.slice(1)}
+                      {`${session?.user.role.charAt(0).toUpperCase() + session?.user.role.slice(1)}`}
                     </p>
                   </div>
                   <div className="relative">
