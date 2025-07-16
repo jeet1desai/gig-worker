@@ -60,7 +60,7 @@ export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
     sub_navigation: []
   },
   {
-    name: 'Landing Page CMS',
+    name: 'CMS Module',
     icon: PanelRight,
     href: PRIVATE_ROUTE.ADMIN_CMS_PATH,
     sub_navigation: [
@@ -242,6 +242,8 @@ export const COMMON_ERROR_MESSAGES = {
 };
 
 export const SUBSCRIPTION_PLAN_TYPES = ['free', 'basic', 'pro'];
+
+export const ADMIN_ROLE = 'admin';
 
 export const WORKING_STEPS_MOVE_DIRECTION = {
   up: 'up',

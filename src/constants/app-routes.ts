@@ -21,6 +21,7 @@ export enum PUBLIC_ROUTE {
 
 export enum PRIVATE_ROUTE {
   PLANS = '/plans',
+  AUTH_CALLBACK_HANDLER = '/auth/callback-handler',
   DASHBOARD = '/dashboard',
   GIGS = '/gigs',
   USER_PROFILE = '/profile',
@@ -47,7 +48,7 @@ export enum PUBLIC_API_ROUTES {
 
 export enum PRIVATE_API_ROUTES {
   SUBSCRIPTION_PLANS_API = '/subscriptions/plans',
-  SUBSCRIPTION_CREATE_API = '/subscriptions/subscribe'
+  SUBSCRIPTION_CREATE_API = '/subscriptions/subscribe',
 }
 
 export const excludedPublicRoutes = [
