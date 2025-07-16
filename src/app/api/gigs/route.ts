@@ -5,7 +5,7 @@ import { authOptions } from '../auth/[...nextauth]/route';
 import { ROLE, GIG_STATUS, TIER } from '@prisma/client';
 import { uploadFile } from '@/lib/utils/file-upload';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
-import { errorResponse, successResponse } from '@/lib/api-response';
+import { errorResponse } from '@/lib/api-response';
 import { safeJsonResponse } from '@/utils/apiResponse';
 
 // POST /api/gigs - Create a new gig
@@ -137,5 +137,116 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error creating gig:', error);
     return errorResponse({ code: 'INTERNAL_SERVER_ERROR', message: 'Internal server error', statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR });
+  }
+}
+
+// GET /api/gigs - Get all gigs with pagination, search, and filtering
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+    const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '10')));
+    const skip = (page - 1) * limit;
+    const search = (searchParams.get('search') || '').trim();
+
+    const baseWhere: any = {};
+
+    if (search) {
+      const searchConditions: any = [
+        { title: { contains: search, mode: 'insensitive' as const } },
+        { description: { contains: search, mode: 'insensitive' as const } }
+      ];
+
+      if (!search.includes(' ')) {
+        searchConditions.push({
+          keywords: {
+            path: ['$'],
+            string_contains: search.toLowerCase()
+          }
+        });
+      }
+
+      baseWhere.AND = [
+        {
+          OR: searchConditions
+        }
+      ];
+    }
+
+    const whereClause = {
+      ...baseWhere,
+      pipeline: {
+        is: {
+          status: GIG_STATUS.open
+        }
+      }
+    };
+
+    const [total, gigs] = await Promise.all([
+      prisma.gig.count({
+        where: whereClause
+      }),
+      prisma.gig.findMany({
+        where: whereClause,
+        include: {
+          user: {
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true,
+              email: true,
+              profile_url: true,
+              created_at: true,
+              updated_at: true,
+              role: true
+            }
+          },
+          pipeline: {
+            select: {
+              id: true,
+              status: true,
+              created_at: true,
+              updated_at: true
+            }
+          }
+        },
+        orderBy: {
+          created_at: 'desc'
+        },
+        skip,
+        take: limit
+      })
+    ]);
+
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const currentPage = Math.min(page, totalPages);
+    const hasNextPage = currentPage < totalPages;
+    const hasPreviousPage = currentPage > 1;
+
+    return safeJsonResponse(
+      {
+        success: true,
+        message: 'Gigs fetched successfully',
+        data: {
+          gigs,
+          pagination: {
+            total,
+            page: currentPage,
+            totalPages,
+            limit
+          }
+        }
+      },
+      { status: HttpStatusCode.OK }
+    );
+  } catch (error) {
+    console.error('Error fetching gigs:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch gigs';
+    return errorResponse({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: errorMessage,
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
+    });
   }
 }

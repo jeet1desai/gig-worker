@@ -4,6 +4,7 @@ import type { NextRequest } from 'next/server';
 
 import { PUBLIC_ROUTE, PUBLIC_API_ROUTES, excludedPublicRoutes, PRIVATE_ROUTE } from '@/constants/app-routes';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
+import { ADMIN_ROLE } from './constants';
 
 const publicRoutes = Object.values(PUBLIC_ROUTE) as string[];
 
@@ -34,7 +35,11 @@ export async function middleware(req: NextRequest) {
   if (isPublicRoute) {
     if (token && token.exp > now && isRestrictedPublicRoute) {
       const url = req.nextUrl.clone();
-      url.pathname = PRIVATE_ROUTE.DASHBOARD;
+      if (token.role === ADMIN_ROLE) {
+        url.pathname = PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH;
+      } else {
+        url.pathname = PRIVATE_ROUTE.DASHBOARD;
+      }
       return NextResponse.redirect(url);
     }
     return NextResponse.next();
@@ -59,6 +64,16 @@ export async function middleware(req: NextRequest) {
       const redirectUrl = req.nextUrl.clone();
       redirectUrl.pathname = '/';
       return NextResponse.redirect(redirectUrl);
+    }
+  }
+
+  if (token && token.exp > now) {
+    const isAccessingPlanPage = pathname === PRIVATE_ROUTE.PLANS || pathname.startsWith(PRIVATE_ROUTE.PLANS + '/');
+    const isActiveSubscription = token.subscription;
+    if (!isApiRoute && !isActiveSubscription && !isAccessingPlanPage && !isPublicRoute && token.role !== ADMIN_ROLE) {
+      const url = req.nextUrl.clone();
+      url.pathname = PRIVATE_ROUTE.PLANS;
+      return NextResponse.redirect(url);
     }
   }
 

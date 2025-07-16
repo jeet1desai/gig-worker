@@ -1,47 +1,140 @@
 'use client';
 
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, DollarSign, Filter, Heart, MapPin, Plus, Search, Star, Trash2 } from 'lucide-react';
+import { Clock, DollarSign, MapPin, Plus, Search, Star, Trash2 } from 'lucide-react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import Link from 'next/link';
 import Image from 'next/image';
 
 import DashboardLayout from '@/components/layouts/layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 
-import { RootState, useSelector } from '@/store/store';
+import { useDebouncedEffect } from '@/hooks/use-debounce';
+import { cn } from '@/lib/utils';
+import { formatDate } from '@/lib/date-format';
+import { TIER } from '@prisma/client';
+
+import { RootState, useDispatch, useSelector } from '@/store/store';
+import { gigService } from '@/services/gig.services';
+
+type GigProviderCardProps = any;
 
 interface GigCardProps {
   id: string;
   title: string;
-  tier: 1 | 2 | 3;
-  price: number;
-  providerName: string;
-  providerId: string;
-  rating: number;
-  reviewCount: number;
-  imageUrl?: string;
-  deliveryTime?: string;
-  isFavorite?: boolean;
-  onFavoriteToggle?: (id: string) => void;
+  description: string;
+  tier: TIER;
+  price_range: {
+    min: number;
+    max: number;
+  };
+  start_date: string;
+  end_date: string;
+  thumbnail: string;
   role?: 'user' | 'provider';
+  user: {
+    first_name: string;
+    last_name: string;
+    profile_url: string;
+  };
 }
 
 const tierColors = {
-  1: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  2: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-  3: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+  basic: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  advanced: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  expert: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
 };
 
 const tierLabels = {
-  1: 'Basic',
-  2: 'Standard',
-  3: 'Premium'
+  basic: 'basic',
+  advanced: 'advanced',
+  expert: 'expert'
 };
 
-export const GigCard = ({
+export const GigCard = ({ id, title, description, tier, price_range, start_date, end_date, thumbnail, role, user }: GigCardProps) => {
+  const router = useRouter();
+
+  return (
+    <div
+      className={`group relative flex h-full flex-col overflow-hidden rounded-xl border ${'border-gray-700/50'} ${'bg-gray-800/50'} transition-all duration-300 ${'hover:border-gray-600 hover:shadow-gray-900/20'}`}
+    >
+      {thumbnail && (
+        <div className="relative h-48 overflow-hidden">
+          <Image src={thumbnail} alt={title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
+          <div className="absolute top-3 right-3">
+            <Badge variant="outline" className={`${tierColors[tier]} border-2 font-medium capitalize backdrop-blur-sm`}>
+              {tierLabels[tier]} Tier
+            </Badge>
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-1 flex-col p-5">
+        <div className="mb-3 flex items-start justify-between">
+          <div className="flex-1">
+            <Link href={`/gigs/${id}`} className="group-hover:text-blue-400">
+              <h3 className="text-md mb-1 line-clamp-2 font-bold text-white capitalize transition-colors">{title}</h3>
+            </Link>
+            <p className="text-sm text-gray-400">
+              ${price_range.min} - ${price_range.max}
+            </p>
+          </div>
+        </div>
+
+        <p className="mb-4 line-clamp-3 text-sm text-gray-300">{description}</p>
+
+        <div className={cn('mt-auto grid gap-2 border-t border-gray-700/50 pt-4', role === 'user' ? 'grid-cols-2' : 'grid-cols-3')}>
+          <div className="flex items-center space-x-2">
+            <div className="flex size-8 items-center justify-center rounded-full bg-blue-900/30">
+              <Clock className="size-4 text-blue-400" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-400">Delivery</p>
+              <p className="text-xs text-white">{formatDate(end_date)}</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="flex size-8 items-center justify-center rounded-full bg-blue-900/30">
+              <MapPin className="size-4 text-blue-400" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-400">Bids</p>
+              <p className="text-xs text-white">1</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-gray-700/50 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-blue-500">
+              <Image src={user.profile_url} alt={user.first_name} width={36} height={36} className="h-full w-full object-cover" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-white">{user.first_name}</p>
+              <div className="flex items-center space-x-1">
+                <Star className="size-2 fill-amber-400 text-amber-400" />
+                <span className="text-xs text-gray-400">1 (5)</span>
+              </div>
+            </div>
+          </div>
+          <Button
+            onClick={() => router.push(`/gigs/${id}`)}
+            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500"
+          >
+            Place Bid
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const GigProviderCard = ({
   id,
   title,
   tier,
@@ -52,86 +145,166 @@ export const GigCard = ({
   reviewCount,
   imageUrl = '/placeholder-gig.jpg',
   deliveryTime = '3 Days',
-  isFavorite = false,
-  onFavoriteToggle,
-  role
-}: GigCardProps) => {
+  role,
+  isActive = false,
+  activeStatus,
+  bidCount = 0,
+  averageBid = 0,
+  highestBid = 0
+}: GigProviderCardProps) => {
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-gray-700/50 bg-gray-800/50 transition-all duration-300 hover:border-gray-600 hover:shadow-lg hover:shadow-gray-900/20">
+    <div
+      className={`group relative flex h-full flex-col overflow-hidden rounded-xl border ${isActive ? 'border-blue-500/50' : 'border-gray-700/50'} ${
+        isActive ? 'bg-blue-900/10' : 'bg-gray-800/50'
+      } transition-all duration-300 ${
+        isActive ? 'hover:border-blue-400 hover:shadow-blue-500/20' : 'hover:border-gray-600 hover:shadow-gray-900/20'
+      }`}
+    >
+      {isActive && <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400" />}
+      {isActive && activeStatus && (
+        <div className="absolute top-2 right-2 left-2 flex items-center gap-2 bg-gray-800/50 p-2 backdrop-blur-sm">
+          <div className="flex-1">
+            <Badge
+              variant="outline"
+              className={`px-3 py-1 text-xs font-medium ${
+                activeStatus === 'accepted'
+                  ? 'border-green-500/50 text-green-400'
+                  : activeStatus === 'running'
+                    ? 'border-yellow-500/50 text-yellow-400'
+                    : 'border-emerald-500/50 text-emerald-400'
+              }`}
+            >
+              {activeStatus === 'accepted' ? 'Accepted' : activeStatus === 'running' ? 'Running' : 'Completed'}
+            </Badge>
+          </div>
+          {activeStatus === 'running' && (
+            <div className="flex-1">
+              <div className="flex items-center justify-end gap-2">
+                <div className="h-2 w-20 rounded-full bg-gray-700/50">
+                  <div className="h-2 w-12 rounded-full bg-blue-400" />
+                </div>
+                <span className="text-xs text-gray-400">60% Complete</span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
       <div className="relative h-48 overflow-hidden">
         <Image src={imageUrl} alt={title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
         <div className="absolute top-3 right-3">
-          <Badge variant="outline" className={`${tierColors[tier]} border-2 font-medium backdrop-blur-sm`}>
+          {/* <Badge variant="outline" className={`${tierColors[tier]} border-2 font-medium backdrop-blur-sm`}>
             {tierLabels[tier]} Tier
-          </Badge>
+          </Badge> */}
         </div>
       </div>
 
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-3 flex items-start justify-between">
-          <Link href={`/gigs/${id}`} className="group-hover:text-blue-400">
-            <h3 className="mb-2 line-clamp-2 text-lg font-bold text-white transition-colors">{title}</h3>
-          </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-gray-400 hover:bg-transparent hover:text-rose-500"
-            onClick={() => onFavoriteToggle?.(id)}
-          >
-            <Heart className={`h-5 w-5 ${isFavorite ? 'fill-rose-500 text-rose-500' : ''}`} />
-          </Button>
+          <div className="flex-1">
+            <Link href={`/gigs/${id}`} className="group-hover:text-blue-400">
+              <h3 className="text-md mb-1 line-clamp-2 font-bold text-white transition-colors">{title}</h3>
+            </Link>
+            <p className="text-sm text-gray-400">${price}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {role === 'provider' && isActive && (
+              <Badge variant="outline" className="border-green-500/50 text-green-400">
+                Active
+              </Badge>
+            )}
+          </div>
         </div>
 
-        <p className="mb-4 line-clamp-3 text-gray-300">
-          I'm a college student struggling with my calculus assignment and need help understanding derivatives and integrals. The assignment is due in
-          2 days and I really need someone who can explain the concepts clearly and help me solve the problems.
+        <p className="mb-4 line-clamp-3 text-sm text-gray-300">
+          {title === 'Need help with calculus homework - derivatives and integrals'
+            ? 'I need help with understanding derivatives and integrals. The assignment is due in 2 days and I need someone who can explain the concepts clearly.'
+            : title === 'Web Development for E-commerce Store'
+              ? 'Looking for a skilled web developer to build an e-commerce store with modern UI and smooth checkout process.'
+              : title === 'Mobile App UI/UX Design'
+                ? 'Need a professional UI/UX designer to create an intuitive and user-friendly mobile app interface.'
+                : 'Need help with calculus homework - derivatives and integrals'}
         </p>
 
-        <div className="mt-auto grid grid-cols-2 gap-4 border-t border-gray-700/50 pt-4">
+        <div className={cn('mt-auto grid gap-2 border-t border-gray-700/50 pt-4', role === 'user' ? 'grid-cols-2' : 'grid-cols-3')}>
           <div className="flex items-center space-x-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-900/30">
-              <DollarSign className="h-5 w-5 text-blue-400" />
+            <div className="flex size-8 items-center justify-center rounded-full bg-blue-900/30">
+              <Clock className="size-4 text-blue-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Budget</p>
-              <p className="font-medium text-white">${price}</p>
+              <p className="text-xs text-gray-400">Delivery</p>
+              <p className="text-xs text-white">{deliveryTime}</p>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-900/30">
-              <Clock className="h-5 w-5 text-purple-400" />
+          {role === 'user' ? (
+            <div className="flex items-center space-x-2">
+              <div className="flex size-8 items-center justify-center rounded-full bg-purple-900/30">
+                <Star className="size-4 text-purple-400" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-400">Rating</p>
+                <div className="flex items-center gap-1">
+                  <Star className="size-3 fill-amber-400 text-amber-400" />
+                  <span className="text-xs text-white">{rating}</span>
+                  <span className="text-xs text-gray-400">({reviewCount})</span>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-400">Delivery</p>
-              <p className="font-medium text-white">{deliveryTime}</p>
-            </div>
-          </div>
+          ) : (
+            <>
+              <div className="flex items-center space-x-2">
+                <div className="flex size-8 items-center justify-center rounded-full bg-blue-900/30">
+                  <MapPin className="size-4 text-blue-400" />
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">Bids</p>
+                  <p className="text-xs text-white">{bidCount}</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="flex size-8 items-center justify-center rounded-full bg-purple-900/30">
+                  <DollarSign className="size-4 text-purple-400" />
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">Average Bid</p>
+                  <p className="text-xs text-white">${averageBid}</p>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
       <div className="border-t border-gray-700/50 p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-blue-500">
-              <Image src={imageUrl} alt={providerName} width={36} height={36} className="h-full w-full object-cover" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-white">{providerName}</p>
-              <div className="flex items-center space-x-1">
-                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                <span className="text-xs text-gray-400">
-                  {rating} ({reviewCount})
-                </span>
-              </div>
-            </div>
-          </div>
-
           {role === 'user' ? (
-            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500">Place Bid</Button>
+            <>
+              <div className="flex items-center space-x-3">
+                <div className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-blue-500">
+                  <Image src={imageUrl} alt={providerName} width={36} height={36} className="h-full w-full object-cover" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-white">{providerName}</p>
+                  <div className="flex items-center space-x-1">
+                    <Star className="size-2 fill-amber-400 text-amber-400" />
+                    <span className="text-xs text-gray-400">
+                      {rating} ({reviewCount})
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500">Place Bid</Button>
+            </>
           ) : (
-            <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-900/20 hover:text-red-400">
-              <Trash2 className="mr-2 h-4 w-4" /> Remove
-            </Button>
+            <div className="flex items-center gap-2">
+              {isActive && activeStatus === 'running' && (
+                <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-900/20 hover:text-green-400">
+                  Complete
+                </Button>
+              )}
+              <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-900/20 hover:text-red-400">
+                <Trash2 className="mr-2 h-4 w-4" /> Remove
+              </Button>
+            </div>
           )}
         </div>
       </div>
@@ -141,84 +314,38 @@ export const GigCard = ({
 
 const GigsPage = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
+
+  const [search, setSearch] = useState('');
+
   const user = useSelector((state: RootState) => state.user);
+  const { gigs, loading, pagination, ownGigs } = useSelector((state: RootState) => state.gigs);
 
-  const toggleFavorite = (id: string) => {
-    console.log(`Toggled favorite for gig ${id}`);
-  };
+  useEffect(() => {
+    dispatch(gigService.clearGigs() as any);
 
-  const gigs: GigCardProps[] = [
-    {
-      id: '1',
-      title: 'Need help with calculus homework - derivatives and integrals',
-      tier: 1 as const,
-      price: 45,
-      providerName: 'Alex Johnson',
-      providerId: '1',
-      rating: 4.5,
-      reviewCount: 24,
-      imageUrl: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=1974&auto=format&fit=crop',
-      deliveryTime: '3 Days',
-      isFavorite: false,
-      onFavoriteToggle: toggleFavorite
-    },
-    {
-      id: '2',
-      title: 'Web Development for E-commerce Store',
-      tier: 2 as const,
-      price: 250,
-      providerName: 'Sarah Miller',
-      providerId: '2',
-      rating: 4.8,
-      reviewCount: 156,
-      imageUrl: 'https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop',
-      deliveryTime: '7 Days',
-      isFavorite: true,
-      onFavoriteToggle: toggleFavorite
-    },
-    {
-      id: '3',
-      title: 'Mobile App UI/UX Design',
-      tier: 3 as const,
-      price: 500,
-      providerName: 'Michael Chen',
-      providerId: '3',
-      rating: 4.9,
-      reviewCount: 89,
-      imageUrl: 'https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop',
-      deliveryTime: '14 Days',
-      isFavorite: false,
-      onFavoriteToggle: toggleFavorite
-    },
-    {
-      id: '1',
-      title: 'Need help with calculus homework - derivatives and integrals',
-      tier: 1,
-      price: 10,
-      providerName: 'John Doe',
-      providerId: '1',
-      rating: 4.5,
-      reviewCount: 10,
-      imageUrl: 'https://images.pexels.com/photos/31023938/pexels-photo-31023938.jpeg',
-      deliveryTime: '3 Days',
-      isFavorite: false,
-      onFavoriteToggle: () => {}
-    },
-    {
-      id: '1',
-      title: 'Need help with calculus homework - derivatives and integrals',
-      tier: 1,
-      price: 10,
-      providerName: 'John Doe',
-      providerId: '1',
-      rating: 4.5,
-      reviewCount: 10,
-      imageUrl: 'https://images.pexels.com/photos/31023938/pexels-photo-31023938.jpeg',
-      deliveryTime: '3 Days',
-      isFavorite: false,
-      onFavoriteToggle: () => {}
+    return () => {
+      dispatch(gigService.clearGigs() as any);
+    };
+  }, [dispatch, search]);
+
+  const loadMore = useCallback(() => {
+    if (pagination.page < pagination.totalPages) {
+      dispatch(gigService.getGigs({ page: pagination.page + 1, search }) as any);
     }
-  ];
+  }, [pagination.page, pagination.totalPages, search]);
+
+  useDebouncedEffect(
+    () => {
+      dispatch(gigService.getGigs({ page: 1, search }) as any);
+    },
+    500,
+    [search]
+  );
+
+  const handleSearch = () => {
+    dispatch(gigService.getGigs({ page: 1, search }) as any);
+  };
 
   return (
     <DashboardLayout>
@@ -243,59 +370,55 @@ const GigsPage = () => {
 
           {/* Search and Filter Bar */}
           <div className="mb-8 rounded-xl bg-gray-800/50 p-4 backdrop-blur-sm sm:p-6">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 md:flex-row">
               <div className="relative w-full">
                 <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400 sm:left-4 sm:h-5 sm:w-5" />
                 <Input
                   placeholder="Search gigs by keyword, skill, or category..."
                   className="w-full rounded-lg border-gray-700 bg-gray-700/50 py-4 pr-3 pl-10 text-sm text-white placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 sm:py-6 sm:pr-4 sm:pl-12 sm:text-base"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
 
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-                <Select>
-                  <SelectTrigger className="w-full border-gray-700 bg-gray-700/50 py-4 text-sm text-white sm:min-w-[180px] sm:py-6 sm:text-base">
-                    <SelectValue placeholder="All Categories" />
-                  </SelectTrigger>
-                  <SelectContent className="border-gray-700 bg-gray-800">
-                    <SelectItem value="all">All Categories</SelectItem>
-                    <SelectItem value="web">Web Development</SelectItem>
-                    <SelectItem value="mobile">Mobile Development</SelectItem>
-                    <SelectItem value="design">Design & Creative</SelectItem>
-                    <SelectItem value="writing">Writing & Translation</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4">
+                <Button
+                  size="lg"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-4 text-sm font-medium text-white hover:from-blue-500 hover:to-purple-500 sm:w-auto sm:px-6 sm:py-6 sm:text-base"
+                  onClick={handleSearch}
+                >
+                  <Search className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  Search
+                </Button>
 
-                <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
+                {user?.role === 'provider' && (
                   <Button
-                    size="lg"
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-4 text-sm font-medium text-white hover:from-blue-500 hover:to-purple-500 sm:w-auto sm:px-6 sm:py-6 sm:text-base"
+                    onClick={() => router.push('/gigs/new')}
                   >
-                    <Search className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    Search
+                    <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="sm:hidden">Create Gig</span>
+                    <span className="hidden sm:inline">Create New Gig</span>
                   </Button>
-
-                  {user?.role === 'provider' && (
-                    <Button
-                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-4 text-sm font-medium text-white hover:from-blue-500 hover:to-purple-500 sm:w-auto sm:px-6 sm:py-6 sm:text-base"
-                      onClick={() => router.push('/gigs/new')}
-                    >
-                      <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                      <span className="sm:hidden">Create Gig</span>
-                      <span className="hidden sm:inline">Create New Gig</span>
-                    </Button>
-                  )}
-                </div>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Gig Grid */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {gigs.map((gig, index) => (
-              <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} onFavoriteToggle={toggleFavorite} />
-            ))}
-          </div>
+          {user.role === 'user' && (
+            <InfiniteScroll
+              dataLength={gigs.length}
+              next={loadMore}
+              hasMore={pagination.page < pagination.totalPages}
+              loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
+              scrollThreshold={0.9}
+              className="col-span-2 grid grid-cols-1 gap-6 md:grid-cols-2"
+            >
+              {gigs.map((gig, index) => (
+                <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />
+              ))}
+            </InfiniteScroll>
+          )}
 
           {/* Empty State */}
           {gigs.length === 0 && (

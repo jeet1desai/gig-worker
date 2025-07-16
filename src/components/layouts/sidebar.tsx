@@ -1,6 +1,6 @@
 'use client';
 
-import { PUBLIC_ROUTE } from '@/constants/app-routes';
+import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Images } from '@/lib/images';
 import { cn } from '@/lib/utils';
@@ -22,9 +22,7 @@ interface SidebarProps {
     href: string;
     sub_navigation: Array<{
       name: string;
-      icon: ForwardRefExoticComponent<
-        Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
-      >;
+      icon: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>;
       href: string;
     }>;
   }>;
@@ -68,9 +66,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
   }, [isMobile]);
 
   useEffect(() => {
-    const matchedMenu = navigation_menu.find((item) =>
-      item.sub_navigation?.some((sub) => isPathMatch(sub.href))
-    );
+    const matchedMenu = navigation_menu.find((item) => item.sub_navigation?.some((sub) => isPathMatch(sub.href)));
     if (matchedMenu) {
       setOpenMenus((prev) => ({ ...prev, [matchedMenu.name]: true }));
     }
@@ -140,19 +136,9 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
                   )}
                   {hasSubNav &&
                     (isSubOpen ? (
-                      <ChevronUp
-                        className={cn(
-                          'h-4 w-4 text-slate-400',
-                          isPathMatch(item.href) && 'text-white'
-                        )}
-                      />
+                      <ChevronUp className={cn('h-4 w-4 text-slate-400', isPathMatch(item.href) && 'text-white')} />
                     ) : (
-                      <ChevronDown
-                        className={cn(
-                          'h-4 w-4 text-slate-400',
-                          isPathMatch(item.href) && 'text-white'
-                        )}
-                      />
+                      <ChevronDown className={cn('h-4 w-4 text-slate-400', isPathMatch(item.href) && 'text-white')} />
                     ))}
                 </button>
 
