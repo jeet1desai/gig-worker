@@ -30,10 +30,7 @@ export async function getSubscription(subscriptionId: string, fields?: QueryFiel
   }
 }
 
-export async function cancelSubscription(
-  subscriptionId: string,
-  reason: PAYPAL_SUBSCRIPTION_CANCEL_REASON
-) {
+export async function cancelSubscription(subscriptionId: string, reason: PAYPAL_SUBSCRIPTION_CANCEL_REASON) {
   const accessToken = await getPayPalAccessToken();
 
   try {
@@ -56,8 +53,6 @@ export async function cancelSubscription(
       return false;
     }
   } catch (err: any) {
-    throw new Error(
-      `Failed to cancel PayPal subscription: ${err.response?.data?.message || err.message}`
-    );
+    throw new Error(`Failed to cancel PayPal subscription: ${err.response?.data?.message || err.message}`);
   }
 }

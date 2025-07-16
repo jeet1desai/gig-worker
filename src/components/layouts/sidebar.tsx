@@ -1,6 +1,6 @@
 'use client';
 
-import { PUBLIC_ROUTE } from '@/constants/app-routes';
+import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Images } from '@/lib/images';
 import { cn } from '@/lib/utils';
@@ -45,7 +45,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
   };
 
   const redirectToHome = useCallback(() => {
-    router.push(PUBLIC_ROUTE.HOME);
+    router.push(PRIVATE_ROUTE.DASHBOARD);
   }, []);
 
   useEffect(() => {
@@ -86,7 +86,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
           </button>
         </div>
 
-        <nav className="flex-1 space-y-2 px-3 py-6">
+        <nav className="flex-1 space-y-2 px-3 pt-3 pb-6">
           {navigation_menu.map((item) => (
             <Link
               key={item.name}

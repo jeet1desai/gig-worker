@@ -11,10 +11,7 @@ import { getPlanByPlanId } from '@/lib/server/subscriptionPlans';
 import { subscribeSchema } from '@/schemas/be/subscription';
 import { COMMON_ERROR_MESSAGES, VERIFICATION_CODES } from '@/constants';
 import { FREE_PLAN_ID } from '@/constants/plans';
-import {
-  PAYPAL_SUBSCRIPTION_CANCEL_REASON,
-  PAYPAL_SUBSCRIPTION_STATUS
-} from '@/enums/be/paypal';
+import { PAYPAL_SUBSCRIPTION_CANCEL_REASON, PAYPAL_SUBSCRIPTION_STATUS } from '@/enums/be/paypal';
 
 export async function POST(req: Request) {
   try {
@@ -36,11 +33,7 @@ export async function POST(req: Request) {
           message: 'Subscription already active for this plan',
           data: safeJson(existing)
         });
-      if (existing.subscription_id)
-        await cancelSubscription(
-          existing.subscription_id,
-          PAYPAL_SUBSCRIPTION_CANCEL_REASON.SWITCHING_PLAN
-        );
+      if (existing.subscription_id) await cancelSubscription(existing.subscription_id, PAYPAL_SUBSCRIPTION_CANCEL_REASON.SWITCHING_PLAN);
       await prisma.subscription.update({
         where: { id: existing.id },
         data: { status: SUBSCRIPTION_STATUS.cancelled }
@@ -148,8 +141,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     if (error instanceof ValidationError) {
       const fieldErrors: Record<string, string> = {};
-      for (const issue of error.inner)
-        issue.path && (fieldErrors[issue.path] = issue.message);
+      for (const issue of error.inner) issue.path && (fieldErrors[issue.path] = issue.message);
       return errorResponse({
         code: VERIFICATION_CODES.VALIDATION_ERROR,
         message: COMMON_ERROR_MESSAGES.VALIDATION_ERROR,
