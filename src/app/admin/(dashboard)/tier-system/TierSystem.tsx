@@ -17,6 +17,7 @@ const TierSystem = () => {
   const [activeTab, setActiveTab] = useState('basic');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRating, setFilterRating] = useState('all');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedGig, setSelectedGig] = useState<any | null>(null);
   const [selectedTierKey, setSelectedTierKey] = useState<string | null>(null);
   const [editedData, setEditedData] = useState({
@@ -118,15 +119,26 @@ const TierSystem = () => {
         </div>
 
         {/* Tier Management Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 border-gray-700 bg-gray-900 lg:w-[600px]">
-            <TabsTrigger value="basic" className="text-sm font-medium data-[state=active]:bg-gray-800 data-[state=active]:text-white">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex space-y-6">
+          <TabsList className="gap-4 rounded-full bg-gray-800 p-4">
+            <TabsTrigger
+              value="basic"
+              className="text-sx rounded-full px-6 py-3 font-semibold text-gray-300 transition-all duration-300 hover:bg-gray-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg"
+            >
               Basic Tier
             </TabsTrigger>
-            <TabsTrigger value="advanced" className="text-sm font-medium data-[state=active]:bg-gray-800 data-[state=active]:text-white">
+
+            <TabsTrigger
+              value="advanced"
+              className="text-sx rounded-full px-6 py-3 font-semibold text-gray-300 transition-all duration-300 hover:bg-gray-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg"
+            >
               Advanced Tier
             </TabsTrigger>
-            <TabsTrigger value="expert" className="text-sm font-medium data-[state=active]:bg-gray-800 data-[state=active]:text-white">
+
+            <TabsTrigger
+              value="expert"
+              className="text-sx rounded-full px-6 py-3 font-semibold text-gray-300 transition-all duration-300 hover:bg-gray-700 data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg"
+            >
               Expert Tier
             </TabsTrigger>
           </TabsList>
@@ -368,12 +380,46 @@ const TierSystem = () => {
                                           >
                                             Edit
                                           </Button>
-                                          <Button variant="outline" className="bg-red-800 text-gray-300 hover:bg-red-400">
+                                          <Button
+                                            variant="outline"
+                                            className="bg-red-800 text-gray-300 hover:bg-red-400"
+                                            onClick={() => setShowDeleteConfirm(true)}
+                                          >
                                             Delete
                                           </Button>
                                         </div>
                                       </>
                                     )}
+                                  </DialogContent>
+                                </Dialog>
+                                <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+                                  <DialogContent className="max-w-sm rounded-xl border border-gray-700 bg-gray-900 text-white shadow-lg backdrop-blur-md backdrop-brightness-75">
+                                    <DialogHeader>
+                                      <DialogTitle className="text-lg text-white">Confirm Deletion</DialogTitle>
+                                      <DialogDescription className="text-sm text-gray-400">
+                                        Are you sure you want to delete <span className="font-semibold text-white">{selectedGig?.title}</span>?
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="mt-4 flex justify-end gap-3">
+                                      <Button
+                                        variant="outline"
+                                        className="bg-gray-800 text-gray-300"
+                                        onClick={() => {
+                                          setShowDeleteConfirm(false);
+                                          setSelectedGig(null);
+                                        }}
+                                      >
+                                        Cancel
+                                      </Button>
+                                      <Button
+                                        className="bg-red-700 text-white hover:bg-red-600"
+                                        onClick={() => {
+                                          setShowDeleteConfirm(false);
+                                        }}
+                                      >
+                                        Confirm
+                                      </Button>
+                                    </div>
                                   </DialogContent>
                                 </Dialog>
                               </div>
