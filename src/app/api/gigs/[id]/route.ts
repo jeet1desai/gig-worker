@@ -168,8 +168,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
             email: true,
             profile_url: true,
             created_at: true,
-            updated_at: true,
-            role: true
+            is_verified: true
           }
         }
       }

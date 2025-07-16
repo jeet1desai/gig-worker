@@ -128,9 +128,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                 <div className="flex cursor-pointer items-center space-x-2 border-l border-slate-700 pl-4">
                   <div className="hidden text-right sm:block">
                     <p className="max-w-[120px] truncate text-sm font-medium text-white">{session?.user.name}</p>
-                    <p className="hidden text-xs text-slate-400 md:block">
-                      {session?.user.role.charAt(0).toUpperCase() + session?.user.role.slice(1)}
-                    </p>
+                    <p className="text-xs text-slate-400">{session?.user.role.charAt(0).toUpperCase() + session?.user.role.slice(1)}</p>
                   </div>
                   <div className="relative">
                     <Avatar className="h-8 w-8 rounded-xl object-cover ring-2 ring-blue-500/20 transition-all duration-200 hover:scale-105 hover:ring-blue-500/40">
