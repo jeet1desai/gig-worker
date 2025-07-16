@@ -23,7 +23,18 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
+          where: { email: credentials.email },
+          include: {
+            subscriptions: {
+              where: {
+                status: 'active'
+              },
+              take: 1,
+              select: {
+                type: true
+              }
+            }
+          }
         });
 
         if (!user || !user.password) return null;
@@ -35,13 +46,6 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email not verified');
         }
 
-        if (user.is_first_login) {
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { is_first_login: false }
-          });
-        }
-
         return {
           id: String(user.id),
           email: user.email,
@@ -51,7 +55,7 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
           sign_up_type: user.sign_up_type || 'email',
           is_verified: user.is_verified ?? false,
-          is_first_login: user.is_first_login ?? false
+          subscription: user.subscriptions?.[0]?.type || null
         };
       }
     }),
@@ -107,22 +111,21 @@ export const authOptions: NextAuthOptions = {
           profile_url: profile.picture,
           role: 'user',
           is_verified: true,
-          sign_up_type: 'google',
-          is_first_login: true
+          sign_up_type: 'google'
         };
       }
     })
   ],
 
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
         token.role = user.role || 'user';
-        token.is_first_login = user.is_first_login ?? false;
         token.first_name = user.first_name || '';
         token.last_name = user.last_name || '';
+        token.subscription = user.subscription || null;
 
         const payload = {
           id: user.id,
@@ -137,7 +140,18 @@ export const authOptions: NextAuthOptions = {
         // If Google login
         if (account?.provider === 'google' && user.email) {
           const existingUser = await prisma.user.findUnique({
-            where: { email: user.email }
+            where: { email: user.email },
+            include: {
+              subscriptions: {
+                where: {
+                  status: 'active'
+                },
+                take: 1,
+                select: {
+                  type: true
+                }
+              }
+            }
           });
           if (!existingUser) {
             const newUser: any = await prisma.user.create({
@@ -149,26 +163,32 @@ export const authOptions: NextAuthOptions = {
                 sign_up_type: 'google',
                 is_verified: true,
                 role: 'user',
-                password: '',
-                is_first_login: false
+                password: ''
               }
             });
 
             token.id = String(newUser.id);
+            token.email = newUser.email;
             token.role = newUser.role;
-            token.is_first_login = true;
             token.first_name = newUser.first_name || '';
             token.last_name = newUser.last_name || '';
+            token.subscription = null;
           } else {
             token.id = String(existingUser.id);
+            token.email = user.email;
             token.role = existingUser.role;
-            token.is_first_login = false;
             token.first_name = existingUser.first_name || '';
             token.last_name = existingUser.last_name || '';
+            token.subscription = existingUser.subscriptions?.[0]?.type || null;
           }
         }
         token.iat = Math.floor(Date.now() / 1000);
         token.exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
+      }
+
+      if (trigger === 'update') {
+        if (session?.subscription) token.subscription = session.subscription;
+        if (session?.role) token.role = session.role;
       }
       return token;
     },
@@ -179,8 +199,8 @@ export const authOptions: NextAuthOptions = {
         session.user.name = token.first_name + ' ' + token.last_name;
         session.user.role = token.role;
         session.accessToken = token.customAccessToken;
+        session.user.subscription = token.subscription || null;
         session.expires = new Date(token.exp * 1000).toISOString();
-        session.user.is_first_login = token.is_first_login;
       }
       return session;
     }

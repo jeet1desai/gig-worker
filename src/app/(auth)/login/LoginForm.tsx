@@ -40,7 +40,7 @@ export default function LoginForm() {
   };
 
   const handleGoogleLogin = useCallback(() => {
-    signIn('google', { callbackUrl: PRIVATE_ROUTE.DASHBOARD });
+    signIn('google', { callbackUrl: PRIVATE_ROUTE.AUTH_CALLBACK_HANDLER });
   }, []);
 
   const onSubmit = async (values: LoginFormValues) => {
@@ -60,12 +60,12 @@ export default function LoginForm() {
         setLoading(false);
       } else {
         const session = await getSession();
-
-        if (session?.user?.is_first_login) {
-          router.replace(PRIVATE_ROUTE.PLANS);
-        } else {
+        if (session?.user?.subscription) {
           router.replace(PRIVATE_ROUTE.DASHBOARD);
+        } else {
+          router.replace(PRIVATE_ROUTE.PLANS);
         }
+        // router.refresh();
       }
     } catch (err: any) {
       toast.error(err?.message || COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE);

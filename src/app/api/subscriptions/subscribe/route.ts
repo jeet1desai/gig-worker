@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       const price = subscription.billing_info.last_payment.amount.value ?? '0.00',
         expires = subscription.billing_info.next_billing_time;
 
-      const [sub] = await prisma.$transaction([
+      const [sub, updatedUser] = await prisma.$transaction([
         prisma.subscription.upsert({
           where: { subscription_id: subscription.id },
           update: {
@@ -98,7 +98,10 @@ export async function POST(req: Request) {
       ]);
       return successResponse({
         message: 'Subscription created successfully',
-        data: safeJson(sub)
+        data: {
+          subscription: safeJson(sub),
+          user: safeJson(updatedUser)
+        }
       });
     }
 
@@ -117,7 +120,7 @@ export async function POST(req: Request) {
         statusCode: HttpStatusCode.BAD_REQUEST
       });
 
-    const [sub] = await prisma.$transaction([
+    const [sub, updatedUser] = await prisma.$transaction([
       prisma.subscription.create({
         data: {
           user_id: BigInt(user.id),
@@ -136,7 +139,10 @@ export async function POST(req: Request) {
     ]);
     return successResponse({
       message: 'Subscription created successfully',
-      data: safeJson(sub)
+      data: {
+        subscription: safeJson(sub),
+        user: safeJson(updatedUser)
+      }
     });
   } catch (error: any) {
     if (error instanceof ValidationError) {
