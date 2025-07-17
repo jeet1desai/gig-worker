@@ -3,7 +3,7 @@ import {
   getAllCreatedGigsNumber,
   getAllFreelancersNumber,
   getAllPositiveReviewsNumber
-} from '@/lib/server/cmsLandingPageStats';
+} from '@/lib/server/landingPageCounts';
 
 async function Statics() {
   const totalFreelancers = await getAllFreelancersNumber();

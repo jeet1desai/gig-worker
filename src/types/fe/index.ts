@@ -50,45 +50,23 @@ export interface SubscriptionPlanPayload {
   maxBids: number;
   subscriptionType: string;
 }
-export interface FAQsPayload {
-  id?: string;
-  question: string;
-  answer: string;
-}
 
-export interface FAQ {
-  id: string;
-  question: string;
-  answer: string;
-  [key: string]: any;
-}
-
-export interface FAQsPlanResponse {
+export interface CMSModuleResponse {
   success: boolean;
-  data: FAQ[];
+  data: ContentItem[];
   message: string;
   [key: string]: any;
 }
 
-export interface WorkingStepPayload {
-  id?: string;
-  title: string;
-  description: string;
-  order: number;
-  color: string;
-}
-export interface WorkingStep {
+export interface ContentItem {
   id: string;
+  type: 'faq' | 'step' | 'contact' | 'terms' | 'privacy';
   title: string;
-  description: string;
-  order: number;
-  color: string;
-  [key: string]: any;
-}
-export interface WorkingStepsResponse {
-  success: boolean;
-  data: WorkingStep[];
-  message: string;
+  description?: string;
+  content: string;
+  order?: number;
+  isVisible: boolean;
+  color?: string;
   [key: string]: any;
 }
 

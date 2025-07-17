@@ -249,3 +249,13 @@ export const WORKING_STEPS_MOVE_DIRECTION = {
   up: 'up',
   down: 'down'
 };
+
+export const contentTypes = {
+  faq: 'FAQ',
+  step: 'Steps',
+  contact: 'Contact Us',
+  terms: 'Terms & Conditions',
+  privacy: 'Privacy Policy'
+};
+
+export const singleEntryTypes = ['contact', 'terms', 'privacy'];

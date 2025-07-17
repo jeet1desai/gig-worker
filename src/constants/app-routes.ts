@@ -42,13 +42,16 @@ export enum PUBLIC_API_ROUTES {
   RESET_PASSWORD_API = '/auth/reset-password',
   API_FORGOT_PASSWORD = '/auth/forgot-password',
   WEBHOOK_PAYPAL = '/api/webhook/paypal',
-  CMS_FAQS_API = '/faqs',
-  CMS_STEPS_API = '/cms_steps'
+  CMS_PARENT_API = 'cms',
+  CMS_TYPE_API = 'cms/type',
+  CMS_CONTENT_ID_API = 'cms/content_id',
+  LANDING_PAGE_FAQS_LIST_API = 'faqs',
+  CMS_STEPS_API = 'cms/type/step'
 }
 
 export enum PRIVATE_API_ROUTES {
   SUBSCRIPTION_PLANS_API = '/subscriptions/plans',
-  SUBSCRIPTION_CREATE_API = '/subscriptions/subscribe',
+  SUBSCRIPTION_CREATE_API = '/subscriptions/subscribe'
 }
 
 export const excludedPublicRoutes = [

@@ -1,7 +1,8 @@
 import React from 'react';
+import CMSModule from './CMSModule';
 
-function LandingPageCMS() {
-  return <div className="text-secondary-foreground">Landing Page CMS Page</div>;
+function CMS() {
+  return <CMSModule />;
 }
 
-export default LandingPageCMS;
+export default CMS;
