@@ -4,7 +4,7 @@ import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Images } from '@/lib/images';
 import { cn } from '@/lib/utils';
-import { LogOut, ChevronLeft, ChevronDown, LucideProps, ChevronUp } from 'lucide-react';
+import { LogOut, ChevronLeft, LucideProps } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -20,11 +20,6 @@ interface SidebarProps {
     name: string;
     icon: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>;
     href: string;
-    sub_navigation: Array<{
-      name: string;
-      icon: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>;
-      href: string;
-    }>;
   }>;
 }
 
@@ -32,11 +27,8 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
   const isMobile = useIsMobile();
   const pathname = usePathname();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
-
-  const isPathMatch = (url: string) => pathname === url || pathname.startsWith(`${url}/`);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
 
   const handleLogout = useCallback(async () => {
     setIsLoading(true);
@@ -48,29 +40,19 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
     router.refresh();
   }, [router]);
 
-  const redirectToHome = useCallback(() => {
-    router.push(PUBLIC_ROUTE.HOME);
-  }, [router]);
-
-  const toggleSubMenu = (menuName: string) => {
-    setOpenMenus((prev) => ({
-      ...prev,
-      [menuName]: !prev[menuName]
-    }));
+  const isPathMatch = (itemUrl: string) => {
+    return pathname === itemUrl || pathname.startsWith(`${itemUrl}/`);
   };
+
+  const redirectToHome = useCallback(() => {
+    router.push(PRIVATE_ROUTE.DASHBOARD);
+  }, []);
 
   useEffect(() => {
     if (isMobile) {
       onToggle(true);
     }
   }, [isMobile]);
-
-  useEffect(() => {
-    const matchedMenu = navigation_menu.find((item) => item.sub_navigation?.some((sub) => isPathMatch(sub.href)));
-    if (matchedMenu) {
-      setOpenMenus((prev) => ({ ...prev, [matchedMenu.name]: true }));
-    }
-  }, [pathname, navigation_menu]);
 
   return (
     <div
@@ -104,85 +86,26 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
           </button>
         </div>
 
-        <nav className="flex-1 space-y-2 overflow-y-auto px-3 py-6">
-          {navigation_menu.map((item) => {
-            const hasSubNav = item.sub_navigation && item.sub_navigation.length > 0;
-            const isSubOpen = openMenus[item.name];
-
-            return (
-              <div key={item.name} className="relative">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (hasSubNav) {
-                      toggleSubMenu(item.name);
-                    } else {
-                      router.push(item.href);
-                    }
-                  }}
-                  className={cn(
-                    'group relative flex w-full items-center overflow-hidden rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200',
-                    isPathMatch(item.href)
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
-                      : 'text-slate-300 hover:scale-105 hover:bg-slate-700/50 hover:text-white hover:shadow-lg',
-                    collapsed ? 'justify-center px-2' : 'space-x-3'
-                  )}
-                >
-                  <item.icon className="relative z-10 h-5 w-5 flex-shrink-0" />
-                  {!collapsed && (
-                    <>
-                      <span className="relative z-10 flex-1 text-left">{item.name}</span>
-                    </>
-                  )}
-                  {hasSubNav &&
-                    (isSubOpen ? (
-                      <ChevronUp className={cn('h-4 w-4 text-slate-400', isPathMatch(item.href) && 'text-white')} />
-                    ) : (
-                      <ChevronDown className={cn('h-4 w-4 text-slate-400', isPathMatch(item.href) && 'text-white')} />
-                    ))}
-                </button>
-
-                {hasSubNav && isSubOpen && !collapsed && (
-                  <div className="mt-1 ml-6 space-y-1">
-                    {item.sub_navigation.map((subItem) => (
-                      <Link
-                        key={subItem.name}
-                        href={subItem.href}
-                        className={cn(
-                          'group flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
-                          isPathMatch(subItem.href)
-                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
-                            : 'text-slate-400 hover:bg-slate-700/40 hover:text-white'
-                        )}
-                      >
-                        <subItem.icon className="h-4 w-4 flex-shrink-0" />
-                        <span>{subItem.name}</span>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-
-                {hasSubNav && isSubOpen && collapsed && (
-                  <div className="mt-1 ml-2 space-y-1">
-                    {item.sub_navigation.map((subItem) => (
-                      <Link
-                        key={subItem.name}
-                        href={subItem.href}
-                        className={cn(
-                          'group flex items-center justify-start rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200',
-                          isPathMatch(subItem.href)
-                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
-                            : 'text-slate-400 hover:bg-slate-700/40 hover:text-white'
-                        )}
-                      >
-                        <subItem.icon className="mr-2 h-4 w-4 flex-shrink-0" />
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        <nav className="flex-1 space-y-2 px-3 pt-3 pb-6">
+          {navigation_menu.map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={cn(
+                'group relative flex items-center overflow-hidden rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200',
+                isPathMatch(item.href)
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
+                  : 'text-slate-300 hover:scale-105 hover:bg-slate-700/50 hover:text-white hover:shadow-lg',
+                collapsed ? 'justify-center px-2' : 'space-x-3'
+              )}
+            >
+              <item.icon className="relative z-10 h-5 w-5 flex-shrink-0" />
+              {!collapsed && <span className="relative z-10">{item.name}</span>}
+              {isPathMatch(item.href) && !collapsed && (
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-xl"></div>
+              )}
+            </Link>
+          ))}
         </nav>
 
         <div className="border-t border-slate-700/50 p-3">

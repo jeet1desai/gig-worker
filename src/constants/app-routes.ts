@@ -29,10 +29,8 @@ export enum PRIVATE_ROUTE {
   ADMIN_USERS_DASHBOARD_PATH = '/admin/users',
   ADMIN_GIGS_DASHBOARD_PATH = '/admin/gigs',
   ADMIN_TIER_SYSTEM_DASHBOARD_PATH = '/admin/tier-system',
-  ADMIN_CMS_FAQS_PATH = '/admin/cms/faqs',
-  ADMIN_CMS_STEPS_PATH = '/admin/cms/steps',
-  ADMIN_CMS_PATH = '/admin/cms',
-  ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH = '/admin/subscriptions'
+  ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH = '/admin/subscriptions',
+  ADMIN_CMS_PATH = '/admin/cms'
 }
 
 export enum PUBLIC_API_ROUTES {

@@ -28,53 +28,36 @@ export const DASHBOARD_NAVIGATION_MENU = [
   {
     name: 'Dashboard',
     icon: BarChart3,
-    href: PRIVATE_ROUTE.DASHBOARD,
-    sub_navigation: []
+    href: PRIVATE_ROUTE.DASHBOARD
   },
-  { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.GIGS, sub_navigation: [] }
+  { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.GIGS }
 ];
 
 export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
   {
     name: 'Tier System',
     icon: LayoutDashboard,
-    href: PRIVATE_ROUTE.ADMIN_TIER_SYSTEM_DASHBOARD_PATH,
-    sub_navigation: []
+    href: PRIVATE_ROUTE.ADMIN_TIER_SYSTEM_DASHBOARD_PATH
   },
   {
     name: 'Users',
     icon: Users2Icon,
-    href: PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH,
-    sub_navigation: []
+    href: PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH
   },
   {
     name: 'Gigs',
     icon: Briefcase,
-    href: PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH,
-    sub_navigation: []
+    href: PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH
   },
   {
     name: 'Subscription Plans',
     icon: PackagePlusIcon,
-    href: PRIVATE_ROUTE.ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH,
-    sub_navigation: []
+    href: PRIVATE_ROUTE.ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH
   },
   {
     name: 'CMS Module',
     icon: PanelRight,
-    href: PRIVATE_ROUTE.ADMIN_CMS_PATH,
-    sub_navigation: [
-      {
-        name: 'FAQs',
-        icon: CircleHelp,
-        href: PRIVATE_ROUTE.ADMIN_CMS_FAQS_PATH
-      },
-      {
-        name: 'Working Steps',
-        icon: List,
-        href: PRIVATE_ROUTE.ADMIN_CMS_STEPS_PATH
-      }
-    ]
+    href: PRIVATE_ROUTE.ADMIN_CMS_PATH
   }
 ];
 
