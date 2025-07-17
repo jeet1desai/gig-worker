@@ -1,7 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 
 type CommonModalProps = {
@@ -31,13 +37,24 @@ const CommonModal: React.FC<CommonModalProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent
-        className={cn('max-h-[90vh] overflow-y-auto rounded-xl bg-[#111] px-6 py-4 text-white sm:max-w-[600px]', className)}
+        className={cn(
+          'max-h-[90vh] overflow-y-auto rounded-xl bg-[#111] px-6 pt-5 pb-6 text-white sm:max-w-[600px]',
+          className
+        )}
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          {title && <DialogTitle className={cn('text-lg', classTitle)}>{title}</DialogTitle>}
-          {subtitle && <p className={cn('text-sm text-gray-400', classSubTitle)}>{subtitle}</p>}
+          {title && (
+            <DialogTitle className={cn('text-lg', classTitle)}>
+              {title}
+            </DialogTitle>
+          )}
+          {subtitle && (
+            <p className={cn('text-sm text-gray-400', classSubTitle)}>
+              {subtitle}
+            </p>
+          )}
         </DialogHeader>
         {children}
       </DialogContent>
