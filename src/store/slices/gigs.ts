@@ -34,6 +34,7 @@ const gigsSlice = createSlice({
     },
     clearGigs: (state) => {
       state.gigs = [];
+      state.ownGigs = [];
       state.pagination = DEFAULT_PAGINATION;
     }
   }
