@@ -23,10 +23,11 @@ interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
   role: 'user' | 'provider' | 'admin';
+  subscriptionType: 'free' | 'basic' | 'pro';
   onRoleChange: (role: 'user' | 'provider') => void;
 }
 
-export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps) {
+export function Header({ collapsed, onToggle, role, onRoleChange, subscriptionType }: SidebarProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -61,7 +62,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
           </div>
 
           <div className="flex items-center space-x-4">
-            {session?.user.role === 'provider' && (
+            {(subscriptionType === 'basic' || subscriptionType === 'pro') && session?.user.role === 'provider' && (
               <div className="flex items-center gap-1 rounded-xl bg-slate-700/50 p-1">
                 <Tooltip>
                   <TooltipTrigger asChild>

@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { setUserRole } from '@/store/slices/user';
 import { DASHBOARD_NAVIGATION_MENU } from '@/constants';
+import { useSession } from 'next-auth/react';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -16,7 +17,7 @@ interface DashboardLayoutProps {
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
+  const { data: session } = useSession();
   const dispatch = useDispatch();
   const { role } = useSelector((state: RootState) => state.user);
 
@@ -29,7 +30,13 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <Sidebar collapsed={sidebarCollapsed} onToggle={(collapsed) => setSidebarCollapsed(collapsed)} navigation_menu={DASHBOARD_NAVIGATION_MENU} />
 
       <div className={`w-full flex-1 overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'ml-18' : 'ml-64'}`}>
-        <Header collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} role={role} onRoleChange={handleRoleChange} />
+        <Header
+          collapsed={sidebarCollapsed}
+          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+          role={role}
+          onRoleChange={handleRoleChange}
+          subscriptionType={session?.user.subscriptionType}
+        />
 
         <div className="mt-18">{children}</div>
       </div>
