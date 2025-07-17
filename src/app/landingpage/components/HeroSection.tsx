@@ -1,5 +1,5 @@
 import { Images } from '@/lib/images';
-import { getAllFreelancersNumber, getAverageRating } from '@/lib/server/cmsLandingPageStats';
+import { getAllFreelancersNumber, getAverageRating } from '@/lib/server/landingPageCounts';
 import Image from 'next/image';
 import Link from 'next/link';
 

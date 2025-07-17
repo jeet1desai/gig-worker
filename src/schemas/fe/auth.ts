@@ -52,13 +52,23 @@ export const subscriptionsPlanValidationSchema = Yup.object().shape({
     .max(5, 'Max 5 benefits allowed')
 });
 
-export const faqSchema = Yup.object().shape({
-  question: Yup.string().trim().required('Question is required'),
-  answer: Yup.string().trim().required('Answer is required')
-});
-
-export const workingStepSchema = Yup.object().shape({
-  title: Yup.string().trim().required('Title is required'),
-  description: Yup.string().trim().required('Description is required'),
-  color: Yup.string().trim().required('Color is required')
-});
+export const cmsSchemas: Record<string, Yup.ObjectSchema<any>> = {
+  faq: Yup.object().shape({
+    title: Yup.string().required('Question is required'),
+    content: Yup.string().required('Answer is required')
+  }),
+  step: Yup.object().shape({
+    title: Yup.string().required('Title is required'),
+    content: Yup.string().required('Description is required'),
+    color: Yup.string().required('Color is required')
+  }),
+  contact: Yup.object().shape({
+    content: Yup.string().required('Contact information is required')
+  }),
+  terms: Yup.object().shape({
+    content: Yup.string().required('Terms & Conditions content is required')
+  }),
+  privacy: Yup.object().shape({
+    content: Yup.string().required('Privacy Policy content is required')
+  })
+};
