@@ -36,7 +36,7 @@ const CommonDeleteDialog = ({
       title={title}
       subtitle={description}
     >
-      <DialogFooter className="">
+      <DialogFooter className="mt-4">
         <DialogClose asChild>
           <Button
             type="button"

@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock, DollarSign, MapPin, Plus, Search, Star, Trash2 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -315,11 +316,12 @@ export const GigProviderCard = ({
 const GigsPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const { data: session } = useSession();
 
   const [search, setSearch] = useState('');
 
   const user = useSelector((state: RootState) => state.user);
-  const { gigs, loading, pagination, ownGigs } = useSelector((state: RootState) => state.gigs);
+  const { gigs, pagination, ownGigs } = useSelector((state: RootState) => state.gigs);
 
   useEffect(() => {
     dispatch(gigService.clearGigs() as any);
@@ -327,24 +329,39 @@ const GigsPage = () => {
     return () => {
       dispatch(gigService.clearGigs() as any);
     };
-  }, [dispatch, search]);
+  }, [user?.role, dispatch]);
 
   const loadMore = useCallback(() => {
     if (pagination.page < pagination.totalPages) {
-      dispatch(gigService.getGigs({ page: pagination.page + 1, search }) as any);
+      if (session?.user.role === 'user' || user?.role === 'user') {
+        dispatch(gigService.getOwnersGig({ page: pagination.page + 1, search }) as any);
+      } else {
+        dispatch(gigService.getGigs({ page: pagination.page + 1, search }) as any);
+      }
     }
   }, [pagination.page, pagination.totalPages, search]);
 
   useDebouncedEffect(
     () => {
-      dispatch(gigService.getGigs({ page: 1, search }) as any);
+      dispatch(gigService.clearGigs() as any);
+      setSearch('');
+      if (session?.user.role === 'user' || user?.role === 'user') {
+        dispatch(gigService.getOwnersGig({ page: 1, search: '' }) as any);
+      } else {
+        dispatch(gigService.getGigs({ page: 1, search: '' }) as any);
+      }
     },
     500,
-    [search]
+    [user?.role]
   );
 
   const handleSearch = () => {
-    dispatch(gigService.getGigs({ page: 1, search }) as any);
+    dispatch(gigService.clearGigs() as any);
+    if (session?.user.role === 'user' || user?.role === 'user') {
+      dispatch(gigService.getOwnersGig({ page: 1, search }) as any);
+    } else {
+      dispatch(gigService.getGigs({ page: 1, search }) as any);
+    }
   };
 
   return (
@@ -352,7 +369,7 @@ const GigsPage = () => {
       <div className="min-h-screen py-8">
         <div className="container mx-auto px-6">
           {/* Hero Section */}
-          {user?.role === 'provider' ? (
+          {session?.user.role === 'user' || user?.role === 'user' ? (
             <div className="mb-8 text-center">
               <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">Create Your Next Gig</h1>
               <p className="mx-auto max-w-2xl text-lg text-gray-300">
@@ -391,7 +408,7 @@ const GigsPage = () => {
                   Search
                 </Button>
 
-                {user?.role === 'provider' && (
+                {(session?.user?.role === 'user' || user?.role === 'user') && (
                   <Button
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-4 text-sm font-medium text-white hover:from-blue-500 hover:to-purple-500 sm:w-auto sm:px-6 sm:py-6 sm:text-base"
                     onClick={() => router.push('/gigs/new')}
@@ -405,14 +422,27 @@ const GigsPage = () => {
             </div>
           </div>
 
-          {user.role === 'user' && (
+          {session?.user.role === 'user' || user?.role === 'user' ? (
+            <InfiniteScroll
+              dataLength={ownGigs.length}
+              next={loadMore}
+              hasMore={pagination.page < pagination.totalPages}
+              loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
+              scrollThreshold={0.9}
+              className="grid grid-cols-1 gap-6 lg:grid-cols-2"
+            >
+              {ownGigs.map((gig, index) => (
+                <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />
+              ))}
+            </InfiniteScroll>
+          ) : (
             <InfiniteScroll
               dataLength={gigs.length}
               next={loadMore}
               hasMore={pagination.page < pagination.totalPages}
               loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
               scrollThreshold={0.9}
-              className="col-span-2 grid grid-cols-1 gap-6 md:grid-cols-2"
+              className="grid grid-cols-1 gap-6 lg:grid-cols-2"
             >
               {gigs.map((gig, index) => (
                 <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />
@@ -421,7 +451,7 @@ const GigsPage = () => {
           )}
 
           {/* Empty State */}
-          {gigs.length === 0 && (
+          {gigs.length === 0 && ownGigs.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="mb-4 rounded-full bg-gray-800 p-4">
                 <Search className="h-8 w-8 text-gray-400" />
@@ -430,8 +460,8 @@ const GigsPage = () => {
               <p className="max-w-md text-gray-400">
                 We couldn't find any gigs matching your search. Try adjusting your filters or check back later.
               </p>
-              {user?.role === 'provider' && (
-                <Button className="mt-4 bg-gradient-to-r from-blue-600 to-purple-600" onClick={() => router.push('/gigs/new')}>
+              {(session?.user.role === 'user' || user?.role === 'user') && (
+                <Button className="mt-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white" onClick={() => router.push('/gigs/new')}>
                   <Plus className="mr-2 h-4 w-4" />
                   Create Your First Gig
                 </Button>
