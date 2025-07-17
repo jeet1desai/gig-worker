@@ -1,17 +1,29 @@
 import { safeJson } from '@/lib/utils/safeJson';
+import { formatCurrency } from '@/lib/utils';
 import { getServerSession, User } from 'next-auth';
 import { ROLE, SUBSCRIPTION_STATUS } from '@prisma/client';
 import { ValidationError } from 'yup';
 import prisma from '@/lib/prisma';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { getSubscription, cancelSubscription } from '@/lib/paypal/subscriptions';
+import {
+  getSubscription,
+  cancelSubscription
+} from '@/lib/paypal/subscriptions';
 import { errorResponse, successResponse } from '@/lib/api-response';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { getPlanByPlanId } from '@/lib/server/subscriptionPlans';
 import { subscribeSchema } from '@/schemas/be/subscription';
 import { COMMON_ERROR_MESSAGES, VERIFICATION_CODES } from '@/constants';
 import { FREE_PLAN_ID } from '@/constants/plans';
-import { PAYPAL_SUBSCRIPTION_CANCEL_REASON, PAYPAL_SUBSCRIPTION_STATUS } from '@/enums/be/paypal';
+import {
+  PAYPAL_SUBSCRIPTION_CANCEL_REASON,
+  PAYPAL_SUBSCRIPTION_STATUS
+} from '@/enums/be/paypal';
+import {
+  getSubscriptionCancelledEmail,
+  getSubscriptionPurchasedEmail
+} from '@/lib/email/templates/subscriptionTemplates';
+import { sendEmail } from '@/lib/email/sendEmail';
 
 export async function POST(req: Request) {
   try {
@@ -27,13 +39,38 @@ export async function POST(req: Request) {
       where: { user_id: BigInt(user.id), status: SUBSCRIPTION_STATUS.active },
       include: { plan: true }
     });
+
     if (existing) {
       if (existing.plan.plan_id === planId)
         return successResponse({
           message: 'Subscription already active for this plan',
           data: safeJson(existing)
         });
-      if (existing.subscription_id) await cancelSubscription(existing.subscription_id, PAYPAL_SUBSCRIPTION_CANCEL_REASON.SWITCHING_PLAN);
+      if (existing.subscription_id) {
+        const existingPayPalSub = await getSubscription(
+          existing.subscription_id
+        );
+        if (existingPayPalSub.status === PAYPAL_SUBSCRIPTION_STATUS.ACTIVE) {
+          await cancelSubscription(
+            existing.subscription_id,
+            PAYPAL_SUBSCRIPTION_CANCEL_REASON.SWITCHING_PLAN
+          );
+        }
+        const { subject, html, extraStyles } = getSubscriptionCancelledEmail({
+          userName: user.name || user.email,
+          planName: existing.plan.name,
+          price: formatCurrency(
+            existing.plan.price.toFixed(2),
+            existing.plan.currency
+          ),
+          startDate: existing.created_at.toISOString().split('T')[0],
+          nextBillingDate:
+            existing.subscription_expires_at?.toISOString().split('T')[0] ||
+            'N/A',
+          cancelImmediately: true
+        });
+        await sendEmail({ to: user.email, subject, html, extraStyles });
+      }
       await prisma.subscription.update({
         where: { id: existing.id },
         data: { status: SUBSCRIPTION_STATUS.cancelled }
@@ -69,7 +106,8 @@ export async function POST(req: Request) {
           statusCode: HttpStatusCode.BAD_REQUEST
         });
 
-      const price = subscription.billing_info.last_payment.amount.value ?? '0.00',
+      const price =
+          subscription.billing_info.last_payment.amount.value ?? '0.00',
         expires = subscription.billing_info.next_billing_time;
 
       const [sub, updatedUser] = await prisma.$transaction([
@@ -96,6 +134,18 @@ export async function POST(req: Request) {
           data: { role: ROLE.provider }
         })
       ]);
+      const { subject, html, extraStyles } = getSubscriptionPurchasedEmail({
+        userName: user.name || user.email,
+        planName: planDetails.name,
+        price: formatCurrency(
+          planDetails.price.toFixed(2),
+          planDetails.currency
+        ),
+        startDate: sub.created_at.toISOString().split('T')[0],
+        nextBillingDate:
+          sub.subscription_expires_at?.toISOString().split('T')[0] || 'N/A'
+      });
+      await sendEmail({ to: user.email, subject, html, extraStyles });
       return successResponse({
         message: 'Subscription created successfully',
         data: {
@@ -145,9 +195,11 @@ export async function POST(req: Request) {
       }
     });
   } catch (error: any) {
+    console.log('Subscribe error:', error);
     if (error instanceof ValidationError) {
       const fieldErrors: Record<string, string> = {};
-      for (const issue of error.inner) issue.path && (fieldErrors[issue.path] = issue.message);
+      for (const issue of error.inner)
+        issue.path && (fieldErrors[issue.path] = issue.message);
       return errorResponse({
         code: VERIFICATION_CODES.VALIDATION_ERROR,
         message: COMMON_ERROR_MESSAGES.VALIDATION_ERROR,
