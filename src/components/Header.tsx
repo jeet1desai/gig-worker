@@ -31,6 +31,7 @@ function Header() {
     setIsLoading(false);
     router.refresh();
   }, [router]);
+
   return (
     <header className="w-full bg-[#1D1D1D]">
       <div className="mx-auto w-full max-w-[1920px] px-4 py-4 sm:px-6 md:px-10">
