@@ -143,6 +143,7 @@ export async function POST(request: Request) {
 // GET /api/gigs - Get all gigs with pagination, search, and filtering
 export async function GET(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
     const { searchParams } = new URL(request.url);
 
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
@@ -180,7 +181,12 @@ export async function GET(request: Request) {
         is: {
           status: GIG_STATUS.open
         }
-      }
+      },
+      ...(session?.user?.id && {
+        user_id: {
+          not: session.user.id
+        }
+      })
     };
 
     const [total, gigs] = await Promise.all([
