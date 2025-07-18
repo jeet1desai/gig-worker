@@ -38,8 +38,8 @@ function WorkOpportunities() {
         setGigsList(response.data.data);
       }
     } catch (error: unknown) {
-      console.error('Error fetching faqs', error);
-      toast.error('Error fetching faqs');
+      console.error('Error fetching gigs', error);
+      toast.error('Error fetching gigs');
     } finally {
       setIsLoading(false);
     }
