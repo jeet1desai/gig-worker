@@ -1,10 +1,10 @@
 import { errorResponse, successResponse } from '@/lib/api-response';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
-import { getLandingPage } from '@/lib/server/faqs';
+import { getLandingPageFAQs } from '@/lib/server/landingPageServices';
 
 export async function GET(_req: Request) {
   try {
-    const faqs = await getLandingPage();
+    const faqs = await getLandingPageFAQs();
 
     return successResponse({
       data: faqs,

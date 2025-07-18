@@ -70,4 +70,23 @@ export interface ContentItem {
   [key: string]: any;
 }
 
+export interface LandingPageGigsItem {
+  title: string;
+  price: string;
+  duration: string;
+  provider: string;
+  postTime: string;
+  description: string;
+  profile_url: string;
+  place: string;
+  [key: string]: any;
+}
+
+export interface LandingPageGigsItemResponse {
+  success: boolean;
+  data: LandingPageGigsItem[];
+  message: string;
+  [key: string]: any;
+}
+
 export type WorkingStepDirectionType = 'up' | 'down';
