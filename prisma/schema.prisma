@@ -8,19 +8,20 @@ datasource db {
 }
 
 model User {
-  id             BigInt   @id @default(autoincrement())
-  first_name     String?
-  last_name      String?
-  profile_url    String?
-  email          String   @unique
-  password       String
-  role           ROLE     @default(user)
-  is_verified    Boolean  @default(false)
-  is_banned      Boolean  @default(false)
-  is_deleted     Boolean  @default(false)
-  sign_up_type   String?
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+  id               BigInt   @id @default(autoincrement())
+  first_name       String?
+  last_name        String?
+  profile_url      String?
+  email            String   @unique
+  password         String
+  role             ROLE     @default(user)
+  is_verified      Boolean  @default(false)
+  is_banned        Boolean  @default(false)
+  is_deleted       Boolean  @default(false)
+  sign_up_type     String?
+  reset_token_used Boolean  @default(false)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 
   // Relations
   provider_bids           Bid[]             @relation("ProviderBid")
@@ -182,6 +183,7 @@ model Gig {
   completed_at DateTime?
   thumbnail    String?
   attachments  Json?
+  location     String?
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
 
