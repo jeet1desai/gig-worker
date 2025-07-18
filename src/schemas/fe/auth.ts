@@ -30,21 +30,26 @@ export const subscriptionsPlanValidationSchema = Yup.object().shape({
   subscriptionType: Yup.string().oneOf(SUBSCRIPTION_PLAN_TYPES, 'Invalid subscription type').required('Subscription type is required'),
   price: Yup.mixed()
     .required('Price is required')
-    .test('is-valid-price', 'Must be a number >= 0', (val) => {
+    .test('is-valid-price', 'Must be a number greater than 0', function (val) {
+      const { subscriptionType } = this.parent;
       const num = Number(val);
-      return !isNaN(num) && num >= 0;
+      if (isNaN(num)) return false;
+      if (num === 0 && subscriptionType !== 'free') return false;
+      return num > 0 || (subscriptionType === 'free' && num === 0);
     }),
   maxGigs: Yup.mixed()
     .required('Max gigs is required')
-    .test('is-valid-maxGigs', 'Must be 0, positive number, or "unlimited"', (val) => {
-      const value = typeof val === 'string' ? val.toLowerCase().trim() : '';
-      return value === 'unlimited' || (!isNaN(Number(value)) && Number(value) >= 0);
+    .test('is-valid-maxGigs', 'Must be a number >= 0 or "unlimited"', (val) => {
+      if (typeof val === 'string' && val.trim().toLowerCase() === 'unlimited') return true;
+      const num = Number(val);
+      return !isNaN(num) && num >= 0;
     }),
   maxBids: Yup.mixed()
     .required('Max bids is required')
-    .test('is-valid-maxBids', 'Must be 0, positive number, or "unlimited"', (val) => {
-      const value = typeof val === 'string' ? val.toLowerCase().trim() : '';
-      return value === 'unlimited' || (!isNaN(Number(value)) && Number(value) >= 0);
+    .test('is-valid-maxBids', 'Must be a number >= 0 or "unlimited"', (val) => {
+      if (typeof val === 'string' && val.trim().toLowerCase() === 'unlimited') return true;
+      const num = Number(val);
+      return !isNaN(num) && num >= 0;
     }),
   benefits: Yup.array()
     .of(Yup.string().trim().required('Each benefit must not be empty'))
