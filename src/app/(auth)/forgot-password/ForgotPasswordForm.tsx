@@ -110,6 +110,10 @@ export default function ForgotPasswordForm() {
                       className={`!border !pl-9 ${
                         form.formState.errors.email ? '!border-red-500' : '!border-[#444]'
                       } bg-transparent !text-white !placeholder-white placeholder:text-base`}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        setServerError(null);
+                      }}
                     />
                   </div>
                 </FormControl>
