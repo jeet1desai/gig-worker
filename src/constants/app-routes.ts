@@ -17,7 +17,8 @@ export enum PUBLIC_ROUTE {
   ADMIN_LOGIN_PATH = '/admin/login',
   EMAIL_VERIFICATION_PATH = '/email-verification',
   WORKS = '/works',
-  NOT_FOUND = '*'
+  NOT_FOUND = '*',
+  USER_PROFILE = '/user-profile'
 }
 
 export enum PRIVATE_ROUTE {
