@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button';
 import { cmsSchemas } from '@/schemas/fe/auth';
 import * as Yup from 'yup';
 import { ContentItem } from '@/types/fe';
+import { contentTypes, singleEntryTypes } from '@/constants';
+import TipTapEditor from '@/components/TipTapEditor';
 
 export default function ContentCard({
   item,
@@ -28,7 +30,13 @@ export default function ContentCard({
   item: ContentItem;
   isEditing: boolean;
   onEdit: () => void;
-  onSave: (id: string, title: string, description: string, content: string, color?: string) => void;
+  onSave: (
+    id: string,
+    title: string,
+    description: string,
+    content: string,
+    color?: string
+  ) => void;
   onDelete: () => void;
   onCancel: () => void;
   onMoveUp: () => void;
@@ -102,42 +110,96 @@ export default function ContentCard({
           <div className="flex-1">
             {isEditing ? (
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-white">{item.type === 'faq' ? 'Question' : 'Title'}</Label>
-                  <Input
-                    placeholder={`Enter ${item.type === 'faq' ? 'question' : 'title'}`}
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
-                  {formErrors.title && <p className="mt-1 text-xs text-red-400">{formErrors.title}</p>}
-                </div>
+                {!singleEntryTypes.includes(item.type) && (
+                  <div className="space-y-2">
+                    <Label className="text-white">
+                      {item.type === 'faq' ? 'Question' : 'Title'}
+                    </Label>
+                    <Input
+                      placeholder={`Enter ${item.type === 'faq' ? 'question' : 'title'}`}
+                      value={title}
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                        setFormErrors({ ...formErrors, title: '' });
+                      }}
+                    />
+                    {formErrors.title && (
+                      <p className="mt-1 text-xs text-red-400">
+                        {formErrors.title}
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 <div className="space-y-2">
-                  <Label className="text-white">{item.type === 'faq' ? 'Answer' : 'Content'}</Label>
-                  <Textarea
-                    placeholder={`Enter ${item.type === 'faq' ? 'answer' : 'content'}`}
-                    value={content}
-                    className="bg-transparent text-white placeholder:text-slate-400"
-                    onChange={(e) => setContent(e.target.value)}
-                    rows={6}
-                  />
-                  {formErrors.content && <p className="mt-1 text-xs text-red-400">{formErrors.content}</p>}
+                  <Label className="text-white">
+                    {item.type === 'faq' ? 'Answer' : 'Content'}
+                  </Label>
+                  {singleEntryTypes.includes(item.type) ? (
+                    <TipTapEditor
+                      value={content}
+                      onChange={(content) => {
+                        setContent(content);
+                        setFormErrors({ ...formErrors, content: '' });
+                      }}
+                      placeholder={`Enter ${contentTypes[item.type]} content`}
+                    />
+                  ) : (
+                    <Textarea
+                      placeholder={`Enter ${item.type === 'faq' ? 'answer' : 'content'}`}
+                      value={content}
+                      className="bg-transparent text-white placeholder:text-slate-400"
+                      onChange={(e) => {
+                        setContent(e.target.value);
+                        setFormErrors({ ...formErrors, content: '' });
+                      }}
+                      rows={6}
+                    />
+                  )}
+
+                  {formErrors.content && (
+                    <p className="mt-1 text-xs text-red-400">
+                      {formErrors.content}
+                    </p>
+                  )}
                 </div>
 
                 {item.type === 'step' && (
                   <div>
-                    <label className="mb-2 block text-sm font-medium">Choose Color</label>
+                    <label className="mb-2 block text-sm font-medium">
+                      Choose Color
+                    </label>
                     <div className="flex items-center gap-3">
                       <input
                         type="color"
                         value={color}
-                        onChange={(e) => setColor(e.target.value)}
+                        onChange={(e) => {
+                          setColor(e.target.value);
+                          setFormErrors({ ...formErrors, color: '' });
+                        }}
                         className="border-input h-10 w-12 cursor-pointer rounded-md border"
                       />
-                      <Input type="text" value={color} onChange={(e) => setColor(e.target.value)} placeholder="#3b82f6" className="flex-1" />
-                      <div className="border-input h-10 w-10 rounded-md border" style={{ backgroundColor: color }} title="Color preview" />
+                      <Input
+                        type="text"
+                        value={color}
+                        onChange={(e) => {
+                          setColor(e.target.value);
+                          setFormErrors({ ...formErrors, color: '' });
+                        }}
+                        placeholder="#3b82f6"
+                        className="flex-1"
+                      />
+                      <div
+                        className="border-input h-10 w-10 rounded-md border"
+                        style={{ backgroundColor: color }}
+                        title="Color preview"
+                      />
                     </div>
-                    {formErrors.color && <p className="mt-1 text-xs text-red-400">{formErrors.color}</p>}
+                    {formErrors.color && (
+                      <p className="mt-1 text-xs text-red-400">
+                        {formErrors.color}
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -165,8 +227,15 @@ export default function ContentCard({
               <div className="space-y-3">
                 {item.type === 'faq' && (
                   <div className="flex items-center gap-2">
-                    <Checkbox id={`visible-${item.id}`} checked={item.isVisible} onCheckedChange={onToggleVisibility} />
-                    <label htmlFor={`visible-${item.id}`} className="cursor-pointer text-sm font-medium">
+                    <Checkbox
+                      id={`visible-${item.id}`}
+                      checked={item.isVisible}
+                      onCheckedChange={onToggleVisibility}
+                    />
+                    <label
+                      htmlFor={`visible-${item.id}`}
+                      className="cursor-pointer text-sm font-medium"
+                    >
                       Show on landing page
                     </label>
                   </div>
@@ -174,20 +243,46 @@ export default function ContentCard({
                 <div className="flex items-center gap-2">
                   <h3 className="text-lg font-semibold">{item.title}</h3>
                   {item.type === 'step' && item.color && (
-                    <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} title="Step Color" />
+                    <div
+                      className="h-3 w-3 rounded-full"
+                      style={{ backgroundColor: item.color }}
+                      title="Step Color"
+                    />
                   )}
                 </div>
-                {item.type !== 'faq' && <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{item.content}</p>}{' '}
+                {item.type !== 'faq' &&
+                  (singleEntryTypes.includes(item.type) ? (
+                    <div
+                      className="text-muted-foreground leading-relaxed whitespace-pre-wrap"
+                      dangerouslySetInnerHTML={{ __html: item.content }}
+                    />
+                  ) : (
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                      {item.content}
+                    </p>
+                  ))}
               </div>
             )}
           </div>
 
           {!isEditing && item.type === 'step' && (
             <div className="flex flex-col gap-2 pt-3">
-              <Button variant="outline" size="sm" onClick={onMoveUp} disabled={!canMoveUp} className="h-8 w-8 bg-transparent p-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onMoveUp}
+                disabled={!canMoveUp}
+                className="h-8 w-8 bg-transparent p-1"
+              >
                 <ArrowUp className="h-3 w-3" />
               </Button>
-              <Button variant="outline" size="sm" onClick={onMoveDown} disabled={!canMoveDown} className="h-8 w-8 bg-transparent p-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onMoveDown}
+                disabled={!canMoveDown}
+                className="h-8 w-8 bg-transparent p-1"
+              >
                 <ArrowDown className="h-3 w-3" />
               </Button>
             </div>
