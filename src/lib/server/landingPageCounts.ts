@@ -1,9 +1,10 @@
 import { safeJson } from '@/lib/utils/safeJson';
 import prisma from '@/lib/prisma';
+import { ROLE } from '@prisma/client';
 
 export const getAllFreelancersNumber = async () => {
   const count = await prisma.user.count({
-    where: { is_deleted: false }
+    where: { is_deleted: false, role: ROLE.provider }
   });
 
   return safeJson(count);
