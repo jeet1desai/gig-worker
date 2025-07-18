@@ -61,7 +61,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
           </div>
 
           <div className="flex items-center space-x-4">
-            {session?.user.role === 'user' && (
+            {session?.user.role === 'provider' && (
               <div className="flex items-center gap-1 rounded-xl bg-slate-700/50 p-1">
                 <Tooltip>
                   <TooltipTrigger asChild>
