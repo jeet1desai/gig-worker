@@ -23,7 +23,6 @@ type Props = {
 
 export default function TipTapEditor({ value, onChange, placeholder }: Props) {
   const [isClient, setIsClient] = useState(false);
-
   useEffect(() => setIsClient(true), []);
 
   const editor = useEditor({
@@ -67,69 +66,45 @@ export default function TipTapEditor({ value, onChange, placeholder }: Props) {
 
   const buttonClass = (isActive: boolean) =>
     clsx(
-      'px-2 py-1 rounded hover:bg-slate-700 transition',
-      isActive ? 'bg-slate-700 text-white font-semibold' : 'text-slate-300'
+      'px-2 py-1 rounded-md text-sm border border-slate-600 hover:bg-slate-700 transition-colors',
+      isActive ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'text-slate-300'
     );
 
   return (
-    <div className="tiptap-editor rounded-md border border-slate-700 bg-slate-800/60">
-      <div className="flex flex-wrap items-center gap-1 border-b border-slate-700 px-2 py-1 text-sm">
-        <button
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          className={buttonClass(editor.isActive('bold'))}
-        >
+    <div className="rounded-md border border-slate-700 bg-slate-800/60">
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-700 px-3 py-2">
+        <button onClick={() => editor.chain().focus().toggleBold().run()} className={buttonClass(editor.isActive('bold'))}>
           Bold
         </button>
-        <button
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={buttonClass(editor.isActive('italic'))}
-        >
+        <button onClick={() => editor.chain().focus().toggleItalic().run()} className={buttonClass(editor.isActive('italic'))}>
           Italic
         </button>
-        <button
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
-          className={buttonClass(editor.isActive('underline'))}
-        >
+        <button onClick={() => editor.chain().focus().toggleUnderline().run()} className={buttonClass(editor.isActive('underline'))}>
           Underline
         </button>
         <button
-          onClick={() =>
-            editor.chain().focus().toggleHeading({ level: 1 }).run()
-          }
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
           className={buttonClass(editor.isActive('heading', { level: 1 }))}
         >
           H1
         </button>
         <button
-          onClick={() =>
-            editor.chain().focus().toggleHeading({ level: 2 }).run()
-          }
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
           className={buttonClass(editor.isActive('heading', { level: 2 }))}
         >
           H2
         </button>
-        <button
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={buttonClass(editor.isActive('bulletList'))}
-        >
+        <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={buttonClass(editor.isActive('bulletList'))}>
           • List
         </button>
-        <button
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={buttonClass(editor.isActive('orderedList'))}
-        >
+        <button onClick={() => editor.chain().focus().toggleOrderedList().run()} className={buttonClass(editor.isActive('orderedList'))}>
           1. List
         </button>
         <button
           onClick={() => {
             const url = prompt('Enter URL');
             if (url) {
-              editor
-                .chain()
-                .focus()
-                .extendMarkRange('link')
-                .setLink({ href: url })
-                .run();
+              editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
             }
           }}
           className={buttonClass(editor.isActive('link'))}
@@ -138,7 +113,7 @@ export default function TipTapEditor({ value, onChange, placeholder }: Props) {
         </button>
       </div>
 
-      <EditorContent editor={editor} className="min-h-[180px]" />
+      <EditorContent editor={editor} className="min-h-[180px] px-3 py-2 text-white" />
     </div>
   );
 }
