@@ -16,6 +16,7 @@ export enum PUBLIC_ROUTE {
   RESET_PASSWORD_PAGE_PATH = '/reset-password',
   ADMIN_LOGIN_PATH = '/admin/login',
   EMAIL_VERIFICATION_PATH = '/email-verification',
+  WORKS = '/works',
   NOT_FOUND = '*'
 }
 
@@ -43,9 +44,9 @@ export enum PUBLIC_API_ROUTES {
   CMS_PARENT_API = 'cms',
   CMS_TYPE_API = 'cms/type',
   CMS_CONTENT_ID_API = 'cms/content_id',
-  LANDING_PAGE_FAQS_LIST_API = 'landingpage/faqs',
-  LANDING_PAGE_GIGS_LIST_API = 'landingpage/gigs',
-  CMS_STEPS_API = 'cms/type/step'
+  LANDING_PAGE_FAQS_LIST_API = 'faqs',
+  CMS_STEPS_API = 'cms/type/step',
+  GIGS_API = '/api/gigs'
 }
 
 export enum PRIVATE_API_ROUTES {

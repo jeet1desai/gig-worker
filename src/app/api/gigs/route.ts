@@ -25,8 +25,8 @@ export async function POST(request: Request) {
       return errorResponse({ code: 'USER_NOT_FOUND', message: 'User not found', statusCode: HttpStatusCode.NOT_FOUND });
     }
 
-    if (user?.role !== ROLE.provider) {
-      return errorResponse({ code: 'FORBIDDEN', message: 'Only providers can create gigs', statusCode: HttpStatusCode.FORBIDDEN });
+    if (user?.role !== ROLE.user) {
+      return errorResponse({ code: 'FORBIDDEN', message: 'Only users can create gigs', statusCode: HttpStatusCode.FORBIDDEN });
     }
 
     const formData = await request.formData();
@@ -37,6 +37,8 @@ export async function POST(request: Request) {
     const end_date = formData.get('end_date')?.toString();
     const price_min = formData.get('price_min')?.toString();
     const price_max = formData.get('price_max')?.toString();
+    const location = formData.get('location')?.toString();
+
     const keywords = formData.get('keywords')
       ? formData
           .get('keywords')
@@ -46,10 +48,10 @@ export async function POST(request: Request) {
       : [];
     const tier = formData.get('tier')?.toString();
 
-    if (!title || !price_min || !price_max || !tier || !description || !start_date) {
+    if (!title || !price_min || !price_max || !tier || !description || !start_date || !location) {
       return errorResponse({
         code: 'BAD_REQUEST',
-        message: 'Title, price range, tier, and description are required',
+        message: 'Title, price range, tier, location, and description are required',
         statusCode: HttpStatusCode.BAD_REQUEST
       });
     }
@@ -112,6 +114,7 @@ export async function POST(request: Request) {
         end_date: end_date || null,
         thumbnail: thumbnailUrl || '',
         attachments: attachmentUrls || [],
+        location: location || null,
         user: {
           connect: { id: session.user.id }
         },
@@ -230,22 +233,21 @@ export async function GET(request: Request) {
     const hasNextPage = currentPage < totalPages;
     const hasPreviousPage = currentPage > 1;
 
-    return safeJsonResponse(
-      {
-        success: true,
-        message: 'Gigs fetched successfully',
-        data: {
-          gigs,
-          pagination: {
-            total,
-            page: currentPage,
-            totalPages,
-            limit
-          }
+    const responseData = {
+      success: true,
+      message: 'Gigs fetched successfully',
+      data: {
+        gigs,
+        pagination: {
+          total,
+          page: currentPage,
+          totalPages,
+          limit
         }
-      },
-      { status: HttpStatusCode.OK }
-    );
+      }
+    };
+
+    return safeJsonResponse(responseData, { status: HttpStatusCode.OK });
   } catch (error) {
     console.error('Error fetching gigs:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch gigs';

@@ -28,11 +28,11 @@ export const gigService = {
     };
   },
 
-  getGigs({ page, search }: { page: number; search?: string }) {
+  getGigs({ page, search, limit }: { page: number; search?: string; limit?: number }) {
     return async (dispatch: AppDispatch) => {
       try {
         dispatch(setLoading({ loading: true }));
-        const response: any = await apiService.get(`/gigs?page=${page}${search ? `&search=${search}` : ''}`, {
+        const response: any = await apiService.get(`/gigs?page=${page}${search ? `&search=${search}` : ''}${limit ? `&limit=${limit}` : ''}`, {
           withAuth: true
         });
         if (response.status === 200 && response.data) {
