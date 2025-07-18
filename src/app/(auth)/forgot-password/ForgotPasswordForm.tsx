@@ -48,7 +48,6 @@ export default function ForgotPasswordForm() {
       const { data } = await apiService.post<ApiResponse>(PUBLIC_API_ROUTES.FORGOT_PASSWORD_API, values, { withAuth: false });
 
       toast.success(data?.message || FORGOT_PASSWORD_MESSAGES.success);
-      form.reset();
     } catch (err: any) {
       if (err.response) {
         const data: ApiResponse = err.response.data;
