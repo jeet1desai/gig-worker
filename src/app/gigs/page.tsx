@@ -432,7 +432,7 @@ const GigsPage = () => {
               className="grid grid-cols-1 gap-6 lg:grid-cols-2"
             >
               {ownGigs.map((gig, index) => (
-                <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />
+                <GigProviderCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />
               ))}
             </InfiniteScroll>
           ) : (
