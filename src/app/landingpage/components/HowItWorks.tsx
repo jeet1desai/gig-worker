@@ -53,7 +53,7 @@ function HowItWorks() {
                   className="mr-4 flex h-20 min-w-20 items-center justify-center rounded-md bg-[#FFFFFF] text-2xl font-bold md:h-24"
                   style={{ color: step.color }}
                 >
-                  {step.order && step.order < 10 ? `0${step.order}.` : `${step.order}.`}
+                  {step.order && step.order < 10 ? `0${step.order}` : `${step.order}`}
                 </div>
                 <div className="flex flex-col justify-evenly p-2">
                   <p className="text-sm font-semibold text-[#CECECE] sm:text-base md:text-lg">{step.title}</p>
