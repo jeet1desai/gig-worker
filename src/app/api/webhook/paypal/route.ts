@@ -3,16 +3,10 @@ import { Decimal } from '@prisma/client/runtime/library';
 
 import prisma from '@/lib/prisma';
 import { verifyWebhookSignature } from '@/lib/paypal/verifyWebhook';
-import {
-  cancelSubscription,
-  getSubscription
-} from '@/lib/paypal/subscriptions';
+import { cancelSubscription, getSubscription } from '@/lib/paypal/subscriptions';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { errorResponse, successResponse } from '@/lib/api-response';
-import {
-  PAYPAL_SUBSCRIPTION_CANCEL_REASON,
-  PAYPAL_SUBSCRIPTION_STATUS
-} from '@/enums/be/paypal';
+import { PAYPAL_SUBSCRIPTION_CANCEL_REASON, PAYPAL_SUBSCRIPTION_STATUS } from '@/enums/be/paypal';
 import { getPlanByPlanId } from '@/lib/server/subscriptionPlans';
 
 export async function POST(req: Request) {
@@ -31,8 +25,7 @@ export async function POST(req: Request) {
         message: 'Ignored non-subscription event',
         data: null
       });
-    if (event_type === 'BILLING.SUBSCRIPTION.CREATED')
-      return successResponse({ message: 'CREATED ignored', data: null });
+    if (event_type === 'BILLING.SUBSCRIPTION.CREATED') return successResponse({ message: 'CREATED ignored', data: null });
 
     const subId = resource.id,
       userId = resource.custom_id;
@@ -82,11 +75,8 @@ export async function POST(req: Request) {
             plan_id: plan.id,
             subscription_id: subId,
             status: SUBSCRIPTION_STATUS.active,
-            subscription_expires_at:
-              resource.billing_info?.next_billing_time ?? null,
-            amount: resource.billing_info?.last_payment?.amount?.value
-              ? Decimal(resource.billing_info.last_payment.amount.value)
-              : new Decimal(0)
+            subscription_expires_at: resource.billing_info?.next_billing_time ?? null,
+            amount: resource.billing_info?.last_payment?.amount?.value ? Decimal(resource.billing_info.last_payment.amount.value) : new Decimal(0)
           }
         });
         await prisma.user.update({
@@ -105,31 +95,21 @@ export async function POST(req: Request) {
       });
     }
 
-    if (!newStatus)
-      return successResponse({ message: `Ignored ${event_type}`, data: null });
+    if (!newStatus) return successResponse({ message: `Ignored ${event_type}`, data: null });
 
     const data: Partial<Subscription> = {
       status: newStatus,
-      subscription_expires_at:
-        resource.billing_info?.next_billing_time ?? sub.subscription_expires_at,
-      amount: resource.billing_info?.last_payment?.amount?.value
-        ? Decimal(resource.billing_info.last_payment.amount.value)
-        : sub.amount
+      subscription_expires_at: resource.billing_info?.next_billing_time ?? sub.subscription_expires_at,
+      amount: resource.billing_info?.last_payment?.amount?.value ? Decimal(resource.billing_info.last_payment.amount.value) : sub.amount
     };
 
     if (newStatus === SUBSCRIPTION_STATUS.active) {
-      const old = user.subscriptions.find(
-        (s) =>
-          s.status === SUBSCRIPTION_STATUS.active && s.subscription_id !== subId
-      );
+      const old = user.subscriptions.find((s) => s.status === SUBSCRIPTION_STATUS.active && s.subscription_id !== subId);
       if (old) {
         if (old.subscription_id) {
           const existingPayPalSub = await getSubscription(old.subscription_id!);
           if (existingPayPalSub.status === PAYPAL_SUBSCRIPTION_STATUS.ACTIVE) {
-            await cancelSubscription(
-              old.subscription_id!,
-              PAYPAL_SUBSCRIPTION_CANCEL_REASON.SWITCHING_PLAN
-            );
+            await cancelSubscription(old.subscription_id!, PAYPAL_SUBSCRIPTION_CANCEL_REASON.SWITCHING_PLAN);
           }
         }
         await prisma.subscription.update({
@@ -144,8 +124,7 @@ export async function POST(req: Request) {
       prisma.user.update({
         where: { id: user.id },
         data: {
-          role:
-            newStatus === SUBSCRIPTION_STATUS.active ? ROLE.provider : ROLE.user
+          role: newStatus === SUBSCRIPTION_STATUS.active ? ROLE.provider : ROLE.user
         }
       })
     ]);
