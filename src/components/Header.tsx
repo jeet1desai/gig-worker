@@ -33,7 +33,7 @@ function Header() {
   }, [router]);
 
   return (
-    <header className="w-full bg-[#1D1D1D]">
+    <header className="sticky top-0 z-50 w-full bg-[#1D1D1D]">
       <div className="mx-auto w-full max-w-[1920px] px-4 py-4 sm:px-6 md:px-10">
         <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
           <div className="flex w-full flex-row items-center justify-between gap-4 lg:w-2/3 lg:justify-between">
@@ -52,7 +52,7 @@ function Header() {
           </div>
 
           <nav className="flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm lg:w-1/3 lg:justify-end">
-            <Link href="#" className="text-base text-[#FFF2E3]">
+            <Link href="/works" className="text-base text-[#FFF2E3]">
               Find Work
             </Link>
             <Link href="#" className="text-base text-[#FFF2E3]">
