@@ -43,7 +43,8 @@ export enum PUBLIC_API_ROUTES {
   CMS_PARENT_API = 'cms',
   CMS_TYPE_API = 'cms/type',
   CMS_CONTENT_ID_API = 'cms/content_id',
-  LANDING_PAGE_FAQS_LIST_API = 'faqs',
+  LANDING_PAGE_FAQS_LIST_API = 'landingpage/faqs',
+  LANDING_PAGE_GIGS_LIST_API = 'landingpage/gigs',
   CMS_STEPS_API = 'cms/type/step'
 }
 
