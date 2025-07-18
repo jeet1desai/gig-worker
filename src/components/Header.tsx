@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import * as Popover from '@radix-ui/react-popover';
-import { LayoutDashboardIcon, LogOut, User } from 'lucide-react';
+import { LayoutDashboardIcon, LogOut } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import CommonDeleteDialog from './CommonDeleteDialog';
 import { signOut } from 'next-auth/react';
@@ -39,7 +39,12 @@ function Header() {
         <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
           <div className="flex w-full flex-row items-center justify-between gap-4 lg:w-2/3 lg:justify-between">
             <div className="relative flex aspect-[120/60] w-[120px] items-center justify-center">
-              <Image src={Images.logo} alt="logo" fill className="object-contain object-center" />
+              <Image
+                src={Images.logo}
+                alt="logo"
+                fill
+                className="object-contain object-center"
+              />
             </div>
 
             <div className="relative w-full max-w-lg lg:ml-10">
@@ -64,14 +69,19 @@ function Header() {
                 <Popover.Trigger asChild>
                   <div className="flex cursor-pointer items-center space-x-2 border-l border-slate-700 pl-4">
                     <div className="hidden text-right sm:block">
-                      <p className="max-w-[120px] truncate text-sm font-medium text-white">{session?.user.name}</p>
+                      <p className="max-w-[120px] truncate text-sm font-medium text-white">
+                        {session?.user.name}
+                      </p>
                       <p className="hidden text-xs text-slate-400 md:block">
                         {`${session?.user.role.charAt(0).toUpperCase() + session?.user.role.slice(1)}`}
                       </p>
                     </div>
                     <div className="relative">
                       <Avatar className="h-8 w-8 rounded-xl object-cover ring-2 ring-blue-500/20 transition-all duration-200 hover:scale-105 hover:ring-blue-500/40">
-                        <AvatarImage src={session?.user.image} alt={session?.user.name} />
+                        <AvatarImage
+                          src={session?.user.image}
+                          alt={session?.user.name}
+                        />
                         <AvatarFallback className="bg-transparent text-white">
                           {session?.user.name
                             ?.split(' ')
@@ -93,7 +103,11 @@ function Header() {
                   >
                     {
                       <Link
-                        href={session?.user.role === ADMIN_ROLE ? PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH : PRIVATE_ROUTE.DASHBOARD}
+                        href={
+                          session?.user.role === ADMIN_ROLE
+                            ? PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH
+                            : PRIVATE_ROUTE.DASHBOARD
+                        }
                         className="flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-sm outline-none hover:bg-slate-700 focus:outline-none focus-visible:ring-0"
                       >
                         <LayoutDashboardIcon className="h-4 w-4" />
@@ -112,10 +126,16 @@ function Header() {
               </Popover.Root>
             ) : (
               <>
-                <Link href={PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH} className="text-base text-[#FFF2E3]">
+                <Link
+                  href={PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH}
+                  className="text-base text-[#FFF2E3]"
+                >
                   Login
                 </Link>
-                <Link href={PUBLIC_ROUTE.SIGNUP_PAGE_PATH} className="text-base text-[#FFF2E3]">
+                <Link
+                  href={PUBLIC_ROUTE.SIGNUP_PAGE_PATH}
+                  className="text-base text-[#FFF2E3]"
+                >
                   Signup
                 </Link>
               </>
