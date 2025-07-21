@@ -34,13 +34,18 @@ export const emailLayout = (content: string, extraStyles = '') => {
         .header {
           text-align: center;
           margin-bottom: 30px;
+          padding: 20px 15px;
+          background-color: #1890ff;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .logo {
           font-size: 24px;
           font-weight: 700;
-          color: #1890ff;
-          margin-bottom: 20px;
+          color: #000;
         }
 
         h1 {

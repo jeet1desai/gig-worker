@@ -66,7 +66,7 @@ export function AdminHeader({ collapsed, onToggle }: SidebarProps) {
               <div className="hidden text-right sm:block">
                 <p className="max-w-[120px] truncate text-sm font-medium text-white md:max-w-none">{userDetails?.user.name}</p>
                 <p className="hidden text-xs text-slate-400 md:block">
-                  {userDetails?.user.role.charAt(0).toUpperCase() + userDetails?.user.role.slice(1)}
+                  {`${userDetails?.user.role.charAt(0).toUpperCase() + userDetails?.user.role.slice(1)}`}
                 </p>
               </div>
               <div className="relative">

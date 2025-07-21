@@ -67,6 +67,7 @@ const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add', avai
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (field === 'subscriptionType' && value === SUBSCRIPTION_TYPE.free) {
       setFormData((prev) => ({ ...prev, price: '0' }));
+      setErrors((prev) => ({ ...prev, price: false }));
     }
     if (errors[field]) {
       setErrors((prev) => {
@@ -288,7 +289,7 @@ const AddPlanModal = ({ isOpen, onClose, onSave, initialData, mode = 'add', avai
               min="0"
               disabled={mode === 'edit' || formData.subscriptionType === SUBSCRIPTION_TYPE.free}
             />
-            {errors.price && <p className="text-sm text-red-400">Valid price (0 or more) required</p>}
+            {errors.price && <p className="text-sm text-red-400">Must be a number greater than 0 or 0 only for Free plan</p>}
             {mode === 'edit' && (
               <p className="mt-1 text-sm text-red-400">Price cannot be changed for an existing plan. Create a new plan for updated pricing.</p>
             )}

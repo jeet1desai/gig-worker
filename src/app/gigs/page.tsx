@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock, DollarSign, MapPin, Plus, Search, Star, Trash2 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -19,8 +20,6 @@ import { TIER } from '@prisma/client';
 
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
-
-type GigProviderCardProps = any;
 
 interface GigCardProps {
   id: string;
@@ -42,13 +41,13 @@ interface GigCardProps {
   };
 }
 
-const tierColors = {
+const tierColors: any = {
   basic: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
   advanced: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
   expert: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
 };
 
-const tierLabels = {
+const tierLabels: any = {
   basic: 'basic',
   advanced: 'advanced',
   expert: 'expert'
@@ -134,24 +133,7 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
   );
 };
 
-export const GigProviderCard = ({
-  id,
-  title,
-  tier,
-  price,
-  providerName,
-  providerId,
-  rating,
-  reviewCount,
-  imageUrl = '/placeholder-gig.jpg',
-  deliveryTime = '3 Days',
-  role,
-  isActive = false,
-  activeStatus,
-  bidCount = 0,
-  averageBid = 0,
-  highestBid = 0
-}: GigProviderCardProps) => {
+export const GigUserCard = ({ id, title, description, tier, price_range, start_date, end_date, role, user, isActive, activeStatus }: any) => {
   return (
     <div
       className={`group relative flex h-full flex-col overflow-hidden rounded-xl border ${isActive ? 'border-blue-500/50' : 'border-gray-700/50'} ${
@@ -189,13 +171,11 @@ export const GigProviderCard = ({
           )}
         </div>
       )}
-      <div className="relative h-48 overflow-hidden">
-        <Image src={imageUrl} alt={title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
-        <div className="absolute top-3 right-3">
-          {/* <Badge variant="outline" className={`${tierColors[tier]} border-2 font-medium backdrop-blur-sm`}>
-            {tierLabels[tier]} Tier
-          </Badge> */}
-        </div>
+
+      <div className="absolute top-3 right-3">
+        <Badge variant="outline" className={`${tierColors[tier]} border-2 font-medium capitalize backdrop-blur-sm`}>
+          {tierLabels[tier]} Tier
+        </Badge>
       </div>
 
       <div className="flex flex-1 flex-col p-5">
@@ -204,10 +184,12 @@ export const GigProviderCard = ({
             <Link href={`/gigs/${id}`} className="group-hover:text-blue-400">
               <h3 className="text-md mb-1 line-clamp-2 font-bold text-white transition-colors">{title}</h3>
             </Link>
-            <p className="text-sm text-gray-400">${price}</p>
+            <p className="text-sm text-gray-400">
+              ${price_range.min} - ${price_range.max}
+            </p>
           </div>
           <div className="flex items-center gap-2">
-            {role === 'provider' && isActive && (
+            {role === 'user' && isActive && (
               <Badge variant="outline" className="border-green-500/50 text-green-400">
                 Active
               </Badge>
@@ -215,97 +197,52 @@ export const GigProviderCard = ({
           </div>
         </div>
 
-        <p className="mb-4 line-clamp-3 text-sm text-gray-300">
-          {title === 'Need help with calculus homework - derivatives and integrals'
-            ? 'I need help with understanding derivatives and integrals. The assignment is due in 2 days and I need someone who can explain the concepts clearly.'
-            : title === 'Web Development for E-commerce Store'
-              ? 'Looking for a skilled web developer to build an e-commerce store with modern UI and smooth checkout process.'
-              : title === 'Mobile App UI/UX Design'
-                ? 'Need a professional UI/UX designer to create an intuitive and user-friendly mobile app interface.'
-                : 'Need help with calculus homework - derivatives and integrals'}
-        </p>
+        <p className="mb-4 line-clamp-3 text-sm text-gray-300">{description}</p>
 
-        <div className={cn('mt-auto grid gap-2 border-t border-gray-700/50 pt-4', role === 'user' ? 'grid-cols-2' : 'grid-cols-3')}>
+        <div className={cn('mt-auto grid gap-2 border-t border-gray-700/50 pt-4', 'grid-cols-3')}>
           <div className="flex items-center space-x-2">
             <div className="flex size-8 items-center justify-center rounded-full bg-blue-900/30">
               <Clock className="size-4 text-blue-400" />
             </div>
             <div>
               <p className="text-xs text-gray-400">Delivery</p>
-              <p className="text-xs text-white">{deliveryTime}</p>
+              <p className="text-xs text-white">{formatDate(end_date)}</p>
             </div>
           </div>
-          {role === 'user' ? (
-            <div className="flex items-center space-x-2">
-              <div className="flex size-8 items-center justify-center rounded-full bg-purple-900/30">
-                <Star className="size-4 text-purple-400" />
-              </div>
-              <div>
-                <p className="text-xs text-gray-400">Rating</p>
-                <div className="flex items-center gap-1">
-                  <Star className="size-3 fill-amber-400 text-amber-400" />
-                  <span className="text-xs text-white">{rating}</span>
-                  <span className="text-xs text-gray-400">({reviewCount})</span>
-                </div>
-              </div>
+          <div className="flex items-center space-x-2">
+            <div className="flex size-8 items-center justify-center rounded-full bg-blue-900/30">
+              <MapPin className="size-4 text-blue-400" />
             </div>
-          ) : (
-            <>
-              <div className="flex items-center space-x-2">
-                <div className="flex size-8 items-center justify-center rounded-full bg-blue-900/30">
-                  <MapPin className="size-4 text-blue-400" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">Bids</p>
-                  <p className="text-xs text-white">{bidCount}</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="flex size-8 items-center justify-center rounded-full bg-purple-900/30">
-                  <DollarSign className="size-4 text-purple-400" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">Average Bid</p>
-                  <p className="text-xs text-white">${averageBid}</p>
-                </div>
-              </div>
-            </>
-          )}
+            <div>
+              <p className="text-xs text-gray-400">Bids</p>
+              <p className="text-xs text-white">0</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="flex size-8 items-center justify-center rounded-full bg-purple-900/30">
+              <DollarSign className="size-4 text-purple-400" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-400">Average Bid</p>
+              <p className="text-xs text-white">$0</p>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="border-t border-gray-700/50 p-4">
         <div className="flex items-center justify-between">
-          {role === 'user' ? (
-            <>
-              <div className="flex items-center space-x-3">
-                <div className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-blue-500">
-                  <Image src={imageUrl} alt={providerName} width={36} height={36} className="h-full w-full object-cover" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-white">{providerName}</p>
-                  <div className="flex items-center space-x-1">
-                    <Star className="size-2 fill-amber-400 text-amber-400" />
-                    <span className="text-xs text-gray-400">
-                      {rating} ({reviewCount})
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500">Place Bid</Button>
-            </>
-          ) : (
-            <div className="flex items-center gap-2">
-              {isActive && activeStatus === 'running' && (
-                <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-900/20 hover:text-green-400">
-                  Complete
-                </Button>
-              )}
-              <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-900/20 hover:text-red-400">
-                <Trash2 className="mr-2 h-4 w-4" /> Remove
+          <div></div>
+          <div className="flex items-center gap-2">
+            {isActive && activeStatus === 'running' && (
+              <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-900/20 hover:text-green-400">
+                Complete
               </Button>
-            </div>
-          )}
+            )}
+            <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-900/20 hover:text-red-400">
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -315,11 +252,12 @@ export const GigProviderCard = ({
 const GigsPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const { data: session } = useSession();
 
   const [search, setSearch] = useState('');
 
   const user = useSelector((state: RootState) => state.user);
-  const { gigs, loading, pagination, ownGigs } = useSelector((state: RootState) => state.gigs);
+  const { gigs, pagination, ownGigs } = useSelector((state: RootState) => state.gigs);
 
   useEffect(() => {
     dispatch(gigService.clearGigs() as any);
@@ -327,24 +265,39 @@ const GigsPage = () => {
     return () => {
       dispatch(gigService.clearGigs() as any);
     };
-  }, [dispatch, search]);
+  }, [user?.role, dispatch]);
 
   const loadMore = useCallback(() => {
     if (pagination.page < pagination.totalPages) {
-      dispatch(gigService.getGigs({ page: pagination.page + 1, search }) as any);
+      if (session?.user.role === 'user' || user?.role === 'user') {
+        dispatch(gigService.getOwnersGig({ page: pagination.page + 1, search }) as any);
+      } else {
+        dispatch(gigService.getGigs({ page: pagination.page + 1, search }) as any);
+      }
     }
   }, [pagination.page, pagination.totalPages, search]);
 
   useDebouncedEffect(
     () => {
-      dispatch(gigService.getGigs({ page: 1, search }) as any);
+      dispatch(gigService.clearGigs() as any);
+      setSearch('');
+      if (session?.user.role === 'user' || user?.role === 'user') {
+        dispatch(gigService.getOwnersGig({ page: 1, search: '' }) as any);
+      } else {
+        dispatch(gigService.getGigs({ page: 1, search: '' }) as any);
+      }
     },
     500,
-    [search]
+    [user?.role]
   );
 
   const handleSearch = () => {
-    dispatch(gigService.getGigs({ page: 1, search }) as any);
+    dispatch(gigService.clearGigs() as any);
+    if (session?.user.role === 'user' || user?.role === 'user') {
+      dispatch(gigService.getOwnersGig({ page: 1, search }) as any);
+    } else {
+      dispatch(gigService.getGigs({ page: 1, search }) as any);
+    }
   };
 
   return (
@@ -352,7 +305,7 @@ const GigsPage = () => {
       <div className="min-h-screen py-8">
         <div className="container mx-auto px-6">
           {/* Hero Section */}
-          {user?.role === 'provider' ? (
+          {session?.user.role === 'user' || user?.role === 'user' ? (
             <div className="mb-8 text-center">
               <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">Create Your Next Gig</h1>
               <p className="mx-auto max-w-2xl text-lg text-gray-300">
@@ -391,7 +344,7 @@ const GigsPage = () => {
                   Search
                 </Button>
 
-                {user?.role === 'provider' && (
+                {(session?.user?.role === 'user' || user?.role === 'user') && (
                   <Button
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-4 text-sm font-medium text-white hover:from-blue-500 hover:to-purple-500 sm:w-auto sm:px-6 sm:py-6 sm:text-base"
                     onClick={() => router.push('/gigs/new')}
@@ -405,14 +358,27 @@ const GigsPage = () => {
             </div>
           </div>
 
-          {user.role === 'user' && (
+          {session?.user.role === 'user' || user?.role === 'user' ? (
+            <InfiniteScroll
+              dataLength={ownGigs.length}
+              next={loadMore}
+              hasMore={pagination.page < pagination.totalPages}
+              loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
+              scrollThreshold={0.9}
+              className="grid grid-cols-1 gap-6 lg:grid-cols-2"
+            >
+              {ownGigs.map((gig, index) => (
+                <GigUserCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />
+              ))}
+            </InfiniteScroll>
+          ) : (
             <InfiniteScroll
               dataLength={gigs.length}
               next={loadMore}
               hasMore={pagination.page < pagination.totalPages}
               loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
               scrollThreshold={0.9}
-              className="col-span-2 grid grid-cols-1 gap-6 md:grid-cols-2"
+              className="grid grid-cols-1 gap-6 lg:grid-cols-2"
             >
               {gigs.map((gig, index) => (
                 <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />
@@ -421,7 +387,7 @@ const GigsPage = () => {
           )}
 
           {/* Empty State */}
-          {gigs.length === 0 && (
+          {gigs.length === 0 && ownGigs.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="mb-4 rounded-full bg-gray-800 p-4">
                 <Search className="h-8 w-8 text-gray-400" />
@@ -430,8 +396,8 @@ const GigsPage = () => {
               <p className="max-w-md text-gray-400">
                 We couldn't find any gigs matching your search. Try adjusting your filters or check back later.
               </p>
-              {user?.role === 'provider' && (
-                <Button className="mt-4 bg-gradient-to-r from-blue-600 to-purple-600" onClick={() => router.push('/gigs/new')}>
+              {(session?.user.role === 'user' || user?.role === 'user') && (
+                <Button className="mt-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white" onClick={() => router.push('/gigs/new')}>
                   <Plus className="mr-2 h-4 w-4" />
                   Create Your First Gig
                 </Button>

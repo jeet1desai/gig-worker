@@ -18,6 +18,7 @@ import Loader from '@/components/Loader';
 import CommonModal from '@/components/CommonModal';
 import { createSubscription } from '@/services/subscription.services';
 import apiService from '@/services/api';
+import CommonDeleteDialog from '@/components/CommonDeleteDialog';
 
 interface PricingClientWrapperProps {
   activeSubscription: ISafeActiveSubscription | null;
@@ -31,18 +32,16 @@ type PayPalSubscriptionActions = {
 };
 
 type SessionUpdatePayload = {
-    message: string;
-    subscription: string;
+  message: string;
+  subscription: string;
 };
 
-const PricingClientWrapper = ({
-  plans,
-  activeSubscription
-}: PricingClientWrapperProps) => {
+const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrapperProps) => {
   const router = useRouter();
   const { update, data: session } = useSession();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPlanConfirmationOpen, setIsPlanConfirmationOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<ISafePlan | null>(null);
 
   const navigateToDashboard = () => {
@@ -54,11 +53,15 @@ const PricingClientWrapper = ({
     setSelectedPlan(null);
   };
 
+  const handleClosePlanConfirmation = () => {
+    setIsPlanConfirmationOpen(false);
+  };
+
   const handleCreateFreeSubscription = async (planId: string) => {
     try {
       setIsLoading(true);
       const response = await createSubscription(null, planId);
-      await update({ 
+      await update({
         subscription: response.data?.subscription.type,
         role: response.data?.user.role
       });
@@ -73,12 +76,22 @@ const PricingClientWrapper = ({
     }
   };
 
+  const handlePlanChangeConfirmation = () => {
+    if (selectedPlan) {
+      if (selectedPlan.plan_id === FREE_PLAN_ID) {
+        handleCreateFreeSubscription(selectedPlan.plan_id);
+      } else {
+        setIsDialogOpen(true);
+      }
+    }
+  };
+
   const handleChoosePlan = (plan: ISafePlan) => {
-    if (plan.plan_id === FREE_PLAN_ID) {
-      handleCreateFreeSubscription(plan.plan_id);
+    setSelectedPlan(plan);
+    if (activeSubscription) {
+      setIsPlanConfirmationOpen(true);
     } else {
-      setSelectedPlan(plan);
-      setIsDialogOpen(true);
+      handlePlanChangeConfirmation();
     }
   };
 
@@ -185,6 +198,15 @@ const PricingClientWrapper = ({
           )}
         </div>
       </CommonModal>
+
+      <CommonDeleteDialog
+        open={isPlanConfirmationOpen}
+        confirmLabel="Confirm"
+        title="Confirm Plan Change"
+        description="Your current plan will be cancelled immediately. The new plan will start now, and you’ll be charged right away"
+        onOpenChange={handleClosePlanConfirmation}
+        onConfirm={handlePlanChangeConfirmation}
+      />
     </div>
   );
 };

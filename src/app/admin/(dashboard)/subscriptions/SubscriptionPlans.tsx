@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Check, Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import AddPlanModal from './AddPlanModal';
 import { SubscriptionPlan, SubscriptionPlanPayload, SubscriptionPlanResponse } from '@/types/fe';
 import apiService from '@/services/api';
@@ -145,7 +145,7 @@ const SubscriptionPlans = () => {
           {plans.map((plan) => (
             <Card
               key={plan.id}
-              className="group relative overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/50 shadow-xl backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+              className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/50 shadow-xl backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
             >
               <button
                 onClick={() => openDeleteConfirmation(plan.plan_id)}
@@ -177,14 +177,16 @@ const SubscriptionPlans = () => {
                     </div>
                   ))}
                 </div>
+              </CardContent>
 
+              <CardFooter className="mt-auto px-6">
                 <Button
                   onClick={() => handleUpdatePlan(plan.plan_id)}
                   className="font-base w-full cursor-pointer rounded-lg border-0 bg-gradient-to-r from-blue-600 to-purple-600 py-3 text-white shadow-md transition-all duration-200 hover:from-blue-700 hover:to-purple-700 hover:shadow-lg"
                 >
                   Update Plan
                 </Button>
-              </CardContent>
+              </CardFooter>
 
               <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
             </Card>
