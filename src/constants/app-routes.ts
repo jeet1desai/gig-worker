@@ -26,6 +26,8 @@ export enum PRIVATE_ROUTE {
   DASHBOARD = '/dashboard',
   GIGS = '/gigs',
   USER_PROFILE = '/profile',
+  USER_GIGS = '/manage-gigs',
+  PROVIDER_BIDS = '/provider-bids',
   ADMIN_DASHBOARD_PATH = '/admin',
   ADMIN_USERS_DASHBOARD_PATH = '/admin/users',
   ADMIN_GIGS_DASHBOARD_PATH = '/admin/gigs',

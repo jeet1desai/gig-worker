@@ -12,7 +12,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { clearStorage } from '@/lib/local-storage';
-
+import { toast } from '@/lib/toast';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import NotificationBell from '../notification-bell';
@@ -23,10 +23,11 @@ interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
   role: 'user' | 'provider' | 'admin';
+  subscriptionType: 'free' | 'basic' | 'pro';
   onRoleChange: (role: 'user' | 'provider') => void;
 }
 
-export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps) {
+export function Header({ collapsed, onToggle, role, onRoleChange, subscriptionType }: SidebarProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -43,6 +44,11 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
     setIsLoading(false);
     router.refresh();
   }, [router]);
+
+  const handleRoleChange = (newRole: 'user' | 'provider') => {
+    onRoleChange(newRole);
+    toast.info(`You have switched your profile as ${newRole.charAt(0).toUpperCase() + newRole.slice(1)}`);
+  };
 
   return (
     <TooltipProvider>
@@ -71,7 +77,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                       className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
                         role === 'user' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
                       }`}
-                      onClick={() => onRoleChange('user')}
+                      onClick={() => handleRoleChange('user')}
                     >
                       <User className="h-4 w-4" />
                     </Button>
@@ -87,7 +93,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                       className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
                         role === 'provider' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
                       }`}
-                      onClick={() => onRoleChange('provider')}
+                      onClick={() => handleRoleChange('provider')}
                     >
                       <Briefcase className="h-4 w-4" />
                     </Button>

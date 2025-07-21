@@ -136,6 +136,46 @@ export const TIER_DATA_LIST = {
   }
 };
 
+export const USER_GIGS = [
+  {
+    id: '1',
+    title: 'I will design a modern mobile app UI for your startup',
+    price: 150,
+    status: 'active' as const,
+    tier: 'Expert',
+    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=225&fit=crop',
+    createdAt: '2024-01-15'
+  },
+  {
+    id: '2',
+    title: 'I will write your research paper and essays',
+    price: 75,
+    status: 'paused' as const,
+    tier: 'Advanced',
+    image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&h=225&fit=crop',
+    createdAt: '2024-01-10'
+  },
+  {
+    id: '3',
+    title: 'I will tutor you in computer science fundamentals',
+    price: 45,
+    status: 'active' as const,
+    tier: 'Expert',
+    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop',
+    createdAt: '2024-01-08'
+  },
+  {
+    id: '4',
+    title: 'I will create social media content for your brand',
+    description: 'Engaging social media posts, stories, and campaigns tailored for student entrepreneurs and small businesses.',
+    price: 85,
+    status: 'draft' as const,
+    tier: 'Basic',
+    image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop',
+    createdAt: '2024-01-05'
+  }
+];
+
 export const DEFAULT_PAGINATION = {
   page: 1,
   pageSize: 10,
