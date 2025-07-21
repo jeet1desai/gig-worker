@@ -26,24 +26,27 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   };
 
   const navigationMenu = useMemo(() => {
-    const subscriptionType = session?.user.subscriptionType;
-
+    const subscriptionType = session?.user.subscription;
     const dynamicMenu = [...DASHBOARD_NAVIGATION_MENU];
 
-    if (subscriptionType === 'basic' || subscriptionType === 'pro' || role === 'user') {
-      dynamicMenu.push({
-        name: 'Manage Gigs',
-        icon: ClipboardList,
-        href: PRIVATE_ROUTE.USER_GIGS
-      });
-    }
+    const hasValidSubscription = subscriptionType === 'basic' || subscriptionType === 'pro';
 
-    if (subscriptionType === 'basic' || subscriptionType === 'pro' || role === 'provider') {
-      dynamicMenu.push({
-        name: 'Manage Bids',
-        icon: Layers3,
-        href: PRIVATE_ROUTE.PROVIDER_BIDS
-      });
+    if (hasValidSubscription) {
+      if (role === 'user') {
+        dynamicMenu.push({
+          name: 'Manage Gigs',
+          icon: ClipboardList,
+          href: PRIVATE_ROUTE.USER_GIGS
+        });
+      }
+
+      if (role === 'provider') {
+        dynamicMenu.push({
+          name: 'Manage Bids',
+          icon: Layers3,
+          href: PRIVATE_ROUTE.PROVIDER_BIDS
+        });
+      }
     }
 
     return dynamicMenu;
