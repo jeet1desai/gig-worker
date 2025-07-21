@@ -5,30 +5,45 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Images } from '@/lib/images';
 import { cn } from '@/lib/utils';
 import { LogOut, ChevronLeft, LucideProps } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ForwardRefExoticComponent, RefAttributes, useCallback, useEffect, useState } from 'react';
+import {
+  ForwardRefExoticComponent,
+  RefAttributes,
+  useCallback,
+  useEffect,
+  useState
+} from 'react';
 import CommonDeleteDialog from '../CommonDeleteDialog';
 import { clearStorage } from '@/lib/local-storage';
+import { ADMIN_ROLE } from '@/constants';
+import { Session } from 'next-auth';
 
 interface SidebarProps {
   collapsed: boolean;
   onToggle: (collapsed: boolean) => void;
   navigation_menu: Array<{
     name: string;
-    icon: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>;
+    icon: ForwardRefExoticComponent<
+      Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+    >;
     href: string;
   }>;
 }
 
-export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) {
+export function Sidebar({
+  collapsed,
+  onToggle,
+  navigation_menu
+}: SidebarProps) {
   const isMobile = useIsMobile();
   const pathname = usePathname();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
+  const [userDetails, setUserDetails] = useState<Session | null>(null);
 
   const handleLogout = useCallback(async () => {
     setIsLoading(true);
@@ -44,9 +59,23 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
     return pathname === itemUrl || pathname.startsWith(`${itemUrl}/`);
   };
 
-  const redirectToHome = useCallback(() => {
-    router.push(PRIVATE_ROUTE.DASHBOARD);
+  const getAdminProfileDetails = useCallback(async () => {
+    const session = await getSession();
+
+    setUserDetails(session);
   }, []);
+
+  useEffect(() => {
+    getAdminProfileDetails();
+  }, []);
+
+  const redirectToHome = useCallback(() => {
+    const path =
+      userDetails?.user.role === ADMIN_ROLE
+        ? PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH
+        : PRIVATE_ROUTE.DASHBOARD;
+    router.push(path);
+  }, [userDetails]);
 
   useEffect(() => {
     if (isMobile) {
@@ -63,15 +92,31 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
     >
       <div className="flex h-full w-full flex-col">
         <div className="relative flex items-center justify-between border-b border-slate-700/50 p-4">
-          <div className={cn('flex cursor-pointer items-center space-x-3', collapsed && 'justify-center')} onClick={redirectToHome}>
+          <div
+            className={cn(
+              'flex cursor-pointer items-center space-x-3',
+              collapsed && 'justify-center'
+            )}
+            onClick={redirectToHome}
+          >
             <div className="flex h-10 w-10 items-center justify-center rounded-xl font-bold text-white shadow-lg">
               <div className="relative flex aspect-[200/113] w-[200px] items-center justify-center">
-                <Image src={Images.logo} alt="logo" fill className="object-contain object-center" />
+                <Image
+                  src={Images.logo}
+                  alt="logo"
+                  fill
+                  className="object-contain object-center"
+                />
               </div>
             </div>
             {!collapsed && (
               <div className="max-w-auto relative flex aspect-[150/25] w-[150px] items-center justify-center">
-                <Image src={Images.big_logo_icon} alt="big_logo" fill className="object-contain object-center" />
+                <Image
+                  src={Images.big_logo_icon}
+                  alt="big_logo"
+                  fill
+                  className="object-contain object-center"
+                />
               </div>
             )}
           </div>
