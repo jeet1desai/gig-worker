@@ -30,13 +30,6 @@ export default function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const token = searchParams.get(TOKEN);
 
-  useEffect(() => {
-    const isResetDone = sessionStorage.getItem('passwordResetDone');
-    if (isResetDone) {
-      router.replace(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH);
-    }
-  }, [router]);
-
   const form = useForm<ResetPasswordFormType>({
     resolver: yupResolver(resetPasswordSchema),
     defaultValues: {
@@ -59,10 +52,7 @@ export default function ResetPasswordForm() {
       toast.success(data?.message || RESET_PASSWORD_MESSAGES.success);
       form.reset();
 
-      sessionStorage.setItem('passwordResetDone', 'true');
-
       setTimeout(() => {
-        sessionStorage.removeItem('passwordResetDone');
         router.replace(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH);
       }, RESET_PASSWORD_MESSAGES.redirectDelay);
     } catch (err: any) {
