@@ -1,16 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Filter, Star, Clock, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, Star, Clock, MapPin, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { gigService } from '@/services/gig.services';
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { getDaysBetweenDates } from '@/lib/date-format';
 import { useRouter } from 'next/navigation';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 
 export default function WorksPage() {
   const router = useRouter();
@@ -19,8 +20,8 @@ export default function WorksPage() {
   const { gigs, pagination, loading } = useSelector((state: RootState) => state.gigs);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState({
-    category: '',
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<{ minPrice: string; maxPrice: string; deliveryTime: string }>({
     minPrice: '',
     maxPrice: '',
     deliveryTime: ''
@@ -29,8 +30,14 @@ export default function WorksPage() {
   useEffect(() => {
     const fetchGigs = async () => {
       try {
+        const params: { page: number; search: string; limit: number } = {
+          page: currentPage,
+          search: '',
+          limit: 10
+        };
+
         dispatch(gigService.clearGigs() as any).then(() => {
-          dispatch(gigService.getGigs({ page: 1, search: '', limit: 10 }) as any);
+          dispatch(gigService.getGigs(params) as any);
         });
       } catch (error) {
         console.error('Error fetching gigs:', error);
@@ -38,11 +45,41 @@ export default function WorksPage() {
     };
 
     fetchGigs();
-  }, [dispatch]);
+  }, [dispatch, currentPage]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Searching for:', searchQuery);
+
+    if (!searchQuery) return;
+
+    setCurrentPage(1);
+    const params: { page: number; search: string; limit: number } = {
+      page: 1,
+      search: searchQuery,
+      limit: 10
+    };
+
+    dispatch(gigService.getGigs(params) as any);
+  };
+
+  const handleApplyFilters = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!filters.minPrice && !filters.maxPrice && !filters.deliveryTime) return;
+
+    setCurrentPage(1);
+    setSearchQuery('');
+
+    const params: { page: number; search: string; limit: number; minPrice?: string; maxPrice?: string; deliveryTime?: string } = {
+      page: 1,
+      search: '',
+      limit: 10,
+      minPrice: filters.minPrice,
+      maxPrice: filters.maxPrice,
+      deliveryTime: filters.deliveryTime
+    };
+
+    dispatch(gigService.getGigs(params) as any);
   };
 
   return (
@@ -76,54 +113,61 @@ export default function WorksPage() {
         <div className="flex flex-col gap-8 md:flex-row">
           <aside className="w-full md:w-1/4">
             <div className="sticky top-28 rounded-xl bg-black p-6">
-              <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Filters</h2>
-                <button className="text-gray-400 hover:text-white">
-                  <Filter className="h-5 w-5" />
-                </button>
-              </div>
+              <form noValidate onSubmit={handleApplyFilters}>
+                <div className="mb-6 flex items-center justify-between">
+                  <h2 className="text-xl font-semibold">Filters</h2>
+                  <button className="text-gray-400 hover:text-white">
+                    <Filter className="h-5 w-5" />
+                  </button>
+                </div>
 
-              <div className="mb-6">
-                <h3 className="mb-3 font-medium">Price Range</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="mb-1 block text-sm text-gray-400">Min ($)</Label>
-                    <Input
-                      type="number"
-                      placeholder="Min"
-                      value={filters.minPrice}
-                      onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <Label className="mb-1 block text-sm text-gray-400">Max ($)</Label>
-                    <Input
-                      type="number"
-                      placeholder="Max"
-                      value={filters.maxPrice}
-                      onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-                    />
+                <div className="mb-6">
+                  <h3 className="mb-3 font-medium">Price Range</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="mb-1 block text-sm text-gray-400">Min ($)</Label>
+                      <Input
+                        type="number"
+                        name="minPrice"
+                        placeholder="Min"
+                        value={filters.minPrice}
+                        onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label className="mb-1 block text-sm text-gray-400">Max ($)</Label>
+                      <Input
+                        type="number"
+                        name="maxPrice"
+                        placeholder="Max"
+                        value={filters.maxPrice}
+                        onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="mb-6">
-                <h3 className="mb-3 font-medium">Delivery Time</h3>
-                <Select>
-                  <SelectTrigger className="w-full rounded-lg px-4 py-2 text-sm">
-                    <SelectValue placeholder="Select a delivery time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">Any Time</SelectItem>
-                    <SelectItem value="3">Up to 3 days</SelectItem>
-                    <SelectItem value="7">Up to 7 days</SelectItem>
-                    <SelectItem value="14">Up to 14 days</SelectItem>
-                    <SelectItem value="30">Up to 30 days</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                <div className="mb-6">
+                  <h3 className="mb-3 font-medium">Delivery Time</h3>
+                  <Select value={filters.deliveryTime} onValueChange={(value) => setFilters((prev) => ({ ...prev, deliveryTime: value }))}>
+                    <SelectTrigger className="w-full rounded-lg px-4 py-2 text-sm">
+                      <SelectValue placeholder="Select a delivery time" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="any">Any Time</SelectItem>
+                      <SelectItem value="24">Within 24 hours</SelectItem>
+                      <SelectItem value="3">Within 3 days</SelectItem>
+                      <SelectItem value="7">Within 7 days</SelectItem>
+                      <SelectItem value="14">Within 14 days</SelectItem>
+                      <SelectItem value="30">Within 30 days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <button className="w-full rounded-lg bg-purple-600 px-4 py-2 text-white transition-colors hover:bg-purple-700">Apply Filters</button>
+                <Button type="submit" className="w-full rounded-lg bg-purple-600 px-4 py-1 text-white transition-colors hover:bg-purple-700">
+                  {loading ? <Loader2 className="size-4 animate-spin" /> : 'Apply Filters'}
+                </Button>
+              </form>
             </div>
           </aside>
 
@@ -154,8 +198,8 @@ export default function WorksPage() {
                 {gigs.map((gig) => (
                   <div
                     key={gig.id}
-                    className="overflow-hidden rounded-xl bg-black transition-all duration-300"
-                    onClick={() => router.push(`/gig/${gig.id}`)}
+                    className="cursor-pointer overflow-hidden rounded-xl bg-black transition-all duration-300"
+                    onClick={() => router.push(`/works/${gig.id}`)}
                   >
                     <div className="relative">
                       <img src={gig.thumbnail} alt={gig.title} className="h-48 w-full object-cover" />
@@ -192,11 +236,11 @@ export default function WorksPage() {
                       </div>
 
                       <div className="mt-4 flex flex-wrap gap-2">
-                        {/* {gig.tags.slice(0, 3).map((tag: string, i: number) => (
+                        {gig.keywords.map((tag: string, i: number) => (
                           <span key={i} className="rounded bg-gray-800 px-2 py-1 text-xs">
                             {tag}
                           </span>
-                        ))} */}
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -209,24 +253,70 @@ export default function WorksPage() {
               </div>
             )}
 
-            {/* Pagination */}
-            {gigs.length > 0 && (
+            {pagination && pagination.total_pages > 1 && (
               <div className="mt-12 flex justify-center">
                 <nav className="flex items-center space-x-2">
-                  <button className="flex size-10 items-center justify-center rounded-lg bg-gray-800 p-2 text-gray-400 transition-colors hover:bg-gray-700">
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1 || loading}
+                    className={`flex size-10 items-center justify-center rounded-lg p-2 transition-colors ${
+                      currentPage === 1 || loading ? 'cursor-not-allowed bg-gray-800 text-gray-600' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    }`}
+                  >
                     <ChevronLeft className="size-6" />
                   </button>
-                  {[1, 2, 3, '...', 10].map((page, i) => (
-                    <button
-                      key={i}
-                      className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                        page === 1 ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                      } transition-colors`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                  <button className="flex size-10 items-center justify-center rounded-lg bg-gray-800 p-2 text-gray-400 transition-colors hover:bg-gray-700">
+
+                  {Array.from({ length: Math.min(5, pagination.total_pages) }, (_, i) => {
+                    let pageNum;
+                    if (pagination.total_pages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                      if (i === 4) pageNum = pagination.total_pages;
+                      else if (i === 3 && pagination.total_pages > 5) return '...';
+                    } else if (currentPage >= pagination.total_pages - 2) {
+                      if (i === 0) pageNum = 1;
+                      else if (i === 1 && pagination.total_pages > 5) return '...';
+                      else pageNum = pagination.total_pages - (4 - i);
+                    } else {
+                      if (i === 0) pageNum = 1;
+                      else if (i === 1) return '...';
+                      else if (i === 3) return '...';
+                      else if (i === 4) pageNum = pagination.total_pages;
+                      else pageNum = currentPage + (i - 2);
+                    }
+
+                    if (pageNum === '...') {
+                      return (
+                        <span key={`ellipsis-${i}`} className="flex h-10 w-10 items-center justify-center">
+                          ...
+                        </span>
+                      );
+                    }
+
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(Number(pageNum))}
+                        disabled={loading}
+                        className={`flex h-10 w-10 items-center justify-center rounded-lg transition-colors ${
+                          currentPage === pageNum ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.min(pagination.total_pages, prev + 1))}
+                    disabled={currentPage === pagination.total_pages || loading}
+                    className={`flex size-10 items-center justify-center rounded-lg p-2 transition-colors ${
+                      currentPage === pagination.total_pages || loading
+                        ? 'cursor-not-allowed bg-gray-800 text-gray-600'
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    }`}
+                  >
                     <ChevronRight className="size-6" />
                   </button>
                 </nav>
