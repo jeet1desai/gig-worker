@@ -16,6 +16,7 @@ export enum PUBLIC_ROUTE {
   RESET_PASSWORD_PAGE_PATH = '/reset-password',
   ADMIN_LOGIN_PATH = '/admin/login',
   EMAIL_VERIFICATION_PATH = '/email-verification',
+  WORKS = '/works',
   NOT_FOUND = '*'
 }
 
@@ -38,12 +39,13 @@ export enum PUBLIC_API_ROUTES {
   FORGOT_PASSWORD_API = '/auth/forgot-password',
   RESET_PASSWORD_API = '/auth/reset-password',
   API_FORGOT_PASSWORD = '/auth/forgot-password',
-  WEBHOOK_PAYPAL = '/api/webhook/paypal'
+  WEBHOOK_PAYPAL = '/api/webhook/paypal',
+  GIGS_API = '/api/gigs'
 }
 
 export enum PRIVATE_API_ROUTES {
   SUBSCRIPTION_PLANS_API = '/subscriptions/plans',
-  SUBSCRIPTION_CREATE_API = '/subscriptions/subscribe',
+  SUBSCRIPTION_CREATE_API = '/subscriptions/subscribe'
 }
 
 export const excludedPublicRoutes = [
