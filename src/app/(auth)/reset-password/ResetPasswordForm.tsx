@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -53,7 +53,7 @@ export default function ResetPasswordForm() {
       form.reset();
 
       setTimeout(() => {
-        router.push(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH);
+        router.replace(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH);
       }, RESET_PASSWORD_MESSAGES.redirectDelay);
     } catch (err: any) {
       setLoading(false);
