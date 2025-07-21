@@ -16,7 +16,7 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isApiRoute = pathname.startsWith('/api');
   const publicApiRoutes = Object.values(PUBLIC_API_ROUTES) as string[];
-  const isPublicApiRoute = publicApiRoutes.includes(pathname);
+  const isPublicApiRoute = publicApiRoutes.includes(pathname) || pathname.startsWith('/api/public/');
   const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
 
   if (isPublicApiRoute) {
