@@ -2,13 +2,27 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell, TableCaption } from '@/components/ui/table';
+import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Search, Pencil, Trash2 } from 'lucide-react';
 import DashboardLayout from '@/components/layouts/layout';
 import { USER_GIGS } from '@/constants';
+import CommonDeleteDialog from '@/components/CommonDeleteDialog';
+import { useState } from 'react';
+import { toast } from '@/lib/toast';
 
 export function UserGigsList() {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const handleDeleteClick = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    setIsDeleteDialogOpen(false);
+    toast.success('Gig deleted successfully!');
+  };
+
   return (
     <DashboardLayout>
       <div className="container mx-auto p-2 sm:p-6">
@@ -74,7 +88,7 @@ export function UserGigsList() {
                           <Button size="icon" variant="ghost" className="hover:text-blue-500">
                             <Pencil className="h-4 w-4" />
                           </Button>
-                          <Button size="icon" variant="ghost" className="hover:text-red-500">
+                          <Button size="icon" variant="ghost" className="hover:text-red-500" onClick={() => handleDeleteClick()}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -92,6 +106,16 @@ export function UserGigsList() {
             )}
           </CardContent>
         </Card>
+        <CommonDeleteDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          title="Delete Gig"
+          description="Are you sure you want to delete this gig?"
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
+          isLoading={false}
+          onConfirm={handleConfirmDelete}
+        />
       </div>
     </DashboardLayout>
   );
