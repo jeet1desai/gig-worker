@@ -177,7 +177,7 @@ export default function SignupForm() {
             {errors.terms && <p className="mt-1 text-sm text-red-500">{errors.terms.message}</p>}
 
             <div className="rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
-              <button type="submit" className="w-full rounded-lg px-5 py-2 font-bold text-[#383937] hover:opacity-90">
+              <button type="submit" className="w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937] hover:opacity-90">
                 Sign up
               </button>
             </div>

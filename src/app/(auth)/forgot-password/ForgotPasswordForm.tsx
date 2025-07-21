@@ -48,7 +48,6 @@ export default function ForgotPasswordForm() {
       const { data } = await apiService.post<ApiResponse>(PUBLIC_API_ROUTES.FORGOT_PASSWORD_API, values, { withAuth: false });
 
       toast.success(data?.message || FORGOT_PASSWORD_MESSAGES.success);
-      form.reset();
     } catch (err: any) {
       if (err.response) {
         const data: ApiResponse = err.response.data;
@@ -111,6 +110,10 @@ export default function ForgotPasswordForm() {
                       className={`!border !pl-9 ${
                         form.formState.errors.email ? '!border-red-500' : '!border-[#444]'
                       } bg-transparent !text-white !placeholder-white placeholder:text-base`}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        setServerError(null);
+                      }}
                     />
                   </div>
                 </FormControl>
@@ -122,7 +125,7 @@ export default function ForgotPasswordForm() {
           {serverError && <p className="text-sm text-red-400">{serverError}</p>}
 
           <div className="mt-12 rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
-            <button type="submit" className="w-full rounded-lg px-5 py-2 font-bold text-[#383937]">
+            <button type="submit" className="w-full cursor-pointer rounded-lg px-5 py-2 font-bold text-[#383937]">
               Confirm
             </button>
           </div>
