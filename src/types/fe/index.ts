@@ -50,3 +50,24 @@ export interface SubscriptionPlanPayload {
   maxBids: number;
   subscriptionType: string;
 }
+
+export interface CMSModuleResponse {
+  success: boolean;
+  data: ContentItem[];
+  message: string;
+  [key: string]: any;
+}
+
+export interface ContentItem {
+  id: string;
+  type: 'faq' | 'step' | 'contact' | 'terms' | 'privacy';
+  title: string;
+  description?: string;
+  content: string;
+  order?: number;
+  isVisible: boolean;
+  color?: string;
+  [key: string]: any;
+}
+
+export type WorkingStepDirectionType = 'up' | 'down';

@@ -1,4 +1,4 @@
-import { setGigs, setLoading, clearGigs } from '@/store/slices/gigs';
+import { setGigs, setLoading, clearGigs, setOwnGigs } from '@/store/slices/gigs';
 import { AppDispatch } from '@/store/store';
 
 import apiService from './api';
@@ -28,11 +28,11 @@ export const gigService = {
     };
   },
 
-  getGigs({ page, search }: { page: number; search?: string }) {
+  getGigs({ page, search, limit }: { page: number; search?: string; limit?: number }) {
     return async (dispatch: AppDispatch) => {
       try {
         dispatch(setLoading({ loading: true }));
-        const response: any = await apiService.get(`/gigs?page=${page}${search ? `&search=${search}` : ''}`, {
+        const response: any = await apiService.get(`/gigs?page=${page}${search ? `&search=${search}` : ''}${limit ? `&limit=${limit}` : ''}`, {
           withAuth: true
         });
         if (response.status === 200 && response.data) {
@@ -66,6 +66,25 @@ export const gigService = {
       } catch (error: any) {
         toast.error(error.response?.data?.error?.message || 'Failed to fetch gig details');
         throw error;
+      } finally {
+        dispatch(setLoading({ loading: false }));
+      }
+    };
+  },
+
+  getOwnersGig({ page, search }: { page: number; search?: string }) {
+    return async (dispatch: AppDispatch) => {
+      try {
+        dispatch(setLoading({ loading: true }));
+        const response: any = await apiService.get(`/gigs/me?page=${page}${search ? `&search=${search}` : ''}`, {
+          withAuth: true
+        });
+        if (response.status === 200 && response.data) {
+          dispatch(setOwnGigs({ gigs: response.data.data.gigs, pagination: response.data.data.pagination }));
+          return response.data;
+        }
+      } catch (error: any) {
+        toast.error(error.response?.data?.error?.message);
       } finally {
         dispatch(setLoading({ loading: false }));
       }

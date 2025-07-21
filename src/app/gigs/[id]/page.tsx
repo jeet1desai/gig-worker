@@ -31,7 +31,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DashboardLayout from '@/components/layouts/layout';
 
-import { formatDate } from '@/lib/date-format';
+import { formatDate, getDaysBetweenDates } from '@/lib/date-format';
 
 import { useDispatch } from '@/store/store';
 import { gigService } from '@/services/gig.services';
@@ -176,13 +176,6 @@ export default function GigDetailPage() {
     }
   }, [id]);
 
-  const getDaysBetweenDates = (startDate: string, endDate: string) => {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
-
   const handleFetchGigDetails = async (id: any) => {
     const response = await dispatch(gigService.getGigById(id) as any);
     if (response && response.data) {
@@ -206,8 +199,6 @@ export default function GigDetailPage() {
       console.error('Error downloading file:', error);
     }
   };
-
-  console.log(gig);
 
   return (
     <DashboardLayout>
@@ -282,7 +273,7 @@ export default function GigDetailPage() {
                         <MapPin className="h-5 w-5 text-green-400" />
                         <div>
                           <p className="text-sm text-gray-400">Location</p>
-                          <p className="font-medium text-white">{mockGigRequest.location}</p>
+                          <p className="font-medium text-white">{gig?.location}</p>
                         </div>
                       </div>
                     </div>

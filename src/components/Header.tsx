@@ -7,13 +7,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import * as Popover from '@radix-ui/react-popover';
-import { LayoutDashboardIcon, LogOut, User } from 'lucide-react';
+import { LayoutDashboardIcon, LogOut } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import CommonDeleteDialog from './CommonDeleteDialog';
 import { signOut } from 'next-auth/react';
 import { clearStorage } from '@/lib/local-storage';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { ADMIN_ROLE } from '@/constants';
 
 function Header() {
   const { data: session } = useSession();
@@ -31,13 +32,19 @@ function Header() {
     setIsLoading(false);
     router.refresh();
   }, [router]);
+
   return (
-    <header className="w-full bg-[#1D1D1D]">
+    <header className="sticky top-0 z-50 w-full bg-[#1D1D1D]">
       <div className="mx-auto w-full max-w-[1920px] px-4 py-4 sm:px-6 md:px-10">
         <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
           <div className="flex w-full flex-row items-center justify-between gap-4 lg:w-2/3 lg:justify-between">
             <div className="relative flex aspect-[120/60] w-[120px] items-center justify-center">
-              <Image src={Images.logo} alt="logo" fill className="object-contain object-center" />
+              <Image
+                src={Images.logo}
+                alt="logo"
+                fill
+                className="object-contain object-center"
+              />
             </div>
 
             <div className="relative w-full max-w-lg lg:ml-10">
@@ -51,7 +58,7 @@ function Header() {
           </div>
 
           <nav className="flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm lg:w-1/3 lg:justify-end">
-            <Link href="#" className="text-base text-[#FFF2E3]">
+            <Link href="/works" className="text-base text-[#FFF2E3]">
               Find Work
             </Link>
             <Link href="#" className="text-base text-[#FFF2E3]">
@@ -62,14 +69,19 @@ function Header() {
                 <Popover.Trigger asChild>
                   <div className="flex cursor-pointer items-center space-x-2 border-l border-slate-700 pl-4">
                     <div className="hidden text-right sm:block">
-                      <p className="max-w-[120px] truncate text-sm font-medium text-white">{session?.user.name}</p>
+                      <p className="max-w-[120px] truncate text-sm font-medium text-white">
+                        {session?.user.name}
+                      </p>
                       <p className="hidden text-xs text-slate-400 md:block">
-                        {session?.user.role.charAt(0).toUpperCase() + session?.user.role.slice(1)}
+                        {`${session?.user.role.charAt(0).toUpperCase() + session?.user.role.slice(1)}`}
                       </p>
                     </div>
                     <div className="relative">
                       <Avatar className="h-8 w-8 rounded-xl object-cover ring-2 ring-blue-500/20 transition-all duration-200 hover:scale-105 hover:ring-blue-500/40">
-                        <AvatarImage src={session?.user.image} alt={session?.user.name} />
+                        <AvatarImage
+                          src={session?.user.image}
+                          alt={session?.user.name}
+                        />
                         <AvatarFallback className="bg-transparent text-white">
                           {session?.user.name
                             ?.split(' ')
@@ -91,7 +103,11 @@ function Header() {
                   >
                     {
                       <Link
-                        href={session?.user.role === 'admin' ? PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH : PRIVATE_ROUTE.DASHBOARD}
+                        href={
+                          session?.user.role === ADMIN_ROLE
+                            ? PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH
+                            : PRIVATE_ROUTE.DASHBOARD
+                        }
                         className="flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-sm outline-none hover:bg-slate-700 focus:outline-none focus-visible:ring-0"
                       >
                         <LayoutDashboardIcon className="h-4 w-4" />
@@ -110,10 +126,16 @@ function Header() {
               </Popover.Root>
             ) : (
               <>
-                <Link href={PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH} className="text-base text-[#FFF2E3]">
+                <Link
+                  href={PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH}
+                  className="text-base text-[#FFF2E3]"
+                >
                   Login
                 </Link>
-                <Link href={PUBLIC_ROUTE.SIGNUP_PAGE_PATH} className="text-base text-[#FFF2E3]">
+                <Link
+                  href={PUBLIC_ROUTE.SIGNUP_PAGE_PATH}
+                  className="text-base text-[#FFF2E3]"
+                >
                   Signup
                 </Link>
               </>
