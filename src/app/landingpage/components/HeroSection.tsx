@@ -1,8 +1,12 @@
 import { Images } from '@/lib/images';
+import { getAllFreelancersNumber, getAverageRating } from '@/lib/server/landingPageCounts';
 import Image from 'next/image';
 import Link from 'next/link';
 
-function HeroSection() {
+async function HeroSection() {
+  const averageRating = await getAverageRating();
+  const totalFreelancers = await getAllFreelancersNumber();
+
   return (
     <section className="w-full bg-[#000000] py-20">
       <div className="mx-auto flex max-w-[1920px] flex-col items-center justify-between gap-10 px-4 sm:px-6 md:px-10 lg:flex-row">
@@ -35,8 +39,8 @@ function HeroSection() {
               <Image src={Images.reviewers_image} alt="reviewers_image" fill className="object-contain object-center" />
             </div>
             <div>
-              <div className="mt-4 text-sm text-yellow-400 sm:text-base">⭐⭐⭐⭐⭐ 4.8/5</div>
-              <p className="mb-6 text-sm text-[#383937] sm:text-base">Trusted by 5,300+ customers</p>
+              <div className="mt-4 text-sm text-yellow-400 sm:text-base">⭐⭐⭐⭐⭐ {averageRating}/5</div>
+              <p className="mb-6 text-sm text-[#383937] sm:text-base">Trusted by {totalFreelancers}+ customers</p>
             </div>
           </div>
         </div>

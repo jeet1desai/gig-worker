@@ -30,7 +30,8 @@ export enum PRIVATE_ROUTE {
   ADMIN_USERS_DASHBOARD_PATH = '/admin/users',
   ADMIN_GIGS_DASHBOARD_PATH = '/admin/gigs',
   ADMIN_TIER_SYSTEM_DASHBOARD_PATH = '/admin/tier-system',
-  ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH = '/admin/subscriptions'
+  ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH = '/admin/subscriptions',
+  ADMIN_CMS_PATH = '/admin/cms'
 }
 
 export enum PUBLIC_API_ROUTES {
@@ -40,6 +41,11 @@ export enum PUBLIC_API_ROUTES {
   RESET_PASSWORD_API = '/auth/reset-password',
   API_FORGOT_PASSWORD = '/auth/forgot-password',
   WEBHOOK_PAYPAL = '/api/webhook/paypal',
+  CMS_PARENT_API = 'cms',
+  CMS_TYPE_API = 'cms/type',
+  CMS_CONTENT_ID_API = 'cms/content_id',
+  LANDING_PAGE_FAQS_LIST_API = 'faqs',
+  CMS_STEPS_API = 'cms/type/step',
   GIGS_API = '/api/gigs'
 }
 
