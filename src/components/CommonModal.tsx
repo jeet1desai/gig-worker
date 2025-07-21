@@ -31,7 +31,7 @@ const CommonModal: React.FC<CommonModalProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent
-        className={cn('max-h-[90vh] overflow-y-auto rounded-xl bg-[#111] px-6 py-4 text-white sm:max-w-[600px]', className)}
+        className={cn('max-h-[90vh] overflow-y-auto rounded-xl bg-[#111] px-6 pt-5 pb-6 text-white sm:max-w-[600px]', className)}
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >

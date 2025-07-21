@@ -26,3 +26,10 @@ export const formatDateInternational = (dateString?: string | Date | null): stri
     return 'Date error';
   }
 };
+
+export const getDaysBetweenDates = (startDate: string, endDate: string) => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const diffTime = Math.abs(end.getTime() - start.getTime());
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+};

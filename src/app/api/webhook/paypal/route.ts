@@ -3,10 +3,10 @@ import { Decimal } from '@prisma/client/runtime/library';
 
 import prisma from '@/lib/prisma';
 import { verifyWebhookSignature } from '@/lib/paypal/verifyWebhook';
-import { cancelSubscription } from '@/lib/paypal/subscriptions';
+import { cancelSubscription, getSubscription } from '@/lib/paypal/subscriptions';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { errorResponse, successResponse } from '@/lib/api-response';
-import { PAYPAL_SUBSCRIPTION_CANCEL_REASON } from '@/enums/be/paypal';
+import { PAYPAL_SUBSCRIPTION_CANCEL_REASON, PAYPAL_SUBSCRIPTION_STATUS } from '@/enums/be/paypal';
 import { getPlanByPlanId } from '@/lib/server/subscriptionPlans';
 
 export async function POST(req: Request) {
@@ -20,7 +20,11 @@ export async function POST(req: Request) {
       });
 
     const { event_type, resource } = body;
-    if (!event_type.startsWith('BILLING.SUBSCRIPTION.')) return successResponse({ message: 'Ignored non-subscription event', data: null });
+    if (!event_type.startsWith('BILLING.SUBSCRIPTION.'))
+      return successResponse({
+        message: 'Ignored non-subscription event',
+        data: null
+      });
     if (event_type === 'BILLING.SUBSCRIPTION.CREATED') return successResponse({ message: 'CREATED ignored', data: null });
 
     const subId = resource.id,
@@ -102,7 +106,12 @@ export async function POST(req: Request) {
     if (newStatus === SUBSCRIPTION_STATUS.active) {
       const old = user.subscriptions.find((s) => s.status === SUBSCRIPTION_STATUS.active && s.subscription_id !== subId);
       if (old) {
-        await cancelSubscription(old.subscription_id!, PAYPAL_SUBSCRIPTION_CANCEL_REASON.SWITCHING_PLAN);
+        if (old.subscription_id) {
+          const existingPayPalSub = await getSubscription(old.subscription_id!);
+          if (existingPayPalSub.status === PAYPAL_SUBSCRIPTION_STATUS.ACTIVE) {
+            await cancelSubscription(old.subscription_id!, PAYPAL_SUBSCRIPTION_CANCEL_REASON.SWITCHING_PLAN);
+          }
+        }
         await prisma.subscription.update({
           where: { id: old.id },
           data: { status: SUBSCRIPTION_STATUS.cancelled }
