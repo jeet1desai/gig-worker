@@ -81,14 +81,12 @@ export const toast = Object.assign(sonnerToast, {
   info: (message: string) => {
     sonnerToast.custom((t) => (
       <div
-        className="flex w-full max-w-sm items-center justify-between gap-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-4 text-white shadow-xl transition-all duration-300 hover:from-blue-500 hover:to-purple-500 sm:px-6 sm:py-6 sm:text-base"
+        className="flex w-full max-w-sm items-center justify-between gap-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-xl transition-all duration-300 hover:from-blue-500 hover:to-purple-500 sm:px-6 sm:py-6 sm:text-base"
         style={{
           boxShadow: '0 0 10px 3px rgba(94, 94, 206, 0.5)'
         }}
       >
-        <div className="flex items-center justify-center gap-3">
-          <span className="text-sm sm:text-base">{message}</span>
-        </div>
+        <span className="text-sm sm:text-base">{message}</span>
         <Button
           variant="ghost"
           size="icon"

@@ -34,7 +34,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     if (hasValidSubscription) {
       if (role === 'user') {
         dynamicMenu.push({
-          name: 'Manage Gigs',
+          name: 'Manage My Gigs',
           icon: ClipboardList,
           href: PRIVATE_ROUTE.USER_GIGS
         });
