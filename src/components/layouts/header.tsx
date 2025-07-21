@@ -12,7 +12,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { clearStorage } from '@/lib/local-storage';
-
+import { toast } from '@/lib/toast';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import NotificationBell from '../notification-bell';
@@ -45,6 +45,11 @@ export function Header({ collapsed, onToggle, role, onRoleChange, subscriptionTy
     router.refresh();
   }, [router]);
 
+  const handleRoleChange = (newRole: 'user' | 'provider') => {
+    onRoleChange(newRole);
+    toast.info(`You have switched your profile as ${newRole.charAt(0).toUpperCase() + newRole.slice(1)}`);
+  };
+
   return (
     <TooltipProvider>
       <header className="bg-foreground fixed right-0 left-0 z-[1] ml-18 border-b border-slate-700/50 p-4 pl-6 shadow-sm">
@@ -62,41 +67,43 @@ export function Header({ collapsed, onToggle, role, onRoleChange, subscriptionTy
           </div>
 
           <div className="flex items-center space-x-4">
-            {(subscriptionType === 'basic' || subscriptionType === 'pro') && session?.user.role === 'provider' && (
-              <div className="flex items-center gap-1 rounded-xl bg-slate-700/50 p-1">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
-                        role === 'user' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
-                      }`}
-                      onClick={() => onRoleChange('user')}
-                    >
-                      <User className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent> User </TooltipContent>
-                </Tooltip>
+            {subscriptionType === 'basic' ||
+              subscriptionType === 'pro' ||
+              (session?.user.role === 'provider' && (
+                <div className="flex items-center gap-1 rounded-xl bg-slate-700/50 p-1">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
+                          role === 'user' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
+                        }`}
+                        onClick={() => handleRoleChange('user')}
+                      >
+                        <User className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent> User </TooltipContent>
+                  </Tooltip>
 
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
-                        role === 'provider' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
-                      }`}
-                      onClick={() => onRoleChange('provider')}
-                    >
-                      <Briefcase className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent> Provider </TooltipContent>
-                </Tooltip>
-              </div>
-            )}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
+                          role === 'provider' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
+                        }`}
+                        onClick={() => handleRoleChange('provider')}
+                      >
+                        <Briefcase className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent> Provider </TooltipContent>
+                  </Tooltip>
+                </div>
+              ))}
 
             <Tooltip>
               <TooltipTrigger asChild>

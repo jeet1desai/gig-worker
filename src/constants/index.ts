@@ -1,11 +1,4 @@
-import {
-  BarChart3,
-  Briefcase,
-  PackagePlusIcon,
-  Users2Icon,
-  LayoutDashboard,
-  PanelRight
-} from 'lucide-react';
+import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelRight } from 'lucide-react';
 import { PayPalButtonStyle } from '@paypal/paypal-js';
 import { PRIVATE_ROUTE } from './app-routes';
 import { publicEnv } from '@/lib/config/publicEnv';
@@ -104,8 +97,7 @@ export const GIGS_LIST = [
 export const TIER_DATA_LIST = {
   basic: {
     title: 'Basic Tier',
-    description:
-      'Simple tasks that require minimal skill but provide essential help to students.',
+    description: 'Simple tasks that require minimal skill but provide essential help to students.',
     examples: 'Laundry, food pickup, move-in/move-out help, package delivery',
     stats: {
       totalGigs: 245,
@@ -118,10 +110,8 @@ export const TIER_DATA_LIST = {
   },
   advanced: {
     title: 'Advanced Tier',
-    description:
-      'Knowledge-based services requiring experience and good judgment.',
-    examples:
-      'Academic advice, major selection guidance, career counseling, campus navigation',
+    description: 'Knowledge-based services requiring experience and good judgment.',
+    examples: 'Academic advice, major selection guidance, career counseling, campus navigation',
     stats: {
       totalGigs: 189,
       avgRating: 4.8,
@@ -133,10 +123,8 @@ export const TIER_DATA_LIST = {
   },
   expert: {
     title: 'Expert Tier',
-    description:
-      'High-skill, specialized services requiring expertise and proven track record.',
-    examples:
-      'Tutoring, homework help, interview preparation, grad school applications, schedule optimization',
+    description: 'High-skill, specialized services requiring expertise and proven track record.',
+    examples: 'Tutoring, homework help, interview preparation, grad school applications, schedule optimization',
     stats: {
       totalGigs: 156,
       avgRating: 4.9,
@@ -147,6 +135,46 @@ export const TIER_DATA_LIST = {
     bgGradient: 'from-purple-950/50 to-violet-950/30 border-l-purple-500'
   }
 };
+
+export const USER_GIGS = [
+  {
+    id: '1',
+    title: 'I will design a modern mobile app UI for your startup',
+    price: 150,
+    status: 'active' as const,
+    tier: 'Expert',
+    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=225&fit=crop',
+    createdAt: '2024-01-15'
+  },
+  {
+    id: '2',
+    title: 'I will write your research paper and essays',
+    price: 75,
+    status: 'paused' as const,
+    tier: 'Advanced',
+    image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&h=225&fit=crop',
+    createdAt: '2024-01-10'
+  },
+  {
+    id: '3',
+    title: 'I will tutor you in computer science fundamentals',
+    price: 45,
+    status: 'active' as const,
+    tier: 'Expert',
+    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop',
+    createdAt: '2024-01-08'
+  },
+  {
+    id: '4',
+    title: 'I will create social media content for your brand',
+    description: 'Engaging social media posts, stories, and campaigns tailored for student entrepreneurs and small businesses.',
+    price: 85,
+    status: 'draft' as const,
+    tier: 'Basic',
+    image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop',
+    createdAt: '2024-01-05'
+  }
+];
 
 export const DEFAULT_PAGINATION = {
   page: 1,
@@ -222,15 +250,12 @@ export const VERIFICATION_MESSAGES = {
   USER_ALREADY_VERIFIED: 'User already verified.',
   EMAIL_VERIFIED_SUCCESS: 'Email verified successfully.',
   EMAIL_VERIFIED_NOTIFICATION_TITLE: 'Email Verified',
-  EMAIL_VERIFIED_NOTIFICATION_MESSAGE:
-    'Your email has been verified successfully.'
+  EMAIL_VERIFIED_NOTIFICATION_MESSAGE: 'Your email has been verified successfully.'
 };
 
 export const COMMON_ERROR_MESSAGES = {
-  INTERNAL_SERVER_ERROR_MESSAGE:
-    'Internal server error. Please try again later.',
-  USER_NOT_FOUND_MESSAGE:
-    'User not found. Please check the provided information.',
+  INTERNAL_SERVER_ERROR_MESSAGE: 'Internal server error. Please try again later.',
+  USER_NOT_FOUND_MESSAGE: 'User not found. Please check the provided information.',
   SOMETHING_WENT_WRONG_MESSAGE: 'Something went wrong. Please try again later.',
   INVALID_REQUEST: 'Invalid request. Please check your input and try again.',
   UNAUTHORIZED: 'Unauthorized access. Please log in and try again.',
