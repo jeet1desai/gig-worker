@@ -52,12 +52,21 @@ export async function PATCH(req: NextRequest) {
       });
     }
 
+    if (user.reset_token_used) {
+      return errorResponse({
+        code: VERIFICATION_CODES.INVALID_OR_EXPIRED_TOKEN,
+        message: RESET_PASSWORD_MESSAGES.invalidOrExpiredToken,
+        statusCode: HttpStatusCode.BAD_REQUEST
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        password: hashedPassword
+        password: hashedPassword,
+        reset_token_used: true
       }
     });
 
@@ -78,7 +87,6 @@ export async function PATCH(req: NextRequest) {
       const fieldErrors: Record<string, string> = {};
       for (const issue of err.inner) {
         if (issue.path) fieldErrors[issue.path] = issue.message;
-        else fieldErrors[''] = issue.message;
       }
 
       return errorResponse({
