@@ -1,4 +1,11 @@
-import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard } from 'lucide-react';
+import {
+  BarChart3,
+  Briefcase,
+  PackagePlusIcon,
+  Users2Icon,
+  LayoutDashboard,
+  PanelRight
+} from 'lucide-react';
 import { PayPalButtonStyle } from '@paypal/paypal-js';
 import { PRIVATE_ROUTE } from './app-routes';
 import { publicEnv } from '@/lib/config/publicEnv';
@@ -25,7 +32,11 @@ export const PAYPAL_BUTTON_CONFIG: PayPalButtonStyle = {
 export const TOKEN = 'token';
 
 export const DASHBOARD_NAVIGATION_MENU = [
-  { name: 'Dashboard', icon: BarChart3, href: PRIVATE_ROUTE.DASHBOARD },
+  {
+    name: 'Dashboard',
+    icon: BarChart3,
+    href: PRIVATE_ROUTE.DASHBOARD
+  },
   { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.GIGS }
 ];
 
@@ -35,12 +46,25 @@ export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
     icon: LayoutDashboard,
     href: PRIVATE_ROUTE.ADMIN_TIER_SYSTEM_DASHBOARD_PATH
   },
-  { name: 'Users', icon: Users2Icon, href: PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH },
-  { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH },
+  {
+    name: 'Users',
+    icon: Users2Icon,
+    href: PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH
+  },
+  {
+    name: 'Gigs',
+    icon: Briefcase,
+    href: PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH
+  },
   {
     name: 'Subscription Plans',
     icon: PackagePlusIcon,
     href: PRIVATE_ROUTE.ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH
+  },
+  {
+    name: 'CMS Module',
+    icon: PanelRight,
+    href: PRIVATE_ROUTE.ADMIN_CMS_PATH
   }
 ];
 
@@ -80,7 +104,8 @@ export const GIGS_LIST = [
 export const TIER_DATA_LIST = {
   basic: {
     title: 'Basic Tier',
-    description: 'Simple tasks that require minimal skill but provide essential help to students.',
+    description:
+      'Simple tasks that require minimal skill but provide essential help to students.',
     examples: 'Laundry, food pickup, move-in/move-out help, package delivery',
     stats: {
       totalGigs: 245,
@@ -93,8 +118,10 @@ export const TIER_DATA_LIST = {
   },
   advanced: {
     title: 'Advanced Tier',
-    description: 'Knowledge-based services requiring experience and good judgment.',
-    examples: 'Academic advice, major selection guidance, career counseling, campus navigation',
+    description:
+      'Knowledge-based services requiring experience and good judgment.',
+    examples:
+      'Academic advice, major selection guidance, career counseling, campus navigation',
     stats: {
       totalGigs: 189,
       avgRating: 4.8,
@@ -106,8 +133,10 @@ export const TIER_DATA_LIST = {
   },
   expert: {
     title: 'Expert Tier',
-    description: 'High-skill, specialized services requiring expertise and proven track record.',
-    examples: 'Tutoring, homework help, interview preparation, grad school applications, schedule optimization',
+    description:
+      'High-skill, specialized services requiring expertise and proven track record.',
+    examples:
+      'Tutoring, homework help, interview preparation, grad school applications, schedule optimization',
     stats: {
       totalGigs: 156,
       avgRating: 4.9,
@@ -193,12 +222,15 @@ export const VERIFICATION_MESSAGES = {
   USER_ALREADY_VERIFIED: 'User already verified.',
   EMAIL_VERIFIED_SUCCESS: 'Email verified successfully.',
   EMAIL_VERIFIED_NOTIFICATION_TITLE: 'Email Verified',
-  EMAIL_VERIFIED_NOTIFICATION_MESSAGE: 'Your email has been verified successfully.'
+  EMAIL_VERIFIED_NOTIFICATION_MESSAGE:
+    'Your email has been verified successfully.'
 };
 
 export const COMMON_ERROR_MESSAGES = {
-  INTERNAL_SERVER_ERROR_MESSAGE: 'Internal server error. Please try again later.',
-  USER_NOT_FOUND_MESSAGE: 'User not found. Please check the provided information.',
+  INTERNAL_SERVER_ERROR_MESSAGE:
+    'Internal server error. Please try again later.',
+  USER_NOT_FOUND_MESSAGE:
+    'User not found. Please check the provided information.',
   SOMETHING_WENT_WRONG_MESSAGE: 'Something went wrong. Please try again later.',
   INVALID_REQUEST: 'Invalid request. Please check your input and try again.',
   UNAUTHORIZED: 'Unauthorized access. Please log in and try again.',
@@ -208,3 +240,20 @@ export const COMMON_ERROR_MESSAGES = {
 };
 
 export const SUBSCRIPTION_PLAN_TYPES = ['free', 'basic', 'pro'];
+
+export const ADMIN_ROLE = 'admin';
+
+export const WORKING_STEPS_MOVE_DIRECTION = {
+  up: 'up',
+  down: 'down'
+};
+
+export const contentTypes = {
+  faq: 'FAQ',
+  step: 'Steps',
+  contact: 'Contact Us',
+  terms: 'Terms & Conditions',
+  privacy: 'Privacy Policy'
+};
+
+export const singleEntryTypes = ['contact', 'terms', 'privacy'];
