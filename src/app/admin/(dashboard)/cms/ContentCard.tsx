@@ -30,13 +30,7 @@ export default function ContentCard({
   item: ContentItem;
   isEditing: boolean;
   onEdit: () => void;
-  onSave: (
-    id: string,
-    title: string,
-    description: string,
-    content: string,
-    color?: string
-  ) => void;
+  onSave: (id: string, title: string, description: string, content: string, color?: string) => void;
   onDelete: () => void;
   onCancel: () => void;
   onMoveUp: () => void;
@@ -112,9 +106,7 @@ export default function ContentCard({
               <div className="space-y-4">
                 {!singleEntryTypes.includes(item.type) && (
                   <div className="space-y-2">
-                    <Label className="text-white">
-                      {item.type === 'faq' ? 'Question' : 'Title'}
-                    </Label>
+                    <Label className="text-white">{item.type === 'faq' ? 'Question' : 'Title'}</Label>
                     <Input
                       placeholder={`Enter ${item.type === 'faq' ? 'question' : 'title'}`}
                       value={title}
@@ -123,18 +115,12 @@ export default function ContentCard({
                         setFormErrors({ ...formErrors, title: '' });
                       }}
                     />
-                    {formErrors.title && (
-                      <p className="mt-1 text-xs text-red-400">
-                        {formErrors.title}
-                      </p>
-                    )}
+                    {formErrors.title && <p className="mt-1 text-xs text-red-400">{formErrors.title}</p>}
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <Label className="text-white">
-                    {item.type === 'faq' ? 'Answer' : 'Content'}
-                  </Label>
+                  <Label className="text-white">{item.type === 'faq' ? 'Answer' : 'Content'}</Label>
                   {singleEntryTypes.includes(item.type) ? (
                     <TipTapEditor
                       value={content}
@@ -157,18 +143,12 @@ export default function ContentCard({
                     />
                   )}
 
-                  {formErrors.content && (
-                    <p className="mt-1 text-xs text-red-400">
-                      {formErrors.content}
-                    </p>
-                  )}
+                  {formErrors.content && <p className="mt-1 text-xs text-red-400">{formErrors.content}</p>}
                 </div>
 
                 {item.type === 'step' && (
                   <div>
-                    <label className="mb-2 block text-sm font-medium">
-                      Choose Color
-                    </label>
+                    <label className="mb-2 block text-sm font-medium">Choose Color</label>
                     <div className="flex items-center gap-3">
                       <input
                         type="color"
@@ -189,17 +169,9 @@ export default function ContentCard({
                         placeholder="#3b82f6"
                         className="flex-1"
                       />
-                      <div
-                        className="border-input h-10 w-10 rounded-md border"
-                        style={{ backgroundColor: color }}
-                        title="Color preview"
-                      />
+                      <div className="border-input h-10 w-10 rounded-md border" style={{ backgroundColor: color }} title="Color preview" />
                     </div>
-                    {formErrors.color && (
-                      <p className="mt-1 text-xs text-red-400">
-                        {formErrors.color}
-                      </p>
-                    )}
+                    {formErrors.color && <p className="mt-1 text-xs text-red-400">{formErrors.color}</p>}
                   </div>
                 )}
 
@@ -227,15 +199,8 @@ export default function ContentCard({
               <div className="space-y-3">
                 {item.type === 'faq' && (
                   <div className="flex items-center gap-2">
-                    <Checkbox
-                      id={`visible-${item.id}`}
-                      checked={item.isVisible}
-                      onCheckedChange={onToggleVisibility}
-                    />
-                    <label
-                      htmlFor={`visible-${item.id}`}
-                      className="cursor-pointer text-sm font-medium"
-                    >
+                    <Checkbox id={`visible-${item.id}`} checked={item.isVisible} onCheckedChange={onToggleVisibility} />
+                    <label htmlFor={`visible-${item.id}`} className="cursor-pointer text-sm font-medium">
                       Show on landing page
                     </label>
                   </div>
@@ -243,23 +208,14 @@ export default function ContentCard({
                 <div className="flex items-center gap-2">
                   <h3 className="text-lg font-semibold">{item.title}</h3>
                   {item.type === 'step' && item.color && (
-                    <div
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                      title="Step Color"
-                    />
+                    <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} title="Step Color" />
                   )}
                 </div>
                 {item.type !== 'faq' &&
                   (singleEntryTypes.includes(item.type) ? (
-                    <div
-                      className="text-muted-foreground leading-relaxed whitespace-pre-wrap"
-                      dangerouslySetInnerHTML={{ __html: item.content }}
-                    />
+                    <div className="text-muted-foreground leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: item.content }} />
                   ) : (
-                    <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                      {item.content}
-                    </p>
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{item.content}</p>
                   ))}
               </div>
             )}
@@ -267,22 +223,10 @@ export default function ContentCard({
 
           {!isEditing && item.type === 'step' && (
             <div className="flex flex-col gap-2 pt-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onMoveUp}
-                disabled={!canMoveUp}
-                className="h-8 w-8 bg-transparent p-1"
-              >
+              <Button variant="outline" size="sm" onClick={onMoveUp} disabled={!canMoveUp} className="h-8 w-8 bg-transparent p-1">
                 <ArrowUp className="h-3 w-3" />
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onMoveDown}
-                disabled={!canMoveDown}
-                className="h-8 w-8 bg-transparent p-1"
-              >
+              <Button variant="outline" size="sm" onClick={onMoveDown} disabled={!canMoveDown} className="h-8 w-8 bg-transparent p-1">
                 <ArrowDown className="h-3 w-3" />
               </Button>
             </div>

@@ -28,11 +28,34 @@ export const gigService = {
     };
   },
 
-  getGigs({ page, search, limit }: { page: number; search?: string; limit?: number }) {
+  getGigs({
+    page,
+    search,
+    limit,
+    minPrice,
+    maxPrice,
+    deliveryTime
+  }: {
+    page: number;
+    search?: string;
+    limit?: number;
+    minPrice?: string | number;
+    maxPrice?: string | number;
+    deliveryTime?: string | number;
+  }) {
     return async (dispatch: AppDispatch) => {
       try {
         dispatch(setLoading({ loading: true }));
-        const response: any = await apiService.get(`/gigs?page=${page}${search ? `&search=${search}` : ''}${limit ? `&limit=${limit}` : ''}`, {
+
+        const params = new URLSearchParams();
+        params.append('page', page.toString());
+        if (search) params.append('search', search);
+        if (limit) params.append('limit', limit.toString());
+        if (minPrice !== undefined) params.append('minPrice', minPrice.toString());
+        if (maxPrice !== undefined) params.append('maxPrice', maxPrice.toString());
+        if (deliveryTime !== undefined) params.append('deliveryTime', deliveryTime.toString());
+
+        const response: any = await apiService.get(`/gigs?${params.toString()}`, {
           withAuth: true
         });
         if (response.status === 200 && response.data) {
@@ -59,6 +82,25 @@ export const gigService = {
         dispatch(setLoading({ loading: true }));
         const response: any = await apiService.get(`/gigs/${id}`, {
           withAuth: true
+        });
+        if (response.status === 200 && response.data) {
+          return response.data;
+        }
+      } catch (error: any) {
+        toast.error(error.response?.data?.error?.message || 'Failed to fetch gig details');
+        throw error;
+      } finally {
+        dispatch(setLoading({ loading: false }));
+      }
+    };
+  },
+
+  getPublicGigDetailById(id: string) {
+    return async (dispatch: AppDispatch) => {
+      try {
+        dispatch(setLoading({ loading: true }));
+        const response: any = await apiService.get(`/public/gigs/${id}`, {
+          withAuth: false
         });
         if (response.status === 200 && response.data) {
           return response.data;
