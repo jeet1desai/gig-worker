@@ -46,7 +46,8 @@ export enum PUBLIC_API_ROUTES {
   CMS_CONTENT_ID_API = 'cms/content_id',
   LANDING_PAGE_FAQS_LIST_API = 'faqs',
   CMS_STEPS_API = 'cms/type/step',
-  GIGS_API = '/api/gigs'
+  GIGS_API = '/api/gigs',
+  GIG_DETAIL_PUBLIC_API = '/api/public/gigs'
 }
 
 export enum PRIVATE_API_ROUTES {

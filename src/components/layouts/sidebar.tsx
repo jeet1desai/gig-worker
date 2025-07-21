@@ -9,13 +9,7 @@ import { getSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import {
-  ForwardRefExoticComponent,
-  RefAttributes,
-  useCallback,
-  useEffect,
-  useState
-} from 'react';
+import { ForwardRefExoticComponent, RefAttributes, useCallback, useEffect, useState } from 'react';
 import CommonDeleteDialog from '../CommonDeleteDialog';
 import { clearStorage } from '@/lib/local-storage';
 import { ADMIN_ROLE } from '@/constants';
@@ -26,18 +20,12 @@ interface SidebarProps {
   onToggle: (collapsed: boolean) => void;
   navigation_menu: Array<{
     name: string;
-    icon: ForwardRefExoticComponent<
-      Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
-    >;
+    icon: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>;
     href: string;
   }>;
 }
 
-export function Sidebar({
-  collapsed,
-  onToggle,
-  navigation_menu
-}: SidebarProps) {
+export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) {
   const isMobile = useIsMobile();
   const pathname = usePathname();
   const router = useRouter();
@@ -70,10 +58,7 @@ export function Sidebar({
   }, []);
 
   const redirectToHome = useCallback(() => {
-    const path =
-      userDetails?.user.role === ADMIN_ROLE
-        ? PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH
-        : PRIVATE_ROUTE.DASHBOARD;
+    const path = userDetails?.user.role === ADMIN_ROLE ? PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH : PRIVATE_ROUTE.DASHBOARD;
     router.push(path);
   }, [userDetails]);
 
@@ -92,31 +77,15 @@ export function Sidebar({
     >
       <div className="flex h-full w-full flex-col">
         <div className="relative flex items-center justify-between border-b border-slate-700/50 p-4">
-          <div
-            className={cn(
-              'flex cursor-pointer items-center space-x-3',
-              collapsed && 'justify-center'
-            )}
-            onClick={redirectToHome}
-          >
+          <div className={cn('flex cursor-pointer items-center space-x-3', collapsed && 'justify-center')} onClick={redirectToHome}>
             <div className="flex h-10 w-10 items-center justify-center rounded-xl font-bold text-white shadow-lg">
               <div className="relative flex aspect-[200/113] w-[200px] items-center justify-center">
-                <Image
-                  src={Images.logo}
-                  alt="logo"
-                  fill
-                  className="object-contain object-center"
-                />
+                <Image src={Images.logo} alt="logo" fill className="object-contain object-center" />
               </div>
             </div>
             {!collapsed && (
               <div className="max-w-auto relative flex aspect-[150/25] w-[150px] items-center justify-center">
-                <Image
-                  src={Images.big_logo_icon}
-                  alt="big_logo"
-                  fill
-                  className="object-contain object-center"
-                />
+                <Image src={Images.big_logo_icon} alt="big_logo" fill className="object-contain object-center" />
               </div>
             )}
           </div>
