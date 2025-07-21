@@ -99,8 +99,12 @@ model Admin {
 
 model CMS {
   id          BigInt   @id @default(autoincrement())
-  name        String
-  description String?
+  type        String   // e.g. 'faq' | 'step' | 'contact' | 'terms' | 'privacy'
+  title       String
+  content     String
+  order       Int
+  isVisible   Boolean  @default(true)
+  color       String?  // Optional (e.g. hex color codes)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 }
