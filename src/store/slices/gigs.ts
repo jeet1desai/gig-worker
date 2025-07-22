@@ -23,7 +23,6 @@ const gigsSlice = createSlice({
   reducers: {
     setLoading: (state, action: PayloadAction<{ loading: boolean }>) => {
       const { loading } = action.payload;
-      console.log(loading);
       state.loading = loading;
     },
     setGigs: (state, action: PayloadAction<{ gigs: any[]; pagination: any }>) => {
