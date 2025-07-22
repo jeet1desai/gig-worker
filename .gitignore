@@ -48,5 +48,3 @@ pnpm-lock.yaml
 !.vscode/settings.json
 .idea
 /src/generated/prisma
-
-/src/generated/prisma
