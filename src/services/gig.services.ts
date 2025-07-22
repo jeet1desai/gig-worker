@@ -1,4 +1,4 @@
-import { setGigs, setLoading, clearGigs, setOwnGigs } from '@/store/slices/gigs';
+import { setGigs, setLoading, clearGigs, setOwnGigs, removeGig } from '@/store/slices/gigs';
 import { AppDispatch } from '@/store/store';
 
 import apiService from './api';
@@ -61,7 +61,7 @@ export const gigService = {
         if (minPrice !== undefined && minPrice !== '') params.append('minPrice', minPrice.toString());
         if (maxPrice !== undefined && maxPrice !== '') params.append('maxPrice', maxPrice.toString());
         if (deliveryTime !== undefined) params.append('deliveryTime', deliveryTime.toString());
-        if (tiers?.length) tiers.forEach((tier) => params.append('tiers', tier));
+        if (tiers?.length) params.append('tiers', tiers.join(','));
         if (rating !== undefined && rating !== 0) params.append('rating', rating.toString());
         if (reviews !== undefined && reviews !== '') params.append('reviews', reviews.toString());
 
@@ -153,11 +153,9 @@ export const gigService = {
         if (limit) params.append('limit', limit.toString());
         if (minPrice !== undefined && minPrice !== '') params.append('minPrice', minPrice.toString());
         if (maxPrice !== undefined && maxPrice !== '') params.append('maxPrice', maxPrice.toString());
-        if (tiers?.length) tiers.forEach((tier) => params.append('tiers', tier));
+        if (tiers?.length) params.append('tiers', tiers.join(','));
         if (rating !== undefined && rating !== 0) params.append('rating', rating.toString());
         if (reviews !== undefined && reviews !== '') params.append('reviews', reviews.toString());
-
-        console.log(params.toString());
 
         const response: any = await apiService.get(`/gigs/me?${params.toString()}`, {
           withAuth: true
@@ -168,6 +166,27 @@ export const gigService = {
         }
       } catch (error: any) {
         toast.error(error.response?.data?.error?.message);
+      } finally {
+        dispatch(setLoading({ loading: false }));
+      }
+    };
+  },
+
+  deleteGig(id: string) {
+    return async (dispatch: AppDispatch) => {
+      try {
+        dispatch(setLoading({ loading: true }));
+        const response: any = await apiService.delete(`/gigs/${id}`, {
+          withAuth: true
+        });
+        if (response && response.status === 200) {
+          toast.success('Gig deleted successfully');
+          dispatch(removeGig({ id: id }));
+          return response.data;
+        }
+      } catch (error: any) {
+        toast.error(error.response?.data?.error?.message || 'Failed to delete gig');
+        throw error;
       } finally {
         dispatch(setLoading({ loading: false }));
       }

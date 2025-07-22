@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, DollarSign, Filter, MapPin, Plus, Search, Star, Trash2, X } from 'lucide-react';
+import { Clock, DollarSign, Filter, Loader2, MapPin, Plus, Search, Star, Trash2, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Link from 'next/link';
@@ -279,7 +279,7 @@ const GigsPage = () => {
   const [selectedGigId, setSelectedGigId] = useState('');
 
   const user = useSelector((state: RootState) => state.user);
-  const { gigs, pagination, ownGigs } = useSelector((state: RootState) => state.gigs);
+  const { loading, gigs, pagination, ownGigs } = useSelector((state: RootState) => state.gigs);
 
   useEffect(() => {
     dispatch(gigService.clearGigs() as any);
@@ -448,7 +448,11 @@ const GigsPage = () => {
   };
 
   const handleDeleteConfirm = async () => {
-    setIsDeleteOpen(false);
+    const response = await dispatch(gigService.deleteGig(selectedGigId) as any);
+    if (response && response.data) {
+      setIsDeleteOpen(false);
+      setSelectedGigId('');
+    }
   };
 
   return (
@@ -732,11 +736,9 @@ const GigsPage = () => {
                 Cancel
               </Button>
             </DialogClose>
-            <DialogClose asChild>
-              <Button type="button" variant="destructive" className="cursor-pointer bg-[#5750F1] text-white" onClick={handleDeleteConfirm}>
-                Delete
-              </Button>
-            </DialogClose>
+            <Button type="button" variant="destructive" className="cursor-pointer bg-[#5750F1] text-white" onClick={handleDeleteConfirm}>
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Delete'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
