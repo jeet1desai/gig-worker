@@ -166,8 +166,6 @@ export default function GigDetailPage() {
   const { id } = useParams();
   const { data: session } = useSession();
 
-  console.log(session);
-
   const [gig, setGig] = useState<any>(null);
 
   useEffect(() => {
