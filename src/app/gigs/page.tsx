@@ -472,9 +472,8 @@ const GigsPage = () => {
             </div>
           )}
 
-          {/* Search and Filter Bar */}
           <div className="mb-8 rounded-xl bg-gray-800/50 p-4 backdrop-blur-sm sm:p-6">
-            <div className="flex flex-col gap-4 md:flex-row">
+            <div className="flex flex-col gap-4 lg:flex-row">
               <div className="relative w-full">
                 <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400 sm:left-4 sm:h-5 sm:w-5" />
                 <Input
@@ -486,16 +485,16 @@ const GigsPage = () => {
                 />
               </div>
 
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4">
-                <Button
-                  size="lg"
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-4 text-sm font-medium text-white hover:from-blue-500 hover:to-purple-500 sm:w-auto sm:px-6 sm:py-6 sm:text-base"
-                  onClick={handleSearch}
-                >
-                  <Search className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  Search
-                </Button>
+              <Button
+                size="lg"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-4 text-sm font-medium text-white hover:from-blue-500 hover:to-purple-500 sm:w-auto sm:px-6 sm:py-6 sm:text-base"
+                onClick={handleSearch}
+              >
+                <Search className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                Search
+              </Button>
 
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-4">
                 <Button
                   size="lg"
                   variant={Object.keys(activeFilters).length > 0 ? 'default' : 'outline'}
@@ -587,7 +586,6 @@ const GigsPage = () => {
             </div>
           )}
 
-          {/* Gig List */}
           {session?.user.role === 'user' || user?.role === 'user' ? (
             <InfiniteScroll
               dataLength={ownGigs.length}
@@ -616,7 +614,6 @@ const GigsPage = () => {
             </InfiniteScroll>
           )}
 
-          {/* Empty State */}
           {gigs.length === 0 && ownGigs.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="mb-4 rounded-full bg-gray-800 p-4">
