@@ -105,10 +105,10 @@ model CMS {
   isPublished  Boolean    @default(false)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  heroSection  Json?      // Optional, only for 'landing'
-  faqs         Json?      // Optional, only for 'faqs'
-  steps        Json?      // Optional, only for 'landing'
-  richContent  Json?      // Optional, only for 'informative'
+  heroSection  Json?
+  faqs         Json?
+  steps        Json?
+  richContent  Json?
 }
 
 model Plan {
