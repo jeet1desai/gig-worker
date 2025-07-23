@@ -1,4 +1,4 @@
-import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelRight, PanelLeft, Globe, FileText, List } from 'lucide-react';
+import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelLeft, Globe, FileText, List } from 'lucide-react';
 import { PayPalButtonStyle } from '@paypal/paypal-js';
 import { PRIVATE_ROUTE } from './app-routes';
 import { publicEnv } from '@/lib/config/publicEnv';
@@ -53,11 +53,6 @@ export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
     name: 'Subscription Plans',
     icon: PackagePlusIcon,
     href: PRIVATE_ROUTE.ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH
-  },
-  {
-    name: 'CMS Module',
-    icon: PanelRight,
-    href: PRIVATE_ROUTE.ADMIN_CMS_PATH
   },
   {
     name: 'CMS Pages',
@@ -272,21 +267,6 @@ export const COMMON_ERROR_MESSAGES = {
 export const SUBSCRIPTION_PLAN_TYPES = ['free', 'basic', 'pro'];
 
 export const ADMIN_ROLE = 'admin';
-
-export const WORKING_STEPS_MOVE_DIRECTION = {
-  up: 'up',
-  down: 'down'
-};
-
-export const contentTypes = {
-  faq: 'FAQ',
-  step: 'Steps',
-  contact: 'Contact Us',
-  terms: 'Terms & Conditions',
-  privacy: 'Privacy Policy'
-};
-
-export const singleEntryTypes = ['contact', 'terms', 'privacy'];
 
 export const pageTypes = {
   landing: { label: 'Landing Page', icon: Globe, color: 'bg-blue-500' },
