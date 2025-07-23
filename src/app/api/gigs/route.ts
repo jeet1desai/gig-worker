@@ -156,6 +156,8 @@ export async function GET(request: Request) {
     const minPrice = searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice') as string) : undefined;
     const maxPrice = searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice') as string) : undefined;
     const deliveryTime = searchParams.get('deliveryTime') ? parseInt(searchParams.get('deliveryTime') as string) : undefined;
+    const tiersParam = searchParams.get('tiers');
+    const tiers = tiersParam ? tiersParam.split(',').map((t) => t.trim().toLowerCase()) : [];
 
     const baseWhere: any = {
       AND: []
@@ -227,6 +229,11 @@ export async function GET(request: Request) {
 
     const whereClause = {
       ...baseWhere,
+      ...(tiers.length > 0 && {
+        tier: {
+          in: tiers as TIER[]
+        }
+      }),
       pipeline: {
         is: {
           status: GIG_STATUS.open

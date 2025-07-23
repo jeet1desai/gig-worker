@@ -171,7 +171,6 @@ export async function POST(req: Request) {
       }
     });
   } catch (error: any) {
-    console.log('Subscribe error:', error);
     if (error instanceof ValidationError) {
       const fieldErrors: Record<string, string> = {};
       for (const issue of error.inner) issue.path && (fieldErrors[issue.path] = issue.message);

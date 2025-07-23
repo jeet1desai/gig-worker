@@ -23,7 +23,6 @@ const gigsSlice = createSlice({
   reducers: {
     setLoading: (state, action: PayloadAction<{ loading: boolean }>) => {
       const { loading } = action.payload;
-      console.log(loading);
       state.loading = loading;
     },
     setGigs: (state, action: PayloadAction<{ gigs: any[]; pagination: any }>) => {
@@ -48,10 +47,14 @@ const gigsSlice = createSlice({
       state.gigs = [];
       state.ownGigs = [];
       state.pagination = DEFAULT_PAGINATION;
+    },
+    removeGig: (state, action: PayloadAction<{ id: string }>) => {
+      const { id } = action.payload;
+      state.ownGigs = state.ownGigs.filter((gig) => gig.id !== id);
     }
   }
 });
 
-export const { setLoading, setGigs, setOwnGigs, clearGigs } = gigsSlice.actions;
+export const { setLoading, setGigs, setOwnGigs, clearGigs, removeGig } = gigsSlice.actions;
 
 export default gigsSlice.reducer;
