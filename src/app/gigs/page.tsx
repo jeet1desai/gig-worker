@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, DollarSign, Filter, Loader2, MapPin, Plus, Search, Star, Trash2, X } from 'lucide-react';
+import { Calendar, Clock, DollarSign, Filter, Loader2, MapPin, Plus, Search, Star, Trash2, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Link from 'next/link';
@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useDebouncedEffect } from '@/hooks/use-debounce';
 
 import { cn } from '@/lib/utils';
-import { formatDate } from '@/lib/date-format';
+import { formatDate, getDaysBetweenDates } from '@/lib/date-format';
 
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
@@ -75,7 +75,7 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
 
         <p className="mb-4 line-clamp-3 text-sm text-gray-300">{description}</p>
 
-        <div className={cn('mt-auto grid gap-2 border-t border-gray-700/50 pt-4', role === 'user' ? 'grid-cols-2' : 'grid-cols-3')}>
+        <div className={cn('mt-auto grid gap-2 border-t border-gray-700/50 pt-4', 'grid-cols-3')}>
           <div className="flex items-center space-x-2">
             <div className="flex size-8 items-center justify-center rounded-full bg-blue-900/30">
               <Clock className="size-4 text-blue-400" />
@@ -92,6 +92,15 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
             <div>
               <p className="text-xs text-gray-400">Bids</p>
               <p className="text-xs text-white">1</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="flex size-8 items-center justify-center rounded-full bg-blue-900/30">
+              <Calendar className="size-4 text-blue-400" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-400">Timeline</p>
+              <p className="text-xs text-white">{getDaysBetweenDates(start_date, end_date)} days</p>
             </div>
           </div>
         </div>
@@ -599,7 +608,7 @@ const GigsPage = () => {
               scrollThreshold={0.9}
               className="grid grid-cols-1 gap-6 lg:grid-cols-2"
             >
-              {ownGigs.map((gig, index) => (
+              {ownGigs.map((gig: any, index: any) => (
                 <GigUserCard key={`${gig.id}-${index}`} role={user?.role} {...gig} openDeleteConfirmation={openDeleteConfirmation} />
               ))}
             </InfiniteScroll>
@@ -612,7 +621,7 @@ const GigsPage = () => {
               scrollThreshold={0.9}
               className="grid grid-cols-1 gap-6 lg:grid-cols-2"
             >
-              {gigs.map((gig, index) => (
+              {gigs.map((gig: any, index: any) => (
                 <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />
               ))}
             </InfiniteScroll>

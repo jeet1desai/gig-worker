@@ -3,9 +3,10 @@ import { getServerSession } from 'next-auth';
 import prisma from '@/lib/prisma';
 import { TIER } from '@prisma/client';
 import { uploadFile } from '@/lib/utils/file-upload';
-import { errorResponse, safeJsonResponse } from '@/utils/apiResponse';
+import { safeJsonResponse } from '@/utils/apiResponse';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { authOptions } from '../../auth/[...nextauth]/route';
+import { errorResponse } from '@/lib/api-response';
 
 type PriceRange = {
   min: number;
@@ -17,19 +18,19 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
-      return errorResponse('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return errorResponse({ code: 'UNAUTHORIZED', message: 'You must be logged in to update a gig', statusCode: HttpStatusCode.UNAUTHORIZED });
     }
 
     const gigId = await params.id;
     if (!gigId) {
-      return errorResponse('Gig ID is required', HttpStatusCode.BAD_REQUEST);
+      return errorResponse({ code: 'BAD_REQUEST', message: 'Gig ID is required', statusCode: HttpStatusCode.BAD_REQUEST });
     }
     const existingGig = await prisma.gig.findUnique({
       where: { id: BigInt(gigId) },
       include: { user: true }
     });
     if (!existingGig) {
-      return errorResponse('Gig not found', HttpStatusCode.NOT_FOUND);
+      return errorResponse({ code: 'NOT_FOUND', message: 'Gig not found', statusCode: HttpStatusCode.NOT_FOUND });
     }
 
     const currentUser = await prisma.user.findUnique({
@@ -37,10 +38,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       select: { id: true, role: true }
     });
     if (!currentUser) {
-      return errorResponse('User not found', HttpStatusCode.NOT_FOUND);
+      return errorResponse({ code: 'USER_NOT_FOUND', message: 'User not found', statusCode: HttpStatusCode.NOT_FOUND });
     }
     if (existingGig.user_id !== currentUser.id && currentUser.role !== 'provider') {
-      return errorResponse('Forbidden', HttpStatusCode.FORBIDDEN);
+      return errorResponse({ code: 'FORBIDDEN', message: 'Forbidden', statusCode: HttpStatusCode.FORBIDDEN });
     }
 
     const formData = await request.formData();
@@ -61,7 +62,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const removeAttachments = formData.get('remove_attachments') === 'true';
 
     if (!title || !price_min || !price_max || !tier || !description || !start_date) {
-      return errorResponse('Title, price range, tier, and description are required', HttpStatusCode.BAD_REQUEST);
+      return errorResponse({
+        code: 'BAD_REQUEST',
+        message: 'Title, price range, tier, and description are required',
+        statusCode: HttpStatusCode.BAD_REQUEST
+      });
     }
 
     const thumbnailFile = formData.get('thumbnail') as File | null;
@@ -80,7 +85,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         });
         thumbnailUrl = uploadResult.secure_url;
       } catch (error) {
-        return errorResponse('Failed to upload thumbnail', HttpStatusCode.INTERNAL_SERVER_ERROR);
+        return errorResponse({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to upload thumbnail',
+          statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
+        });
       }
     }
 
@@ -101,7 +110,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             });
             attachmentUrls.push(uploadResult.secure_url);
           } catch (error) {
-            return errorResponse('Failed to upload attachment', HttpStatusCode.INTERNAL_SERVER_ERROR);
+            return errorResponse({
+              code: 'INTERNAL_SERVER_ERROR',
+              message: 'Failed to upload attachment',
+              statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
+            });
           }
         }
       }
@@ -143,54 +156,69 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     );
   } catch (error) {
     console.error('Error updating gig:', error);
-    return errorResponse('Failed to update gig', HttpStatusCode.INTERNAL_SERVER_ERROR, {
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    return errorResponse({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to update gig', statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR });
   }
 }
 
 // GET /api/gigs/[id] - Get a gig with all details
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const gigId = await params.id;
-    if (!gigId) {
-      return errorResponse('Gig ID is required', HttpStatusCode.BAD_REQUEST);
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return errorResponse({ code: 'UNAUTHORIZED', message: 'You must be logged in to place a bid', statusCode: HttpStatusCode.UNAUTHORIZED });
     }
 
-    const gig = await prisma.gig.findUnique({
-      where: { id: BigInt(gigId) },
-      include: {
-        user: {
-          select: {
-            id: true,
-            first_name: true,
-            last_name: true,
-            email: true,
-            profile_url: true,
-            created_at: true,
-            is_verified: true
+    const gigId = await params.id;
+    if (!gigId) {
+      return errorResponse({ code: 'BAD_REQUEST', message: 'Gig ID is required', statusCode: HttpStatusCode.BAD_REQUEST });
+    }
+
+    const [gig, userBid, bids] = await Promise.all([
+      prisma.gig.findUnique({
+        where: { id: BigInt(gigId) },
+        include: {
+          user: {
+            select: { id: true, first_name: true, last_name: true, email: true, profile_url: true, created_at: true, is_verified: true }
           }
         }
-      }
-    });
+      }),
+      prisma.bid.findFirst({
+        where: {
+          gig_id: BigInt(gigId),
+          provider_id: session.user.id
+        },
+        select: { id: true }
+      }),
+      prisma.bid.findMany({
+        where: { gig_id: BigInt(gigId), status: 'pending' },
+        include: {
+          provider: {
+            select: { id: true, first_name: true, last_name: true, profile_url: true, email: true, is_verified: true }
+          }
+        },
+        orderBy: { created_at: 'desc' }
+      })
+    ]);
 
     if (!gig) {
-      return errorResponse('Gig not found', HttpStatusCode.NOT_FOUND);
+      return errorResponse({ code: 'NOT_FOUND', message: 'Gig not found', statusCode: HttpStatusCode.NOT_FOUND });
     }
 
     return safeJsonResponse(
       {
         success: true,
         message: 'Gig fetched successfully',
-        data: gig
+        data: {
+          ...gig,
+          hasBid: !!userBid,
+          ...(gig?.user_id === BigInt(session.user.id) && { bids: bids })
+        }
       },
       { status: HttpStatusCode.OK }
     );
   } catch (error) {
     console.error('Error fetching gig:', error);
-    return errorResponse('Failed to fetch gig', HttpStatusCode.INTERNAL_SERVER_ERROR, {
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    return errorResponse({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to fetch gig', statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR });
   }
 }
 
@@ -199,12 +227,12 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
-      return errorResponse('Unauthorized', HttpStatusCode.UNAUTHORIZED);
+      return errorResponse({ code: 'UNAUTHORIZED', message: 'You must be logged in to delete a gig', statusCode: HttpStatusCode.UNAUTHORIZED });
     }
 
     const { id: gigId } = params;
     if (!gigId) {
-      return errorResponse('Gig ID is required', HttpStatusCode.BAD_REQUEST);
+      return errorResponse({ code: 'BAD_REQUEST', message: 'Gig ID is required', statusCode: HttpStatusCode.BAD_REQUEST });
     }
 
     const existingGig = await prisma.gig.findUnique({
@@ -212,7 +240,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       select: { user_id: true, id: true }
     });
     if (!existingGig) {
-      return errorResponse('Gig not found', HttpStatusCode.NOT_FOUND, { gigId });
+      return errorResponse({ code: 'NOT_FOUND', message: 'Gig not found', statusCode: HttpStatusCode.NOT_FOUND });
     }
 
     const currentUser = await prisma.user.findUnique({
@@ -220,10 +248,10 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       select: { id: true, role: true }
     });
     if (!currentUser) {
-      return errorResponse('User not found', HttpStatusCode.NOT_FOUND);
+      return errorResponse({ code: 'USER_NOT_FOUND', message: 'User not found', statusCode: HttpStatusCode.NOT_FOUND });
     }
     if (existingGig.user_id !== currentUser.id && currentUser.role !== 'provider') {
-      return errorResponse('Forbidden', HttpStatusCode.FORBIDDEN);
+      return errorResponse({ code: 'FORBIDDEN', message: 'Forbidden', statusCode: HttpStatusCode.FORBIDDEN });
     }
 
     await prisma.gigPipeline.deleteMany({
@@ -243,8 +271,6 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     );
   } catch (error) {
     console.error('Error deleting gig:', error);
-    return errorResponse('Failed to delete gig', HttpStatusCode.INTERNAL_SERVER_ERROR, {
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    return errorResponse({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to delete gig', statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR });
   }
 }
