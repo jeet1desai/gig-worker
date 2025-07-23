@@ -1,8 +1,8 @@
 import React from 'react';
-import CMSModule from './CMSModule';
+import PageManager from './PageManager';
 
 function CMS() {
-  return <CMSModule />;
+  return <PageManager />;
 }
 
 export default CMS;

@@ -50,24 +50,55 @@ export interface SubscriptionPlanPayload {
   maxBids: number;
   subscriptionType: string;
 }
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+  isVisible: boolean;
+}
 
-export interface CMSModuleResponse {
+export interface StepItem {
+  id: string;
+  title: string;
+  description: string;
+  color: string;
+  order: number;
+}
+
+export interface HeroSectionData {
+  title: string;
+  description: string;
+}
+
+export interface CMSPage {
+  id: string;
+  title: string;
+  slug: string;
+  type: 'landing' | 'informative' | 'faqs' | '';
+  isPublished: boolean;
+  heroSection?: HeroSectionData;
+  faqs?: FAQItem[];
+  steps?: StepItem[];
+  richContent?: string;
+}
+
+export interface CMSPageResponse {
   success: boolean;
-  data: ContentItem[];
+  data: CMSPage[];
   message: string;
   [key: string]: any;
 }
 
-export interface ContentItem {
-  id: string;
-  type: 'faq' | 'step' | 'contact' | 'terms' | 'privacy';
-  title: string;
-  description?: string;
-  content: string;
-  order?: number;
-  isVisible: boolean;
-  color?: string;
+export interface FAQsHomeResponse {
+  success: boolean;
+  data: FAQItem[];
+  message: string;
   [key: string]: any;
 }
 
-export type WorkingStepDirectionType = 'up' | 'down';
+export interface StepsHomeResponse {
+  success: boolean;
+  data: StepItem[];
+  message: string;
+  [key: string]: any;
+}

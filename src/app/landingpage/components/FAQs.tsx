@@ -1,15 +1,16 @@
 'use client';
 import Loader from '@/components/Loader';
+import { static_faqs } from '@/constants';
 import { PUBLIC_API_ROUTES } from '@/constants/app-routes';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { toast } from '@/lib/toast';
 import apiService from '@/services/api';
-import { CMSModuleResponse, ContentItem } from '@/types/fe';
+import { FAQItem, FAQsHomeResponse } from '@/types/fe';
 import { useCallback, useEffect, useState } from 'react';
 
 function FAQs() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [faqsList, setFaqsList] = useState<ContentItem[]>([]);
+  const [faqsList, setFaqsList] = useState<FAQItem[]>(static_faqs as FAQItem[]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const toggle = (index: number) => {
@@ -19,9 +20,9 @@ function FAQs() {
   const getAllFAQsList = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await apiService.get<CMSModuleResponse>(PUBLIC_API_ROUTES.LANDING_PAGE_FAQS_LIST_API, { withAuth: false });
+      const response = await apiService.get<FAQsHomeResponse>(PUBLIC_API_ROUTES.LANDING_PAGE_FAQS_LIST_API, { withAuth: false });
 
-      if (response.data.data && response.status === HttpStatusCode.OK && response.data.message) {
+      if (response.data.data && response.data.data.length > 0 && response.status === HttpStatusCode.OK && response.data.message) {
         setFaqsList(response.data.data);
       }
     } catch (error: unknown) {
@@ -60,11 +61,11 @@ function FAQs() {
                 }}
               >
                 <div className="flex items-center justify-between border-b border-gray-700 py-4 text-lg font-semibold">
-                  {faq.title}
+                  {faq.question}
                   <span>{openIndex === index ? '-' : '+'}</span>
                 </div>
               </button>
-              {openIndex === index && <div className="mt-2 text-sm text-[#FFFFFF]">{faq.content}</div>}
+              {openIndex === index && <div className="mt-2 text-sm text-[#FFFFFF]">{faq.answer}</div>}
             </div>
           ))}
         </div>

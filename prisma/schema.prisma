@@ -98,15 +98,17 @@ model Admin {
 }
 
 model CMS {
-  id         BigInt   @id @default(autoincrement())
-  type       String // e.g. 'faq' | 'step' | 'contact' | 'terms' | 'privacy'
-  title      String
-  content    String
-  order      Int
-  isVisible  Boolean  @default(true)
-  color      String? // Optional (e.g. hex color codes)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id           BigInt     @id @default(autoincrement())
+  title        String
+  slug         String     @unique
+  type         PageType
+  isPublished  Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  heroSection  Json?
+  faqs         Json?
+  steps        Json?
+  richContent  Json?
 }
 
 model Plan {
@@ -414,4 +416,10 @@ enum NOTIFICATION_TYPE {
   warning
   error
   info
+}
+
+enum PageType {
+  landing
+  informative
+  faqs
 }

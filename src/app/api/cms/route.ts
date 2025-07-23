@@ -1,22 +1,16 @@
 import { errorResponse, successResponse } from '@/lib/api-response';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
-import { contentService } from '@/lib/server/contentService';
-import { ContentItem, WorkingStepDirectionType } from '@/types/fe';
+import { CMSPage } from '@/types/fe';
+import { cmsPagesServices } from '@/lib/server/cmsPagesServices';
+import { paginatedResponse } from '@/utils/apiResponse';
 
-export async function POST(request: Request) {
+export async function GET(req: Request) {
   try {
-    const body: ContentItem = await request.json();
+    const getAllPages = await cmsPagesServices.getAllPagesList(req);
 
-    const create_content: { success: boolean; message: string } = await contentService.createContent(body);
-
-    if (create_content.success && create_content.message) {
-      return successResponse({
-        data: [],
-        message: create_content.message
-      });
-    }
+    return paginatedResponse(getAllPages.pages, getAllPages.page, getAllPages.pageSize, getAllPages.total, { status: HttpStatusCode.OK });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Failed to create content';
+    const message = err instanceof Error ? err.message : 'Failed to fetch pages';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,
@@ -25,20 +19,20 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PATCH(request: Request) {
-  const body: { id: string; direction: WorkingStepDirectionType } = await request.json();
-
+export async function POST(request: Request) {
   try {
-    const update_order = await contentService.reorderContent(body);
+    const body: CMSPage = await request.json();
 
-    if (update_order.success && update_order.message) {
+    const create_page: { success: boolean; message: string } = await cmsPagesServices.createCMSPage(body);
+
+    if (create_page.success && create_page.message) {
       return successResponse({
         data: [],
-        message: 'Content data updated successfully'
+        message: create_page.message
       });
     }
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Failed to update content';
+    const message = err instanceof Error ? err.message : 'Failed to create page';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,

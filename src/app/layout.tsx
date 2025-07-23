@@ -5,7 +5,6 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Providers } from '@/app/providers';
 import ClientSocketWrapper from '@/components/client-socket-wrapper';
-import QueryProvider from '@/components/QueryProvider';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -41,13 +40,11 @@ export default function RootLayout({
         <meta name="robots" content="noindex, nofollow" />
       </head>
       <body className={`${outfit.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <QueryProvider>
-          <Providers>
-            {children}
-            <ClientSocketWrapper />
-            <Toaster />
-          </Providers>
-        </QueryProvider>
+        <Providers>
+          {children}
+          <ClientSocketWrapper />
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
