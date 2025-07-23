@@ -14,7 +14,7 @@ export const cmsPagesServices = {
     const pageSize = parseInt(pageSizeParam || '10', 10);
     const skip = (page - 1) * pageSize;
 
-    const whereClause: prisma.cMSWhereInput = {
+    const whereClause: Prisma.CMSWhereInput = {
       ...(searchParam && {
         OR: [{ slug: { contains: searchParam, mode: 'insensitive' } }, { title: { contains: searchParam, mode: 'insensitive' } }]
       })

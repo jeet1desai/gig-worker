@@ -2,7 +2,6 @@ import { safeJson } from '@/lib/utils/safeJson';
 import prisma from '@/lib/prisma';
 import { PageType } from '@prisma/client';
 import { FAQItem, StepItem } from '@/types/fe';
-import { string } from 'yup';
 
 export const getLandingPageFAQs = async () => {
   const data = await prisma.cMS.findFirst({
