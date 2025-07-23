@@ -13,7 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/lib/toast';
 import { pageSchema } from '@/schemas/fe/auth';
 import { Label } from '@/components/ui/label';
-import { FAQItem, CMSPage, StepItem, CMSPageResponse } from '@/types/fe';
+import { FAQItem, CMSPage, StepItem, CMSPageResponse, HeroSectionData } from '@/types/fe';
 import apiService from '@/services/api';
 import Loader from '@/components/Loader';
 import { PageType } from '@prisma/client';
@@ -178,7 +178,6 @@ function AddEditPage() {
     setFormErrors({});
   };
 
-  // FAQ Management Functions
   const addFaq = (pageData: Partial<CMSPage>, setPageData: (data: Partial<CMSPage>) => void) => {
     const newFaq: FAQItem = {
       id: Date.now().toString(),
@@ -223,7 +222,6 @@ function AddEditPage() {
     });
   };
 
-  // Step Management Functions
   const addStep = (pageData: Partial<CMSPage>, setPageData: (data: Partial<CMSPage>) => void) => {
     const newStep: StepItem = {
       id: Date.now().toString(),
@@ -269,6 +267,56 @@ function AddEditPage() {
     });
   };
 
+  const handleHeroSectionChange = (
+    pageData: Partial<CMSPage>,
+    setPageData: (data: Partial<CMSPage>) => void,
+    key: keyof HeroSectionData,
+    value: string
+  ) => {
+    setPageData({
+      ...pageData,
+      heroSection: { ...pageData.heroSection!, [key]: value }
+    });
+    setFormErrors((prev) => ({
+      ...prev,
+      [`heroSection.${key}`]: ''
+    }));
+  };
+
+  const handleRichContentChange = (pageData: Partial<CMSPage>, setPageData: (data: Partial<CMSPage>) => void, value: string) => {
+    setPageData({ ...pageData, richContent: value });
+    setFormErrors({ ...formErrors, richContent: '' });
+  };
+
+  const handlePageTitleChange = (title: string) => {
+    setNewPage({
+      ...newPage,
+      title,
+      slug: generateSlug(title)
+    });
+    setFormErrors({ ...formErrors, title: '', slug: '' });
+  };
+
+  const handleSlugChange = (value: string) => {
+    setNewPage({
+      ...newPage,
+      slug: value
+    });
+    setFormErrors({ ...formErrors, slug: '' });
+  };
+
+  const handlePagePublicationChange = (value: boolean) => {
+    setNewPage({
+      ...newPage,
+      isPublished: value
+    });
+  };
+
+  const handlePageTypeChange = (value: CMSPage['type']) => {
+    setNewPage({ ...newPage, type: value });
+    setFormErrors({ ...formErrors, type: '' });
+  };
+
   const renderPageTypeSpecificFields = (pageData: Partial<CMSPage>, setPageData: (data: Partial<CMSPage>) => void) => {
     switch (pageData.type) {
       case PageType.landing:
@@ -293,13 +341,7 @@ function AddEditPage() {
             <Label className="mb-2 block text-sm font-medium">Hero Title</Label>
             <TipTapEditor
               content={pageData.heroSection?.title || ''}
-              onChange={(content: string) => {
-                setPageData({
-                  ...pageData,
-                  heroSection: { ...pageData.heroSection!, title: content }
-                });
-                setFormErrors({ ...formErrors, ['heroSection.title']: '' });
-              }}
+              onChange={(content: string) => handleHeroSectionChange(pageData, setPageData, 'title', content)}
               placeholder="Hero title"
             />
             {formErrors['heroSection.title'] && <p className="mt-1 text-sm text-red-500">{formErrors['heroSection.title']}</p>}{' '}
@@ -310,13 +352,7 @@ function AddEditPage() {
               className="bg-transparent"
               placeholder="Hero description"
               value={pageData.heroSection?.description || ''}
-              onChange={(e) => {
-                setPageData({
-                  ...pageData,
-                  heroSection: { ...pageData.heroSection!, description: e.target.value }
-                });
-                setFormErrors({ ...formErrors, ['heroSection.description']: '' });
-              }}
+              onChange={(e) => handleHeroSectionChange(pageData, setPageData, 'description', e.target.value)}
               rows={3}
             />
             {formErrors['heroSection.description'] && <p className="mt-1 text-sm text-red-500">{formErrors['heroSection.description']}</p>}{' '}
@@ -467,10 +503,7 @@ function AddEditPage() {
         </p>
         <TipTapEditor
           content={pageData.richContent || ''}
-          onChange={(content: string) => {
-            setPageData({ ...pageData, richContent: content });
-            setFormErrors({ ...formErrors, richContent: '' });
-          }}
+          onChange={(content: string) => handleRichContentChange(pageData, setPageData, content)}
           placeholder="Start writing your content here"
         />
       </div>
@@ -494,31 +527,12 @@ function AddEditPage() {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <Label className="mb-2 block text-sm font-medium">Page Title</Label>
-                    <Input
-                      placeholder="Enter page title"
-                      value={newPage.title}
-                      onChange={(e) => {
-                        const title = e.target.value;
-                        setNewPage({
-                          ...newPage,
-                          title,
-                          slug: generateSlug(title)
-                        });
-                        setFormErrors({ ...formErrors, title: '', slug: '' });
-                      }}
-                    />
+                    <Input placeholder="Enter page title" value={newPage.title} onChange={(e) => handlePageTitleChange(e.target.value)} />
                     {formErrors.title && <p className="mt-1 text-sm text-red-500">{formErrors.title}</p>}
                   </div>
                   <div>
                     <Label className="mb-2 block text-sm font-medium">URL Slug</Label>
-                    <Input
-                      placeholder="page-url-slug"
-                      value={newPage.slug}
-                      onChange={(e) => {
-                        setNewPage({ ...newPage, slug: e.target.value });
-                        setFormErrors({ ...formErrors, slug: '' });
-                      }}
-                    />
+                    <Input placeholder="page-url-slug" value={newPage.slug} onChange={(e) => handleSlugChange(e.target.value)} />
                     {formErrors.slug && <p className="mt-1 text-sm text-red-500">{formErrors.slug}</p>}
                   </div>
                 </div>
@@ -529,10 +543,7 @@ function AddEditPage() {
                     <Select
                       value={newPage.type}
                       disabled={action_type === 'edit'}
-                      onValueChange={(value: CMSPage['type']) => {
-                        setNewPage({ ...newPage, type: value });
-                        setFormErrors({ ...formErrors, type: '' });
-                      }}
+                      onValueChange={(value: CMSPage['type']) => handlePageTypeChange(value)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select page type" />
@@ -550,12 +561,7 @@ function AddEditPage() {
 
                   <div>
                     <Label className="mb-2 block text-sm font-medium">Publish Status</Label>
-                    <Select
-                      value={String(newPage.isPublished)}
-                      onValueChange={(value: string) => {
-                        setNewPage({ ...newPage, isPublished: value === 'true' });
-                      }}
-                    >
+                    <Select value={String(newPage.isPublished)} onValueChange={(value: string) => handlePagePublicationChange(value === 'true')}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select publish status" />
                       </SelectTrigger>

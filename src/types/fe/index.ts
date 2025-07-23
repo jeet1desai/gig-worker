@@ -76,11 +76,9 @@ export interface CMSPage {
   slug: string;
   type: 'landing' | 'informative' | 'faqs' | '';
   isPublished: boolean;
-  // Landing Page specific fields
   heroSection?: HeroSectionData;
   faqs?: FAQItem[];
   steps?: StepItem[];
-  // Informative Page specific fields - rich content
   richContent?: string;
 }
 

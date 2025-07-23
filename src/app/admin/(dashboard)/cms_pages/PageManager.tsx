@@ -117,6 +117,11 @@ export default function PageManager() {
     setDeletePageId(id);
   };
 
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    handlePageChange(1);
+  };
+
   return (
     <div className="min-h-screen">
       <Loader isLoading={loading} />
@@ -134,10 +139,7 @@ export default function PageManager() {
                   placeholder="Search pages..."
                   className="h-9 w-full rounded-lg border border-[#374151] bg-[#1F2A37] pr-4 pl-10 text-white placeholder-gray-400 focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/50 focus:ring-offset-0 focus:ring-offset-transparent sm:w-64"
                   value={search}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setSearch(e.target.value);
-                    handlePageChange(1);
-                  }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearchChange(e.target.value)}
                 />
               </div>
               <Button
