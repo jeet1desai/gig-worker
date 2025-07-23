@@ -8,18 +8,19 @@ import {
   CheckCircle,
   DollarSign,
   MapPin,
-  Briefcase,
   MessageCircle,
   AlertCircle,
   ChevronLeft,
   Share2,
-  Flag,
-  Bookmark,
   Check,
   FileText,
-  Zap,
-  Download
+  Download,
+  Loader2,
+  X
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { Form, Formik, FormikHelpers } from 'formik';
+import * as Yup from 'yup';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,14 +29,12 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DashboardLayout from '@/components/layouts/layout';
 
 import { formatDate, getDaysBetweenDates } from '@/lib/date-format';
 
 import { useDispatch } from '@/store/store';
 import { gigService } from '@/services/gig.services';
-import { useSession } from 'next-auth/react';
 
 const mockGigRequest = {
   id: 1,
@@ -198,6 +197,24 @@ export default function GigDetailPage() {
     }
   };
 
+  const handlePostBidSubmit = async (values: any, { setSubmitting, resetForm }: FormikHelpers<any>) => {
+    setSubmitting(true);
+    try {
+      const response = await dispatch(
+        gigService.createBid(gig.id?.toString() || '', { proposal: values.proposal, bidPrice: values.bidPrice }) as any
+      );
+      if (response && response.data) {
+        setSubmitting(false);
+        setGig((prevGig: any) => ({ ...prevGig, hasBid: true }));
+        resetForm();
+      }
+    } catch (error: any) {
+      console.error('Error updating user:', error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       <main className="min-h-screen py-8">
@@ -314,81 +331,86 @@ export default function GigDetailPage() {
               {session?.user?.id === gig?.user_id && (
                 <Card className="rounded-lg border-gray-700/50 bg-inherit">
                   <CardContent>
-                    <CardTitle className="text-white">Bids ({mockGigRequest.bids.length})</CardTitle>
+                    <CardTitle className="text-white">Bids ({gig?.bids?.length})</CardTitle>
 
                     <div className="mt-6 space-y-4">
-                      {mockGigRequest.bids.map((bid) => (
-                        <Card
-                          key={bid.id}
-                          className={`relative overflow-hidden border border-gray-700/50 bg-gray-800/30 transition-all hover:border-gray-600/50 ${bid.featured ? 'ring-2 ring-blue-500/30' : ''}`}
-                        >
-                          {bid.featured && (
+                      {gig?.bids?.map((bid: any) => {
+                        console.log(bid);
+
+                        return (
+                          <Card
+                            key={bid.id}
+                            className={`relative overflow-hidden border border-gray-700/50 bg-gray-800/30 transition-all hover:border-gray-600/50 ${bid.featured ? 'ring-2 ring-blue-500/30' : ''}`}
+                          >
                             <div className="absolute top-0 right-0 rounded-bl-md bg-blue-600 px-2 py-1 text-xs font-medium text-white">Featured</div>
-                          )}
-                          <CardContent className="pt-2">
-                            <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
-                              <div className="flex items-start space-x-4">
-                                <Avatar className="h-14 w-14 border-2 border-blue-500/30">
-                                  <AvatarImage src={bid.provider.avatar} alt={bid.provider.name} />
-                                  <AvatarFallback className="bg-gray-700">
-                                    {bid.provider.name
-                                      .split(' ')
-                                      .map((n) => n[0])
-                                      .join('')}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <div className="flex items-center space-x-2">
-                                    <h4 className="text-lg font-semibold text-white">{bid.provider.name}</h4>
-                                    {bid.provider.verified && <CheckCircle className="h-4 w-4 text-blue-400" />}
-                                  </div>
-                                  <div className="mt-1 flex items-center space-x-2">
-                                    <div className="flex items-center">
-                                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                      <span className="ml-1 text-sm font-medium text-white">{bid.provider.rating}</span>
-                                      <span className="mx-1 text-gray-500">•</span>
-                                      <span className="text-sm text-gray-400">{bid.provider.reviews} reviews</span>
+                            <CardContent className="pt-2">
+                              <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+                                <div className="flex items-start space-x-4">
+                                  <Avatar className="h-14 w-14 border-2 border-blue-500/30">
+                                    <AvatarImage src={bid.provider.profile_url} alt={bid.provider.first_name} />
+                                    <AvatarFallback className="bg-gray-700">
+                                      {bid.provider.first_name
+                                        .split(' ')
+                                        .map((n: string) => n[0])
+                                        .join('')}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div>
+                                    <div className="flex items-center space-x-2">
+                                      <h4 className="text-lg font-semibold text-white">
+                                        {bid.provider.first_name} {bid.provider.last_name}
+                                      </h4>
+                                      {bid.provider.is_verified && <CheckCircle className="h-4 w-4 text-blue-400" />}
                                     </div>
+                                    <div className="mt-1 flex items-center space-x-2">
+                                      <div className="flex items-center">
+                                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                        <span className="ml-1 text-sm font-medium text-white">{4}</span>
+                                        <span className="mx-1 text-gray-500">•</span>
+                                        <span className="text-sm text-gray-400">{4} reviews</span>
+                                      </div>
+                                    </div>
+                                    <p className="mt-1 text-sm text-gray-300">'Engineering student with strong math background'</p>
                                   </div>
-                                  <p className="mt-1 text-sm text-gray-300">{bid.provider.expertise}</p>
+                                </div>
+
+                                <div className="flex flex-col items-end space-y-2 sm:items-end">
+                                  <div className="text-right">
+                                    <div className="text-2xl font-bold text-white">${bid.bid_price}</div>
+                                  </div>
                                 </div>
                               </div>
 
-                              <div className="flex flex-col items-end space-y-2 sm:items-end">
-                                <div className="text-right">
-                                  <div className="text-2xl font-bold text-white">${bid.amount}</div>
-                                  <div className="text-sm text-gray-400">Delivery in {bid.timeframe}</div>
+                              <div className="mt-4 border-t border-gray-700/50 pt-4">
+                                <h5 className="mb-2 text-sm font-medium text-gray-300">Proposal:</h5>
+                                <p className="text-gray-300">{bid.proposal}</p>
+                                <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
+                                  <span className="flex items-center">
+                                    <Clock className="mr-1 h-3.5 w-3.5" />
+                                    Posted {formatDate(bid.created_at)}
+                                  </span>
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="border-blue-500/30 text-blue-400 hover:bg-blue-900/20 hover:text-blue-300"
+                                    >
+                                      <MessageCircle className="mr-2 h-4 w-4" />
+                                      Message
+                                    </Button>
+                                    <Button variant="default" size="sm" className="bg-green-600 text-white hover:bg-green-700">
+                                      <Check className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="default" size="sm" className="bg-red-600 text-white hover:bg-red-700">
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-
-                            <div className="mt-4 border-t border-gray-700/50 pt-4">
-                              <h5 className="mb-2 text-sm font-medium text-gray-300">Proposal:</h5>
-                              <p className="text-gray-300">{bid.proposal}</p>
-                              <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
-                                <span className="flex items-center">
-                                  <Clock className="mr-1 h-3.5 w-3.5" />
-                                  Posted {bid.postedAgo}
-                                </span>
-                                <div className="flex space-x-2">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="border-blue-500/30 text-blue-400 hover:bg-blue-900/20 hover:text-blue-300"
-                                  >
-                                    <MessageCircle className="mr-2 h-4 w-4" />
-                                    Message
-                                  </Button>
-                                  <Button variant="default" size="sm" className="bg-green-600 text-white hover:bg-green-700">
-                                    <Check className="mr-2 h-4 w-4" />
-                                    Accept Bid
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
                     </div>
                   </CardContent>
                 </Card>
@@ -423,7 +445,7 @@ export default function GigDetailPage() {
                   </div>
                 </div>
 
-                <div className="mb-6 space-y-3">
+                <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Member since:</span>
                     <span className="font-medium">{formatDate(gig?.user?.created_at)}</span>
@@ -437,11 +459,6 @@ export default function GigDetailPage() {
                     <span className="font-medium text-green-600">{gig?.user?.completion_rate}%</span>
                   </div>
                 </div>
-
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600">
-                  <MessageCircle className="h-4 w-4" />
-                  Message Client
-                </Button>
               </CardContent>
             </Card>
 
@@ -506,59 +523,90 @@ export default function GigDetailPage() {
                     Place Your Bid
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4 text-white">
-                  <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
-                    <AlertCircle className="mr-2 inline h-4 w-4" />
-                    This gig expires in {mockGigRequest.expires}. Act fast!
-                  </div>
-
-                  <div>
-                    <Label className="mb-2 block text-sm font-medium">Your Bid Amount</Label>
-                    <div className="relative">
-                      <DollarSign className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-                      <Input type="number" placeholder="Enter your bid (50-80)" className="h-10 w-full rounded-lg border-gray-600 py-2 pr-4 pl-10" />
+                {gig?.hasBid ? (
+                  <CardContent className="space-y-4 text-white">
+                    <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
+                      <AlertCircle className="mr-2 inline h-4 w-4" />
+                      You have already placed a bid for this gig.
                     </div>
-                    <p className="mt-1 text-xs text-gray-500">Budget range: {mockGigRequest.budget}</p>
-                  </div>
-
-                  <div>
-                    <Label className="mb-2 block text-sm font-medium">Delivery Time</Label>
-                    <Select>
-                      <SelectTrigger className="!h-10 w-full rounded-lg border-gray-600 px-4 py-2">
-                        <SelectValue placeholder="Select a delivery time" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1 day">1 day</SelectItem>
-                        <SelectItem value="2 days">2 days</SelectItem>
-                        <SelectItem value="3 days">3 days</SelectItem>
-                        <SelectItem value="1 week">1 week</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label className="mb-2 block text-sm font-medium">Cover Letter</Label>
-                    <Textarea
-                      rows={4}
-                      placeholder="Explain why you're the perfect fit for this project..."
-                      className="w-full rounded-lg border-gray-600 bg-inherit px-4 py-2"
-                    />
-                    <p className="mt-1 text-xs text-gray-500">Min. 100 characters recommended</p>
-                  </div>
-
-                  <div className="border-t border-gray-700/50 pt-4">
-                    <div className="mb-2 flex justify-between text-sm">
-                      <span>Service fee (5%):</span>
-                      <span className="text-gray-600">-$3.25</span>
+                  </CardContent>
+                ) : (
+                  <CardContent className="space-y-4 text-white">
+                    <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
+                      <AlertCircle className="mr-2 inline h-4 w-4" />
+                      This gig expires in {new Date(gig?.end_date).toLocaleDateString()}. Act fast!
                     </div>
-                    <div className="flex justify-between font-medium">
-                      <span>You'll receive:</span>
-                      <span className="text-green-600">$61.75</span>
-                    </div>
-                  </div>
 
-                  <Button className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800">Submit Bid</Button>
-                </CardContent>
+                    <Formik
+                      initialValues={{ proposal: '', bidPrice: '' }}
+                      enableReinitialize
+                      validationSchema={Yup.object().shape({
+                        proposal: Yup.string().required('Required').min(100, 'Too Short!'),
+                        bidPrice: Yup.number().required('Required')
+                      })}
+                      onSubmit={handlePostBidSubmit}
+                    >
+                      {({ isSubmitting, errors, touched, handleSubmit, getFieldProps }) => {
+                        return (
+                          <Form noValidate onSubmit={handleSubmit}>
+                            <div className="space-y-4">
+                              <div>
+                                <Label htmlFor="bidPrice" className="mb-2 block text-sm font-medium">
+                                  Your Bid Amount
+                                </Label>
+                                <div className="relative">
+                                  <DollarSign className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+                                  <Input
+                                    id="bidPrice"
+                                    type="number"
+                                    step="0.1"
+                                    placeholder={`Enter your bid (${gig?.price_range?.min || 0}-${gig?.price_range?.max || 'N/A'})`}
+                                    className="h-10 w-full rounded-lg border-gray-600 bg-inherit py-2 pr-4 pl-10"
+                                    {...getFieldProps('bidPrice')}
+                                  />
+                                </div>
+                                <p className="mt-1 text-xs text-gray-500">
+                                  Budget range: ${gig?.price_range?.min || 0} - ${gig?.price_range?.max || 'N/A'}
+                                </p>
+                                {errors.bidPrice && touched.bidPrice && <div className="text-sm text-red-500">{errors.bidPrice}</div>}
+                              </div>
+
+                              <div>
+                                <Label htmlFor="proposal" className="mb-2 block text-sm font-medium">
+                                  Cover Letter
+                                </Label>
+                                <Textarea
+                                  id="proposal"
+                                  rows={4}
+                                  minLength={100}
+                                  placeholder="Explain why you're the perfect fit for this project..."
+                                  className="w-full rounded-lg border-gray-600 bg-inherit px-4 py-2"
+                                  {...getFieldProps('proposal')}
+                                />
+                                <p className="mt-1 text-xs text-gray-500">Min. 100 characters recommended</p>
+                                {errors.proposal && touched.proposal && <div className="text-sm text-red-500">{errors.proposal}</div>}
+                              </div>
+
+                              <div className="border-t border-gray-700/50 pt-4">
+                                <div className="mb-2 flex justify-between text-sm">
+                                  <span>Service fee (5%):</span>
+                                  <span className="text-gray-400">Calculated after bid</span>
+                                </div>
+                              </div>
+
+                              <Button
+                                type="submit"
+                                className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800"
+                              >
+                                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Submit Bid'}
+                              </Button>
+                            </div>
+                          </Form>
+                        );
+                      }}
+                    </Formik>
+                  </CardContent>
+                )}
               </Card>
             )}
 

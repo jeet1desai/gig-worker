@@ -191,5 +191,23 @@ export const gigService = {
         dispatch(setLoading({ loading: false }));
       }
     };
+  },
+
+  createBid(gigId: string, body: { proposal: string; bidPrice: number }) {
+    return async (dispatch: AppDispatch) => {
+      try {
+        dispatch(setLoading({ loading: true }));
+        const response = await apiService.post(`/gigs/bids/${gigId}`, body, { withAuth: true });
+        if (response.status === 201) {
+          toast.success('Bid placed successfully!');
+          return response.data;
+        }
+      } catch (error: any) {
+        toast.error(error.response?.data?.error?.message || 'Failed to place bid');
+        throw error;
+      } finally {
+        dispatch(setLoading({ loading: false }));
+      }
+    };
   }
 };

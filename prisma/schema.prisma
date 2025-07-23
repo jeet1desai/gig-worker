@@ -206,7 +206,9 @@ model GigPipeline {
   status     GIG_STATUS @default(open)
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
-  gig        Gig        @relation(fields: [gig_id], references: [id])
+
+  // Relations
+  gig Gig @relation(fields: [gig_id], references: [id])
 }
 
 model Bid {
