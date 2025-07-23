@@ -123,7 +123,7 @@ export default function ContentCard({
                   <Label className="text-white">{item.type === 'faq' ? 'Answer' : 'Content'}</Label>
                   {singleEntryTypes.includes(item.type) ? (
                     <TipTapEditor
-                      value={content}
+                      content={content}
                       onChange={(content) => {
                         setContent(content);
                         setFormErrors({ ...formErrors, content: '' });

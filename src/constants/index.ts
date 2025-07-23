@@ -1,4 +1,4 @@
-import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelRight } from 'lucide-react';
+import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelRight, PanelLeft, Globe, FileText, List } from 'lucide-react';
 import { PayPalButtonStyle } from '@paypal/paypal-js';
 import { PRIVATE_ROUTE } from './app-routes';
 import { publicEnv } from '@/lib/config/publicEnv';
@@ -58,6 +58,11 @@ export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
     name: 'CMS Module',
     icon: PanelRight,
     href: PRIVATE_ROUTE.ADMIN_CMS_PATH
+  },
+  {
+    name: 'CMS Pages',
+    icon: PanelLeft,
+    href: PRIVATE_ROUTE.ADMIN_CMS_PAGES_PATH
   }
 ];
 
@@ -282,3 +287,70 @@ export const contentTypes = {
 };
 
 export const singleEntryTypes = ['contact', 'terms', 'privacy'];
+
+export const pageTypes = {
+  landing: { label: 'Landing Page', icon: Globe, color: 'bg-blue-500' },
+  informative: { label: 'Informative Page', icon: FileText, color: 'bg-green-500' },
+  faqs: { label: 'FAQs', icon: List, color: 'bg-purple-500' }
+};
+
+export const publish_type = [
+  { label: 'Published', value: true },
+  { label: 'Draft', value: false }
+];
+
+export const working_steps = [
+  {
+    title: 'Create a Gig',
+    description: "Payment is released to the freelancer once you're pleased and approve the work you get.",
+    color: '#7B41FF'
+  },
+  {
+    title: 'Deliver Great',
+    description: "Find any service within minutes and know exactly what you'll pay. No hourly rates, just a fixed price.",
+    color: '#0C9BFF'
+  },
+  {
+    title: "We're Here For You 24/7",
+    description: 'We here for you, anything from answering any questions to resolving any issues, at any time.',
+    color: '#DF3699'
+  },
+  {
+    title: 'Stay Updated',
+    description: 'We are consisting of both creative thinkers and tech geniuses. We have the curiosity to explore new ideas',
+    color: '#3CB66F'
+  }
+];
+
+export const static_faqs = [
+  {
+    id: 'faq-1',
+    question: 'How does it work?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-2',
+    question: 'How can designers effectively seek out new opportunities?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-3',
+    question: 'How do I Send Proposals?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-4',
+    question: 'How can Clients find Designers?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-5',
+    question: 'How Can I Join?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-6',
+    question: 'What if I have more questions?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  }
+];

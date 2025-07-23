@@ -2,118 +2,205 @@
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Bold from '@tiptap/extension-bold';
-import Italic from '@tiptap/extension-italic';
-import Heading from '@tiptap/extension-heading';
-import Paragraph from '@tiptap/extension-paragraph';
-import BulletList from '@tiptap/extension-bullet-list';
-import OrderedList from '@tiptap/extension-ordered-list';
-import ListItem from '@tiptap/extension-list-item';
-import Underline from '@tiptap/extension-underline';
-import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
-import { useEffect, useState } from 'react';
-import clsx from 'clsx';
+import { TextStyle } from '@tiptap/extension-text-style';
+import Color from '@tiptap/extension-color';
+import { Mark, mergeAttributes } from '@tiptap/core';
 
-type Props = {
-  value: string;
-  onChange: (value: string) => void;
+import { Button } from '@/components/ui/button';
+import { Bold, Italic, List, ListOrdered, Quote, Undo, Redo, Link as LinkIcon, Link2Off } from 'lucide-react';
+
+import { useRef } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+
+interface TipTapEditorProps {
+  content: string;
+  onChange: (content: string) => void;
   placeholder?: string;
-};
+}
 
-export default function TipTapEditor({ value, onChange, placeholder }: Props) {
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => setIsClient(true), []);
+// 🆕 Inline FontSize extension
+const FontSize = Mark.create({
+  name: 'fontSize',
+
+  addOptions() {
+    return {
+      types: ['textStyle']
+    };
+  },
+
+  addAttributes() {
+    return {
+      fontSize: {
+        default: null,
+        parseHTML: (element) => element.style.fontSize?.replace(/['"]+/g, ''),
+        renderHTML: (attributes) => {
+          if (!attributes.fontSize) return {};
+          return { style: `font-size: ${attributes.fontSize}` };
+        }
+      }
+    };
+  },
+
+  parseHTML() {
+    return [{ style: 'font-size' }];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ['span', mergeAttributes(HTMLAttributes), 0];
+  },
+
+  addCommands() {
+    return {
+      setFontSize:
+        (fontSize) =>
+        ({ chain }) =>
+          chain().setMark('fontSize', { fontSize }).run()
+    };
+  }
+});
+
+export default function TipTapEditor({ content, onChange, placeholder = 'Start typing...' }: TipTapEditorProps) {
+  const colorInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Bold,
-      Italic,
-      Underline,
-      Paragraph,
-      Heading.configure({ levels: [1, 2] }),
-      BulletList,
-      OrderedList,
-      ListItem,
-      Placeholder.configure({
-        placeholder: placeholder || 'Write something...'
-      }),
+      TextStyle,
+      Color,
+      FontSize, // 🆕 Include FontSize here
       Link.configure({
-        openOnClick: false,
-        linkOnPaste: true,
-        HTMLAttributes: {
-          class: 'text-blue-400 underline',
-          target: '_blank',
-          rel: 'noopener noreferrer'
-        }
+        openOnClick: false
       })
     ],
-    content: value,
+    content,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-invert min-h-[150px] p-3 outline-none text-white'
+        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[200px] p-4 border rounded-md',
+        placeholder
       }
     },
-    autofocus: true,
+    autofocus: false,
     immediatelyRender: false
   });
 
-  if (!isClient || !editor) return null;
+  const setLink = () => {
+    const url = window.prompt('Enter URL');
+    if (url) {
+      editor?.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    }
+  };
 
-  const buttonClass = (isActive: boolean) =>
-    clsx(
-      'px-2 py-1 rounded-md text-sm border border-slate-600 hover:bg-slate-700 transition-colors',
-      isActive ? 'bg-blue-600 text-white border-blue-600 font-semibold' : 'text-slate-300'
-    );
+  const unsetLink = () => {
+    editor?.chain().focus().unsetLink().run();
+  };
+
+  const setColor = (color: string) => {
+    editor?.chain().focus().setColor(color).run();
+  };
+
+  const setFontSize = (size: string) => {
+    editor?.chain().focus().setFontSize(size).run();
+  };
+
+  if (!editor) return null;
 
   return (
-    <div className="rounded-md border border-slate-700 bg-slate-800/60">
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-700 px-3 py-2">
-        <button onClick={() => editor.chain().focus().toggleBold().run()} className={buttonClass(editor.isActive('bold'))}>
-          Bold
-        </button>
-        <button onClick={() => editor.chain().focus().toggleItalic().run()} className={buttonClass(editor.isActive('italic'))}>
-          Italic
-        </button>
-        <button onClick={() => editor.chain().focus().toggleUnderline().run()} className={buttonClass(editor.isActive('underline'))}>
-          Underline
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          className={buttonClass(editor.isActive('heading', { level: 1 }))}
+    <div className="rounded-lg border bg-transparent">
+      <div className="flex flex-wrap items-center gap-1 border-b p-2">
+        {/* Toolbar buttons */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          className={editor.isActive('bold') ? 'bg-muted' : ''}
         >
-          H1
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          className={buttonClass(editor.isActive('heading', { level: 2 }))}
+          <Bold className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          className={editor.isActive('italic') ? 'bg-muted' : ''}
         >
-          H2
-        </button>
-        <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={buttonClass(editor.isActive('bulletList'))}>
-          • List
-        </button>
-        <button onClick={() => editor.chain().focus().toggleOrderedList().run()} className={buttonClass(editor.isActive('orderedList'))}>
-          1. List
-        </button>
-        <button
-          onClick={() => {
-            const url = prompt('Enter URL');
-            if (url) {
-              editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-            }
-          }}
-          className={buttonClass(editor.isActive('link'))}
+          <Italic className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          className={editor.isActive('bulletList') ? 'bg-muted' : ''}
         >
-          Link
-        </button>
+          <List className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          className={editor.isActive('orderedList') ? 'bg-muted' : ''}
+        >
+          <ListOrdered className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          className={editor.isActive('blockquote') ? 'bg-muted' : ''}
+        >
+          <Quote className="h-4 w-4" />
+        </Button>
+
+        <div className="bg-border mx-1 h-6 w-px" />
+
+        <Button variant="ghost" size="sm" onClick={setLink} className={editor.isActive('link') ? 'bg-muted' : ''}>
+          <LinkIcon className="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="sm" onClick={unsetLink} disabled={!editor.isActive('link')}>
+          <Link2Off className="h-4 w-4" />
+        </Button>
+
+        <div className="bg-border mx-1 h-6 w-px" />
+
+        <input
+          type="color"
+          ref={colorInputRef}
+          onChange={(e) => setColor(e.target.value)}
+          className="h-8 w-8 cursor-pointer rounded border-none bg-transparent p-0"
+          title="Text color"
+        />
+
+        <div className="bg-border mx-1 h-6 w-px" />
+
+        <Select onValueChange={(value: string) => setFontSize(value)}>
+          <SelectTrigger className="w-[120px]">
+            <SelectValue placeholder="Font size" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="10px">10px</SelectItem>
+            <SelectItem value="12px">12px</SelectItem>
+            <SelectItem value="14px">14px</SelectItem>
+            <SelectItem value="16px">16px</SelectItem>
+            <SelectItem value="18px">18px</SelectItem>
+            <SelectItem value="20px">20px</SelectItem>
+            <SelectItem value="24px">24px</SelectItem>
+            <SelectItem value="28px">28px</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <div className="bg-border mx-1 h-6 w-px" />
+
+        <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>
+          <Undo className="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="sm" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}>
+          <Redo className="h-4 w-4" />
+        </Button>
       </div>
 
-      <EditorContent editor={editor} className="min-h-[180px] px-3 py-2 text-white" />
+      <EditorContent editor={editor} />
     </div>
   );
 }

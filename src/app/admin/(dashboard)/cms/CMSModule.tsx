@@ -173,7 +173,7 @@ export default function CMSModule() {
               <Label className="text-white">{selectedType === 'faq' ? 'Answer' : 'Content'}</Label>
               {singleEntryTypes.includes(selectedType) ? (
                 <TipTapEditor
-                  value={newContent.content}
+                  content={newContent.content}
                   onChange={(content) => {
                     setNewContent({ ...newContent, content });
                     setFormErrors({ ...formErrors, content: '' });

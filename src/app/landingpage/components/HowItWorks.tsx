@@ -2,25 +2,26 @@
 
 import { DoubleDotIconSvg } from '@/components/icons';
 import Loader from '@/components/Loader';
+import { working_steps } from '@/constants';
 import { PUBLIC_API_ROUTES } from '@/constants/app-routes';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { Images } from '@/lib/images';
 import { toast } from '@/lib/toast';
 import apiService from '@/services/api';
-import { CMSModuleResponse, ContentItem } from '@/types/fe';
+import { StepItem, StepsHomeResponse } from '@/types/fe';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 
 function HowItWorks() {
-  const [steps, setSteps] = useState<ContentItem[]>([]);
+  const [steps, setSteps] = useState<StepItem[]>(working_steps as StepItem[]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getAllWorkingSteps = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await apiService.get<CMSModuleResponse>(PUBLIC_API_ROUTES.CMS_STEPS_API, { withAuth: true });
+      const response = await apiService.get<StepsHomeResponse>(PUBLIC_API_ROUTES.LANDING_PAGE_STEPS_LIST_API, { withAuth: true });
 
-      if (response.data.data && response.status === HttpStatusCode.OK && response.data.message) {
+      if (response.data.data && response.data.data.length > 0 && response.status === HttpStatusCode.OK && response.data.message) {
         setSteps(response.data.data);
       }
     } catch (error: unknown) {
@@ -53,11 +54,11 @@ function HowItWorks() {
                   className="mr-4 flex h-20 min-w-20 items-center justify-center rounded-md bg-[#FFFFFF] text-2xl font-bold md:h-24"
                   style={{ color: step.color }}
                 >
-                  {step.order && step.order < 10 ? `0${step.order}` : `${step.order}`}
+                  {i + 1 < 10 ? `0${i + 1}` : `${i + 1}`}
                 </div>
                 <div className="flex flex-col justify-evenly p-2">
                   <p className="text-sm font-semibold text-[#CECECE] sm:text-base md:text-lg">{step.title}</p>
-                  <p className="text-[10px] font-semibold text-[#A0A0A0] sm:text-xs md:text-[13px]">{step.content}</p>
+                  <p className="text-[10px] font-semibold text-[#A0A0A0] sm:text-xs md:text-[13px]">{step.description}</p>
                 </div>
               </li>
             ))}

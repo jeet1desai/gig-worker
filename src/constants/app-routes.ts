@@ -33,7 +33,10 @@ export enum PRIVATE_ROUTE {
   ADMIN_GIGS_DASHBOARD_PATH = '/admin/gigs',
   ADMIN_TIER_SYSTEM_DASHBOARD_PATH = '/admin/tier-system',
   ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH = '/admin/subscriptions',
-  ADMIN_CMS_PATH = '/admin/cms'
+  ADMIN_CMS_PATH = '/admin/cms',
+  ADMIN_CMS_PAGES_PATH = '/admin/cms_pages',
+  ADMIN_ADD_CMS_PAGES_PATH = '/admin/cms_pages/add',
+  ADMIN_EDIT_CMS_PAGES_PATH = '/admin/cms_pages/edit'
 }
 
 export enum PUBLIC_API_ROUTES {
@@ -47,7 +50,7 @@ export enum PUBLIC_API_ROUTES {
   CMS_TYPE_API = 'cms/type',
   CMS_CONTENT_ID_API = 'cms/content_id',
   LANDING_PAGE_FAQS_LIST_API = 'faqs',
-  CMS_STEPS_API = 'cms/type/step',
+  LANDING_PAGE_STEPS_LIST_API = 'working_steps',
   GIGS_API = '/api/gigs',
   GIG_DETAIL_PUBLIC_API = '/api/public/gigs'
 }

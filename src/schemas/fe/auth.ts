@@ -1,4 +1,5 @@
 import { SUBSCRIPTION_PLAN_TYPES } from '@/constants';
+import { PageType } from '@prisma/client';
 import * as Yup from 'yup';
 
 export const loginSchema = Yup.object().shape({
@@ -77,3 +78,59 @@ export const cmsSchemas: Record<string, Yup.ObjectSchema<any>> = {
     content: Yup.string().required('Privacy Policy content is required')
   })
 };
+
+export const pageSchema = Yup.object().shape({
+  title: Yup.string().required('Title is required'),
+  slug: Yup.string().required('Slug is required'),
+  type: Yup.mixed<PageType>()
+    .oneOf(Object.values(PageType) as PageType[], 'Invalid page type.')
+    .required('Page type must be selected.'),
+  heroSection: Yup.mixed().when('type', {
+    is: PageType.landing,
+    then: () =>
+      Yup.object().shape({
+        title: Yup.string().required('Hero title is required'),
+        description: Yup.string().required('Hero description is required')
+      }),
+    otherwise: () => Yup.mixed().notRequired()
+  }),
+  richContent: Yup.string().when('type', {
+    is: PageType.informative,
+    then: (schema) =>
+      schema.required('Content is required').test('not-empty', 'Content cannot be empty', (value) => {
+        if (!value) return false;
+        const div = document.createElement('div');
+        div.innerHTML = value;
+        const text = div.textContent ?? '';
+        return text.trim().length > 0;
+      }),
+    otherwise: () => Yup.string().notRequired()
+  }),
+  faqs: Yup.mixed().when('type', {
+    is: PageType.faqs,
+    then: () =>
+      Yup.array()
+        .min(1, 'At least one FAQ is required.')
+        .of(
+          Yup.object().shape({
+            question: Yup.string().required('Question is required.'),
+            answer: Yup.string().required('Answer is required.')
+          })
+        ),
+    otherwise: () => Yup.mixed().notRequired()
+  }),
+  steps: Yup.mixed().when('type', {
+    is: PageType.landing,
+    then: () =>
+      Yup.array()
+        .min(1, 'At least one Step is required.')
+        .of(
+          Yup.object().shape({
+            title: Yup.string().required('Step title is required.'),
+            description: Yup.string().required('Step description is required.'),
+            color: Yup.string().required('Color is required')
+          })
+        ),
+    otherwise: () => Yup.mixed().notRequired()
+  })
+});
