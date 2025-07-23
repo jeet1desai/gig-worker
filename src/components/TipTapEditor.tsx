@@ -19,7 +19,6 @@ interface TipTapEditorProps {
   placeholder?: string;
 }
 
-// 🆕 Inline FontSize extension
 const FontSize = Mark.create({
   name: 'fontSize',
 
@@ -68,7 +67,7 @@ export default function TipTapEditor({ content, onChange, placeholder = 'Start t
       StarterKit,
       TextStyle,
       Color,
-      FontSize, // 🆕 Include FontSize here
+      FontSize,
       Link.configure({
         openOnClick: false
       })
@@ -111,7 +110,6 @@ export default function TipTapEditor({ content, onChange, placeholder = 'Start t
   return (
     <div className="rounded-lg border bg-transparent">
       <div className="flex flex-wrap items-center gap-1 border-b p-2">
-        {/* Toolbar buttons */}
         <Button
           variant="ghost"
           size="sm"
