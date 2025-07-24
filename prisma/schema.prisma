@@ -98,17 +98,17 @@ model Admin {
 }
 
 model CMS {
-  id           BigInt     @id @default(autoincrement())
-  title        String
-  slug         String     @unique
-  type         PageType
-  isPublished  Boolean    @default(false)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  heroSection  Json?
-  faqs         Json?
-  steps        Json?
-  richContent  Json?
+  id          BigInt   @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  type        PageType
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  heroSection Json?
+  faqs        Json?
+  steps       Json?
+  richContent Json?
 }
 
 model Plan {
@@ -186,6 +186,7 @@ model Gig {
   thumbnail    String?
   attachments  Json?
   location     String?
+  is_removed   Boolean   @default(false)
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
 
