@@ -22,7 +22,6 @@ export async function middleware(req: NextRequest) {
 
   const isExplicitPrivateRoute = privateRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
 
-  // Match dynamic routes like `/about-us` but exclude if it’s a private route
   const isDynamicTopLevelRoute = /^\/[a-z0-9-]+$/i.test(pathname);
   const isDynamicPublicRoute = isDynamicTopLevelRoute && !isExplicitPrivateRoute;
 
