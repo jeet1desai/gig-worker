@@ -7,6 +7,7 @@ import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { ADMIN_ROLE } from './constants';
 
 const publicRoutes = Object.values(PUBLIC_ROUTE) as string[];
+const privateRoutes = Object.values(PRIVATE_ROUTE) as string[];
 
 export async function middleware(req: NextRequest) {
   if (req.headers.get('upgrade') === 'websocket') {
@@ -17,7 +18,15 @@ export async function middleware(req: NextRequest) {
   const isApiRoute = pathname.startsWith('/api');
   const publicApiRoutes = Object.values(PUBLIC_API_ROUTES) as string[];
   const isPublicApiRoute = publicApiRoutes.includes(pathname) || pathname.startsWith('/api/public/');
-  const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
+  const isExplicitPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
+
+  const isExplicitPrivateRoute = privateRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
+
+  // Match dynamic routes like `/about-us` but exclude if it’s a private route
+  const isDynamicTopLevelRoute = /^\/[a-z0-9-]+$/i.test(pathname);
+  const isDynamicPublicRoute = isDynamicTopLevelRoute && !isExplicitPrivateRoute;
+
+  const isPublicRoute = isExplicitPublicRoute || isDynamicPublicRoute;
 
   if (isPublicApiRoute) {
     return NextResponse.next();
