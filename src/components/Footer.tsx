@@ -14,7 +14,16 @@ async function Footer() {
 
   const informativeData = footerContent.filter((item) => item.type === PageType.informative);
 
+  const findByKeyword = (keyword: string) => {
+    return informativeData.find(
+      (page) => page.title.toLowerCase().includes(keyword.toLowerCase()) || page.slug.toLowerCase().includes(keyword.toLowerCase())
+    );
+  };
+
   const faqSlug = faqData.length > 0 ? faqData[0] : '#';
+  const terms = findByKeyword('terms');
+  const privacy = findByKeyword('privacy');
+
   return (
     <footer className="border-t-4 border-[#404040] bg-[#111111] text-white">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-12 md:grid-cols-4">
@@ -101,11 +110,11 @@ async function Footer() {
 
       <div className="mx-auto flex max-w-[1920px] flex-col items-center justify-between px-4 py-6 text-xs text-gray-400 md:flex-row">
         <div className="space-x-4">
-          <Link href="#" className="font-inter">
+          <Link href={terms?.slug ?? '#'} className="font-inter">
             Terms & Conditions
           </Link>
           <span>|</span>
-          <Link href="#" className="font-inter">
+          <Link href={privacy?.slug ?? '#'} className="font-inter">
             Privacy Policy
           </Link>
           <span>|</span>

@@ -12,7 +12,7 @@ export const cmsPagesServices = {
         },
         isPublished: true
       },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { title: 'asc' },
       select: {
         id: true,
         title: true,

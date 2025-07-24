@@ -300,7 +300,7 @@ function AddEditPage() {
   const handleSlugChange = (value: string) => {
     setNewPage({
       ...newPage,
-      slug: value
+      slug: value.toLocaleLowerCase()
     });
     setFormErrors({ ...formErrors, slug: '' });
   };
