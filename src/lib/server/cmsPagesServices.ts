@@ -24,19 +24,32 @@ export const cmsPagesServices = {
     return safeJson(findManyOptions);
   },
 
+  async getPageDataUsingSlug(slug: string) {
+    const find_slug_data = await prisma.cMS.findUnique({
+      where: {
+        slug: slug,
+        isPublished: true
+      },
+      select: {
+        id: true,
+        title: true,
+        type: true,
+        slug: true,
+        faqs: true,
+        richContent: true
+      }
+    });
+
+    return safeJson(find_slug_data);
+  },
+
   async getAllPagesList(request: Request) {
     const { searchParams } = new URL(request.url);
     const searchParam = searchParams.get('search');
-    const slug = searchParams.get('slug');
     const pageParam = searchParams.get('page');
     const pageSizeParam = searchParams.get('pageSize');
 
     const whereClause: Prisma.CMSWhereInput = {};
-
-    if (slug) {
-      whereClause.slug = slug;
-      whereClause.isPublished = true;
-    }
 
     if (searchParam) {
       whereClause.OR = [{ title: { contains: searchParam, mode: 'insensitive' } }, { slug: { contains: searchParam, mode: 'insensitive' } }];
