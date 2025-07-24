@@ -4,47 +4,78 @@ import { PageType, Prisma } from '@prisma/client';
 import { safeJson } from '../utils/safeJson';
 
 export const cmsPagesServices = {
+  async getAllFooterContent() {
+    const findManyOptions = await prisma.cMS.findMany({
+      where: {
+        type: {
+          not: PageType.landing
+        },
+        isPublished: true
+      },
+      orderBy: { createdAt: 'asc' },
+      select: {
+        id: true,
+        title: true,
+        type: true,
+        slug: true
+      }
+    });
+
+    return safeJson(findManyOptions);
+  },
+
   async getAllPagesList(request: Request) {
     const { searchParams } = new URL(request.url);
     const searchParam = searchParams.get('search');
+    const slug = searchParams.get('slug');
     const pageParam = searchParams.get('page');
     const pageSizeParam = searchParams.get('pageSize');
 
+    const whereClause: Prisma.CMSWhereInput = {};
+
+    if (slug) {
+      whereClause.slug = slug;
+      whereClause.isPublished = true;
+    }
+
+    if (searchParam) {
+      whereClause.OR = [{ title: { contains: searchParam, mode: 'insensitive' } }, { slug: { contains: searchParam, mode: 'insensitive' } }];
+    }
+
+    const shouldPaginate = pageParam !== null && pageSizeParam !== null;
     const page = parseInt(pageParam || '1', 10);
     const pageSize = parseInt(pageSizeParam || '10', 10);
     const skip = (page - 1) * pageSize;
 
-    const whereClause: Prisma.CMSWhereInput = {
-      ...(searchParam && {
-        OR: [{ slug: { contains: searchParam, mode: 'insensitive' } }, { title: { contains: searchParam, mode: 'insensitive' } }]
-      })
+    const findManyOptions: Prisma.CMSFindManyArgs = {
+      where: whereClause,
+      orderBy: { createdAt: 'asc' },
+      select: {
+        id: true,
+        title: true,
+        type: true,
+        slug: true,
+        faqs: true,
+        steps: true,
+        isPublished: true,
+        heroSection: true,
+        richContent: true,
+        updatedAt: true
+      }
     };
 
-    const [pages, total] = await Promise.all([
-      prisma.cMS.findMany({
-        where: whereClause,
-        skip,
-        take: pageSize,
-        orderBy: {
-          createdAt: 'asc'
-        },
-        select: {
-          id: true,
-          title: true,
-          type: true,
-          slug: true,
-          faqs: true,
-          steps: true,
-          isPublished: true,
-          heroSection: true,
-          richContent: true,
-          updatedAt: true
-        }
-      }),
-      prisma.cMS.count({ where: whereClause })
-    ]);
+    if (shouldPaginate) {
+      findManyOptions.skip = skip;
+      findManyOptions.take = pageSize;
+    }
 
-    return { pages, page, pageSize, total };
+    const [pages, total] = await Promise.all([prisma.cMS.findMany(findManyOptions), prisma.cMS.count({ where: whereClause })]);
+
+    return {
+      pages,
+      total,
+      ...(shouldPaginate ? { page, pageSize } : {})
+    };
   },
 
   async getPageDetailById(page_id: string) {

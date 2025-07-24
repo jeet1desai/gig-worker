@@ -4,8 +4,17 @@ import Image from 'next/image';
 import { Images } from '@/lib/images';
 import { FACEBOOK_PROFILE_PATH, INSTAGRAM_PROFILE_PATH, LINKEDIN_PROFILE_PATH, TWITTER_PROFILE_PATH } from '@/constants/app-routes';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
+import { cmsPagesServices } from '@/lib/server/cmsPagesServices';
+import { PageType } from '@prisma/client';
 
-function Footer() {
+async function Footer() {
+  const footerContent = (await cmsPagesServices.getAllFooterContent()) || [];
+
+  const faqData = footerContent.filter((item) => item.type === PageType.faqs).map((item) => item.slug);
+
+  const informativeData = footerContent.filter((item) => item.type === PageType.informative);
+
+  const faqSlug = faqData.length > 0 ? faqData[0] : '#';
   return (
     <footer className="border-t-4 border-[#404040] bg-[#111111] text-white">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-12 md:grid-cols-4">
@@ -41,7 +50,7 @@ function Footer() {
             <Link href="#" className="font-inter">
               Why us?
             </Link>
-            <Link href="#" className="font-inter">
+            <Link href={faqSlug} className="font-inter">
               FAQs
             </Link>
           </div>
@@ -67,25 +76,18 @@ function Footer() {
             <Link href="#" className="font-inter">
               Why us?
             </Link>
-            <Link href="#" className="font-inter">
+            <Link href={faqSlug} className="font-inter">
               FAQs
             </Link>
           </div>
         </div>
 
         <div className="flex flex-col space-y-2 text-sm text-gray-300">
-          <Link href="#" className="font-inter">
-            Community
-          </Link>
-          <Link href={PUBLIC_ROUTE.ABOUT} className="font-inter">
-            About us
-          </Link>
-          <Link href="#" className="font-inter">
-            FAQs
-          </Link>
-          <Link href="#" className="font-inter">
-            Contact us
-          </Link>
+          {informativeData.map((info) => (
+            <Link key={info.slug} href={info.slug || '#'} className="font-inter">
+              {info.title}
+            </Link>
+          ))}
         </div>
       </div>
 
