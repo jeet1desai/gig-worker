@@ -19,7 +19,7 @@ async function Footer() {
     );
   };
 
-  const faqSlug = faqData.length > 0 ? faqData[0] : '#';
+  const faqSlug = faqData.length > 0 ? faqData[0] : 'javascript:void(0)';
   const terms = findByKeyword('terms');
   const privacy = findByKeyword('privacy');
 
@@ -49,13 +49,13 @@ async function Footer() {
             For User
           </h2>
           <div className="flex flex-col space-y-2 text-sm text-gray-300">
-            <Link href="#" className="font-inter">
+            <Link href="javascript:void(0)" className="font-inter">
               Post an Opportunity
             </Link>
-            <Link href="#" className="font-inter">
+            <Link href="javascript:void(0)" className="font-inter">
               Project management
             </Link>
-            <Link href="#" className="font-inter">
+            <Link href="javascript:void(0)" className="font-inter">
               Why us?
             </Link>
             <Link href={faqSlug} className="font-inter">
@@ -75,13 +75,13 @@ async function Footer() {
             For Provider
           </h2>
           <div className="flex flex-col space-y-2 text-sm text-gray-300">
-            <Link href="#" className="font-inter">
+            <Link href="javascript:void(0)" className="font-inter">
               Create a portfolio
             </Link>
-            <Link href="#" className="font-inter">
+            <Link href="javascript:void(0)" className="font-inter">
               Freelancing
             </Link>
-            <Link href="#" className="font-inter">
+            <Link href="javascript:void(0)" className="font-inter">
               Why us?
             </Link>
             <Link href={faqSlug} className="font-inter">
@@ -92,7 +92,7 @@ async function Footer() {
 
         <div className="flex flex-col space-y-2 text-sm text-gray-300">
           {informativeData.map((info) => (
-            <Link key={info.slug} href={info.slug || '#'} className="font-inter">
+            <Link key={info.slug} href={info.slug || 'javascript:void(0)'} className="font-inter">
               {info.title}
             </Link>
           ))}
@@ -109,15 +109,15 @@ async function Footer() {
 
       <div className="mx-auto flex max-w-[1920px] flex-col items-center justify-between px-4 py-6 text-xs text-gray-400 md:flex-row">
         <div className="space-x-4">
-          <Link href={terms?.slug ?? '#'} className="font-inter">
+          <Link href={terms?.slug ?? 'javascript:void(0)'} className="font-inter">
             Terms & Conditions
           </Link>
           <span>|</span>
-          <Link href={privacy?.slug ?? '#'} className="font-inter">
+          <Link href={privacy?.slug ?? 'javascript:void(0)'} className="font-inter">
             Privacy Policy
           </Link>
           <span>|</span>
-          <Link href="#" className="font-inter">
+          <Link href="javascript:void(0)" className="font-inter">
             Code of conduct
           </Link>
         </div>
