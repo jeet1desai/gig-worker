@@ -3,9 +3,9 @@ import { getServerSession } from 'next-auth';
 import prisma from '@/lib/prisma';
 import { TIER } from '@prisma/client';
 import { uploadFile } from '@/lib/utils/file-upload';
-import { safeJsonResponse } from '@/utils/apiResponse';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { authOptions } from '../../auth/[...nextauth]/route';
+import { safeJsonResponse } from '@/utils/apiResponse';
 import { errorResponse } from '@/lib/api-response';
 
 type PriceRange = {
@@ -173,7 +173,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return errorResponse({ code: 'BAD_REQUEST', message: 'Gig ID is required', statusCode: HttpStatusCode.BAD_REQUEST });
     }
 
-    const [gig, userBid, bids] = await Promise.all([
+    const [gig, userBid] = await Promise.all([
       prisma.gig.findUnique({
         where: { id: BigInt(gigId) },
         include: {
@@ -188,15 +188,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
           provider_id: session.user.id
         },
         select: { id: true }
-      }),
-      prisma.bid.findMany({
-        where: { gig_id: BigInt(gigId), status: 'pending' },
-        include: {
-          provider: {
-            select: { id: true, first_name: true, last_name: true, profile_url: true, email: true, is_verified: true }
-          }
-        },
-        orderBy: { created_at: 'desc' }
       })
     ]);
 
@@ -205,15 +196,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 
     return safeJsonResponse(
-      {
-        success: true,
-        message: 'Gig fetched successfully',
-        data: {
-          ...gig,
-          hasBid: !!userBid,
-          ...(gig?.user_id === BigInt(session.user.id) && { bids: bids })
-        }
-      },
+      { success: true, message: 'Gig fetched successfully', data: { ...gig, hasBid: !!userBid } },
       { status: HttpStatusCode.OK }
     );
   } catch (error) {

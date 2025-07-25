@@ -1,4 +1,4 @@
-import { setGigs, setLoading, clearGigs, setOwnGigs, removeGig } from '@/store/slices/gigs';
+import { setGigs, setLoading, clearGigs, setOwnGigs, removeGig, setBids, updateBid } from '@/store/slices/gigs';
 import { AppDispatch } from '@/store/store';
 
 import apiService from './api';
@@ -198,12 +198,49 @@ export const gigService = {
       try {
         dispatch(setLoading({ loading: true }));
         const response = await apiService.post(`/gigs/bids/${gigId}`, body, { withAuth: true });
-        if (response.status === 201) {
+        if (response && response.status === 201) {
           toast.success('Bid placed successfully!');
           return response.data;
         }
       } catch (error: any) {
         toast.error(error.response?.data?.error?.message || 'Failed to place bid');
+        throw error;
+      } finally {
+        dispatch(setLoading({ loading: false }));
+      }
+    };
+  },
+
+  updateBidStatus(bidId: string, body: { status: string }) {
+    return async (dispatch: AppDispatch) => {
+      try {
+        dispatch(setLoading({ loading: true }));
+        const response = await apiService.patch(`/gigs/bids/${bidId}`, body, { withAuth: true });
+        if (response && response.status === 200) {
+          toast.success('Bid status updated successfully!');
+          dispatch(updateBid({ id: bidId, status: body.status }));
+          return response.data;
+        }
+      } catch (error: any) {
+        toast.error(error.response?.data?.error?.message || 'Failed to update bid status');
+        throw error;
+      } finally {
+        dispatch(setLoading({ loading: false }));
+      }
+    };
+  },
+
+  getBidsByGigId(gigId: string, page: number, limit: number) {
+    return async (dispatch: AppDispatch) => {
+      try {
+        dispatch(setLoading({ loading: true }));
+        const response: any = await apiService.get(`/gigs/bids/${gigId}?page=${page}&limit=${limit}`, { withAuth: true });
+        if (response && response.status === 200) {
+          dispatch(setBids({ bids: response.data.data.items, pagination: response.data.data.pagination }));
+          return response.data;
+        }
+      } catch (error: any) {
+        toast.error(error.response?.data?.error?.message || 'Failed to fetch bids');
         throw error;
       } finally {
         dispatch(setLoading({ loading: false }));

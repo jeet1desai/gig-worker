@@ -47,7 +47,9 @@ export function Header({ collapsed, onToggle, role, onRoleChange, subscriptionTy
 
   const handleRoleChange = (newRole: 'user' | 'provider') => {
     onRoleChange(newRole);
-    toast.info(`You have switched your profile as ${newRole.charAt(0).toUpperCase() + newRole.slice(1)}`);
+    if (newRole !== role) {
+      toast.info(`You have switched profile as ${newRole.charAt(0).toUpperCase() + newRole.slice(1)}`);
+    }
   };
 
   return (

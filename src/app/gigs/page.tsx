@@ -43,7 +43,7 @@ const tierOptions = [
   { value: 'expert', label: 'Expert' }
 ];
 
-export const GigCard = ({ id, title, description, tier, price_range, start_date, end_date, thumbnail, role, user }: any) => {
+export const GigCard = ({ id, title, description, tier, price_range, start_date, end_date, thumbnail, _count, user }: any) => {
   const router = useRouter();
 
   return (
@@ -91,7 +91,7 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
             </div>
             <div>
               <p className="text-xs text-gray-400">Bids</p>
-              <p className="text-xs text-white">1</p>
+              <p className="text-xs text-white">{_count.bids}</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -138,10 +138,9 @@ export const GigUserCard = ({
   description,
   tier,
   price_range,
-  start_date,
   end_date,
   role,
-  user,
+  _count,
   isActive,
   activeStatus,
   openDeleteConfirmation
@@ -227,7 +226,7 @@ export const GigUserCard = ({
             </div>
             <div>
               <p className="text-xs text-gray-400">Bids</p>
-              <p className="text-xs text-white">0</p>
+              <p className="text-xs text-white">{_count.bids}</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -606,7 +605,7 @@ const GigsPage = () => {
               hasMore={pagination.page < pagination.totalPages}
               loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
               scrollThreshold={0.9}
-              className="grid grid-cols-1 gap-6 lg:grid-cols-2"
+              className="grid grid-cols-1 gap-6 lg:grid-cols-3"
             >
               {ownGigs.map((gig: any, index: any) => (
                 <GigUserCard key={`${gig.id}-${index}`} role={user?.role} {...gig} openDeleteConfirmation={openDeleteConfirmation} />
@@ -619,7 +618,7 @@ const GigsPage = () => {
               hasMore={pagination.page < pagination.totalPages}
               loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
               scrollThreshold={0.9}
-              className="grid grid-cols-1 gap-6 lg:grid-cols-2"
+              className="grid grid-cols-1 gap-6 lg:grid-cols-3"
             >
               {gigs.map((gig: any, index: any) => (
                 <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />

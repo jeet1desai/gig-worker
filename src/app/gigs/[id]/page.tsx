@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   Star,
@@ -16,7 +16,8 @@ import {
   FileText,
   Download,
   Loader2,
-  X
+  X,
+  FolderX
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { Form, Formik, FormikHelpers } from 'formik';
@@ -34,15 +35,18 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 import { formatDate, formatOnlyDate, getDaysBetweenDates } from '@/lib/date-format';
 
-import { useDispatch } from '@/store/store';
+import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 export default function GigDetailPage() {
   const router = useRouter();
   const dispatch = useDispatch();
   const { id } = useParams();
   const { data: session } = useSession();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  const { loading, bids, pagination } = useSelector((state: RootState) => state.gigs);
   const [gig, setGig] = useState<any>(null);
 
   useEffect(() => {
@@ -52,11 +56,23 @@ export default function GigDetailPage() {
   }, [id]);
 
   const handleFetchGigDetails = async (id: any) => {
-    const response = await dispatch(gigService.getGigById(id) as any);
-    if (response && response.data) {
-      setGig(response.data);
+    try {
+      const response = await dispatch(gigService.getGigById(id) as any);
+      if (response && response.data) {
+        setGig(response.data);
+
+        await dispatch(gigService.getBidsByGigId(id, 1, 5) as any);
+      }
+    } catch (error) {
+      console.error('Error fetching gig details:', error);
     }
   };
+
+  const loadMore = useCallback(async () => {
+    if (pagination.page < pagination.totalPages) {
+      await dispatch(gigService.getBidsByGigId(id?.toString() || '', pagination.page + 1, 5) as any);
+    }
+  }, [pagination.page, pagination.totalPages]);
 
   const downloadFile = async (fileUrl: string) => {
     try {
@@ -87,9 +103,17 @@ export default function GigDetailPage() {
         resetForm();
       }
     } catch (error: any) {
-      console.error('Error updating user:', error);
+      console.error('Error creating bid:', error);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleUpdateBidStatus = async (bidId: string, status: string) => {
+    try {
+      await dispatch(gigService.updateBidStatus(bidId, { status }) as any);
+    } catch (error: any) {
+      console.error('Error updating bid status:', error);
     }
   };
 
@@ -120,6 +144,12 @@ export default function GigDetailPage() {
 
           <div className="grid gap-4 lg:grid-cols-3">
             <div className="space-y-4 lg:col-span-2">
+              {gig?.thumbnail && (
+                <div className="overflow-hidden rounded-lg border border-gray-700/50">
+                  <img src={gig?.thumbnail} alt={gig?.title} className="h-[270px] w-full object-fill" />
+                </div>
+              )}
+
               <Card className="rounded-lg border-gray-700/50 bg-inherit">
                 <CardContent className="">
                   <div className="mb-4 flex flex-wrap items-center gap-2 capitalize">
@@ -184,7 +214,7 @@ export default function GigDetailPage() {
                         {gig?.attachments.map((file: any, i: any) => (
                           <div
                             key={i}
-                            className="group flex items-center justify-between rounded-lg border border-gray-700 bg-gray-700/30 p-3 transition-colors hover:bg-gray-700/50"
+                            className="group flex items-center justify-between rounded-lg border border-gray-700/50 p-3 transition-colors hover:bg-gray-700/50"
                           >
                             <div className="flex items-center space-x-3">
                               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-900/20 text-blue-400">
@@ -234,15 +264,15 @@ export default function GigDetailPage() {
 
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Member since:</span>
+                      <span className="">Member since:</span>
                       <span className="font-medium">{formatDate(gig?.user?.created_at)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Total posted:</span>
+                      <span className="">Total posted:</span>
                       <span className="font-medium">{gig?.user?.total_posted} gigs</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Completion rate:</span>
+                      <span className="">Completion rate:</span>
                       <span className="font-medium text-green-600">{gig?.user?.completion_rate}%</span>
                     </div>
                   </div>
@@ -307,87 +337,131 @@ export default function GigDetailPage() {
               {session?.user?.id === gig?.user_id && (
                 <Card className="rounded-lg border-gray-700/50 bg-inherit p-0">
                   <CardContent className="p-4">
-                    <CardTitle className="text-white">Bids ({gig?.bids?.length})</CardTitle>
+                    <CardTitle className="text-white">Bids ({bids.length || 0})</CardTitle>
 
-                    <ScrollArea className="mt-4 lg:h-[calc(100vh-16rem)]">
-                      <div className="space-y-4 pr-2">
-                        {gig?.bids?.map((bid: any) => {
-                          return (
-                            <Card
-                              key={bid.id}
-                              className={`relative overflow-hidden border border-gray-700/50 bg-gray-800/30 p-0 transition-all hover:border-gray-600/50 ${bid.featured ? 'ring-2 ring-blue-500/30' : ''}`}
-                            >
-                              <div className="absolute top-0 right-0 rounded-bl-md bg-blue-600 px-2 py-1 text-xs font-medium text-white">
-                                Featured
-                              </div>
-                              <CardContent className="p-4">
-                                <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
-                                  <div className="flex items-start space-x-4">
-                                    <Avatar className="h-14 w-14 border-2 border-blue-500/30">
-                                      <AvatarImage src={bid.provider.profile_url} alt={bid.provider.first_name} />
-                                      <AvatarFallback className="bg-gray-700">
-                                        {bid.provider.first_name
-                                          .split(' ')
-                                          .map((n: string) => n[0])
-                                          .join('')}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                      <div className="flex items-center space-x-2">
-                                        <h4 className="text-lg font-semibold text-white">
-                                          {bid.provider.first_name} {bid.provider.last_name}
-                                        </h4>
-                                        {bid.provider.is_verified && <CheckCircle className="h-4 w-4 text-blue-400" />}
+                    <div className="mt-4 overflow-auto lg:h-[calc(100vh-16rem)]" id="bids-scroll-container" ref={scrollContainerRef}>
+                      {bids.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-700/50 p-8 text-center">
+                          <FolderX className="h-12 w-12 text-gray-500" />
+                          <h3 className="mt-2 text-lg font-medium text-gray-300">No bids yet</h3>
+                          <p className="mt-1 text-sm text-gray-500">Your gig hasn&apos;t received any bids yet. Check back later!</p>
+                        </div>
+                      ) : (
+                        <ScrollArea className="space-y-4">
+                          <InfiniteScroll
+                            dataLength={bids.length}
+                            next={loadMore}
+                            hasMore={pagination.page < pagination.totalPages}
+                            loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more bids...</div>}
+                            scrollThreshold={0.9}
+                            scrollableTarget={scrollContainerRef.current ? 'bids-scroll-container' : undefined}
+                            className="space-y-4"
+                          >
+                            {bids.map((bid: any) => {
+                              return (
+                                <Card
+                                  key={bid.id}
+                                  className={`relative overflow-hidden border border-gray-700/50 bg-gray-800/30 p-0 transition-all hover:border-gray-600/50 ${bid.featured ? 'ring-2 ring-blue-500/30' : ''}`}
+                                >
+                                  {/* <div className="absolute top-0 right-0 rounded-bl-md bg-blue-600 px-2 py-1 text-xs font-medium text-white">
+                                  Featured
+                                </div> */}
+                                  <CardContent className="p-4">
+                                    <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+                                      <div className="flex items-start space-x-4">
+                                        <Avatar className="h-14 w-14 border-2 border-blue-500/30">
+                                          <AvatarImage src={bid.provider.profile_url} alt={bid.provider.first_name} />
+                                          <AvatarFallback className="bg-gray-700">
+                                            {bid.provider.first_name
+                                              .split(' ')
+                                              .map((n: string) => n[0])
+                                              .join('')}
+                                          </AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                          <div className="flex items-center space-x-2">
+                                            <h4 className="text-lg font-semibold text-white">
+                                              {bid.provider.first_name} {bid.provider.last_name}
+                                            </h4>
+                                            {bid.provider.is_verified && <CheckCircle className="h-4 w-4 text-blue-400" />}
+                                          </div>
+                                          <div className="mt-1 flex items-center space-x-2">
+                                            <div className="flex items-center">
+                                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                              <span className="ml-1 text-sm font-medium text-white">{4}</span>
+                                              <span className="mx-1 text-gray-500">•</span>
+                                              <span className="text-sm text-gray-400">{4} reviews</span>
+                                            </div>
+                                          </div>
+                                        </div>
                                       </div>
-                                      <div className="mt-1 flex items-center space-x-2">
-                                        <div className="flex items-center">
-                                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                          <span className="ml-1 text-sm font-medium text-white">{4}</span>
-                                          <span className="mx-1 text-gray-500">•</span>
-                                          <span className="text-sm text-gray-400">{4} reviews</span>
+
+                                      <div className="flex flex-col items-end space-y-2 sm:items-end">
+                                        <div className="text-right">
+                                          <div className="text-2xl font-bold text-white">${bid.bid_price}</div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
 
-                                  <div className="flex flex-col items-end space-y-2 sm:items-end">
-                                    <div className="text-right">
-                                      <div className="text-2xl font-bold text-white">${bid.bid_price}</div>
+                                    <div className="mt-4 border-t border-gray-700/50 pt-4">
+                                      <h5 className="mb-2 text-sm font-medium text-gray-300">Proposal:</h5>
+                                      <p className="text-gray-300">{bid.proposal}</p>
+                                      <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
+                                        <span className="flex items-center">
+                                          <Clock className="mr-1 h-3.5 w-3.5" />
+                                          Posted {formatOnlyDate(bid.created_at)}
+                                        </span>
+                                        <div className="flex space-x-2">
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="border-blue-500/30 text-blue-400 hover:bg-blue-900/20 hover:text-blue-300"
+                                          >
+                                            <MessageCircle className="h-4 w-4" />
+                                          </Button>
+                                          {bid.status === 'pending' && (
+                                            <>
+                                              <Button
+                                                onClick={() => handleUpdateBidStatus(bid.id, 'accept')}
+                                                variant="default"
+                                                size="sm"
+                                                className="bg-green-600 text-white hover:bg-green-700"
+                                                disabled={loading}
+                                              >
+                                                <Check className="h-4 w-4" />
+                                              </Button>
+                                              <Button
+                                                onClick={() => handleUpdateBidStatus(bid.id, 'reject')}
+                                                variant="default"
+                                                size="sm"
+                                                className="bg-red-600 text-white hover:bg-red-700"
+                                                disabled={loading}
+                                              >
+                                                <X className="h-4 w-4" />
+                                              </Button>
+                                            </>
+                                          )}
+                                          {bid.status === 'accepted' && (
+                                            <Button variant="default" size="sm" className="bg-green-600 text-white hover:bg-green-700">
+                                              Accepted
+                                            </Button>
+                                          )}
+                                          {bid.status === 'rejected' && (
+                                            <Button variant="default" size="sm" className="bg-red-600 text-white hover:bg-red-700">
+                                              Rejected
+                                            </Button>
+                                          )}
+                                        </div>
+                                      </div>
                                     </div>
-                                  </div>
-                                </div>
-
-                                <div className="mt-4 border-t border-gray-700/50 pt-4">
-                                  <h5 className="mb-2 text-sm font-medium text-gray-300">Proposal:</h5>
-                                  <p className="text-gray-300">{bid.proposal}</p>
-                                  <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
-                                    <span className="flex items-center">
-                                      <Clock className="mr-1 h-3.5 w-3.5" />
-                                      Posted {formatOnlyDate(bid.created_at)}
-                                    </span>
-                                    <div className="flex space-x-2">
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="border-blue-500/30 text-blue-400 hover:bg-blue-900/20 hover:text-blue-300"
-                                      >
-                                        <MessageCircle className="h-4 w-4" />
-                                      </Button>
-                                      <Button variant="default" size="sm" className="bg-green-600 text-white hover:bg-green-700">
-                                        <Check className="h-4 w-4" />
-                                      </Button>
-                                      <Button variant="default" size="sm" className="bg-red-600 text-white hover:bg-red-700">
-                                        <X className="h-4 w-4" />
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          );
-                        })}
-                      </div>
-                    </ScrollArea>
+                                  </CardContent>
+                                </Card>
+                              );
+                            })}
+                          </InfiniteScroll>
+                        </ScrollArea>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               )}
@@ -493,11 +567,97 @@ export default function GigDetailPage() {
               <CardHeader>
                 <CardTitle className="text-white">Similar Gigs</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 text-white">Similar Gigs</CardContent>
+              <CardContent className="space-y-4 text-white">
+                <SimilarGigs currentGigId={gig?.id?.toString() || ''} />
+              </CardContent>
             </Card>
           </div>
         </div>
       </main>
     </DashboardLayout>
+  );
+}
+
+function SimilarGigs({ currentGigId }: { currentGigId: string }) {
+  const [similarGigs, setSimilarGigs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchSimilarGigs = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/gigs/${currentGigId}/similar`);
+        const data = await response.json();
+        if (data.success) {
+          setSimilarGigs(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching similar gigs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (currentGigId) {
+      fetchSimilarGigs();
+    }
+  }, [currentGigId]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-8">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      </div>
+    );
+  }
+
+  if (!similarGigs.length) {
+    return (
+      <div className="rounded-lg border border-gray-700/50 bg-gray-800/50 p-6 text-center">
+        <FolderX className="mx-auto h-12 w-12 text-gray-500" />
+        <p className="mt-2 text-gray-400">No similar gigs found</p>
+      </div>
+    );
+  }
+
+  console.log(similarGigs);
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-1">
+      {similarGigs.map((gig) => {
+        return (
+          <Card
+            key={gig.id}
+            className="cursor-pointer gap-2 border-gray-700/50 bg-gray-800/50 p-4 transition-colors hover:border-blue-500/50 hover:bg-gray-700/50"
+            onClick={() => router.push(`/gigs/${gig.id}`)}
+          >
+            <CardHeader className="p-0">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={gig.user?.profile_url || ''} alt={gig.user?.first_name} />
+                  <AvatarFallback>
+                    {gig.user?.first_name?.[0]}
+                    {gig.user?.last_name?.[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="line-clamp-1 font-medium text-white">{gig.title}</h3>
+                  <p className="text-sm text-gray-400">
+                    {gig.user?.first_name} {gig.user?.last_name}{' '}
+                    <span className="text-gray-400">
+                      (${gig.price_range?.min} - ${gig.price_range?.max})
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <p className="line-clamp-2 text-sm text-gray-300">{gig.description}</p>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
   );
 }

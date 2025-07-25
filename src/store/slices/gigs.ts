@@ -6,6 +6,7 @@ interface GigState {
 
   gigs: any[];
   ownGigs: any[];
+  bids: any[];
   pagination: any;
 }
 
@@ -14,6 +15,7 @@ const initialState: GigState = {
 
   gigs: [],
   ownGigs: [],
+  bids: [],
   pagination: DEFAULT_PAGINATION
 };
 
@@ -43,6 +45,23 @@ const gigsSlice = createSlice({
       }
       state.pagination = pagination;
     },
+    setBids: (state, action: PayloadAction<{ bids: any[]; pagination: any }>) => {
+      const { bids, pagination } = action.payload;
+      if (pagination.page === 1) {
+        state.bids = bids;
+      } else {
+        state.bids = [...state.bids, ...bids];
+      }
+      state.pagination = pagination;
+    },
+    updateBid: (state, action: PayloadAction<{ id: string; status: string }>) => {
+      const { id, status } = action.payload;
+      state.bids = state.bids.map((bid) => (bid.id === id ? { ...bid, status: status === 'reject' ? 'rejected' : 'accepted' } : bid));
+    },
+    clearBids: (state) => {
+      state.bids = [];
+      state.pagination = DEFAULT_PAGINATION;
+    },
     clearGigs: (state) => {
       state.gigs = [];
       state.ownGigs = [];
@@ -55,6 +74,6 @@ const gigsSlice = createSlice({
   }
 });
 
-export const { setLoading, setGigs, setOwnGigs, clearGigs, removeGig } = gigsSlice.actions;
+export const { setLoading, setGigs, setOwnGigs, setBids, clearBids, clearGigs, removeGig, updateBid } = gigsSlice.actions;
 
 export default gigsSlice.reducer;

@@ -97,25 +97,10 @@ export async function GET(request: Request) {
         where: whereClause,
         include: {
           user: {
-            select: {
-              id: true,
-              first_name: true,
-              last_name: true,
-              email: true,
-              profile_url: true,
-              created_at: true,
-              updated_at: true,
-              role: true
-            }
+            select: { id: true, first_name: true, last_name: true, email: true, profile_url: true, created_at: true, updated_at: true, role: true }
           },
-          pipeline: {
-            select: {
-              id: true,
-              status: true,
-              created_at: true,
-              updated_at: true
-            }
-          }
+          pipeline: { select: { id: true, status: true, created_at: true, updated_at: true } },
+          _count: { select: { bids: true } }
         },
         orderBy: {
           created_at: 'desc'

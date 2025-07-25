@@ -25,10 +25,6 @@ export async function POST(request: Request) {
       return errorResponse({ code: 'USER_NOT_FOUND', message: 'User not found', statusCode: HttpStatusCode.NOT_FOUND });
     }
 
-    if (user?.role !== ROLE.user) {
-      return errorResponse({ code: 'FORBIDDEN', message: 'Only users can create gigs', statusCode: HttpStatusCode.FORBIDDEN });
-    }
-
     const formData = await request.formData();
 
     const title = formData.get('title')?.toString();
@@ -254,25 +250,10 @@ export async function GET(request: Request) {
         where: whereClause,
         include: {
           user: {
-            select: {
-              id: true,
-              first_name: true,
-              last_name: true,
-              email: true,
-              profile_url: true,
-              created_at: true,
-              updated_at: true,
-              role: true
-            }
+            select: { id: true, first_name: true, last_name: true, email: true, profile_url: true, created_at: true, updated_at: true, role: true }
           },
-          pipeline: {
-            select: {
-              id: true,
-              status: true,
-              created_at: true,
-              updated_at: true
-            }
-          }
+          pipeline: { select: { id: true, status: true, created_at: true, updated_at: true } },
+          _count: { select: { bids: true } }
         },
         orderBy: {
           created_at: 'desc'
@@ -290,15 +271,7 @@ export async function GET(request: Request) {
     const responseData = {
       success: true,
       message: 'Gigs fetched successfully',
-      data: {
-        gigs,
-        pagination: {
-          total,
-          page: currentPage,
-          totalPages,
-          limit
-        }
-      }
+      data: { gigs, pagination: { total, page: currentPage, totalPages, limit } }
     };
 
     return safeJsonResponse(responseData, { status: HttpStatusCode.OK });

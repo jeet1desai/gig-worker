@@ -25,8 +25,8 @@ import { gigService } from '@/services/gig.services';
 
 const TIER_OPTIONS = [
   { value: 'basic', label: 'Basic' },
-  { value: 'standard', label: 'Standard' },
-  { value: 'premium', label: 'Premium' }
+  { value: 'advanced', label: 'Advanced' },
+  { value: 'expert', label: 'Expert' }
 ];
 
 const NewGigPage = () => {
