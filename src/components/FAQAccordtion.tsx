@@ -15,18 +15,10 @@ export default function FAQAccordion({ data }: { data: FAQItem[] }) {
         const isOpen = openIndex === index;
         return (
           <div key={faq.id}>
-            <button
-              onClick={() => toggle(index)}
-              className={`w-full text-left transition-colors duration-300 ${isOpen ? 'bg-clip-text text-transparent' : 'text-[#FFFFFF]'}`}
-              style={{
-                backgroundImage: isOpen
-                  ? 'linear-gradient(271.26deg, #A8E5EC -32.48%, #1CBAE0 -6.29%, #6C98EE 19.89%, #AB9EF5 55.1%, #CF8CCC 88.51%, #FFB9C7 111.09%, #FFC29F 140.88%)'
-                  : ''
-              }}
-            >
+            <button onClick={() => toggle(index)} className="w-full text-left transition-colors duration-300">
               <div className="flex items-center justify-between border-b border-gray-700 py-4 text-lg font-semibold">
-                {faq.question}
-                <span>{isOpen ? '-' : '+'}</span>
+                <span className={isOpen ? 'gradient-text' : 'text-[#FFFFFF]'}>{faq.question}</span>
+                <span className="text-[#FFFFFF]">{isOpen ? '-' : '+'}</span>
               </div>
             </button>
             {isOpen && <div className="mt-2 text-sm text-[#FFFFFF]">{faq.answer}</div>}
