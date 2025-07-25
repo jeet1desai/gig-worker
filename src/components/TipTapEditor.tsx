@@ -6,11 +6,9 @@ import Link from '@tiptap/extension-link';
 import { TextStyle } from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
 import { Mark, mergeAttributes } from '@tiptap/core';
-
 import { Button } from '@/components/ui/button';
 import { Bold, Italic, List, ListOrdered, Quote, Undo, Redo, Link as LinkIcon, Link2Off } from 'lucide-react';
-
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface TipTapEditorProps {
@@ -74,7 +72,9 @@ export default function TipTapEditor({ content, onChange, placeholder = 'Start t
     ],
     content,
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      let html = editor.getHTML();
+      html = html.replace(/<p>\s*<\/p>/g, '');
+      onChange(html);
     },
     editorProps: {
       attributes: {
@@ -85,6 +85,26 @@ export default function TipTapEditor({ content, onChange, placeholder = 'Start t
     autofocus: false,
     immediatelyRender: false
   });
+
+  useEffect(() => {
+    if (editor && content) {
+      const decode = (html: string) => {
+        const txt = document.createElement('textarea');
+        txt.innerHTML = html;
+        return txt.value;
+      };
+
+      let decoded = decode(content);
+
+      decoded = decoded.replace(/(<br\s*\/?>\s*){2,}/gi, '</p><p>');
+
+      decoded = decoded.replace(/<p>\s*<\/p>/g, '');
+
+      if (decoded !== editor.getHTML()) {
+        editor.commands.setContent(decoded, { emitUpdate: false });
+      }
+    }
+  }, [content, editor]);
 
   const setLink = () => {
     const url = window.prompt('Enter URL');

@@ -207,3 +207,21 @@ input:-webkit-autofill:active {
   background: #3399ff;
   color: #fff;
 }
+
+@layer utilities {
+  .gradient-text {
+    background-image: linear-gradient(
+      271.26deg,
+      #a8e5ec -32.48%,
+      #1cbae0 -6.29%,
+      #6c98ee 19.89%,
+      #ab9ef5 55.1%,
+      #cf8ccc 88.51%,
+      #ffb9c7 111.09%,
+      #ffc29f 140.88%
+    );
+    @apply bg-clip-text text-transparent;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}

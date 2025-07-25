@@ -3,9 +3,26 @@ import { FacebookIconSvg, InstagramIconSvg, LinkedInIconSvg, TwitterIconSvg } fr
 import Image from 'next/image';
 import { Images } from '@/lib/images';
 import { FACEBOOK_PROFILE_PATH, INSTAGRAM_PROFILE_PATH, LINKEDIN_PROFILE_PATH, TWITTER_PROFILE_PATH } from '@/constants/app-routes';
-import { PUBLIC_ROUTE } from '@/constants/app-routes';
+import { cmsPagesServices } from '@/lib/server/cmsPagesServices';
+import { PageType } from '@prisma/client';
 
-function Footer() {
+async function Footer() {
+  const footerContent = (await cmsPagesServices.getAllFooterContent()) || [];
+
+  const faqData = footerContent.filter((item) => item.type === PageType.faqs).map((item) => item.slug);
+
+  const informativeData = footerContent.filter((item) => item.type === PageType.informative);
+
+  const findByKeyword = (keyword: string) => {
+    return informativeData.find(
+      (page) => page.title.toLowerCase().includes(keyword.toLowerCase()) || page.slug.toLowerCase().includes(keyword.toLowerCase())
+    );
+  };
+
+  const faqSlug = faqData.length > 0 ? faqData[0] : 'javascript:void(0)';
+  const terms = findByKeyword('terms');
+  const privacy = findByKeyword('privacy');
+
   return (
     <footer className="border-t-4 border-[#404040] bg-[#111111] text-white">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 py-12 md:grid-cols-4">
@@ -32,16 +49,16 @@ function Footer() {
             For User
           </h2>
           <div className="flex flex-col space-y-2 text-sm text-gray-300">
-            <Link href="#" className="font-inter">
+            <Link href="javascript:void(0)" className="font-inter">
               Post an Opportunity
             </Link>
-            <Link href="#" className="font-inter">
+            <Link href="javascript:void(0)" className="font-inter">
               Project management
             </Link>
-            <Link href="#" className="font-inter">
+            <Link href="javascript:void(0)" className="font-inter">
               Why us?
             </Link>
-            <Link href="#" className="font-inter">
+            <Link href={faqSlug} className="font-inter">
               FAQs
             </Link>
           </div>
@@ -58,34 +75,27 @@ function Footer() {
             For Provider
           </h2>
           <div className="flex flex-col space-y-2 text-sm text-gray-300">
-            <Link href="#" className="font-inter">
+            <Link href="javascript:void(0)" className="font-inter">
               Create a portfolio
             </Link>
-            <Link href="#" className="font-inter">
+            <Link href="javascript:void(0)" className="font-inter">
               Freelancing
             </Link>
-            <Link href="#" className="font-inter">
+            <Link href="javascript:void(0)" className="font-inter">
               Why us?
             </Link>
-            <Link href="#" className="font-inter">
+            <Link href={faqSlug} className="font-inter">
               FAQs
             </Link>
           </div>
         </div>
 
         <div className="flex flex-col space-y-2 text-sm text-gray-300">
-          <Link href="#" className="font-inter">
-            Community
-          </Link>
-          <Link href={PUBLIC_ROUTE.ABOUT} className="font-inter">
-            About us
-          </Link>
-          <Link href="#" className="font-inter">
-            FAQs
-          </Link>
-          <Link href="#" className="font-inter">
-            Contact us
-          </Link>
+          {informativeData.map((info) => (
+            <Link key={info.slug} href={info.slug || 'javascript:void(0)'} className="font-inter">
+              {info.title}
+            </Link>
+          ))}
         </div>
       </div>
 
@@ -99,15 +109,15 @@ function Footer() {
 
       <div className="mx-auto flex max-w-[1920px] flex-col items-center justify-between px-4 py-6 text-xs text-gray-400 md:flex-row">
         <div className="space-x-4">
-          <Link href="#" className="font-inter">
+          <Link href={terms?.slug ?? 'javascript:void(0)'} className="font-inter">
             Terms & Conditions
           </Link>
           <span>|</span>
-          <Link href="#" className="font-inter">
+          <Link href={privacy?.slug ?? 'javascript:void(0)'} className="font-inter">
             Privacy Policy
           </Link>
           <span>|</span>
-          <Link href="#" className="font-inter">
+          <Link href="javascript:void(0)" className="font-inter">
             Code of conduct
           </Link>
         </div>
