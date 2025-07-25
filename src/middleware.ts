@@ -2,7 +2,12 @@ import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import type { NextRequest } from 'next/server';
 
-import { PUBLIC_ROUTE, PUBLIC_API_ROUTES, excludedPublicRoutes, PRIVATE_ROUTE } from '@/constants/app-routes';
+import {
+  PUBLIC_ROUTE,
+  PUBLIC_API_ROUTES,
+  excludedPublicRoutes,
+  PRIVATE_ROUTE
+} from '@/constants/app-routes';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 
 const publicRoutes = Object.values(PUBLIC_ROUTE) as string[];
@@ -16,20 +21,21 @@ export async function middleware(req: NextRequest) {
   const isApiRoute = pathname.startsWith('/api');
   const publicApiRoutes = Object.values(PUBLIC_API_ROUTES) as string[];
   const isPublicApiRoute = publicApiRoutes.includes(pathname);
-  const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
+  const isPublicRoute = publicRoutes.some(
+    (route) => pathname === route || pathname.startsWith(route + '/')
+  );
 
-  if (isPublicApiRoute) {
-    return NextResponse.next();
-  }
+  if (isPublicApiRoute) return NextResponse.next();
 
-  if (req.headers.get('upgrade') === 'websocket') {
-    return NextResponse.next();
-  }
+  const isPublicUserProfile = /^\/profile\/[^/]+$/.test(pathname);
+  if (isPublicUserProfile) return NextResponse.next();
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const now = Math.floor(Date.now() / 1000);
 
-  const isRestrictedPublicRoute = excludedPublicRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
+  const isRestrictedPublicRoute = excludedPublicRoutes.some(
+    (route) => pathname === route || pathname.startsWith(route + '/')
+  );
 
   if (isPublicRoute) {
     if (token && token.exp > now && isRestrictedPublicRoute) {
@@ -42,7 +48,10 @@ export async function middleware(req: NextRequest) {
 
   if (!token) {
     if (isApiRoute) {
-      return NextResponse.json({ message: 'Unauthorized: Token missing or expired' }, { status: HttpStatusCode.UNAUTHORIZED });
+      return NextResponse.json(
+        { message: 'Unauthorized: Token missing or expired' },
+        { status: HttpStatusCode.UNAUTHORIZED }
+      );
     } else {
       const redirectUrl = req.nextUrl.clone();
       redirectUrl.pathname = '/';
@@ -63,9 +72,17 @@ export async function middleware(req: NextRequest) {
   }
 
   if (token && token.exp > now) {
-    const isAccessingPlanPage = pathname === PRIVATE_ROUTE.PLANS || pathname.startsWith(PRIVATE_ROUTE.PLANS + '/');
+    const isAccessingPlanPage =
+      pathname === PRIVATE_ROUTE.PLANS ||
+      pathname.startsWith(PRIVATE_ROUTE.PLANS + '/');
     const isActiveSubscription = token.subscription;
-    if (!isApiRoute && !isActiveSubscription && !isAccessingPlanPage && !isPublicRoute) {
+
+    if (
+      !isApiRoute &&
+      !isActiveSubscription &&
+      !isAccessingPlanPage &&
+      !isPublicRoute
+    ) {
       const url = req.nextUrl.clone();
       url.pathname = PRIVATE_ROUTE.PLANS;
       return NextResponse.redirect(url);

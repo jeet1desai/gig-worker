@@ -1,58 +1,157 @@
 'use client';
 
+import { PencilIcon, PlusIcon, XIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useFormik } from 'formik';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { PencilIcon, PlusIcon, XIcon } from 'lucide-react';
-import { useState } from 'react';
 import CommonModal from '@/components/CommonModal';
 import { HammerSvg, BulbSvg, DartSvg } from '@/components/icons';
+import { userService } from '@/services/user.services';
+import { toast } from '@/lib/toast';
+import { UserProfile, UserProfileDetails } from '@/types/shared/user';
 
-export default function EditProfileTagsModal() {
+interface EditProfileTagModalProps {
+  isOwnProfile: boolean;
+  user: UserProfileDetails;
+  handleUpdateProfileAction: (updateUserDetails: UserProfileDetails) => void;
+}
+
+interface FormValues {
+  skills: string[];
+  extracurricular: string[];
+  interests: string[];
+  skillInput: string;
+  extraInput: string;
+  interestInput: string;
+}
+
+export default function EditProfileTagsModal({
+  user,
+  isOwnProfile,
+  handleUpdateProfileAction
+}: EditProfileTagModalProps) {
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [skills, setSkills] = useState<string[]>(['Graphic Design', 'Typography']);
-  const [skillInput, setSkillInput] = useState('');
+  const initialValues = {
+    skills: user.profile?.skills || [],
+    extracurricular: user.profile?.extracurricular || [],
+    interests: user.profile?.interests || [],
+    skillInput: '',
+    extraInput: '',
+    interestInput: ''
+  };
 
-  const [extracurricular, setExtracurricular] = useState<string[]>(['Photography', 'Public Speaking']);
-  const [extraInput, setExtraInput] = useState('');
+  const handleTagsSubmit = async (values: FormValues) => {
+    try {
+      setIsLoading(true);
+      const { skillInput, extraInput, interestInput, ...profileValues } =
+        values;
 
-  const [interests, setInterests] = useState<string[]>(['UI/UX Design', 'Animation']);
-  const [interestInput, setInterestInput] = useState('');
+      const response = await userService.updateUserTags({
+        skills: profileValues.skills,
+        interests: profileValues.interests,
+        extracurricular: profileValues.extracurricular
+      });
 
-  // Add item helper
-  const handleAdd = (type: 'skill' | 'extra' | 'interest') => {
-    const trimmed = type === 'skill' ? skillInput.trim() : type === 'extra' ? extraInput.trim() : type === 'interest' ? interestInput.trim() : '';
+      handleUpdateProfileAction({
+        ...user,
+        profile: response.data as UserProfile
+      });
 
-    if (!trimmed) return;
+      toast.success('Profile updated successfully');
+      setOpen(false);
+    } catch (error: any) {
+      const apiError = error?.response?.data?.error;
 
-    if (type === 'skill' && !skills.includes(trimmed)) {
-      setSkills((prev) => [...prev, trimmed]);
-      setSkillInput('');
-    } else if (type === 'extra' && !extracurricular.includes(trimmed)) {
-      setExtracurricular((prev) => [...prev, trimmed]);
-      setExtraInput('');
-    } else if (type === 'interest' && !interests.includes(trimmed)) {
-      setInterests((prev) => [...prev, trimmed]);
-      setInterestInput('');
+      toast.error(apiError?.message || 'Something went wrong.');
+
+      const fieldErrors = apiError?.fieldErrors;
+      if (fieldErrors) {
+        Object.entries(fieldErrors).forEach(([field, msg]) => {
+          setFieldError(field, msg as string);
+        });
+      }
+
+      console.error('Error updating profile tags:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const removeItem = (type: 'skill' | 'extra' | 'interest', item: string) => {
-    if (type === 'skill') setSkills((prev) => prev.filter((i) => i !== item));
-    else if (type === 'extra') setExtracurricular((prev) => prev.filter((i) => i !== item));
-    else if (type === 'interest') setInterests((prev) => prev.filter((i) => i !== item));
+  const {
+    values,
+    setFieldValue,
+    setFieldError,
+    handleChange,
+    handleSubmit,
+    resetForm
+  } = useFormik({
+    initialValues,
+    enableReinitialize: true,
+    onSubmit: handleTagsSubmit
+  });
+
+  useEffect(() => {
+    if (open) {
+      resetForm({
+        values: {
+          skills: user.profile?.skills ?? [],
+          extracurricular: user.profile?.extracurricular ?? [],
+          interests: user.profile?.interests ?? [],
+          skillInput: '',
+          extraInput: '',
+          interestInput: ''
+        }
+      });
+    }
+  }, [open]);
+
+  const handleAdd = (type: 'skills' | 'extracurricular' | 'interests') => {
+    const inputKey =
+      type === 'skills'
+        ? 'skillInput'
+        : type === 'extracurricular'
+          ? 'extraInput'
+          : 'interestInput';
+
+    const trimmed = values[inputKey].trim();
+    if (!trimmed || values[type].includes(trimmed)) return;
+
+    setFieldValue(type, [...values[type], trimmed]);
+    setFieldValue(inputKey, '');
   };
 
-  const handleSave = () => {
-    console.log('Skills:', skills);
-    console.log('Extracurricular:', extracurricular);
-    console.log('Interests:', interests);
-    setOpen(false);
+  const removeItem = (
+    type: 'skills' | 'extracurricular' | 'interests',
+    item: string
+  ) => {
+    setFieldValue(
+      type,
+      values[type].filter((i: string) => i !== item)
+    );
+  };
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    type: 'skills' | 'extracurricular' | 'interests'
+  ) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAdd(type);
+    }
   };
 
   return (
     <div>
-      <PencilIcon onClick={() => setOpen(true)} className="h-4 w-4 cursor-pointer text-white hover:text-gray-300" />
+      {isOwnProfile && (
+        <PencilIcon
+          onClick={() => setOpen(true)}
+          className="h-4 w-4 cursor-pointer text-white hover:text-gray-300"
+        />
+      )}
       <CommonModal
         open={open}
         onOpenChange={setOpen}
@@ -60,92 +159,140 @@ export default function EditProfileTagsModal() {
         title="Edit Profile Tags"
         subtitle="Update your skills, interests, and activities"
       >
-        <div className="mt-4 space-y-2">
-          <label className="flex items-center gap-1 text-sm font-semibold text-white">
-            <HammerSvg /> Skills
-          </label>
-          <div className="flex items-center gap-2">
-            <Input
-              value={skillInput}
-              onChange={(e) => setSkillInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAdd('skill')}
-              placeholder="Enter skill"
-              className="border border-[#333] bg-[#1a1a1a] text-white"
-            />
-            <Button size="icon" className="border border-[#333] bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]" onClick={() => handleAdd('skill')}>
-              <PlusIcon size={18} />
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <label className="flex items-center gap-1 text-sm font-semibold text-white">
+              <HammerSvg /> Skills
+            </label>
+            <div className="flex items-center gap-2">
+              <Input
+                name="skillInput"
+                value={values.skillInput}
+                onChange={handleChange}
+                placeholder="Enter skill"
+                onKeyDown={(event) => handleKeyDown(event, 'skills')}
+                className="border border-[#333] bg-[#1a1a1a] text-white"
+              />
+              <Button
+                type="button"
+                size="icon"
+                onClick={() => handleAdd('skills')}
+              >
+                <PlusIcon size={18} />
+              </Button>
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {values.skills.map((item: string, idx: number) => (
+                <span
+                  key={idx}
+                  className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm"
+                >
+                  {item}
+                  <XIcon
+                    size={14}
+                    className="cursor-pointer hover:text-red-400"
+                    onClick={() => removeItem('skills', item)}
+                  />
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="flex items-center gap-1 text-sm font-semibold text-white">
+              <DartSvg /> Extracurricular
+            </label>
+            <div className="flex items-center gap-2">
+              <Input
+                name="extraInput"
+                value={values.extraInput}
+                onChange={handleChange}
+                onKeyDown={(event) => handleKeyDown(event, 'extracurricular')}
+                placeholder="Enter extracurricular"
+                className="border border-[#333] bg-[#1a1a1a] text-white"
+              />
+              <Button
+                type="button"
+                size="icon"
+                onClick={() => handleAdd('extracurricular')}
+              >
+                <PlusIcon size={18} />
+              </Button>
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {values.extracurricular.map((item: string, idx: number) => (
+                <span
+                  key={idx}
+                  className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm"
+                >
+                  {item}
+                  <XIcon
+                    size={14}
+                    className="cursor-pointer hover:text-red-400"
+                    onClick={() => removeItem('extracurricular', item)}
+                  />
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="flex items-center gap-1 text-sm font-semibold text-white">
+              <BulbSvg /> Interests
+            </label>
+            <div className="flex items-center gap-2">
+              <Input
+                name="interestInput"
+                value={values.interestInput}
+                onChange={handleChange}
+                onKeyDown={(event) => handleKeyDown(event, 'interests')}
+                placeholder="Enter interest"
+                className="border border-[#333] bg-[#1a1a1a] text-white"
+              />
+              <Button
+                type="button"
+                size="icon"
+                onClick={() => handleAdd('interests')}
+              >
+                <PlusIcon size={18} />
+              </Button>
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {values.interests.map((item: string, idx: number) => (
+                <span
+                  key={idx}
+                  className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm"
+                >
+                  {item}
+                  <XIcon
+                    size={14}
+                    className="cursor-pointer hover:text-red-400"
+                    onClick={() => removeItem('interests', item)}
+                  />
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 border-t border-[#333] pt-4">
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={isLoading}
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              disabled={isLoading}
+              className="bg-white text-black hover:bg-gray-200"
+            >
+              Save Changes
             </Button>
           </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {skills.map((item, idx) => (
-              <span key={idx} className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm text-white">
-                {item}
-                <XIcon size={14} className="cursor-pointer hover:text-red-400" onClick={() => removeItem('skill', item)} />
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-6 space-y-2">
-          <label className="flex items-center gap-1 text-sm font-semibold text-white">
-            <DartSvg /> Extracurricular
-          </label>
-          <div className="flex items-center gap-2">
-            <Input
-              value={extraInput}
-              onChange={(e) => setExtraInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAdd('extra')}
-              placeholder="Enter extracurricular"
-              className="border border-[#333] bg-[#1a1a1a] text-white"
-            />
-            <Button size="icon" className="border border-[#333] bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]" onClick={() => handleAdd('extra')}>
-              <PlusIcon size={18} />
-            </Button>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {extracurricular.map((item, idx) => (
-              <span key={idx} className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm text-white">
-                {item}
-                <XIcon size={14} className="cursor-pointer hover:text-red-400" onClick={() => removeItem('extra', item)} />
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-6 space-y-2">
-          <label className="flex items-center gap-1 text-sm font-semibold text-white">
-            <BulbSvg /> Interests
-          </label>
-          <div className="flex items-center gap-2">
-            <Input
-              value={interestInput}
-              onChange={(e) => setInterestInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAdd('interest')}
-              placeholder="Enter interest"
-              className="border border-[#333] bg-[#1a1a1a] text-white"
-            />
-            <Button size="icon" className="border border-[#333] bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]" onClick={() => handleAdd('interest')}>
-              <PlusIcon size={18} />
-            </Button>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {interests.map((item, idx) => (
-              <span key={idx} className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1a1a1a] px-3 py-1 text-sm text-white">
-                {item}
-                <XIcon size={14} className="cursor-pointer hover:text-red-400" onClick={() => removeItem('interest', item)} />
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-6 flex justify-end gap-2 border-t border-[#333] pt-4">
-          <Button variant="ghost" onClick={() => setOpen(false)} className="cursor-pointer text-white">
-            Cancel
-          </Button>
-          <Button onClick={handleSave} className="cursor-pointer bg-white text-black hover:bg-gray-200">
-            Save Changes
-          </Button>
-        </div>
+        </form>
       </CommonModal>
     </div>
   );

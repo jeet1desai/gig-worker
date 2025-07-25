@@ -1,6 +1,13 @@
 'use client';
 
-import { Menu, MessageCircle, Search, User, Briefcase, LogOut } from 'lucide-react';
+import {
+  Menu,
+  MessageCircle,
+  Search,
+  User,
+  Briefcase,
+  LogOut
+} from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -14,7 +21,12 @@ import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { clearStorage } from '@/lib/local-storage';
 
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import NotificationBell from '../notification-bell';
 import CommonDeleteDialog from '../CommonDeleteDialog';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -26,7 +38,12 @@ interface SidebarProps {
   onRoleChange: (role: 'user' | 'provider') => void;
 }
 
-export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps) {
+export function Header({
+  collapsed,
+  onToggle,
+  role,
+  onRoleChange
+}: SidebarProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -69,7 +86,9 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                       variant="ghost"
                       size="icon"
                       className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
-                        role === 'user' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
+                        role === 'user'
+                          ? 'bg-slate-600 text-white shadow-md'
+                          : 'text-slate-400 hover:text-slate-300'
                       }`}
                       onClick={() => onRoleChange('user')}
                     >
@@ -85,7 +104,9 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
                       variant="ghost"
                       size="icon"
                       className={`h-7 w-7 p-2 transition-all duration-200 hover:scale-110 ${
-                        role === 'provider' ? 'bg-slate-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-300'
+                        role === 'provider'
+                          ? 'bg-slate-600 text-white shadow-md'
+                          : 'text-slate-400 hover:text-slate-300'
                       }`}
                       onClick={() => onRoleChange('provider')}
                     >
@@ -127,12 +148,20 @@ export function Header({ collapsed, onToggle, role, onRoleChange }: SidebarProps
               <Popover.Trigger asChild>
                 <div className="flex cursor-pointer items-center space-x-2 border-l border-slate-700 pl-4">
                   <div className="hidden text-right sm:block">
-                    <p className="max-w-[120px] truncate text-sm font-medium text-white">{session?.user.name}</p>
-                    <p className="text-xs text-slate-400">{session?.user.role.charAt(0).toUpperCase() + session?.user.role.slice(1)}</p>
+                    <p className="max-w-[120px] truncate text-sm font-medium text-white">
+                      {session?.user.name}
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      {session?.user.role.charAt(0).toUpperCase() +
+                        session?.user.role.slice(1)}
+                    </p>
                   </div>
                   <div className="relative">
                     <Avatar className="h-8 w-8 rounded-xl object-cover ring-2 ring-blue-500/20 transition-all duration-200 hover:scale-105 hover:ring-blue-500/40">
-                      <AvatarImage src={session?.user.image} alt={session?.user.name} />
+                      <AvatarImage
+                        src={session?.user.image}
+                        alt={session?.user.name}
+                      />
                       <AvatarFallback className="bg-transparent text-white">
                         {session?.user.name
                           ?.split(' ')
