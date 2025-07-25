@@ -3,9 +3,12 @@
 import { useEffect, useState } from 'react';
 
 import { useSocket } from '@/contexts/socket-context';
+import { useSession } from 'next-auth/react';
 
 export default function ClientSocketWrapper() {
   const { isConnected, socket } = useSocket();
+  const { data: session } = useSession();
+
   const [showStatus, setShowStatus] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -19,12 +22,12 @@ export default function ClientSocketWrapper() {
     if (socket && !isInitialized) {
       setIsInitialized(true);
 
-      const currentUserId = '5';
+      const currentUserId = session?.user?.id;
       if (currentUserId) {
         socket.emit('register', currentUserId);
       }
     }
-  }, [socket, isInitialized]);
+  }, [socket, isInitialized, session]);
 
   if (!showStatus) return null;
 

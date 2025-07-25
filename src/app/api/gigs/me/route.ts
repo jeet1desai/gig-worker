@@ -18,14 +18,46 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
+
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '10')));
     const search = (searchParams.get('search') || '').trim();
+    const minPrice = searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice') as string) : undefined;
+    const maxPrice = searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice') as string) : undefined;
+    const tiersParam = searchParams.get('tiers');
+    const tiers = tiersParam ? tiersParam.split(',').map((t) => t.trim().toLowerCase()) : [];
+
     const skip = (page - 1) * limit;
 
-    const whereClause: any = {
-      user_id: session.user.id
+    const baseWhere: any = {
+      AND: []
     };
+
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      const priceConditions = [];
+
+      if (minPrice !== undefined) {
+        priceConditions.push({
+          price_range: {
+            path: ['min'],
+            gte: minPrice
+          }
+        });
+      }
+
+      if (maxPrice !== undefined) {
+        priceConditions.push({
+          price_range: {
+            path: ['max'],
+            lte: maxPrice
+          }
+        });
+      }
+
+      if (priceConditions.length > 0) {
+        baseWhere.AND.push({ OR: priceConditions });
+      }
+    }
 
     if (search) {
       const searchConditions: any = [
@@ -42,12 +74,20 @@ export async function GET(request: Request) {
         });
       }
 
-      whereClause.AND = [
-        {
-          OR: searchConditions
-        }
-      ];
+      baseWhere.AND.push({
+        OR: searchConditions
+      });
     }
+
+    const whereClause = {
+      ...baseWhere,
+      ...(tiers.length > 0 && {
+        tier: {
+          in: tiers
+        }
+      }),
+      user_id: session.user.id
+    };
 
     const [total, gigs] = await Promise.all([
       prisma.gig.count({
@@ -57,25 +97,10 @@ export async function GET(request: Request) {
         where: whereClause,
         include: {
           user: {
-            select: {
-              id: true,
-              first_name: true,
-              last_name: true,
-              email: true,
-              profile_url: true,
-              created_at: true,
-              updated_at: true,
-              role: true
-            }
+            select: { id: true, first_name: true, last_name: true, email: true, profile_url: true, created_at: true, updated_at: true, role: true }
           },
-          pipeline: {
-            select: {
-              id: true,
-              status: true,
-              created_at: true,
-              updated_at: true
-            }
-          }
+          pipeline: { select: { id: true, status: true, created_at: true, updated_at: true } },
+          _count: { select: { bids: true } }
         },
         orderBy: {
           created_at: 'desc'

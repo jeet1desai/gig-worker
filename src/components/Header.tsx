@@ -7,13 +7,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import * as Popover from '@radix-ui/react-popover';
-import { LayoutDashboardIcon, LogOut, User } from 'lucide-react';
+import { LayoutDashboardIcon, LogOut } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import CommonDeleteDialog from './CommonDeleteDialog';
 import { signOut } from 'next-auth/react';
 import { clearStorage } from '@/lib/local-storage';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { ADMIN_ROLE } from '@/constants';
 
 function Header() {
   const { data: session } = useSession();
@@ -65,7 +66,7 @@ function Header() {
                     <div className="hidden text-right sm:block">
                       <p className="max-w-[120px] truncate text-sm font-medium text-white">{session?.user.name}</p>
                       <p className="hidden text-xs text-slate-400 md:block">
-                        {session?.user.role.charAt(0).toUpperCase() + session?.user.role.slice(1)}
+                        {`${session?.user.role.charAt(0).toUpperCase() + session?.user.role.slice(1)}`}
                       </p>
                     </div>
                     <div className="relative">
@@ -92,7 +93,7 @@ function Header() {
                   >
                     {
                       <Link
-                        href={session?.user.role === 'admin' ? PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH : PRIVATE_ROUTE.DASHBOARD}
+                        href={session?.user.role === ADMIN_ROLE ? PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH : PRIVATE_ROUTE.DASHBOARD}
                         className="flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-sm outline-none hover:bg-slate-700 focus:outline-none focus-visible:ring-0"
                       >
                         <LayoutDashboardIcon className="h-4 w-4" />

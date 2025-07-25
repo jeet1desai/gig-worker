@@ -50,3 +50,55 @@ export interface SubscriptionPlanPayload {
   maxBids: number;
   subscriptionType: string;
 }
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+  isVisible: boolean;
+}
+
+export interface StepItem {
+  id: string;
+  title: string;
+  description: string;
+  color: string;
+  order: number;
+}
+
+export interface HeroSectionData {
+  title: string;
+  description: string;
+}
+
+export interface CMSPage {
+  id: string;
+  title: string;
+  slug: string;
+  type: 'landing' | 'informative' | 'faqs' | '';
+  isPublished: boolean;
+  heroSection?: HeroSectionData;
+  faqs?: FAQItem[];
+  steps?: StepItem[];
+  richContent?: string;
+}
+
+export interface CMSPageResponse {
+  success: boolean;
+  data: CMSPage[];
+  message: string;
+  [key: string]: any;
+}
+
+export interface FAQsHomeResponse {
+  success: boolean;
+  data: FAQItem[];
+  message: string;
+  [key: string]: any;
+}
+
+export interface StepsHomeResponse {
+  success: boolean;
+  data: StepItem[];
+  message: string;
+  [key: string]: any;
+}

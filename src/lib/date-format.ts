@@ -27,6 +27,21 @@ export const formatDateInternational = (dateString?: string | Date | null): stri
   }
 };
 
+export const formatOnlyDate = (dateString?: string | Date | null): string => {
+  if (!dateString) return 'N/A';
+  try {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }).format(date);
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return 'Date error';
+  }
+};
+
 export const getDaysBetweenDates = (startDate: string, endDate: string) => {
   const start = new Date(startDate);
   const end = new Date(endDate);

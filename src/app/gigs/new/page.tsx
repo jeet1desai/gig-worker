@@ -25,8 +25,8 @@ import { gigService } from '@/services/gig.services';
 
 const TIER_OPTIONS = [
   { value: 'basic', label: 'Basic' },
-  { value: 'standard', label: 'Standard' },
-  { value: 'premium', label: 'Premium' }
+  { value: 'advanced', label: 'Advanced' },
+  { value: 'expert', label: 'Expert' }
 ];
 
 const NewGigPage = () => {
@@ -67,8 +67,6 @@ const NewGigPage = () => {
 
   const handleSubmit = async (values: any, { setSubmitting, resetForm }: FormikHelpers<any>) => {
     try {
-      console.log(values);
-
       const formData = new FormData();
 
       formData.append('title', values.title);
@@ -81,7 +79,6 @@ const NewGigPage = () => {
       formData.append('price_max', values.max_price);
       formData.append('keywords', values.keywords.join(','));
       [...values.attachments].forEach((file: File, index: number) => {
-        console.log(file);
         formData.append('attachments', file);
       });
       if (values.thumbnail) {

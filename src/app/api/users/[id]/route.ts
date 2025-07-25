@@ -172,7 +172,6 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     return safeJsonResponse({ success: true, message: 'User deleted successfully', data: existingUser }, { status: HttpStatusCode.OK });
   } catch (error) {
-    console.log(error);
     return NextResponse.json(errorResponse('Internal Server Error', HttpStatusCode.INTERNAL_SERVER_ERROR), {
       status: HttpStatusCode.INTERNAL_SERVER_ERROR
     });

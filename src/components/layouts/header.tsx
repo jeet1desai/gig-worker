@@ -19,7 +19,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
 import { clearStorage } from '@/lib/local-storage';
-
+import { toast } from '@/lib/toast';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -35,6 +35,7 @@ interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
   role: 'user' | 'provider' | 'admin';
+  subscriptionType: 'free' | 'basic' | 'pro';
   onRoleChange: (role: 'user' | 'provider') => void;
 }
 
@@ -42,7 +43,8 @@ export function Header({
   collapsed,
   onToggle,
   role,
-  onRoleChange
+  onRoleChange,
+  subscriptionType
 }: SidebarProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
@@ -60,6 +62,15 @@ export function Header({
     setIsLoading(false);
     router.refresh();
   }, [router]);
+
+  const handleRoleChange = (newRole: 'user' | 'provider') => {
+    onRoleChange(newRole);
+    if (newRole !== role) {
+      toast.info(
+        `You have switched profile as ${newRole.charAt(0).toUpperCase() + newRole.slice(1)}`
+      );
+    }
+  };
 
   return (
     <TooltipProvider>
@@ -90,7 +101,7 @@ export function Header({
                           ? 'bg-slate-600 text-white shadow-md'
                           : 'text-slate-400 hover:text-slate-300'
                       }`}
-                      onClick={() => onRoleChange('user')}
+                      onClick={() => handleRoleChange('user')}
                     >
                       <User className="h-4 w-4" />
                     </Button>
@@ -108,7 +119,7 @@ export function Header({
                           ? 'bg-slate-600 text-white shadow-md'
                           : 'text-slate-400 hover:text-slate-300'
                       }`}
-                      onClick={() => onRoleChange('provider')}
+                      onClick={() => handleRoleChange('provider')}
                     >
                       <Briefcase className="h-4 w-4" />
                     </Button>
@@ -151,9 +162,8 @@ export function Header({
                     <p className="max-w-[120px] truncate text-sm font-medium text-white">
                       {session?.user.name}
                     </p>
-                    <p className="text-xs text-slate-400">
-                      {session?.user.role.charAt(0).toUpperCase() +
-                        session?.user.role.slice(1)}
+                    <p className="hidden text-xs text-slate-400 md:block">
+                      {`${session?.user.role.charAt(0).toUpperCase() + session?.user.role.slice(1)}`}
                     </p>
                   </div>
                   <div className="relative">

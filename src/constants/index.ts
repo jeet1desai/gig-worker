@@ -1,4 +1,4 @@
-import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard } from 'lucide-react';
+import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelLeft, Globe, FileText, List } from 'lucide-react';
 import { PayPalButtonStyle } from '@paypal/paypal-js';
 import { PRIVATE_ROUTE } from './app-routes';
 import { publicEnv } from '@/lib/config/publicEnv';
@@ -25,7 +25,11 @@ export const PAYPAL_BUTTON_CONFIG: PayPalButtonStyle = {
 export const TOKEN = 'token';
 
 export const DASHBOARD_NAVIGATION_MENU = [
-  { name: 'Dashboard', icon: BarChart3, href: PRIVATE_ROUTE.DASHBOARD },
+  {
+    name: 'Dashboard',
+    icon: BarChart3,
+    href: PRIVATE_ROUTE.DASHBOARD
+  },
   { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.GIGS }
 ];
 
@@ -35,12 +39,25 @@ export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
     icon: LayoutDashboard,
     href: PRIVATE_ROUTE.ADMIN_TIER_SYSTEM_DASHBOARD_PATH
   },
-  { name: 'Users', icon: Users2Icon, href: PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH },
-  { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH },
+  {
+    name: 'Users',
+    icon: Users2Icon,
+    href: PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH
+  },
+  {
+    name: 'Gigs',
+    icon: Briefcase,
+    href: PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH
+  },
   {
     name: 'Subscription Plans',
     icon: PackagePlusIcon,
     href: PRIVATE_ROUTE.ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH
+  },
+  {
+    name: 'CMS Pages',
+    icon: PanelLeft,
+    href: PRIVATE_ROUTE.ADMIN_CMS_PAGES_PATH
   }
 ];
 
@@ -118,6 +135,46 @@ export const TIER_DATA_LIST = {
     bgGradient: 'from-purple-950/50 to-violet-950/30 border-l-purple-500'
   }
 };
+
+export const USER_GIGS = [
+  {
+    id: '1',
+    title: 'I will design a modern mobile app UI for your startup',
+    price: 150,
+    status: 'active' as const,
+    tier: 'Expert',
+    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=225&fit=crop',
+    createdAt: '2024-01-15'
+  },
+  {
+    id: '2',
+    title: 'I will write your research paper and essays',
+    price: 75,
+    status: 'paused' as const,
+    tier: 'Advanced',
+    image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&h=225&fit=crop',
+    createdAt: '2024-01-10'
+  },
+  {
+    id: '3',
+    title: 'I will tutor you in computer science fundamentals',
+    price: 45,
+    status: 'active' as const,
+    tier: 'Expert',
+    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop',
+    createdAt: '2024-01-08'
+  },
+  {
+    id: '4',
+    title: 'I will create social media content for your brand',
+    description: 'Engaging social media posts, stories, and campaigns tailored for student entrepreneurs and small businesses.',
+    price: 85,
+    status: 'draft' as const,
+    tier: 'Basic',
+    image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop',
+    createdAt: '2024-01-05'
+  }
+];
 
 export const DEFAULT_PAGINATION = {
   page: 1,
@@ -209,3 +266,72 @@ export const COMMON_ERROR_MESSAGES = {
 };
 
 export const SUBSCRIPTION_PLAN_TYPES = ['free', 'basic', 'pro'];
+
+export const ADMIN_ROLE = 'admin';
+
+export const pageTypes = {
+  landing: { label: 'Landing Page', icon: Globe, color: 'bg-blue-500' },
+  informative: { label: 'Informative Page', icon: FileText, color: 'bg-green-500' },
+  faqs: { label: 'FAQs', icon: List, color: 'bg-purple-500' }
+};
+
+export const publish_type = [
+  { label: 'Published', value: true },
+  { label: 'Draft', value: false }
+];
+
+export const working_steps = [
+  {
+    title: 'Create a Gig',
+    description: "Payment is released to the freelancer once you're pleased and approve the work you get.",
+    color: '#7B41FF'
+  },
+  {
+    title: 'Deliver Great',
+    description: "Find any service within minutes and know exactly what you'll pay. No hourly rates, just a fixed price.",
+    color: '#0C9BFF'
+  },
+  {
+    title: "We're Here For You 24/7",
+    description: 'We here for you, anything from answering any questions to resolving any issues, at any time.',
+    color: '#DF3699'
+  },
+  {
+    title: 'Stay Updated',
+    description: 'We are consisting of both creative thinkers and tech geniuses. We have the curiosity to explore new ideas',
+    color: '#3CB66F'
+  }
+];
+
+export const static_faqs = [
+  {
+    id: 'faq-1',
+    question: 'How does it work?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-2',
+    question: 'How can designers effectively seek out new opportunities?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-3',
+    question: 'How do I Send Proposals?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-4',
+    question: 'How can Clients find Designers?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-5',
+    question: 'How Can I Join?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-6',
+    question: 'What if I have more questions?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  }
+];

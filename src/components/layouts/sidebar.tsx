@@ -5,13 +5,15 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Images } from '@/lib/images';
 import { cn } from '@/lib/utils';
 import { LogOut, ChevronLeft, LucideProps } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ForwardRefExoticComponent, RefAttributes, useCallback, useEffect, useState } from 'react';
 import CommonDeleteDialog from '../CommonDeleteDialog';
 import { clearStorage } from '@/lib/local-storage';
+import { ADMIN_ROLE } from '@/constants';
+import { Session } from 'next-auth';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -29,6 +31,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
+  const [userDetails, setUserDetails] = useState<Session | null>(null);
 
   const handleLogout = useCallback(async () => {
     setIsLoading(true);
@@ -44,9 +47,20 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
     return pathname === itemUrl || pathname.startsWith(`${itemUrl}/`);
   };
 
-  const redirectToHome = useCallback(() => {
-    router.push(PRIVATE_ROUTE.DASHBOARD);
+  const getAdminProfileDetails = useCallback(async () => {
+    const session = await getSession();
+
+    setUserDetails(session);
   }, []);
+
+  useEffect(() => {
+    getAdminProfileDetails();
+  }, []);
+
+  const redirectToHome = useCallback(() => {
+    const path = userDetails?.user.role === ADMIN_ROLE ? PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH : PRIVATE_ROUTE.DASHBOARD;
+    router.push(path);
+  }, [userDetails]);
 
   useEffect(() => {
     if (isMobile) {

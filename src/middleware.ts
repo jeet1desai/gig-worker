@@ -9,8 +9,10 @@ import {
   PRIVATE_ROUTE
 } from '@/constants/app-routes';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
+import { ADMIN_ROLE } from './constants';
 
 const publicRoutes = Object.values(PUBLIC_ROUTE) as string[];
+const privateRoutes = Object.values(PRIVATE_ROUTE) as string[];
 
 export async function middleware(req: NextRequest) {
   if (req.headers.get('upgrade') === 'websocket') {
@@ -20,10 +22,21 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isApiRoute = pathname.startsWith('/api');
   const publicApiRoutes = Object.values(PUBLIC_API_ROUTES) as string[];
-  const isPublicApiRoute = publicApiRoutes.includes(pathname);
-  const isPublicRoute = publicRoutes.some(
+  const isPublicApiRoute =
+    publicApiRoutes.includes(pathname) || pathname.startsWith('/api/public/');
+  const isExplicitPublicRoute = publicRoutes.some(
     (route) => pathname === route || pathname.startsWith(route + '/')
   );
+
+  const isExplicitPrivateRoute = privateRoutes.some(
+    (route) => pathname === route || pathname.startsWith(route + '/')
+  );
+
+  const isDynamicTopLevelRoute = /^\/[a-z0-9-/]+$/i.test(pathname);
+  const isDynamicPublicRoute =
+    isDynamicTopLevelRoute && !isExplicitPrivateRoute;
+
+  const isPublicRoute = isExplicitPublicRoute || isDynamicPublicRoute;
 
   if (isPublicApiRoute) return NextResponse.next();
 
@@ -40,7 +53,11 @@ export async function middleware(req: NextRequest) {
   if (isPublicRoute) {
     if (token && token.exp > now && isRestrictedPublicRoute) {
       const url = req.nextUrl.clone();
-      url.pathname = PRIVATE_ROUTE.DASHBOARD;
+      if (token.role === ADMIN_ROLE) {
+        url.pathname = PRIVATE_ROUTE.ADMIN_DASHBOARD_PATH;
+      } else {
+        url.pathname = PRIVATE_ROUTE.DASHBOARD;
+      }
       return NextResponse.redirect(url);
     }
     return NextResponse.next();
@@ -76,12 +93,12 @@ export async function middleware(req: NextRequest) {
       pathname === PRIVATE_ROUTE.PLANS ||
       pathname.startsWith(PRIVATE_ROUTE.PLANS + '/');
     const isActiveSubscription = token.subscription;
-
     if (
       !isApiRoute &&
       !isActiveSubscription &&
       !isAccessingPlanPage &&
-      !isPublicRoute
+      !isPublicRoute &&
+      token.role !== ADMIN_ROLE
     ) {
       const url = req.nextUrl.clone();
       url.pathname = PRIVATE_ROUTE.PLANS;
@@ -101,5 +118,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|favicon.ico|images|fonts|icons|auth|api/auth).*)']
+  matcher: [
+    '/((?!_next|favicon.ico|images|fonts|icons|auth|api/auth|api/cms|api/faqs|api/working_steps).*)'
+  ]
 };

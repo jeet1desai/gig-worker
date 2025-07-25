@@ -1,8 +1,14 @@
 import { Images } from '@/lib/images';
+import { getAllFreelancersNumber, getAverageRating } from '@/lib/server/landingPageCounts';
+import { getLandingPageHeroSection } from '@/lib/server/landingPageServices';
 import Image from 'next/image';
 import Link from 'next/link';
 
-function HeroSection() {
+async function HeroSection() {
+  const averageRating = await getAverageRating();
+  const totalFreelancers = await getAllFreelancersNumber();
+  const heroSectionData: { title: string; description: string } = await getLandingPageHeroSection();
+
   return (
     <section className="w-full bg-[#000000] py-20">
       <div className="mx-auto flex max-w-[1920px] flex-col items-center justify-between gap-10 px-4 sm:px-6 md:px-10 lg:flex-row">
@@ -16,12 +22,20 @@ function HeroSection() {
               <Image src={Images.round_arrow} alt="round_arrow" fill className="object-contain object-center" />
             </div>
           </div>
-          <h1 className="mb-4 text-3xl leading-tight font-extrabold sm:text-3xl md:text-6xl">
-            On-Demand <span className="text-[#FFB9C7]">Services</span> for Your Every Need
-          </h1>
+          {heroSectionData.title ? (
+            <h1
+              className="mb-4 text-3xl leading-tight font-extrabold sm:text-3xl md:text-6xl"
+              dangerouslySetInnerHTML={{ __html: heroSectionData.title }}
+            ></h1>
+          ) : (
+            <h1 className="mb-4 text-3xl leading-tight font-extrabold sm:text-3xl md:text-6xl">
+              On-Demand <span className="text-[#FFB9C7]">Services</span> for Your Every Need
+            </h1>
+          )}
           <p className="mb-6 text-sm text-[#383937] sm:text-base">
-            We pride ourselves on offering a seamless, secure, and efficient experience. Browse through thousands of trusted service providers, read
-            reviews, compare prices.
+            {heroSectionData.description
+              ? heroSectionData.description
+              : 'We pride ourselves on offering a seamless, secure, and efficient experience. Browse through thousands of trusted service providers, read reviews, compare prices.'}
           </p>
           <Link href="#" className="font-inter">
             <div className="inline-block rounded-lg bg-[linear-gradient(45deg,_#20cbff,_#bd9ef5,_#FFC29F)] p-[1px]">
@@ -35,8 +49,8 @@ function HeroSection() {
               <Image src={Images.reviewers_image} alt="reviewers_image" fill className="object-contain object-center" />
             </div>
             <div>
-              <div className="mt-4 text-sm text-yellow-400 sm:text-base">⭐⭐⭐⭐⭐ 4.8/5</div>
-              <p className="mb-6 text-sm text-[#383937] sm:text-base">Trusted by 5,300+ customers</p>
+              <div className="mt-4 text-sm text-yellow-400 sm:text-base">⭐⭐⭐⭐⭐ {averageRating}/5</div>
+              <p className="mb-6 text-sm text-[#383937] sm:text-base">Trusted by {totalFreelancers}+ customers</p>
             </div>
           </div>
         </div>
