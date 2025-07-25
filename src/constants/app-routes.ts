@@ -56,7 +56,12 @@ export enum PUBLIC_API_ROUTES {
 
 export enum PRIVATE_API_ROUTES {
   SUBSCRIPTION_PLANS_API = '/subscriptions/plans',
-  SUBSCRIPTION_CREATE_API = '/subscriptions/subscribe'
+  SUBSCRIPTION_CREATE_API = '/subscriptions/subscribe',
+  USER_ABOUT_UPDATE_API = '/users/profile/about',
+  USER_TAGS_UPDATE_API = '/users/profile/tags',
+  USER_EDUCATION_UPDATE_API = '/users/profile/education',
+  USER_PROFILE_PICTURE_UPDATE_API = '/users/profile/profile-picture',
+  USER_BANNER_IMAGE_UPDATE_API = '/users/profile/banner-image'
 }
 
 export const excludedPublicRoutes = [
