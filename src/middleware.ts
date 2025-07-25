@@ -22,7 +22,7 @@ export async function middleware(req: NextRequest) {
 
   const isExplicitPrivateRoute = privateRoutes.some((route) => pathname === route || pathname.startsWith(route + '/'));
 
-  const isDynamicTopLevelRoute = /^\/[a-z0-9-]+$/i.test(pathname);
+  const isDynamicTopLevelRoute = /^\/[a-z0-9-/]+$/i.test(pathname);
   const isDynamicPublicRoute = isDynamicTopLevelRoute && !isExplicitPrivateRoute;
 
   const isPublicRoute = isExplicitPublicRoute || isDynamicPublicRoute;

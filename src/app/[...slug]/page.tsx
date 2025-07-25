@@ -6,15 +6,21 @@ import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {
   const all_data = (await cmsPagesServices.getAllFooterContent()) || [];
+
+  console.log(
+    all_data.map((page) => ({
+      slug: page.slug.split('/')
+    }))
+  );
   return all_data.map((page) => ({
-    slug: page.slug
+    slug: page.slug.split('/')
   }));
 }
 
-export default async function Page({ params }: { params: { slug: string } }) {
-  const { slug } = await params;
+export default async function Page({ params }: { params: { slug: string[] | string } }) {
+  const slugParam = Array.isArray(params.slug) ? params.slug.join('/') : params.slug;
 
-  const data = await cmsPagesServices.getPageDataUsingSlug(slug);
+  const data = await cmsPagesServices.getPageDataUsingSlug(slugParam);
 
   if (!data) {
     return notFound();
