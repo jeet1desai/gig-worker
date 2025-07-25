@@ -7,11 +7,6 @@ import { notFound } from 'next/navigation';
 export async function generateStaticParams() {
   const all_data = (await cmsPagesServices.getAllFooterContent()) || [];
 
-  console.log(
-    all_data.map((page) => ({
-      slug: page.slug.split('/')
-    }))
-  );
   return all_data.map((page) => ({
     slug: page.slug.split('/')
   }));
