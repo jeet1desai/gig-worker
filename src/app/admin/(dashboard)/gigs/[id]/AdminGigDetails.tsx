@@ -19,7 +19,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/lib/toast';
 import { PRIVATE_API_ROUTES, PRIVATE_ROUTE } from '@/constants/app-routes';
 import { AdminGigsList, AdminGigsSingleDataResponse } from '@/types/fe';
@@ -101,7 +100,7 @@ export default function AdminGigDetails() {
           <Card className="from-card to-card/50 border-0 bg-gradient-to-br shadow-lg">
             <CardHeader>
               <div className="flex">
-                {gig?.keywords?.map((keyword: any) => (
+                {gig?.keywords?.map((keyword: string) => (
                   <Badge
                     variant="outline"
                     key={keyword}
@@ -126,46 +125,44 @@ export default function AdminGigDetails() {
 
           {gig?.attachments && gig?.attachments.length > 0 && (
             <Card className="border-0 shadow-lg">
-              <Tabs defaultValue="attachments" className="w-full">
-                <CardHeader>
-                  <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-white">
-                    Attachments
-                  </h3>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {gig?.attachments?.map((fileUrl: string, index: number) => {
-                      const fileName = decodeURIComponent(
-                        fileUrl.split('/').pop() || `file-${index}`
-                      );
+              <CardHeader>
+                <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-white">
+                  Attachments
+                </h3>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {gig?.attachments?.map((fileUrl: string, index: number) => {
+                    const fileName = decodeURIComponent(
+                      fileUrl.split('/').pop() || `file-${index}`
+                    );
 
-                      return (
-                        <div
-                          key={index}
-                          className="bg-muted/30 flex items-center justify-between rounded-lg border p-3"
-                        >
-                          <div className="flex items-center gap-3">
-                            <FileText className="text-primary h-8 w-8" />
-                            <div>
-                              <p className="text-sm font-medium">{fileName}</p>
-                            </div>
+                    return (
+                      <div
+                        key={fileUrl}
+                        className="bg-muted/30 flex items-center justify-between rounded-lg border p-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <FileText className="text-primary h-8 w-8" />
+                          <div>
+                            <p className="text-sm font-medium">{fileName}</p>
                           </div>
-                          <a
-                            href={fileUrl}
-                            download
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Button variant="ghost" size="sm">
-                              <Download className="h-4 w-4" />
-                            </Button>
-                          </a>
                         </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Tabs>
+                        <a
+                          href={fileUrl}
+                          download
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Button variant="ghost" size="sm">
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        </a>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
             </Card>
           )}
         </div>

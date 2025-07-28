@@ -76,7 +76,17 @@ export default function GigManagement() {
     [pagination.page, searchTerm, activeFilters]
   );
 
-  const buildQueryParams = (query: Record<string, any>) => {
+  const buildQueryParams = (
+    query: Record<
+      string,
+      | string
+      | number
+      | boolean
+      | null
+      | undefined
+      | (string | number | boolean)[]
+    >
+  ) => {
     const params = new URLSearchParams();
 
     Object.entries(query).forEach(([key, value]) => {
@@ -239,13 +249,16 @@ export default function GigManagement() {
     setFilters((prev) => ({ ...prev, status: value }));
   };
 
-  const removeFilter = (key: string, value: any) => {
+  const removeFilter = (
+    key: string,
+    value: string | number | string[] | undefined
+  ) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
 
     let filterParams = { ...activeFilters };
 
     if (key === 'tiers') {
-      if (value?.length) {
+      if (Array.isArray(value) && value.length) {
         filterParams.tiers = value;
       } else {
         delete filterParams.tiers;
