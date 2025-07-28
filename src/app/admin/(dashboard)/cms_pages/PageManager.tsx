@@ -96,10 +96,6 @@ export default function PageManager() {
     }
   };
 
-  useEffect(() => {
-    getAllPagesList();
-  }, []);
-
   const handlePageChange = (page_number: number) => {
     setPagination({ ...pagination, page: page_number });
   };
