@@ -8,3 +8,14 @@ export enum REVIEW_RATING_STATUS {
   APPROVED = 'approved',
   REJECTED = 'rejected'
 }
+
+export enum PROFILE_VIEW {
+  USER = 'user',
+  PROVIDER = 'provider'
+}
+
+export enum SUBSCRIPTION_STATUS {
+  PENDING = 'pending',
+  ACTIVE = 'active',
+  INACTIVE = 'inactive'
+}

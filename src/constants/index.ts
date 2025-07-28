@@ -269,7 +269,8 @@ export const COMMON_ERROR_MESSAGES = {
 export const USER_ROLE = {
   success: 'User role updated successfully.',
   failure: 'Failed to update user role.',
-  invalidRole: 'Invalid user role.'
+  invalidRole: 'Invalid user role.',
+  subscriptionRequired : 'User must have a Basic or Pro subscription to change profile view.'
 };
 
 export const GIGS_RATING_MESSAGES = {

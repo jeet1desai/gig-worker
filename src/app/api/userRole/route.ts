@@ -2,8 +2,9 @@ import { ValidationError } from 'yup';
 import prisma from '@/lib/prisma';
 import { errorResponse, successResponse } from '@/lib/api-response';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
-import { COMMON_ERROR_MESSAGES, VERIFICATION_CODES } from '@/constants';
+import { COMMON_ERROR_MESSAGES, USER_ROLE, VERIFICATION_CODES } from '@/constants';
 import { roleChangeSchema } from '@/schemas/be/auth';
+import { SUBSCRIPTION_STATUS } from '@/enums/be/user';
 
 export async function POST(req: Request) {
   try {
@@ -28,9 +29,27 @@ export async function POST(req: Request) {
       });
     }
 
+    const subscription = await prisma.subscription.findFirst({
+      where: {
+        user_id: numericUserId,
+        status: SUBSCRIPTION_STATUS.ACTIVE, 
+        type: { in: ['basic', 'pro'] }
+      }
+    });
+
+    if (!subscription) {
+      return errorResponse({
+        code: VERIFICATION_CODES.VALIDATION_ERROR,
+        message: USER_ROLE.subscriptionRequired,
+        statusCode: HttpStatusCode.FORBIDDEN
+      });
+    }
+
     await prisma.user.update({
       where: { id: numericUserId },
-      data: { profile_view }
+      data: { 
+        profile_view: profile_view.toUpperCase() as any
+      }
     });
 
     return successResponse({
