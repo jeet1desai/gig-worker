@@ -33,6 +33,9 @@ export interface SubscriptionPlanResponse {
 
 export interface ApiResponse {
   message?: string;
+  data?: {
+    [key: string]: any;
+  };
   error?: {
     message?: string;
     fieldErrors?: {

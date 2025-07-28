@@ -51,7 +51,8 @@ export enum PUBLIC_API_ROUTES {
   LANDING_PAGE_FAQS_LIST_API = 'faqs',
   LANDING_PAGE_STEPS_LIST_API = 'working_steps',
   GIGS_API = '/api/gigs',
-  GIG_DETAIL_PUBLIC_API = '/api/public/gigs'
+  GIG_DETAIL_PUBLIC_API = '/api/public/gigs',
+  GIG_RATING_API = '/api/ratings',
 }
 
 export enum PRIVATE_API_ROUTES {
@@ -61,7 +62,8 @@ export enum PRIVATE_API_ROUTES {
   USER_TAGS_UPDATE_API = '/users/profile/tags',
   USER_EDUCATION_UPDATE_API = '/users/profile/education',
   USER_PROFILE_PICTURE_UPDATE_API = '/users/profile/profile-picture',
-  USER_BANNER_IMAGE_UPDATE_API = '/users/profile/banner-image'
+  USER_BANNER_IMAGE_UPDATE_API = '/users/profile/banner-image',
+  USER_ROLE_CHANGE_API = '/userRole'
 }
 
 export const excludedPublicRoutes = [
