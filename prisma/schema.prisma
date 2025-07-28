@@ -376,6 +376,12 @@ enum BID_STATUS {
   rejected
 }
 
+enum RatingStatus {
+  pending
+  approved
+  rejected
+}
+
 enum PAYMENT_STATUS {
   held
   completed
