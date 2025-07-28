@@ -133,7 +133,7 @@ export async function GET(req: Request) {
     const ratings = await prisma.reviewRating.findMany({
       where: {
         user_id: BigInt(userId),
-        status: 'approved'
+        status: REVIEW_RATING_STATUS.APPROVED
       },
       include: {
         gig: true,
