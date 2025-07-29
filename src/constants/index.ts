@@ -1,4 +1,14 @@
-import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelLeft, Globe, FileText, List } from 'lucide-react';
+import {
+  BarChart3,
+  Briefcase,
+  PackagePlusIcon,
+  Users2Icon,
+  LayoutDashboard,
+  PanelLeft,
+  Globe,
+  FileText,
+  List
+} from 'lucide-react';
 import { PayPalButtonStyle } from '@paypal/paypal-js';
 import { PRIVATE_ROUTE } from './app-routes';
 import { publicEnv } from '@/lib/config/publicEnv';
@@ -97,7 +107,8 @@ export const GIGS_LIST = [
 export const TIER_DATA_LIST = {
   basic: {
     title: 'Basic Tier',
-    description: 'Simple tasks that require minimal skill but provide essential help to students.',
+    description:
+      'Simple tasks that require minimal skill but provide essential help to students.',
     examples: 'Laundry, food pickup, move-in/move-out help, package delivery',
     stats: {
       totalGigs: 245,
@@ -110,8 +121,10 @@ export const TIER_DATA_LIST = {
   },
   advanced: {
     title: 'Advanced Tier',
-    description: 'Knowledge-based services requiring experience and good judgment.',
-    examples: 'Academic advice, major selection guidance, career counseling, campus navigation',
+    description:
+      'Knowledge-based services requiring experience and good judgment.',
+    examples:
+      'Academic advice, major selection guidance, career counseling, campus navigation',
     stats: {
       totalGigs: 189,
       avgRating: 4.8,
@@ -123,8 +136,10 @@ export const TIER_DATA_LIST = {
   },
   expert: {
     title: 'Expert Tier',
-    description: 'High-skill, specialized services requiring expertise and proven track record.',
-    examples: 'Tutoring, homework help, interview preparation, grad school applications, schedule optimization',
+    description:
+      'High-skill, specialized services requiring expertise and proven track record.',
+    examples:
+      'Tutoring, homework help, interview preparation, grad school applications, schedule optimization',
     stats: {
       totalGigs: 156,
       avgRating: 4.9,
@@ -143,7 +158,8 @@ export const USER_GIGS = [
     price: 150,
     status: 'active' as const,
     tier: 'Expert',
-    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=225&fit=crop',
+    image:
+      'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=225&fit=crop',
     createdAt: '2024-01-15'
   },
   {
@@ -152,7 +168,8 @@ export const USER_GIGS = [
     price: 75,
     status: 'paused' as const,
     tier: 'Advanced',
-    image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&h=225&fit=crop',
+    image:
+      'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&h=225&fit=crop',
     createdAt: '2024-01-10'
   },
   {
@@ -161,17 +178,20 @@ export const USER_GIGS = [
     price: 45,
     status: 'active' as const,
     tier: 'Expert',
-    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop',
+    image:
+      'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop',
     createdAt: '2024-01-08'
   },
   {
     id: '4',
     title: 'I will create social media content for your brand',
-    description: 'Engaging social media posts, stories, and campaigns tailored for student entrepreneurs and small businesses.',
+    description:
+      'Engaging social media posts, stories, and campaigns tailored for student entrepreneurs and small businesses.',
     price: 85,
     status: 'draft' as const,
     tier: 'Basic',
-    image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop',
+    image:
+      'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop',
     createdAt: '2024-01-05'
   }
 ];
@@ -252,7 +272,8 @@ export const VERIFICATION_MESSAGES = {
   USER_ALREADY_VERIFIED: 'User already verified.',
   EMAIL_VERIFIED_SUCCESS: 'Email verified successfully.',
   EMAIL_VERIFIED_NOTIFICATION_TITLE: 'Email Verified',
-  EMAIL_VERIFIED_NOTIFICATION_MESSAGE: 'Your email has been verified successfully.'
+  EMAIL_VERIFIED_NOTIFICATION_MESSAGE:
+    'Your email has been verified successfully.'
 };
 
 export const COMMON_ERROR_MESSAGES = {
@@ -291,7 +312,11 @@ export const ADMIN_ROLE = 'admin';
 
 export const pageTypes = {
   landing: { label: 'Landing Page', icon: Globe, color: 'bg-blue-500' },
-  informative: { label: 'Informative Page', icon: FileText, color: 'bg-green-500' },
+  informative: {
+    label: 'Informative Page',
+    icon: FileText,
+    color: 'bg-green-500'
+  },
   faqs: { label: 'FAQs', icon: List, color: 'bg-purple-500' }
 };
 
@@ -303,22 +328,26 @@ export const publish_type = [
 export const working_steps = [
   {
     title: 'Create a Gig',
-    description: "Payment is released to the freelancer once you're pleased and approve the work you get.",
+    description:
+      "Payment is released to the freelancer once you're pleased and approve the work you get.",
     color: '#7B41FF'
   },
   {
     title: 'Deliver Great',
-    description: "Find any service within minutes and know exactly what you'll pay. No hourly rates, just a fixed price.",
+    description:
+      "Find any service within minutes and know exactly what you'll pay. No hourly rates, just a fixed price.",
     color: '#0C9BFF'
   },
   {
     title: "We're Here For You 24/7",
-    description: 'We here for you, anything from answering any questions to resolving any issues, at any time.',
+    description:
+      'We here for you, anything from answering any questions to resolving any issues, at any time.',
     color: '#DF3699'
   },
   {
     title: 'Stay Updated',
-    description: 'We are consisting of both creative thinkers and tech geniuses. We have the curiosity to explore new ideas',
+    description:
+      'We are consisting of both creative thinkers and tech geniuses. We have the curiosity to explore new ideas',
     color: '#3CB66F'
   }
 ];
@@ -327,31 +356,57 @@ export const static_faqs = [
   {
     id: 'faq-1',
     question: 'How does it work?',
-    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+    answer:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
   },
   {
     id: 'faq-2',
     question: 'How can designers effectively seek out new opportunities?',
-    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+    answer:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
   },
   {
     id: 'faq-3',
     question: 'How do I Send Proposals?',
-    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+    answer:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
   },
   {
     id: 'faq-4',
     question: 'How can Clients find Designers?',
-    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+    answer:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
   },
   {
     id: 'faq-5',
     question: 'How Can I Join?',
-    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+    answer:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
   },
   {
     id: 'faq-6',
     question: 'What if I have more questions?',
-    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+    answer:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
   }
 ];
+
+export const tierColors: Record<string, string> = {
+  basic: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  advanced: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  expert: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+};
+
+export const tierLabels: Record<string, string> = {
+  basic: 'basic',
+  advanced: 'advanced',
+  expert: 'expert'
+};
+
+export const statusColors: Record<string, string> = {
+  open: 'bg-primary/10 text-primary border-primary/20',
+  requested: 'bg-amber-100 text-amber-600 border-amber-300',
+  in_progress: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+  completed: 'border-green-300 bg-green-100 text-green-600',
+  rejected: 'bg-destructive/10 text-destructive border-destructive/20'
+};

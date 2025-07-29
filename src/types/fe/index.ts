@@ -1,3 +1,5 @@
+import { GIG_STATUS, TIER } from '@prisma/client';
+
 export interface SubscriptionPlan {
   id: number | string;
   plan_id: string;
@@ -103,5 +105,65 @@ export interface StepsHomeResponse {
   success: boolean;
   data: StepItem[];
   message: string;
+  [key: string]: any;
+}
+export interface AdminGigsResponse {
+  success: boolean;
+  data: {
+    gigs: AdminGigsList[];
+    pagination: {
+      page: number;
+      pageSize: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+  message: string;
+  [key: string]: any;
+}
+
+export interface AdminGigsSingleDataResponse {
+  success: boolean;
+  data: AdminGigsList;
+  message: string;
+  [key: string]: any;
+}
+
+export interface AdminGigsList {
+  attachments: string[];
+  completed_at: string | null;
+  created_at: string;
+  description: string;
+  end_date: string;
+  id: string;
+  is_removed: boolean;
+  keywords: string[];
+  location: string;
+  pipeline: {
+    id: string;
+    status: GIG_STATUS;
+    created_at: string;
+    [key: string]: any;
+  };
+  price_range: {
+    max: number;
+    min: number;
+    [key: string]: any;
+  };
+  start_date: string;
+  thumbnail: string;
+  tier: TIER;
+  title: string;
+  updated_at: string;
+  user: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    profile_url: string | null;
+    _count: { gigs: number };
+    [key: string]: any;
+  };
+  user_id: string;
   [key: string]: any;
 }
