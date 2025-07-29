@@ -46,13 +46,13 @@ export enum PUBLIC_API_ROUTES {
   API_FORGOT_PASSWORD = '/auth/forgot-password',
   WEBHOOK_PAYPAL = '/api/webhook/paypal',
   CMS_PARENT_API = 'cms',
-  CMS_TYPE_API = 'cms/type',
   CMS_CONTENT_ID_API = 'cms/content_id',
   LANDING_PAGE_FAQS_LIST_API = 'faqs',
   LANDING_PAGE_STEPS_LIST_API = 'working_steps',
   GIGS_API = '/api/gigs',
   GIG_DETAIL_PUBLIC_API = '/api/public/gigs',
-  GIGS_BY_USER_ID_API = '/users/gigs'
+  GIGS_BY_USER_ID_API = '/users/gigs',
+  GIG_RATING_API = '/api/ratings'
 }
 
 export enum PRIVATE_API_ROUTES {
@@ -62,7 +62,9 @@ export enum PRIVATE_API_ROUTES {
   USER_TAGS_UPDATE_API = '/users/profile/tags',
   USER_EDUCATION_UPDATE_API = '/users/profile/education',
   USER_PROFILE_PICTURE_UPDATE_API = '/users/profile/profile-picture',
-  USER_BANNER_IMAGE_UPDATE_API = '/users/profile/banner-image'
+  USER_BANNER_IMAGE_UPDATE_API = '/users/profile/banner-image',
+  USER_ROLE_CHANGE_API = '/userRole',
+  ADMIN_GIGS_LIST_API = '/admin/gigs'
 }
 
 export const excludedPublicRoutes = [

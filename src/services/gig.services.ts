@@ -158,7 +158,8 @@ export const gigService = {
     minPrice,
     maxPrice,
     rating,
-    reviews
+    startDate,
+    endDate
   }: {
     page: number;
     search?: string;
@@ -167,7 +168,8 @@ export const gigService = {
     minPrice?: string;
     maxPrice?: string;
     rating?: number;
-    reviews?: string;
+    startDate?: string;
+    endDate?: string;
   }) {
     return async (dispatch: AppDispatch) => {
       try {
@@ -184,8 +186,10 @@ export const gigService = {
         if (tiers?.length) params.append('tiers', tiers.join(','));
         if (rating !== undefined && rating !== 0)
           params.append('rating', rating.toString());
-        if (reviews !== undefined && reviews !== '')
-          params.append('reviews', reviews.toString());
+        if (startDate !== undefined && startDate !== '')
+          params.append('startDate', startDate.toString());
+        if (endDate !== undefined && endDate !== '')
+          params.append('endDate', endDate.toString());
 
         const response: any = await apiService.get(
           `/gigs/me?${params.toString()}`,

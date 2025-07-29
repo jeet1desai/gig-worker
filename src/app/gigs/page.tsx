@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, Clock, DollarSign, Filter, Loader2, MapPin, Plus, Search, Star, Trash2, X } from 'lucide-react';
+import { CalendarIcon, Clock, DollarSign, Filter, Loader2, MapPin, Plus, Search, Star, Trash2, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Link from 'next/link';
@@ -15,13 +15,12 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
-import { useDebouncedEffect } from '@/hooks/use-debounce';
-
-import { cn } from '@/lib/utils';
 import { formatDate, getDaysBetweenDates } from '@/lib/date-format';
-
+import { useDebouncedEffect } from '@/hooks/use-debounce';
+import { cn } from '@/lib/utils';
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
 
@@ -151,7 +150,7 @@ export const GigUserCard = ({
         isActive ? 'bg-blue-900/10' : 'bg-gray-800/50'
       } transition-all duration-300 ${
         isActive ? 'hover:border-blue-400 hover:shadow-blue-500/20' : 'hover:border-gray-600 hover:shadow-gray-900/20'
-      }`}
+        }`}
     >
       {isActive && <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400" />}
       {isActive && activeStatus && (
@@ -161,11 +160,11 @@ export const GigUserCard = ({
               variant="outline"
               className={`px-3 py-1 text-xs font-medium ${
                 activeStatus === 'accepted'
-                  ? 'border-green-500/50 text-green-400'
-                  : activeStatus === 'running'
-                    ? 'border-yellow-500/50 text-yellow-400'
-                    : 'border-emerald-500/50 text-emerald-400'
-              }`}
+                ? 'border-green-500/50 text-green-400'
+                : activeStatus === 'running'
+                  ? 'border-yellow-500/50 text-yellow-400'
+                  : 'border-emerald-500/50 text-emerald-400'
+                }`}
             >
               {activeStatus === 'accepted' ? 'Accepted' : activeStatus === 'running' ? 'Running' : 'Completed'}
             </Badge>
@@ -272,15 +271,16 @@ const GigsPage = () => {
   const [search, setSearch] = useState('');
 
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
-  const [filters, setFilters] = useState<{ tiers: string[]; minPrice: string; maxPrice: string; rating: number; reviews: string }>({
+  const [filters, setFilters] = useState<{ tiers: string[]; minPrice: string; maxPrice: string; rating: number; startDate: string, endDate: string }>({
     tiers: [],
     minPrice: '',
     maxPrice: '',
     rating: 0,
-    reviews: ''
+    startDate: '',
+    endDate: '',
   });
   const [activeFilters, setActiveFilters] = useState<
-    Partial<{ tiers: string[]; minPrice: string; maxPrice: string; rating: number; reviews: string }>
+    Partial<{ tiers: string[]; minPrice: string; maxPrice: string; rating: number; startDate: string; endDate: string }>
   >({});
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -303,7 +303,8 @@ const GigsPage = () => {
         ...(activeFilters.minPrice !== undefined && activeFilters.minPrice !== '' && { minPrice: activeFilters.minPrice }),
         ...(activeFilters.maxPrice !== undefined && activeFilters.maxPrice !== '' && { maxPrice: activeFilters.maxPrice }),
         ...(activeFilters.rating !== undefined && activeFilters.rating !== 0 && { rating: activeFilters.rating }),
-        ...(activeFilters.reviews !== undefined && activeFilters.reviews !== '' && { reviews: activeFilters.reviews })
+        ...(activeFilters.startDate !== undefined && activeFilters.startDate !== '' && { startDate: activeFilters.startDate }),
+        ...(activeFilters.endDate !== undefined && activeFilters.endDate !== '' && { endDate: activeFilters.endDate })
       };
 
       if (session?.user.role === 'user' || user?.role === 'user') {
@@ -319,7 +320,7 @@ const GigsPage = () => {
       dispatch(gigService.clearGigs() as any);
       setSearch('');
       setActiveFilters({});
-      setFilters({ tiers: [], minPrice: '', maxPrice: '', rating: 0, reviews: '' });
+      setFilters({ tiers: [], minPrice: '', maxPrice: '', rating: 0, startDate: '', endDate: '' });
 
       if (session?.user.role === 'user' || user?.role === 'user') {
         dispatch(gigService.getOwnersGig({ page: 1, search: '' }) as any);
@@ -331,40 +332,42 @@ const GigsPage = () => {
     [user?.role]
   );
 
-  const handleSearch = () => {
-    const filterParams = {
-      ...(activeFilters.tiers?.length && { tiers: activeFilters.tiers }),
-      ...(activeFilters.minPrice !== undefined && activeFilters.minPrice !== '' && { minPrice: activeFilters.minPrice }),
-      ...(activeFilters.maxPrice !== undefined && activeFilters.maxPrice !== '' && { maxPrice: activeFilters.maxPrice }),
-      ...(activeFilters.rating !== undefined && activeFilters.rating !== 0 && { rating: activeFilters.rating }),
-      ...(activeFilters.reviews !== undefined && activeFilters.reviews !== '' && { reviews: activeFilters.reviews })
-    };
-
-    if (session?.user.role === 'user' || user?.role === 'user') {
-      dispatch(gigService.getOwnersGig({ page: 1, search, ...filterParams }) as any);
-    } else {
-      dispatch(gigService.getGigs({ page: 1, search, ...filterParams }) as any);
-    }
+const handleSearch = () => {
+  const filterParams = {
+    ...(activeFilters.tiers?.length && { tiers: activeFilters.tiers }),
+    ...(activeFilters.minPrice !== undefined && activeFilters.minPrice !== '' && { minPrice: activeFilters.minPrice }),
+    ...(activeFilters.maxPrice !== undefined && activeFilters.maxPrice !== '' && { maxPrice: activeFilters.maxPrice }),
+    ...(activeFilters.rating !== undefined && activeFilters.rating !== 0 && { rating: activeFilters.rating }),
+    ...(activeFilters.startDate !== undefined && activeFilters.startDate !== '' && { startDate: activeFilters.startDate }),
+    ...(activeFilters.endDate !== undefined && activeFilters.endDate !== '' && { endDate: activeFilters.endDate }),
   };
 
-  const handleApplyFilters = () => {
-    const filterParams = {
-      ...(filters.tiers?.length && { tiers: filters.tiers }),
-      ...(filters.minPrice !== undefined && filters.minPrice !== '' && { minPrice: filters.minPrice }),
-      ...(filters.maxPrice !== undefined && filters.maxPrice !== '' && { maxPrice: filters.maxPrice }),
-      ...(filters.rating !== undefined && filters.rating !== 0 && { rating: filters.rating }),
-      ...(filters.reviews !== undefined && filters.reviews !== '' && { reviews: filters.reviews })
-    };
+  if (session?.user.role === 'user' || user?.role === 'user') {
+    dispatch(gigService.getOwnersGig({ page: 1, search, ...filterParams }) as any);
+  } else {
+    dispatch(gigService.getGigs({ page: 1, search, ...filterParams }) as any);
+  }
+};
 
-    setActiveFilters((prev) => ({ ...prev, ...filterParams }));
-    setIsFilterDialogOpen(false);
-
-    if (session?.user.role === 'user' || user?.role === 'user') {
-      dispatch(gigService.getOwnersGig({ page: 1, search, ...filterParams }) as any);
-    } else {
-      dispatch(gigService.getGigs({ page: 1, search, ...filterParams }) as any);
-    }
+const handleApplyFilters = () => {
+  const filterParams = {
+    ...(filters.tiers?.length && { tiers: filters.tiers }),
+    ...(filters.minPrice !== undefined && filters.minPrice !== '' && { minPrice: filters.minPrice }),
+    ...(filters.maxPrice !== undefined && filters.maxPrice !== '' && { maxPrice: filters.maxPrice }),
+    ...(filters.rating !== undefined && filters.rating !== 0 && { rating: filters.rating }),
+    ...(filters.startDate !== undefined && filters.startDate !== '' && { startDate: filters.startDate }),
+    ...(filters.endDate !== undefined && filters.endDate !== '' && { endDate: filters.endDate }),
   };
+
+  setActiveFilters((prev) => ({ ...prev, ...filterParams }));
+  setIsFilterDialogOpen(false);
+
+  if (session?.user.role === 'user' || user?.role === 'user') {
+    dispatch(gigService.getOwnersGig({ page: 1, search, ...filterParams }) as any);
+  } else {
+    dispatch(gigService.getGigs({ page: 1, search, ...filterParams }) as any);
+  }
+};
 
   const handleResetFilters = () => {
     const defaultFilters = {
@@ -372,7 +375,8 @@ const GigsPage = () => {
       minPrice: '',
       maxPrice: '',
       rating: 0,
-      reviews: ''
+      startDate: '',
+      endDate: ''
     };
     setFilters(() => defaultFilters);
     setActiveFilters({});
@@ -401,8 +405,12 @@ const GigsPage = () => {
     setFilters((prev) => ({ ...prev, rating: value[0] }));
   };
 
-  const handleReviewsChange = (value: string) => {
-    setFilters((prev) => ({ ...prev, reviews: value }));
+  const handleStartDateChange = (value: string) => {
+    setFilters((prev) => ({ ...prev, startDate: value }));
+  };
+
+  const handleEndDateChange = (value: string) => {
+    setFilters((prev) => ({ ...prev, endDate: value }));
   };
 
   const removeFilter = (key: string, value: any) => {
@@ -437,10 +445,16 @@ const GigsPage = () => {
       delete filterParams.rating;
     }
 
-    if (key === 'reviews') {
-      const { reviews, ...rest } = activeFilters;
+    if (key === 'startDate') {
+      const { startDate, ...rest } = activeFilters;
       setActiveFilters(rest);
-      delete filterParams.reviews;
+      delete filterParams.startDate;
+    }
+
+    if (key === 'endDate') {
+      const { endDate, ...rest } = activeFilters;
+      setActiveFilters(rest);
+      delete filterParams.endDate;
     }
 
     if (session?.user.role === 'user' || user?.role === 'user') {
@@ -580,10 +594,17 @@ const GigsPage = () => {
                 </div>
               )}
 
-              {activeFilters.reviews !== undefined && activeFilters.reviews !== '' && (
+              {activeFilters.startDate !== undefined && activeFilters.startDate !== '' && (
                 <div className="flex items-center gap-1 rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-400 hover:bg-purple-500/20">
-                  {activeFilters.reviews}+ Reviews
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('reviews', '')} />
+                  {activeFilters.startDate}+ Start Date
+                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('startDate', '')} />
+                </div>
+              )}
+
+              {activeFilters.endDate !== undefined && activeFilters.endDate !== '' && (
+                <div className="flex items-center gap-1 rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-400 hover:bg-purple-500/20">
+                  {activeFilters.endDate}+ End Date
+                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('endDate', '')} />
                 </div>
               )}
 
@@ -704,21 +725,62 @@ const GigsPage = () => {
               </div>
 
               <div>
-                <Label htmlFor="min-reviews" className="mb-2 block text-sm font-medium">
-                  Minimum Reviews
-                </Label>
-                <Select value={filters.reviews} onValueChange={handleReviewsChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select minimum reviews" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">0 - 10</SelectItem>
-                    <SelectItem value="25">11 - 25</SelectItem>
-                    <SelectItem value="50">26 - 50</SelectItem>
-                    <SelectItem value="100">51 - 100</SelectItem>
-                    <SelectItem value="1000000">101+</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="start_date">Start Date </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-full rounded-lg border-gray-700/50 bg-inherit px-4 py-2 text-left font-normal text-white hover:bg-inherit hover:text-white',
+                            !filters.startDate && 'text-muted-foreground hover:text-muted-foreground',
+                          )}
+                        >
+                          {filters.startDate ? formatDate(filters.startDate) : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          captionLayout="dropdown"
+                          selected={filters.startDate ? new Date(filters.startDate) : undefined}
+                          onSelect={(date: Date | undefined) => {
+                            if (date) handleStartDateChange(date.toISOString());
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="end_date">End Date </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-full rounded-lg border-gray-700/50 bg-inherit px-4 py-2 text-left font-normal text-white hover:bg-inherit hover:text-white',
+                            !filters.endDate && 'text-muted-foreground hover:text-muted-foreground',
+                          )}
+                        >
+                          {filters.endDate ? formatDate(filters.endDate) : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          captionLayout="dropdown"
+                          selected={filters.endDate ? new Date(filters.endDate) : undefined}
+                          onSelect={(date: Date | undefined) => {
+                            if (date) handleEndDateChange(date.toISOString());
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
               </div>
 
               <div className="flex justify-between pt-4">
