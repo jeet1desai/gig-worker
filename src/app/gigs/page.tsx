@@ -24,6 +24,7 @@ import { formatDate, getDaysBetweenDates } from '@/lib/date-format';
 
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
+import { PRIVATE_ROUTE } from '@/constants/app-routes';
 
 const tierColors: any = {
   basic: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
@@ -43,7 +44,7 @@ const tierOptions = [
   { value: 'expert', label: 'Expert' }
 ];
 
-export const GigCard = ({ id, title, description, tier, price_range, start_date, end_date, thumbnail, _count, user }: any) => {
+export const GigCard = ({ id, slug, title, description, tier, price_range, start_date, end_date, thumbnail, _count, user }: any) => {
   const router = useRouter();
 
   return (
@@ -64,7 +65,7 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-3 flex items-start justify-between">
           <div className="flex-1">
-            <Link href={`/gigs/${id}`} className="group-hover:text-blue-400">
+            <Link href={`${PRIVATE_ROUTE.GIGS}/${slug}`} className="group-hover:text-blue-400">
               <h3 className="text-md mb-1 line-clamp-2 font-bold text-white capitalize transition-colors">{title}</h3>
             </Link>
             <p className="text-sm text-gray-400">
@@ -121,7 +122,7 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
             </div>
           </div>
           <Button
-            onClick={() => router.push(`/gigs/${id}`)}
+            onClick={() => router.push(`${PRIVATE_ROUTE.GIGS}/${slug}`)}
             className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500"
           >
             Place Bid
@@ -134,6 +135,7 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
 
 export const GigUserCard = ({
   id,
+  slug,
   title,
   description,
   tier,
@@ -192,7 +194,7 @@ export const GigUserCard = ({
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-3 flex items-start justify-between">
           <div className="flex-1">
-            <Link href={`/gigs/${id}`} className="group-hover:text-blue-400">
+            <Link href={`${PRIVATE_ROUTE.GIGS}/${slug}`} className="group-hover:text-blue-400">
               <h3 className="text-md mb-1 line-clamp-2 font-bold text-white transition-colors">{title}</h3>
             </Link>
             <p className="text-sm text-gray-400">

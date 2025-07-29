@@ -30,10 +30,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const limit = parseInt(searchParams.get('limit') || '5');
     const skip = (page - 1) * limit;
 
-    const gigId = BigInt(params.id);
+    const gigId = await params.id;
 
     const gig = await prisma.gig.findUnique({
-      where: { id: gigId },
+      where: { slug: gigId },
       select: { id: true, user_id: true }
     });
     if (!gig) {
@@ -47,8 +47,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
         data: { items: [], pagination: { total: 0, page: 1, limit, totalPages: 0 } }
       });
     }
-
-    console.log(gig);
 
     const total = await prisma.bid.count({
       where: { gig_id: gig.id, status: BID_STATUS.pending }

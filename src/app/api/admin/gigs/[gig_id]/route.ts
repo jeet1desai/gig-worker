@@ -24,7 +24,7 @@ export async function GET(
 
   try {
     let gig_details = await prisma.gig.findFirst({
-      where: { id: BigInt(gig_id) },
+      where: { slug: gig_id, is_removed: false },
       select: {
         attachments: true,
         completed_at: true,

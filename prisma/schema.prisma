@@ -176,6 +176,7 @@ model Gig {
   id           BigInt    @id @default(autoincrement())
   user_id      BigInt
   title        String
+  slug         String    @unique
   description  String?
   start_date   DateTime?
   end_date     DateTime?

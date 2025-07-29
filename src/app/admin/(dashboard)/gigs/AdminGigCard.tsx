@@ -45,7 +45,8 @@ export const AdminGigCard = ({
     thumbnail,
     bids,
     pipeline,
-    user
+    user,
+    slug
   } = gig_details;
 
   const formatLabel = (status: string) =>
@@ -56,38 +57,40 @@ export const AdminGigCard = ({
     <div
       className={`group relative flex h-full flex-col overflow-hidden rounded-xl border ${'border-gray-700/50'} ${'bg-gray-800/50'} transition-all duration-300 ${'hover:border-gray-600 hover:shadow-gray-900/20'}`}
     >
-      {thumbnail && (
-        <div className="relative h-48 overflow-hidden">
+      <div className="relative flex h-48 items-center justify-center overflow-hidden bg-gray-700">
+        {thumbnail ? (
           <Image
             src={thumbnail}
             alt={title}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
-          <div className="absolute top-3 right-3">
-            <Badge
-              variant="outline"
-              className={`${tierColors[tier]} border-2 font-medium capitalize backdrop-blur-sm`}
-            >
-              {tierLabels[tier]} Tier
-            </Badge>
-          </div>
-          <div className="absolute bottom-3 left-3 max-w-max">
-            <Badge
-              variant="outline"
-              className={`${statusColors[pipeline?.status] || 'bg-primary/10 text-primary border-primary/20'} border-2 font-medium capitalize backdrop-blur-sm`}
-            >
-              {formatLabel(pipeline?.status)}
-            </Badge>
-          </div>
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-800 via-gray-700 to-gray-600 text-sm text-gray-400"></div>
+        )}
+        <div className="absolute top-3 right-3">
+          <Badge
+            variant="outline"
+            className={`${tierColors[tier]} border-2 font-medium capitalize backdrop-blur-sm`}
+          >
+            {tierLabels[tier]} Tier
+          </Badge>
         </div>
-      )}
+        <div className="absolute bottom-3 left-3 max-w-max">
+          <Badge
+            variant="outline"
+            className={`${statusColors[pipeline?.status] || 'bg-primary/10 text-primary border-primary/20'} border-2 font-medium capitalize backdrop-blur-sm`}
+          >
+            {formatLabel(pipeline?.status)}
+          </Badge>
+        </div>
+      </div>
 
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-3 flex items-start justify-between">
           <div className="flex-1">
             <Link
-              href={`${PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH}/${id}`}
+              href={`${PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH}/${slug}`}
               className="group-hover:text-blue-400"
             >
               <h3 className="text-md mb-1 line-clamp-2 font-bold text-white capitalize transition-colors">
@@ -193,7 +196,7 @@ export const AdminGigCard = ({
               >
                 Mark as Rejected
               </DropdownMenuItem>
-              <Link href={`${PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH}/${id}`}>
+              <Link href={`${PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH}/${slug}`}>
                 <DropdownMenuItem>
                   <Eye className="mr-2 h-4 w-4" />
                   <span>View Details</span>

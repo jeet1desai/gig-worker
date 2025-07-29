@@ -38,6 +38,7 @@ import { formatDate, formatOnlyDate, getDaysBetweenDates } from '@/lib/date-form
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { PRIVATE_ROUTE } from '@/constants/app-routes';
 
 export default function GigDetailPage() {
   const router = useRouter();
@@ -621,8 +622,6 @@ function SimilarGigs({ currentGigId }: { currentGigId: string }) {
     );
   }
 
-  console.log(similarGigs);
-
   return (
     <div className="grid gap-4 lg:grid-cols-1">
       {similarGigs.map((gig) => {
@@ -630,7 +629,7 @@ function SimilarGigs({ currentGigId }: { currentGigId: string }) {
           <Card
             key={gig.id}
             className="cursor-pointer gap-2 border-gray-700/50 bg-gray-800/50 p-4 transition-colors hover:border-blue-500/50 hover:bg-gray-700/50"
-            onClick={() => router.push(`/gigs/${gig.id}`)}
+            onClick={() => router.push(`${PRIVATE_ROUTE.GIGS}/${gig.slug}`)}
           >
             <CardHeader className="p-0">
               <div className="flex items-center gap-3">

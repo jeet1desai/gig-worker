@@ -103,7 +103,7 @@ export const cmsPagesServices = {
     }
 
     const page_details = await prisma.cMS.findFirst({
-      where: { id: BigInt(page_id) }
+      where: { slug: page_id }
     });
 
     if (page_details) {
@@ -182,7 +182,7 @@ export const cmsPagesServices = {
     ) {
       const existingPublishedPage = await prisma.cMS.findFirst({
         where: {
-          id: { not: BigInt(id) },
+          slug: { not: id },
           type: pageType,
           isPublished: true
         }
@@ -196,7 +196,7 @@ export const cmsPagesServices = {
     }
 
     await prisma.cMS.update({
-      where: { id: BigInt(id) },
+      where: { slug: id },
       data: {
         title: cms_update_data.title,
         slug: cms_update_data.slug,

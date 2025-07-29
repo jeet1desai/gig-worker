@@ -2,11 +2,12 @@ import { getServerSession } from 'next-auth';
 
 import prisma from '@/lib/prisma';
 import { authOptions } from '../auth/[...nextauth]/route';
-import { ROLE, GIG_STATUS, TIER } from '@prisma/client';
+import { GIG_STATUS, TIER } from '@prisma/client';
 import { uploadFile } from '@/lib/utils/file-upload';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { errorResponse } from '@/lib/api-response';
 import { safeJsonResponse } from '@/utils/apiResponse';
+import { generateUniqueSlug } from '@/lib/utils/gig-slug-generator';
 
 // POST /api/gigs - Create a new gig
 export async function POST(request: Request) {
@@ -34,6 +35,7 @@ export async function POST(request: Request) {
     const price_min = formData.get('price_min')?.toString();
     const price_max = formData.get('price_max')?.toString();
     const location = formData.get('location')?.toString();
+    const slug = await generateUniqueSlug(title as string);
 
     const keywords = formData.get('keywords')
       ? formData
@@ -99,6 +101,7 @@ export async function POST(request: Request) {
     const gig = await prisma.gig.create({
       data: {
         title,
+        slug,
         description: description || null,
         price_range: {
           min: parseFloat(price_min),
