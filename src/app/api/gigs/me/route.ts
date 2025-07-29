@@ -24,6 +24,11 @@ export async function GET(request: Request) {
     const search = (searchParams.get('search') || '').trim();
     const minPrice = searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice') as string) : undefined;
     const maxPrice = searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice') as string) : undefined;
+    const startDateParam = searchParams.get('startDate');
+    const endDateParam = searchParams.get('endDate');
+    const startDate = startDateParam ? new Date(startDateParam) : undefined;
+    const endDate = endDateParam ? new Date(endDateParam) : undefined;
+
     const tiersParam = searchParams.get('tiers');
     const tiers = tiersParam ? tiersParam.split(',').map((t) => t.trim().toLowerCase()) : [];
 
@@ -57,6 +62,20 @@ export async function GET(request: Request) {
       if (priceConditions.length > 0) {
         baseWhere.AND.push({ OR: priceConditions });
       }
+    }
+
+    if (startDate !== undefined || endDate !== undefined) {
+      const dateConditions: any = {};
+
+      if (startDate !== undefined) {
+        dateConditions.start_date = { gte: startDate };
+      }
+
+      if (endDate !== undefined) {
+        dateConditions.end_date = { lte: endDate };
+      }
+
+      baseWhere.AND.push(dateConditions);
     }
 
     if (search) {

@@ -61,7 +61,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <Sidebar
             collapsed={sidebarCollapsed}
             onToggle={(collapsed) => setSidebarCollapsed(collapsed)}
-            navigation_menu={DASHBOARD_NAVIGATION_MENU}
+            navigation_menu={navigationMenu}
           />
 
           <div

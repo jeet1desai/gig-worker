@@ -262,7 +262,8 @@ export const VERIFICATION_CODES = {
   INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
   USER_ALREADY_EXISTS: 'USER_ALREADY_EXISTS',
   VALIDATION_ERROR: 'VALIDATION_ERROR',
-  UNAUTHORIZED: 'UNAUTHORIZED'
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  GIG_NOT_FOUND: 'GIG_NOT_FOUND'
 };
 
 export const VERIFICATION_MESSAGES = {
@@ -276,16 +277,33 @@ export const VERIFICATION_MESSAGES = {
 };
 
 export const COMMON_ERROR_MESSAGES = {
-  INTERNAL_SERVER_ERROR_MESSAGE:
-    'Internal server error. Please try again later.',
-  USER_NOT_FOUND_MESSAGE:
-    'User not found. Please check the provided information.',
+  INTERNAL_SERVER_ERROR_MESSAGE: 'Internal server error. Please try again later.',
+  USER_NOT_FOUND_MESSAGE: 'User not found.',
   SOMETHING_WENT_WRONG_MESSAGE: 'Something went wrong. Please try again later.',
   INVALID_REQUEST: 'Invalid request. Please check your input and try again.',
   UNAUTHORIZED: 'Unauthorized access. Please log in and try again.',
   EMAIL_NOT_EXISTS: 'User with this email does not exist.',
   INVALID_REQUEST_PAYLOAD: 'Invalid request payload',
   VALIDATION_ERROR: 'Validation error occurred. Please check your input.'
+};
+
+export const USER_ROLE = {
+  success: 'User role updated successfully.',
+  failure: 'Failed to update user role.',
+  invalidRole: 'Invalid user role.',
+  subscriptionRequired : 'User must have a Basic or Pro subscription to change profile view.'
+};
+
+export const GIGS_RATING_MESSAGES = {
+  success: 'Rating submitted successfully.',
+  failure: 'Failed to submit rating. Please try again.',
+  GIG_NOT_FOUND: 'Gig not found. Please check the gig ID.',
+  INVALID_RATING: 'Invalid rating. Rating must be between 1 and 5.',
+  INVALID_COMMENT: 'Comment is too long. Maximum length is 500 characters.',
+  RATING_UPDATED: 'Rating updated successfully.',
+  RATING_CREATED: 'Rating created successfully.',
+  DELETE_RATING: 'Rating deleted successfully.',
+  RATING_FETCHED: 'Ratings fetched successfully.'
 };
 
 export const SUBSCRIPTION_PLAN_TYPES = ['free', 'basic', 'pro'];
