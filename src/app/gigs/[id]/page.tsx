@@ -38,6 +38,7 @@ import { formatDate, formatOnlyDate, getDaysBetweenDates } from '@/lib/date-form
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import Loader from '@/components/Loader';
 
 export default function GigDetailPage() {
   const router = useRouter();
@@ -45,7 +46,6 @@ export default function GigDetailPage() {
   const { id } = useParams();
   const { data: session } = useSession();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
   const { loading, bids, pagination } = useSelector((state: RootState) => state.gigs);
   const [gig, setGig] = useState<any>(null);
 
@@ -119,7 +119,12 @@ export default function GigDetailPage() {
 
   return (
     <DashboardLayout>
-      <main className="min-h-screen py-8">
+     {(loading || !gig) && (
+        <div>
+          <Loader isLoading={true} />
+        </div>
+      )}
+      <main className="min-h-screen py-8" style={{ filter: loading || !gig ? 'blur(2px)' : 'none', pointerEvents: loading || !gig ? 'none' : 'auto' }}>
         <div className="container mx-auto px-4">
           <div className="mb-6 flex items-center justify-between">
             <Button variant="ghost" size="sm" onClick={() => router.back()} className="text-gray-400 hover:bg-gray-800 hover:text-white">
