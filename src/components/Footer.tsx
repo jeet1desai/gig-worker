@@ -92,7 +92,11 @@ async function Footer() {
 
         <div className="flex flex-col space-y-2 text-sm text-gray-300">
           {informativeData.map((info) => (
-            <Link key={info.slug} href={info.slug || 'javascript:void(0)'} className="font-inter">
+            <Link
+              key={info.slug}
+              href={info.slug ? `/${info.slug}` : 'javascript:void(0)'}
+              className="font-inter"
+            >
               {info.title}
             </Link>
           ))}
