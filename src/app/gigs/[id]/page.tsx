@@ -262,24 +262,21 @@ export default function GigDetailPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="">Member since:</span>
-                      <span className="font-medium">{formatDate(gig?.user?.created_at)}</span>
+                  <div className="grid grid-cols-1 gap-4 rounded-lg bg-muted/30 p-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground font-medium">Member since:</span>
+                      <span className="font-semibold text-card-foreground">{formatDate(gig?.user?.created_at)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="">Total posted:</span>
-                      <span className="font-medium">{gig?.user?.total_posted} gigs</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground font-medium">Total posted:</span>
+                      <span className="font-semibold text-card-foreground">{gig?.user?.total_posted} gigs</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="">Completion rate:</span>
-                      <span className="font-medium text-green-600">{gig?.user?.completion_rate}%</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground font-medium">Completion rate:</span>
+                      <span className="font-semibold text-success">{gig?.user?.completion_rate}%</span>
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-
-              <Card className="border-gray-700/50 bg-inherit">
                 <CardContent>
                   <div className="mb-6">
                     <h3 className="mb-4 text-xl font-semibold text-white">Client Reviews</h3>
