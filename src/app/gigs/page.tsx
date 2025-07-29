@@ -303,8 +303,8 @@ const GigsPage = () => {
         ...(activeFilters.minPrice !== undefined && activeFilters.minPrice !== '' && { minPrice: activeFilters.minPrice }),
         ...(activeFilters.maxPrice !== undefined && activeFilters.maxPrice !== '' && { maxPrice: activeFilters.maxPrice }),
         ...(activeFilters.rating !== undefined && activeFilters.rating !== 0 && { rating: activeFilters.rating }),
-        ...(activeFilters.startDate !== undefined && activeFilters.startDate !== '' && { reviews: activeFilters.startDate }),
-        ...(activeFilters.endDate !== undefined && activeFilters.endDate !== '' && { reviews: activeFilters.endDate })
+        ...(activeFilters.startDate !== undefined && activeFilters.startDate !== '' && { startDate: activeFilters.startDate }),
+        ...(activeFilters.endDate !== undefined && activeFilters.endDate !== '' && { endDate: activeFilters.endDate })
       };
 
       if (session?.user.role === 'user' || user?.role === 'user') {
@@ -332,42 +332,42 @@ const GigsPage = () => {
     [user?.role]
   );
 
-  const handleSearch = () => {
-    const filterParams = {
-      ...(activeFilters.tiers?.length && { tiers: activeFilters.tiers }),
-      ...(activeFilters.minPrice !== undefined && activeFilters.minPrice !== '' && { minPrice: activeFilters.minPrice }),
-      ...(activeFilters.maxPrice !== undefined && activeFilters.maxPrice !== '' && { maxPrice: activeFilters.maxPrice }),
-      ...(activeFilters.rating !== undefined && activeFilters.rating !== 0 && { rating: activeFilters.rating }),
-      ...(activeFilters.startDate !== undefined && activeFilters.startDate !== '' && { reviews: activeFilters.startDate }),
-      ...(activeFilters.endDate !== undefined && activeFilters.endDate !== '' && { reviews: activeFilters.endDate })
-    };
-
-    if (session?.user.role === 'user' || user?.role === 'user') {
-      dispatch(gigService.getOwnersGig({ page: 1, search, ...filterParams }) as any);
-    } else {
-      dispatch(gigService.getGigs({ page: 1, search, ...filterParams }) as any);
-    }
+const handleSearch = () => {
+  const filterParams = {
+    ...(activeFilters.tiers?.length && { tiers: activeFilters.tiers }),
+    ...(activeFilters.minPrice !== undefined && activeFilters.minPrice !== '' && { minPrice: activeFilters.minPrice }),
+    ...(activeFilters.maxPrice !== undefined && activeFilters.maxPrice !== '' && { maxPrice: activeFilters.maxPrice }),
+    ...(activeFilters.rating !== undefined && activeFilters.rating !== 0 && { rating: activeFilters.rating }),
+    ...(activeFilters.startDate !== undefined && activeFilters.startDate !== '' && { startDate: activeFilters.startDate }),
+    ...(activeFilters.endDate !== undefined && activeFilters.endDate !== '' && { endDate: activeFilters.endDate }),
   };
 
-  const handleApplyFilters = () => {
-    const filterParams = {
-      ...(filters.tiers?.length && { tiers: filters.tiers }),
-      ...(filters.minPrice !== undefined && filters.minPrice !== '' && { minPrice: filters.minPrice }),
-      ...(filters.maxPrice !== undefined && filters.maxPrice !== '' && { maxPrice: filters.maxPrice }),
-      ...(filters.rating !== undefined && filters.rating !== 0 && { rating: filters.rating }),
-      ...(filters.startDate !== undefined && filters.startDate !== '' && { reviews: filters.startDate }),
-      ...(filters.endDate !== undefined && filters.endDate !== '' && { reviews: filters.endDate })
-    };
+  if (session?.user.role === 'user' || user?.role === 'user') {
+    dispatch(gigService.getOwnersGig({ page: 1, search, ...filterParams }) as any);
+  } else {
+    dispatch(gigService.getGigs({ page: 1, search, ...filterParams }) as any);
+  }
+};
 
-    setActiveFilters((prev) => ({ ...prev, ...filterParams }));
-    setIsFilterDialogOpen(false);
-
-    if (session?.user.role === 'user' || user?.role === 'user') {
-      dispatch(gigService.getOwnersGig({ page: 1, search, ...filterParams }) as any);
-    } else {
-      dispatch(gigService.getGigs({ page: 1, search, ...filterParams }) as any);
-    }
+const handleApplyFilters = () => {
+  const filterParams = {
+    ...(filters.tiers?.length && { tiers: filters.tiers }),
+    ...(filters.minPrice !== undefined && filters.minPrice !== '' && { minPrice: filters.minPrice }),
+    ...(filters.maxPrice !== undefined && filters.maxPrice !== '' && { maxPrice: filters.maxPrice }),
+    ...(filters.rating !== undefined && filters.rating !== 0 && { rating: filters.rating }),
+    ...(filters.startDate !== undefined && filters.startDate !== '' && { startDate: filters.startDate }),
+    ...(filters.endDate !== undefined && filters.endDate !== '' && { endDate: filters.endDate }),
   };
+
+  setActiveFilters((prev) => ({ ...prev, ...filterParams }));
+  setIsFilterDialogOpen(false);
+
+  if (session?.user.role === 'user' || user?.role === 'user') {
+    dispatch(gigService.getOwnersGig({ page: 1, search, ...filterParams }) as any);
+  } else {
+    dispatch(gigService.getGigs({ page: 1, search, ...filterParams }) as any);
+  }
+};
 
   const handleResetFilters = () => {
     const defaultFilters = {
@@ -597,14 +597,14 @@ const GigsPage = () => {
               {activeFilters.startDate !== undefined && activeFilters.startDate !== '' && (
                 <div className="flex items-center gap-1 rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-400 hover:bg-purple-500/20">
                   {activeFilters.startDate}+ Start Date
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('reviews', '')} />
+                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('startDate', '')} />
                 </div>
               )}
 
               {activeFilters.endDate !== undefined && activeFilters.endDate !== '' && (
                 <div className="flex items-center gap-1 rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-400 hover:bg-purple-500/20">
                   {activeFilters.endDate}+ End Date
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('reviews', '')} />
+                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('endDate', '')} />
                 </div>
               )}
 
