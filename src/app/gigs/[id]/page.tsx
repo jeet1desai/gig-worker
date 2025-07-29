@@ -39,6 +39,7 @@ import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
+import Loader from '@/components/Loader';
 
 export default function GigDetailPage() {
   const router = useRouter();
@@ -46,7 +47,6 @@ export default function GigDetailPage() {
   const { id } = useParams();
   const { data: session } = useSession();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
   const { loading, bids, pagination } = useSelector((state: RootState) => state.gigs);
   const [gig, setGig] = useState<any>(null);
 
@@ -120,7 +120,12 @@ export default function GigDetailPage() {
 
   return (
     <DashboardLayout>
-      <main className="min-h-screen py-8">
+     {(loading || !gig) && (
+        <div>
+          <Loader isLoading={true} />
+        </div>
+      )}
+      <main className="min-h-screen py-8" style={{ filter: loading || !gig ? 'blur(2px)' : 'none', pointerEvents: loading || !gig ? 'none' : 'auto' }}>
         <div className="container mx-auto px-4">
           <div className="mb-6 flex items-center justify-between">
             <Button variant="ghost" size="sm" onClick={() => router.back()} className="text-gray-400 hover:bg-gray-800 hover:text-white">
@@ -263,24 +268,21 @@ export default function GigDetailPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="">Member since:</span>
-                      <span className="font-medium">{formatDate(gig?.user?.created_at)}</span>
+                  <div className="grid grid-cols-1 gap-4 rounded-lg bg-muted/30 p-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground font-medium">Member since:</span>
+                      <span className="font-semibold text-card-foreground">{formatDate(gig?.user?.created_at)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="">Total posted:</span>
-                      <span className="font-medium">{gig?.user?.total_posted} gigs</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground font-medium">Total posted:</span>
+                      <span className="font-semibold text-card-foreground">{gig?.user?.total_posted} gigs</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="">Completion rate:</span>
-                      <span className="font-medium text-green-600">{gig?.user?.completion_rate}%</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground font-medium">Completion rate:</span>
+                      <span className="font-semibold text-success">{gig?.user?.completion_rate}%</span>
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-
-              <Card className="border-gray-700/50 bg-inherit">
                 <CardContent>
                   <div className="mb-6">
                     <h3 className="mb-4 text-xl font-semibold text-white">Client Reviews</h3>

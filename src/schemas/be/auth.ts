@@ -34,3 +34,16 @@ export const resetPasswordSchema = yup.object({
     .required('Confirm password is required')
     .oneOf([yup.ref('password')], 'Passwords must match')
 });
+
+export const roleChangeSchema = yup.object({
+  userId: yup.string().required('User ID is required.'),
+  profile_view: yup.string().oneOf(['user', 'provider'], 'Profile must be either "user" or "provider".').required('Role is required.')
+});
+
+export const rateGigSchema = yup.object({
+  user_id: yup.string().required('User ID is required.'),
+  gig_id: yup.string().required('Gig ID is required.'),
+  provider_id: yup.string().required('Provider ID is required.'),
+  rating: yup.number().min(1, 'Rating must be at least 1.').max(5, 'Rating cannot be more than 5.').required('Rating is required.'),
+  rating_feedback: yup.string().max(500).optional()
+});
