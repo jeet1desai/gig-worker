@@ -21,8 +21,8 @@ import {
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { Form, Formik, FormikHelpers } from 'formik';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import * as Yup from 'yup';
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -31,15 +31,14 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import DashboardLayout from '@/components/layouts/layout';
+import Loader from '@/components/Loader';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
 import { formatOnlyDate, getDaysBetweenDates } from '@/lib/date-format';
-
+import notificationHelper from '@/lib/utils/notifications';
+import { NOTIFICATION_TYPE } from '@prisma/client';
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
-import Loader from '@/components/Loader';
 
 export default function GigDetailPage() {
   const router = useRouter();
@@ -99,6 +98,13 @@ export default function GigDetailPage() {
         gigService.createBid(gig.id?.toString() || '', { proposal: values.proposal, bidPrice: values.bidPrice }) as any
       );
       if (response && response.data) {
+        notificationHelper.sendNotification(response.data.user_id, {
+          title: 'New Bid Received',
+          message: `You have received a new bid on your gig "${response.data.gig.title}"`,
+          type: NOTIFICATION_TYPE.info,
+          module: 'gigs',
+          relatedId: response.data.id
+        });
         setSubmitting(false);
         setGig((prevGig: any) => ({ ...prevGig, hasBid: true }));
         resetForm();
@@ -112,7 +118,16 @@ export default function GigDetailPage() {
 
   const handleUpdateBidStatus = async (bidId: string, status: string) => {
     try {
-      await dispatch(gigService.updateBidStatus(bidId, { status }) as any);
+      const response = await dispatch(gigService.updateBidStatus(bidId, { status }) as any);
+      if (response && response.data) {
+        notificationHelper.sendNotification(response.data.bid.provider_id, {
+          title: 'Bid Status Updated',
+          message: `Your bid for "${response.data.bid.gig.title}" has been ${status}`,
+          type: NOTIFICATION_TYPE.info,
+          module: 'gigs',
+          relatedId: response.data.bid.id
+        });
+      }
     } catch (error: any) {
       console.error('Error updating bid status:', error);
     }
@@ -247,27 +262,35 @@ export default function GigDetailPage() {
 
               <Card className="rounded-lg border-gray-700/50 bg-inherit">
                 <CardContent className="text-white">
-                  <div className="mb-4 flex items-center space-x-4">
-                    <Avatar className="h-16 w-16">
-                      <AvatarImage src={gig?.user?.profile_url} />
-                      <AvatarFallback>
-                        {gig?.user?.first_name
-                          .split(' ')
-                          .map((n: any) => n[0])
-                          .join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="mb-1 flex items-center gap-2">
-                        <h3 className="text-lg font-semibold">{gig?.user?.first_name + ' ' + gig?.user?.last_name}</h3>
-                        {gig?.user?.is_verified && <CheckCircle className="h-4 w-4 text-blue-600" />}
+                  <div className="flex items-start justify-between">
+                    <div className="mb-4 flex items-center space-x-4">
+                      <Avatar className="h-16 w-16">
+                        <AvatarImage src={gig?.user?.profile_url} />
+                        <AvatarFallback>
+                          {gig?.user?.first_name
+                            .split(' ')
+                            .map((n: any) => n[0])
+                            .join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="mb-1 flex items-center gap-2">
+                          <h3 className="text-lg font-semibold">{gig?.user?.first_name + ' ' + gig?.user?.last_name}</h3>
+                          {gig?.user?.is_verified && <CheckCircle className="h-4 w-4 text-blue-600" />}
+                        </div>
+                        <p className="text-sm text-gray-500">{gig?.user?.location}</p>
                       </div>
-                      <div className="mb-1 flex items-center space-x-1 text-sm text-gray-600">
-                        <Star className="h-4 w-4 fill-current text-yellow-500" />
-                        <span className="font-medium">{gig?.user?.rating}</span>
-                        <span>({gig?.user?.reviews} reviews)</span>
+                    </div>
+                    <div className="mt-2 flex items-center">
+                      <div className="mr-2 text-3xl font-bold text-white">4.8</div>
+                      <div className="mr-4">
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star key={star} className={`h-5 w-5 ${star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`} />
+                          ))}
+                        </div>
+                        <div className="text-sm text-gray-400">Based on 24 reviews</div>
                       </div>
-                      <p className="text-sm text-gray-500">{gig?.user?.location}</p>
                     </div>
                   </div>
 
@@ -287,20 +310,7 @@ export default function GigDetailPage() {
                   </div>
                 </CardContent>
                 <CardContent>
-                  <div className="mb-6">
-                    <h3 className="mb-4 text-xl font-semibold text-white">Client Reviews</h3>
-                    <div className="mt-2 flex items-center">
-                      <div className="mr-2 text-3xl font-bold text-white">4.8</div>
-                      <div className="mr-4">
-                        <div className="flex">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star key={star} className={`h-5 w-5 ${star <= 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`} />
-                          ))}
-                        </div>
-                        <div className="text-sm text-gray-400">Based on 24 reviews</div>
-                      </div>
-                    </div>
-                  </div>
+                  <h3 className="mb-6 text-xl font-semibold text-white">Client Reviews</h3>
 
                   <div className="space-y-6">
                     {[1, 2, 3].map((review) => (

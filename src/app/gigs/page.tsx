@@ -96,7 +96,7 @@ export const GigCard = ({ id, slug, title, description, tier, price_range, start
           </div>
           <div className="flex items-center space-x-2">
             <div className="flex size-8 items-center justify-center rounded-full bg-blue-900/30">
-              <Calendar className="size-4 text-blue-400" />
+              <CalendarIcon className="size-4 text-blue-400" />
             </div>
             <div>
               <p className="text-xs text-gray-400">Timeline</p>
@@ -673,7 +673,7 @@ const GigsPage = () => {
               hasMore={pagination.page < pagination.totalPages}
               loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
               scrollThreshold={0.9}
-              className="grid grid-cols-1 gap-6 lg:grid-cols-3"
+              className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
             >
               {ownGigs.map((gig: any, index: any) => (
                 <GigUserCard key={`${gig.id}-${index}`} role={user?.role} {...gig} openDeleteConfirmation={openDeleteConfirmation} />
@@ -686,7 +686,7 @@ const GigsPage = () => {
               hasMore={pagination.page < pagination.totalPages}
               loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
               scrollThreshold={0.9}
-              className="grid grid-cols-1 gap-6 lg:grid-cols-3"
+              className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
             >
               {gigs.map((gig: any, index: any) => (
                 <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />

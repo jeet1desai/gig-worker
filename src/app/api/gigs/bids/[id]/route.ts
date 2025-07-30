@@ -7,7 +7,6 @@ import { ROLE, BID_STATUS, NOTIFICATION_TYPE, GIG_STATUS } from '@prisma/client'
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { errorResponse } from '@/lib/api-response';
 import { safeJsonResponse } from '@/utils/apiResponse';
-import { sendNotification } from '@/lib/socket/socket-server';
 import { getSocketServer } from '@/app/api/socket/route';
 
 const io = getSocketServer();
@@ -155,13 +154,6 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const notificationMessage =
       status === 'accept' ? `Your bid for "${bid.gig.title}" has been accepted!` : `Your bid for "${bid.gig.title}" has been rejected.`;
 
-    await sendNotification(io, bid.provider_id.toString(), {
-      title: 'New Bid Received',
-      message: notificationMessage,
-      module: 'gigs',
-      type: NOTIFICATION_TYPE.info
-    });
-
     return safeJsonResponse(
       { success: true, message: notificationMessage, data: { bid: updatedBid, message: notificationMessage } },
       { status: HttpStatusCode.OK }
@@ -226,14 +218,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     const bid = await prisma.bid.create({
       data: { gig_id: gigId, provider_id: user.id, user_id: gig.user_id, proposal, bid_price: bidPrice, status: BID_STATUS.pending },
-      select: { id: true, bid_price: true, status: true, created_at: true }
-    });
-
-    await sendNotification(io, gig.user_id.toString(), {
-      title: 'New Bid Received',
-      message: 'You have received a new bid on your gig',
-      module: 'gigs',
-      type: NOTIFICATION_TYPE.info
+      select: { id: true, bid_price: true, status: true, created_at: true, user_id: true, gig: { select: { id: true, title: true } } }
     });
 
     return safeJsonResponse({ success: true, message: 'Bid placed successfully', data: bid }, { status: HttpStatusCode.CREATED });
