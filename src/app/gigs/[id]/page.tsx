@@ -23,7 +23,6 @@ import { useSession } from 'next-auth/react';
 import { Form, Formik, FormikHelpers } from 'formik';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import * as Yup from 'yup';
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -32,15 +31,14 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import DashboardLayout from '@/components/layouts/layout';
-import Loader from '@/components/Loader';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
 import { formatOnlyDate, getDaysBetweenDates } from '@/lib/date-format';
 import notificationHelper from '@/lib/utils/notifications';
 import { NOTIFICATION_TYPE } from '@prisma/client';
-
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
+import { PRIVATE_ROUTE } from '@/constants/app-routes';
+import { ShimmerSkeletonGigDetail } from '@/components/ShimmerEffects';
 
 export default function GigDetailPage() {
   const router = useRouter();
@@ -135,13 +133,16 @@ export default function GigDetailPage() {
     }
   };
 
+  if (loading || !gig) {
+    return (
+      <DashboardLayout>
+        <ShimmerSkeletonGigDetail />
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
-      {(loading || !gig) && (
-        <div>
-          <Loader isLoading={true} />
-        </div>
-      )}
       <main
         className="min-h-screen py-8"
         style={{ filter: loading || !gig ? 'blur(2px)' : 'none', pointerEvents: loading || !gig ? 'none' : 'auto' }}
@@ -183,8 +184,8 @@ export default function GigDetailPage() {
                       <CheckCircle className="mr-1 h-3.5 w-3.5" />
                       {gig?.tier}
                     </Badge>
-                    {gig?.keywords?.map((keyword: any) => (
-                      <Badge variant="outline" className="border-amber-500/20 bg-amber-500/10 text-amber-400">
+                    {gig?.keywords?.map((keyword: string) => (
+                      <Badge key={keyword} variant="outline" className="border-amber-500/20 bg-amber-500/10 text-amber-400">
                         {keyword}
                       </Badge>
                     ))}
@@ -646,7 +647,7 @@ function SimilarGigs({ currentGigId }: { currentGigId: string }) {
           <Card
             key={gig.id}
             className="cursor-pointer gap-2 border-gray-700/50 bg-gray-800/50 p-4 transition-colors hover:border-blue-500/50 hover:bg-gray-700/50"
-            onClick={() => router.push(`/gigs/${gig.id}`)}
+            onClick={() => router.push(`${PRIVATE_ROUTE.GIGS}/${gig.slug}`)}
           >
             <CardHeader className="p-0">
               <div className="flex items-center gap-3">

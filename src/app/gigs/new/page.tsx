@@ -22,6 +22,8 @@ import { formatDateInternational, formatOnlyDate } from '@/lib/date-format';
 
 import { useDispatch } from '@/store/store';
 import { gigService } from '@/services/gig.services';
+import { TimePicker } from '@/components/TimePicker';
+import { PRIVATE_ROUTE } from '@/constants/app-routes';
 
 const TIER_OPTIONS = [
   { value: 'basic', label: 'Basic' },
@@ -96,7 +98,7 @@ const NewGigPage = () => {
   };
 
   const redirectToPreviousPage = () => {
-    router.push('/gigs');
+    router.push(PRIVATE_ROUTE.GIGS);
   };
 
   return (
@@ -332,9 +334,29 @@ const NewGigPage = () => {
                             <Calendar
                               mode="single"
                               captionLayout="dropdown"
+                              className='radix-calendar'
                               selected={values.start_date ? new Date(values.start_date) : undefined}
-                              onSelect={(date: any) => setFieldValue('start_date', formatDateInternational(date))}
+                              onSelect={(date: Date | undefined) => {
+                                if (date) {
+                                  setFieldValue(
+                                    'start_date',
+                                    formatDateInternational(date)
+                                  );
+                                }
+                              }}
                             />
+                            <div className="mx-auto mb-2 w-[90%] space-y-2">
+                              <Label htmlFor="start_time">Start Time *</Label>
+                              <TimePicker
+                                value={new Date(values.start_date)}
+                                onChange={(newTime) =>
+                                  setFieldValue(
+                                    'start_date',
+                                    formatDateInternational(newTime)
+                                  )
+                                }
+                              />
+                            </div>
                           </PopoverContent>
                         </Popover>
                         {errors.start_date && touched.start_date && <div className="text-sm text-red-500">{errors.start_date}</div>}
@@ -360,8 +382,29 @@ const NewGigPage = () => {
                               mode="single"
                               captionLayout="dropdown"
                               selected={values.end_date ? new Date(values.end_date) : undefined}
-                              onSelect={(date: any) => setFieldValue('end_date', formatDateInternational(date))}
+                              className='radix-calendar'
+                              hidden={{ before: new Date(values.start_date) }}
+                              onSelect={(date: Date | undefined) => {
+                                if (date) {
+                                  setFieldValue(
+                                    'end_date',
+                                    formatDateInternational(date)
+                                  );
+                                }
+                              }}
                             />
+                            <div className="mx-auto mb-2 w-[90%] space-y-2">
+                              <Label htmlFor="start_time">End Time *</Label>
+                              <TimePicker
+                                value={new Date(values.end_date)}
+                                onChange={(newTime) =>
+                                  setFieldValue(
+                                    'end_date',
+                                    formatDateInternational(newTime)
+                                  )
+                                }
+                              />
+                            </div>
                           </PopoverContent>
                         </Popover>
                         {errors.end_date && touched.end_date && <div className="text-sm text-red-500">{errors.end_date}</div>}

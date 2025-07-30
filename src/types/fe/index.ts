@@ -134,6 +134,7 @@ export interface AdminGigsList {
   completed_at: string | null;
   created_at: string;
   description: string;
+  slug: string;
   end_date: string;
   id: string;
   is_removed: boolean;

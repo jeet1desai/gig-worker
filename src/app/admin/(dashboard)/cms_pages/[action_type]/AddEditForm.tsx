@@ -66,6 +66,9 @@ function AddEditPage() {
         setNewPage(response.data.data as unknown as CMSPage);
       }
     } catch (error: any) {
+      if (error?.message && !error?.success) {
+        router.push(PRIVATE_ROUTE.ADMIN_CMS_PAGES_PATH);
+      }
       const message = error?.response?.data?.error?.message || error?.message || 'Failed to fetch page';
       toast.error(message);
     } finally {

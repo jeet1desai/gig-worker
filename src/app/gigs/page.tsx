@@ -23,14 +23,16 @@ import { useDebouncedEffect } from '@/hooks/use-debounce';
 import { cn } from '@/lib/utils';
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
+import { PRIVATE_ROUTE } from '@/constants/app-routes';
+import { GigsShimmerCards } from '@/components/ShimmerEffects';
 
-const tierColors: any = {
+const tierColors: Record<string, string> = {
   basic: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
   advanced: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
   expert: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
 };
 
-const tierLabels: any = {
+const tierLabels: Record<string, string> = {
   basic: 'basic',
   advanced: 'advanced',
   expert: 'expert'
@@ -42,7 +44,7 @@ const tierOptions = [
   { value: 'expert', label: 'Expert' }
 ];
 
-export const GigCard = ({ id, title, description, tier, price_range, start_date, end_date, thumbnail, _count, user }: any) => {
+export const GigCard = ({ id, slug, title, description, tier, price_range, start_date, end_date, thumbnail, _count, user }: any) => {
   const router = useRouter();
 
   return (
@@ -63,7 +65,7 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-3 flex items-start justify-between">
           <div className="flex-1">
-            <Link href={`/gigs/${id}`} className="group-hover:text-blue-400">
+            <Link href={`${PRIVATE_ROUTE.GIGS}/${slug}`} className="group-hover:text-blue-400">
               <h3 className="text-md mb-1 line-clamp-2 font-bold text-white capitalize transition-colors">{title}</h3>
             </Link>
             <p className="text-sm text-gray-400">
@@ -120,7 +122,7 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
             </div>
           </div>
           <Button
-            onClick={() => router.push(`/gigs/${id}`)}
+            onClick={() => router.push(`${PRIVATE_ROUTE.GIGS}/${slug}`)}
             className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500"
           >
             Place Bid
@@ -133,6 +135,7 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
 
 export const GigUserCard = ({
   id,
+  slug,
   title,
   description,
   tier,
@@ -191,7 +194,7 @@ export const GigUserCard = ({
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-3 flex items-start justify-between">
           <div className="flex-1">
-            <Link href={`/gigs/${id}`} className="group-hover:text-blue-400">
+            <Link href={`${PRIVATE_ROUTE.GIGS}/${slug}`} className="group-hover:text-blue-400">
               <h3 className="text-md mb-1 line-clamp-2 font-bold text-white transition-colors">{title}</h3>
             </Link>
             <p className="text-sm text-gray-400">
@@ -669,26 +672,28 @@ const GigsPage = () => {
               dataLength={ownGigs.length}
               next={loadMore}
               hasMore={pagination.page < pagination.totalPages}
-              loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
+              loader={<GigsShimmerCards />}
               scrollThreshold={0.9}
               className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
             >
-              {ownGigs.map((gig: any, index: any) => (
+              {ownGigs.map((gig, index) => (
                 <GigUserCard key={`${gig.id}-${index}`} role={user?.role} {...gig} openDeleteConfirmation={openDeleteConfirmation} />
               ))}
+              {loading && <GigsShimmerCards />}
             </InfiniteScroll>
           ) : (
             <InfiniteScroll
               dataLength={gigs.length}
               next={loadMore}
               hasMore={pagination.page < pagination.totalPages}
-              loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
+              loader={<GigsShimmerCards />}
               scrollThreshold={0.9}
               className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
             >
-              {gigs.map((gig: any, index: any) => (
+              {gigs.map((gig, index) => (
                 <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />
               ))}
+              {loading && <GigsShimmerCards />}
             </InfiniteScroll>
           )}
 

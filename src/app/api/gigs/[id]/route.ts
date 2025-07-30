@@ -173,27 +173,38 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return errorResponse({ code: 'BAD_REQUEST', message: 'Gig ID is required', statusCode: HttpStatusCode.BAD_REQUEST });
     }
 
-    const [gig, userBid] = await Promise.all([
-      prisma.gig.findUnique({
-        where: { id: BigInt(gigId) },
-        include: {
-          user: {
-            select: { id: true, first_name: true, last_name: true, email: true, profile_url: true, created_at: true, is_verified: true }
+    const gig = await prisma.gig.findUnique({
+      where: { slug: gigId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+            profile_url: true,
+            created_at: true,
+            is_verified: true
           }
         }
-      }),
-      prisma.bid.findFirst({
-        where: {
-          gig_id: BigInt(gigId),
-          provider_id: session.user.id
-        },
-        select: { id: true }
-      })
-    ]);
+      }
+    });
 
     if (!gig) {
-      return errorResponse({ code: 'NOT_FOUND', message: 'Gig not found', statusCode: HttpStatusCode.NOT_FOUND });
+      return errorResponse({
+        code: 'NOT_FOUND',
+        message: 'Gig not found',
+        statusCode: HttpStatusCode.NOT_FOUND
+      });
     }
+
+    const userBid = await prisma.bid.findFirst({
+      where: {
+        gig_id: gig.id,
+        provider_id: session.user.id
+      },
+      select: { id: true }
+    });
 
     return safeJsonResponse(
       { success: true, message: 'Gig fetched successfully', data: { ...gig, hasBid: !!userBid } },
