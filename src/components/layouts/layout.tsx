@@ -64,7 +64,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <>
           <Sidebar collapsed={sidebarCollapsed} onToggle={(collapsed) => setSidebarCollapsed(collapsed)} navigation_menu={navigationMenu} />
 
-          <div className={`w-full flex-1 overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'ml-18' : 'ml-64'}`}>
+          <div
+            className={`flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'ml-18' : 'ml-64'}`}
+          >
             <Header
               collapsed={sidebarCollapsed}
               onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -73,14 +75,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               subscriptionType={session?.user.subscriptionType}
             />
 
-            <div className="mt-18">{children}</div>
+            <div className="mt-18 flex-1">{children}</div>
           </div>
         </>
       ) : (
-        <div className={`w-full flex-1 overflow-hidden transition-all duration-300`}>
+        <div className={`flex min-h-0 w-full flex-1 flex-col overflow-hidden transition-all duration-300`}>
           <LandingHeader />
 
-          <div className="">{children}</div>
+          <div className="flex-1">{children}</div>
         </div>
       )}
     </div>
