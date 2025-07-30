@@ -11,18 +11,18 @@ import { REVIEW_RATING_STATUS } from '@/enums/be/user';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const validatedData = await rateGigSchema.validate(body, {
+    const validatedData = (await rateGigSchema.validate(body, {
       abortEarly: false,
       stripUnknown: true
-    }) as rateGigPayload;
+    })) as rateGigPayload;
 
     const { gig_id, provider_id, user_id, rating, rating_feedback } = validatedData;
 
-    const gig = await prisma.gig.findUnique({ 
+    const gig = await prisma.gig.findUnique({
       where: { id: BigInt(gig_id) },
       select: { id: true }
     });
-    
+
     if (!gig) {
       return errorResponse({
         code: VERIFICATION_CODES.GIG_NOT_FOUND,
@@ -32,11 +32,11 @@ export async function POST(req: Request) {
     }
 
     const [user, provider] = await Promise.all([
-      prisma.user.findUnique({ 
+      prisma.user.findUnique({
         where: { id: BigInt(user_id) },
         select: { id: true }
       }),
-      prisma.user.findUnique({ 
+      prisma.user.findUnique({
         where: { id: BigInt(provider_id) },
         select: { id: true }
       })
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     });
 
     let review;
-    
+
     if (existingRating) {
       review = await prisma.reviewRating.update({
         where: { id: existingRating.id },
@@ -85,9 +85,7 @@ export async function POST(req: Request) {
     const stats = await calculateAverageRating({ provider_id: BigInt(provider_id) });
 
     return successResponse({
-      message: existingRating 
-        ? GIGS_RATING_MESSAGES.RATING_UPDATED 
-        : GIGS_RATING_MESSAGES.RATING_CREATED,
+      message: existingRating ? GIGS_RATING_MESSAGES.RATING_UPDATED : GIGS_RATING_MESSAGES.RATING_CREATED,
       data: {
         review,
         average_rating: stats.average_rating,
@@ -95,12 +93,9 @@ export async function POST(req: Request) {
       },
       statusCode: HttpStatusCode.OK
     });
-
   } catch (err) {
     if (err instanceof ValidationError) {
-      const fieldErrors = Object.fromEntries(
-        err.inner.map((e) => [e.path ?? 'unknown', e.message])
-      );
+      const fieldErrors = Object.fromEntries(err.inner.map((e) => [e.path ?? 'unknown', e.message]));
       return errorResponse({
         code: VERIFICATION_CODES.VALIDATION_ERROR,
         message: COMMON_ERROR_MESSAGES.INVALID_REQUEST_PAYLOAD,
@@ -151,6 +146,6 @@ export async function GET(req: Request) {
       code: VERIFICATION_CODES.INTERNAL_SERVER_ERROR,
       message: COMMON_ERROR_MESSAGES.SOMETHING_WENT_WRONG_MESSAGE,
       statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
-       });
+    });
   }
 }

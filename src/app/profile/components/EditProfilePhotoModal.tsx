@@ -22,22 +22,16 @@ function getInitials(first_name: string = '', last_name: string = '') {
   return `${first_name.charAt(0)}${last_name.charAt(0)}`.toUpperCase();
 }
 
-export default function EditProfilePhotoModal({
-  user,
-  isOwnProfile,
-  handleUpdateProfileAction
-}: EditProfilePhotoModalProps) {
+export default function EditProfilePhotoModal({ user, isOwnProfile, handleUpdateProfileAction }: EditProfilePhotoModalProps) {
   const [open, setOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
-  const { file, previewUrl, error, openFileDialog, clearFiles } = useFilePicker(
-    {
-      allowedCategories: ['image'],
-      maxSizes: { image: 5 },
-      multiple: false
-    }
-  );
+  const { file, previewUrl, error, openFileDialog, clearFiles } = useFilePicker({
+    allowedCategories: ['image'],
+    maxSizes: { image: 5 },
+    multiple: false
+  });
 
   const initials = getInitials(user.first_name!, user.last_name!);
   const isImageAvailable = !!(previewUrl || user.profile_url);
@@ -79,13 +73,8 @@ export default function EditProfilePhotoModal({
       trigger={
         <div className="group relative h-24 w-24 cursor-pointer rounded-full border-4 border-[#0d0d0d] shadow-md">
           <Avatar className="h-full w-full">
-            <AvatarImage
-              src={user.profile_url || '/images/avatar.jpg'}
-              alt="Avatar"
-            />
-            <AvatarFallback className="bg-yellow-500 text-black">
-              {initials}
-            </AvatarFallback>
+            <AvatarImage src={user.profile_url || '/images/avatar.jpg'} alt="Avatar" />
+            <AvatarFallback className="bg-yellow-500 text-black">{initials}</AvatarFallback>
           </Avatar>
 
           {isOwnProfile && (
@@ -150,22 +139,13 @@ export default function EditProfilePhotoModal({
           </Button>
         </div>
 
-        {(localError || error) && (
-          <p className="mt-2 text-center text-sm text-red-500">
-            {localError || error}
-          </p>
-        )}
+        {(localError || error) && <p className="mt-2 text-center text-sm text-red-500">{localError || error}</p>}
       </div>
     </CommonModal>
   ) : (
     <Avatar className="h-24 w-24 border-4 border-[#0d0d0d] shadow-md">
-      <AvatarImage
-        src={user.profile_url || '/images/avatar.jpg'}
-        alt="Avatar"
-      />
-      <AvatarFallback className="bg-yellow-500 text-black">
-        {initials}
-      </AvatarFallback>
+      <AvatarImage src={user.profile_url || '/images/avatar.jpg'} alt="Avatar" />
+      <AvatarFallback className="bg-yellow-500 text-black">{initials}</AvatarFallback>
     </Avatar>
   );
 }
