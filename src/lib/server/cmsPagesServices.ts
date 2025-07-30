@@ -52,10 +52,7 @@ export const cmsPagesServices = {
     const whereClause: Prisma.CMSWhereInput = {};
 
     if (searchParam) {
-      whereClause.OR = [
-        { title: { contains: searchParam, mode: 'insensitive' } },
-        { slug: { contains: searchParam, mode: 'insensitive' } }
-      ];
+      whereClause.OR = [{ title: { contains: searchParam, mode: 'insensitive' } }, { slug: { contains: searchParam, mode: 'insensitive' } }];
     }
 
     const shouldPaginate = pageParam !== null && pageSizeParam !== null;
@@ -85,10 +82,7 @@ export const cmsPagesServices = {
       findManyOptions.take = pageSize;
     }
 
-    const [pages, total] = await Promise.all([
-      prisma.cMS.findMany(findManyOptions),
-      prisma.cMS.count({ where: whereClause })
-    ]);
+    const [pages, total] = await Promise.all([prisma.cMS.findMany(findManyOptions), prisma.cMS.count({ where: whereClause })]);
 
     return {
       pages,
@@ -113,9 +107,7 @@ export const cmsPagesServices = {
     }
   },
 
-  async createCMSPage(
-    cms_page_data: Omit<CMSPage, 'id'>
-  ): Promise<{ success: boolean; message: string }> {
+  async createCMSPage(cms_page_data: Omit<CMSPage, 'id'>): Promise<{ success: boolean; message: string }> {
     if (cms_page_data.type === PageType.landing) {
       const is_landing_page_added = await prisma.cMS.findFirst({
         where: { type: PageType.landing, isPublished: true }
@@ -150,12 +142,10 @@ export const cmsPagesServices = {
         slug: cms_page_data.slug,
         type: cms_page_data.type as PageType,
         isPublished: cms_page_data.isPublished || false,
-        heroSection:
-          cms_page_data.heroSection as unknown as Prisma.InputJsonValue,
+        heroSection: cms_page_data.heroSection as unknown as Prisma.InputJsonValue,
         faqs: cms_page_data.faqs as unknown as Prisma.InputJsonValue,
         steps: cms_page_data.steps as unknown as Prisma.InputJsonValue,
-        richContent:
-          cms_page_data.richContent as unknown as Prisma.InputJsonValue
+        richContent: cms_page_data.richContent as unknown as Prisma.InputJsonValue
       }
     });
 
@@ -165,10 +155,7 @@ export const cmsPagesServices = {
     };
   },
 
-  async updatePageDetails(
-    id: string,
-    cms_update_data: Partial<CMSPage>
-  ): Promise<{ success: boolean; message: string }> {
+  async updatePageDetails(id: string, cms_update_data: Partial<CMSPage>): Promise<{ success: boolean; message: string }> {
     if (!id) {
       throw new Error('Page id not found.');
     }
@@ -176,10 +163,7 @@ export const cmsPagesServices = {
     const pageType = cms_update_data.type;
     const isPublishing = cms_update_data.isPublished === true;
 
-    if (
-      isPublishing &&
-      (pageType === PageType.landing || pageType === PageType.faqs)
-    ) {
+    if (isPublishing && (pageType === PageType.landing || pageType === PageType.faqs)) {
       const existingPublishedPage = await prisma.cMS.findFirst({
         where: {
           id: { not: BigInt(id) },
@@ -189,9 +173,7 @@ export const cmsPagesServices = {
       });
 
       if (existingPublishedPage) {
-        throw new Error(
-          `Only one "${pageType}" page can be published at a time.`
-        );
+        throw new Error(`Only one "${pageType}" page can be published at a time.`);
       }
     }
 
@@ -202,12 +184,10 @@ export const cmsPagesServices = {
         slug: cms_update_data.slug,
         type: cms_update_data.type as PageType,
         isPublished: cms_update_data.isPublished || false,
-        heroSection:
-          cms_update_data.heroSection as unknown as Prisma.InputJsonValue,
+        heroSection: cms_update_data.heroSection as unknown as Prisma.InputJsonValue,
         faqs: cms_update_data.faqs as unknown as Prisma.InputJsonValue,
         steps: cms_update_data.steps as unknown as Prisma.InputJsonValue,
-        richContent:
-          cms_update_data.richContent as unknown as Prisma.InputJsonValue
+        richContent: cms_update_data.richContent as unknown as Prisma.InputJsonValue
       }
     });
 
@@ -217,12 +197,9 @@ export const cmsPagesServices = {
     };
   },
 
-  async deleteCMSPage(
-    id: string
-  ): Promise<{ success: boolean; message: string }> {
+  async deleteCMSPage(id: string): Promise<{ success: boolean; message: string }> {
     const item = await prisma.cMS.findUnique({ where: { id: BigInt(id) } });
-    if (!item)
-      return { success: false, message: 'The cms page has been not found.' };
+    if (!item) return { success: false, message: 'The cms page has been not found.' };
 
     await prisma.cMS.delete({ where: { id: BigInt(id) } });
 

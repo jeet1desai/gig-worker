@@ -10,7 +10,7 @@ export async function calculateAverageRating(whereClause: object): Promise<Ratin
   const ratings = await prisma.reviewRating.findMany({
     where: {
       ...whereClause,
-      status: REVIEW_RATING_STATUS.APPROVED,
+      status: REVIEW_RATING_STATUS.APPROVED
     },
     select: { rating: true }
   });

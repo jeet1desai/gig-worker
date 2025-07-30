@@ -7,11 +7,7 @@ interface FormikErrorMessageProps<T> {
   touched: FormikTouched<T>;
 }
 
-const FormikErrorMessage = <T,>({
-  name,
-  errors,
-  touched
-}: FormikErrorMessageProps<T>) => {
+const FormikErrorMessage = <T,>({ name, errors, touched }: FormikErrorMessageProps<T>) => {
   const hasError = touched[name] && errors[name];
 
   if (!hasError || typeof errors[name] !== 'string') return null;

@@ -27,11 +27,7 @@ interface FormValues {
   interestInput: string;
 }
 
-export default function EditProfileTagsModal({
-  user,
-  isOwnProfile,
-  handleUpdateProfileAction
-}: EditProfileTagModalProps) {
+export default function EditProfileTagsModal({ user, isOwnProfile, handleUpdateProfileAction }: EditProfileTagModalProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,8 +43,7 @@ export default function EditProfileTagsModal({
   const handleTagsSubmit = async (values: FormValues) => {
     try {
       setIsLoading(true);
-      const { skillInput, extraInput, interestInput, ...profileValues } =
-        values;
+      const { skillInput, extraInput, interestInput, ...profileValues } = values;
 
       const response = await userService.updateUserTags({
         skills: profileValues.skills,
@@ -81,14 +76,7 @@ export default function EditProfileTagsModal({
     }
   };
 
-  const {
-    values,
-    setFieldValue,
-    setFieldError,
-    handleChange,
-    handleSubmit,
-    resetForm
-  } = useFormik({
+  const { values, setFieldValue, setFieldError, handleChange, handleSubmit, resetForm } = useFormik({
     initialValues,
     enableReinitialize: true,
     onSubmit: handleTagsSubmit
@@ -110,12 +98,7 @@ export default function EditProfileTagsModal({
   }, [open]);
 
   const handleAdd = (type: 'skills' | 'extracurricular' | 'interests') => {
-    const inputKey =
-      type === 'skills'
-        ? 'skillInput'
-        : type === 'extracurricular'
-          ? 'extraInput'
-          : 'interestInput';
+    const inputKey = type === 'skills' ? 'skillInput' : type === 'extracurricular' ? 'extraInput' : 'interestInput';
 
     const trimmed = values[inputKey].trim();
     if (!trimmed || values[type].includes(trimmed)) return;
@@ -124,20 +107,14 @@ export default function EditProfileTagsModal({
     setFieldValue(inputKey, '');
   };
 
-  const removeItem = (
-    type: 'skills' | 'extracurricular' | 'interests',
-    item: string
-  ) => {
+  const removeItem = (type: 'skills' | 'extracurricular' | 'interests', item: string) => {
     setFieldValue(
       type,
       values[type].filter((i: string) => i !== item)
     );
   };
 
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    type: 'skills' | 'extracurricular' | 'interests'
-  ) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, type: 'skills' | 'extracurricular' | 'interests') => {
     if (e.key === 'Enter') {
       e.preventDefault();
       handleAdd(type);
@@ -146,12 +123,7 @@ export default function EditProfileTagsModal({
 
   return (
     <div>
-      {isOwnProfile && (
-        <PencilIcon
-          onClick={() => setOpen(true)}
-          className="h-4 w-4 cursor-pointer text-white hover:text-gray-300"
-        />
-      )}
+      {isOwnProfile && <PencilIcon onClick={() => setOpen(true)} className="h-4 w-4 cursor-pointer text-white hover:text-gray-300" />}
       <CommonModal
         open={open}
         onOpenChange={setOpen}
@@ -173,26 +145,15 @@ export default function EditProfileTagsModal({
                 onKeyDown={(event) => handleKeyDown(event, 'skills')}
                 className="border border-[#333] bg-[#1a1a1a] text-white"
               />
-              <Button
-                type="button"
-                size="icon"
-                onClick={() => handleAdd('skills')}
-              >
+              <Button type="button" size="icon" onClick={() => handleAdd('skills')}>
                 <PlusIcon size={18} />
               </Button>
             </div>
             <div className="mt-2 flex flex-wrap gap-2">
               {values.skills.map((item: string, idx: number) => (
-                <span
-                  key={idx}
-                  className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm"
-                >
+                <span key={idx} className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm">
                   {item}
-                  <XIcon
-                    size={14}
-                    className="cursor-pointer hover:text-red-400"
-                    onClick={() => removeItem('skills', item)}
-                  />
+                  <XIcon size={14} className="cursor-pointer hover:text-red-400" onClick={() => removeItem('skills', item)} />
                 </span>
               ))}
             </div>
@@ -211,26 +172,15 @@ export default function EditProfileTagsModal({
                 placeholder="Enter extracurricular"
                 className="border border-[#333] bg-[#1a1a1a] text-white"
               />
-              <Button
-                type="button"
-                size="icon"
-                onClick={() => handleAdd('extracurricular')}
-              >
+              <Button type="button" size="icon" onClick={() => handleAdd('extracurricular')}>
                 <PlusIcon size={18} />
               </Button>
             </div>
             <div className="mt-2 flex flex-wrap gap-2">
               {values.extracurricular.map((item: string, idx: number) => (
-                <span
-                  key={idx}
-                  className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm"
-                >
+                <span key={idx} className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm">
                   {item}
-                  <XIcon
-                    size={14}
-                    className="cursor-pointer hover:text-red-400"
-                    onClick={() => removeItem('extracurricular', item)}
-                  />
+                  <XIcon size={14} className="cursor-pointer hover:text-red-400" onClick={() => removeItem('extracurricular', item)} />
                 </span>
               ))}
             </div>
@@ -249,46 +199,25 @@ export default function EditProfileTagsModal({
                 placeholder="Enter interest"
                 className="border border-[#333] bg-[#1a1a1a] text-white"
               />
-              <Button
-                type="button"
-                size="icon"
-                onClick={() => handleAdd('interests')}
-              >
+              <Button type="button" size="icon" onClick={() => handleAdd('interests')}>
                 <PlusIcon size={18} />
               </Button>
             </div>
             <div className="mt-2 flex flex-wrap gap-2">
               {values.interests.map((item: string, idx: number) => (
-                <span
-                  key={idx}
-                  className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm"
-                >
+                <span key={idx} className="flex items-center gap-2 rounded-full border border-[#333] bg-[#1b1b1b] px-3 py-1 text-sm">
                   {item}
-                  <XIcon
-                    size={14}
-                    className="cursor-pointer hover:text-red-400"
-                    onClick={() => removeItem('interests', item)}
-                  />
+                  <XIcon size={14} className="cursor-pointer hover:text-red-400" onClick={() => removeItem('interests', item)} />
                 </span>
               ))}
             </div>
           </div>
 
           <div className="flex justify-end gap-2 border-t border-[#333] pt-4">
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={isLoading}
-              onClick={() => setOpen(false)}
-            >
+            <Button type="button" variant="ghost" disabled={isLoading} onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              isLoading={isLoading}
-              disabled={isLoading}
-              className="bg-white text-black hover:bg-gray-200"
-            >
+            <Button type="submit" isLoading={isLoading} disabled={isLoading} className="bg-white text-black hover:bg-gray-200">
               Save Changes
             </Button>
           </div>

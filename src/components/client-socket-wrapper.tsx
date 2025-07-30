@@ -20,14 +20,13 @@ export default function ClientSocketWrapper() {
 
   useEffect(() => {
     if (socket && !isInitialized) {
-      setIsInitialized(true);
-
       const currentUserId = session?.user?.id;
       if (currentUserId) {
         socket.emit('register', currentUserId);
+        setIsInitialized(true);
       }
     }
-  }, [socket, isInitialized, session]);
+  }, [socket, isInitialized, session?.user]);
 
   if (!showStatus) return null;
 

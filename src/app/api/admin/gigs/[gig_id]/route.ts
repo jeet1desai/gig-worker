@@ -5,10 +5,7 @@ import { safeJsonResponse } from '@/utils/apiResponse';
 import { checkAdminRole } from '@/utils/checkAdminRole';
 import { GIG_STATUS } from '@prisma/client';
 
-export async function GET(
-  request: Request,
-  { params }: { params: { gig_id: string } }
-) {
+export async function GET(request: Request, { params }: { params: { gig_id: string } }) {
   const roleCheck = await checkAdminRole(request);
   if ('status' in roleCheck) return roleCheck;
 
@@ -78,8 +75,7 @@ export async function GET(
       { status: HttpStatusCode.OK }
     );
   } catch (err: any) {
-    const message =
-      err instanceof Error ? err.message : 'Unknown error occurred';
+    const message = err instanceof Error ? err.message : 'Unknown error occurred';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,
@@ -88,10 +84,7 @@ export async function GET(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { gig_id: string } }
-) {
+export async function DELETE(request: Request, { params }: { params: { gig_id: string } }) {
   const roleCheck = await checkAdminRole(request);
   if ('status' in roleCheck) return roleCheck;
 
@@ -134,8 +127,7 @@ export async function DELETE(
       { status: HttpStatusCode.OK }
     );
   } catch (err: any) {
-    const message =
-      err instanceof Error ? err.message : 'Unknown error occurred';
+    const message = err instanceof Error ? err.message : 'Unknown error occurred';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,
@@ -144,10 +136,7 @@ export async function DELETE(
   }
 }
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: { gig_id: string } }
-) {
+export async function PATCH(request: Request, { params }: { params: { gig_id: string } }) {
   const roleCheck = await checkAdminRole(request);
   if ('status' in roleCheck) return roleCheck;
 
@@ -254,8 +243,7 @@ export async function PATCH(
       { status: HttpStatusCode.OK }
     );
   } catch (err: any) {
-    const message =
-      err instanceof Error ? err.message : 'Unknown error occurred';
+    const message = err instanceof Error ? err.message : 'Unknown error occurred';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,

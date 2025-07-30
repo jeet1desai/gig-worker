@@ -21,69 +21,59 @@ interface EditProfileModalProps {
   handleUpdateProfileAction: (updateUserDetails: UserProfileDetails) => void;
 }
 
-export default function EditProfileModal({
-  user,
-  isOwnProfile,
-  handleUpdateProfileAction
-}: EditProfileModalProps) {
+export default function EditProfileModal({ user, isOwnProfile, handleUpdateProfileAction }: EditProfileModalProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { values, touched, errors, setFieldError, handleChange, handleSubmit } =
-    useFormik({
-      initialValues: {
-        firstName: user.first_name || '',
-        lastName: user.last_name || '',
-        bio: user.profile?.bio || ''
-      },
-      validationSchema: aboutUpdateSchema,
-      onSubmit: async (values) => {
-        try {
-          setIsLoading(true);
-          const payload = {
-            first_name: values.firstName,
-            last_name: values.lastName,
-            bio: values.bio
-          };
+  const { values, touched, errors, setFieldError, handleChange, handleSubmit } = useFormik({
+    initialValues: {
+      firstName: user.first_name || '',
+      lastName: user.last_name || '',
+      bio: user.profile?.bio || ''
+    },
+    validationSchema: aboutUpdateSchema,
+    onSubmit: async (values) => {
+      try {
+        setIsLoading(true);
+        const payload = {
+          first_name: values.firstName,
+          last_name: values.lastName,
+          bio: values.bio
+        };
 
-          const response = await userService.updateAboutDetails(payload);
+        const response = await userService.updateAboutDetails(payload);
 
-          handleUpdateProfileAction({
-            ...user,
-            first_name: values.firstName,
-            last_name: values.lastName,
-            profile: response.data as UserProfile
+        handleUpdateProfileAction({
+          ...user,
+          first_name: values.firstName,
+          last_name: values.lastName,
+          profile: response.data as UserProfile
+        });
+
+        toast.success('Profile updated successfully.');
+        setOpen(false);
+      } catch (error: any) {
+        const apiError = error?.response?.data?.error;
+
+        toast.error(apiError?.message || 'Something went wrong.');
+
+        const fieldErrors = apiError?.fieldErrors;
+        if (fieldErrors) {
+          Object.entries(fieldErrors).forEach(([field, msg]) => {
+            setFieldError(field, msg as string);
           });
-
-          toast.success('Profile updated successfully.');
-          setOpen(false);
-        } catch (error: any) {
-          const apiError = error?.response?.data?.error;
-
-          toast.error(apiError?.message || 'Something went wrong.');
-
-          const fieldErrors = apiError?.fieldErrors;
-          if (fieldErrors) {
-            Object.entries(fieldErrors).forEach(([field, msg]) => {
-              setFieldError(field, msg as string);
-            });
-          }
-
-          console.error('Education update error:', apiError?.details || error);
-        } finally {
-          setIsLoading(false);
         }
+
+        console.error('Education update error:', apiError?.details || error);
+      } finally {
+        setIsLoading(false);
       }
-    });
+    }
+  });
 
   return (
     <div>
-      {isOwnProfile && (
-        <PencilIcon
-          onClick={() => setOpen(true)}
-          className="mb-2 h-4 w-4 cursor-pointer text-white hover:text-gray-300"
-        />
-      )}
+      {isOwnProfile && <PencilIcon onClick={() => setOpen(true)} className="mb-2 h-4 w-4 cursor-pointer text-white hover:text-gray-300" />}
       <CommonModal
         open={open}
         onOpenChange={setOpen}
@@ -106,11 +96,7 @@ export default function EditProfileModal({
                   className="border border-[#333] bg-[#1a1a1a] text-white"
                   placeholder="First name"
                 />
-                <FormikErrorMessage
-                  name="firstName"
-                  touched={touched}
-                  errors={errors}
-                />
+                <FormikErrorMessage name="firstName" touched={touched} errors={errors} />
               </div>
             </div>
 
@@ -127,11 +113,7 @@ export default function EditProfileModal({
                   className="border border-[#333] bg-[#1a1a1a] text-white"
                   placeholder="Last name"
                 />
-                <FormikErrorMessage
-                  name="lastName"
-                  touched={touched}
-                  errors={errors}
-                />
+                <FormikErrorMessage name="lastName" touched={touched} errors={errors} />
               </div>
             </div>
 
@@ -149,11 +131,7 @@ export default function EditProfileModal({
                   placeholder="Tell us something about you..."
                   rows={4}
                 />
-                <FormikErrorMessage
-                  name="bio"
-                  touched={touched}
-                  errors={errors}
-                />
+                <FormikErrorMessage name="bio" touched={touched} errors={errors} />
               </div>
             </div>
           </div>
@@ -161,21 +139,10 @@ export default function EditProfileModal({
           <div className="my-4 border-t border-[#333]" />
 
           <div className="flex justify-end gap-3">
-            <Button
-              variant="ghost"
-              type="button"
-              disabled={isLoading}
-              onClick={() => setOpen(false)}
-              className="cursor-pointer text-white"
-            >
+            <Button variant="ghost" type="button" disabled={isLoading} onClick={() => setOpen(false)} className="cursor-pointer text-white">
               Cancel
             </Button>
-            <Button
-              type="submit"
-              isLoading={isLoading}
-              disabled={isLoading}
-              className="cursor-pointer bg-white text-black hover:bg-gray-200"
-            >
+            <Button type="submit" isLoading={isLoading} disabled={isLoading} className="cursor-pointer bg-white text-black hover:bg-gray-200">
               Save Changes
             </Button>
           </div>

@@ -1,19 +1,7 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import {
-  ArrowLeft,
-  Calendar,
-  DollarSign,
-  MapPin,
-  Clock,
-  Users,
-  Star,
-  FileText,
-  Mail,
-  Briefcase,
-  Download
-} from 'lucide-react';
+import { ArrowLeft, Calendar, DollarSign, MapPin, Clock, Users, Star, FileText, Mail, Briefcase, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -41,21 +29,15 @@ export default function AdminGigDetails() {
   const getGigDetailById = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await apiService.get<AdminGigsSingleDataResponse>(
-        `${PRIVATE_API_ROUTES.ADMIN_GIGS_LIST_API}/${id}`,
-        {
-          withAuth: true
-        }
-      );
+      const response = await apiService.get<AdminGigsSingleDataResponse>(`${PRIVATE_API_ROUTES.ADMIN_GIGS_LIST_API}/${id}`, {
+        withAuth: true
+      });
 
       if (response.data.success && response.data.data) {
         setGig(response.data.data);
       }
     } catch (error: any) {
-      const message =
-        error?.response?.data?.error?.message ||
-        error?.message ||
-        'Error fetching gig detail';
+      const message = error?.response?.data?.error?.message || error?.message || 'Error fetching gig detail';
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -66,30 +48,20 @@ export default function AdminGigDetails() {
     getGigDetailById();
   }, []);
 
-  const formatLabel = (status: string) =>
-    status &&
-    status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const formatLabel = (status: string) => status && status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
   return (
     <div className="space-y-6">
       <Loader isLoading={isLoading} />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="!bg-transparent text-white"
-            onClick={handleBack}
-          >
+          <Button variant="ghost" size="sm" className="!bg-transparent text-white" onClick={handleBack}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Gigs
           </Button>
         </div>
         <div className="flex items-center gap-2">
-          <Badge
-            className={statusColors[gig?.pipeline?.status as GIG_STATUS]}
-            variant="outline"
-          >
+          <Badge className={statusColors[gig?.pipeline?.status as GIG_STATUS]} variant="outline">
             {formatLabel(gig?.pipeline?.status as GIG_STATUS)}
           </Badge>
         </div>
@@ -101,24 +73,16 @@ export default function AdminGigDetails() {
             <CardHeader>
               <div className="flex">
                 {gig?.keywords?.map((keyword: string) => (
-                  <Badge
-                    variant="outline"
-                    key={keyword}
-                    className="mx-1 border-amber-500/20 bg-amber-500/10 text-amber-400"
-                  >
+                  <Badge variant="outline" key={keyword} className="mx-1 border-amber-500/20 bg-amber-500/10 text-amber-400">
                     {keyword}
                   </Badge>
                 ))}
               </div>
-              <CardTitle className="text-lg font-bold text-white sm:text-xl md:text-2xl lg:text-3xl">
-                {gig?.title}
-              </CardTitle>
+              <CardTitle className="text-lg font-bold text-white sm:text-xl md:text-2xl lg:text-3xl">{gig?.title}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="prose max-w-none">
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {gig?.description}
-                </p>
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{gig?.description}</p>
               </div>
             </CardContent>
           </Card>
@@ -126,34 +90,22 @@ export default function AdminGigDetails() {
           {gig?.attachments && gig?.attachments.length > 0 && (
             <Card className="border-0 shadow-lg">
               <CardHeader>
-                <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-white">
-                  Attachments
-                </h3>
+                <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-white">Attachments</h3>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {gig?.attachments?.map((fileUrl: string, index: number) => {
-                    const fileName = decodeURIComponent(
-                      fileUrl.split('/').pop() || `file-${index}`
-                    );
+                    const fileName = decodeURIComponent(fileUrl.split('/').pop() || `file-${index}`);
 
                     return (
-                      <div
-                        key={fileUrl}
-                        className="bg-muted/30 flex items-center justify-between rounded-lg border p-3"
-                      >
+                      <div key={fileUrl} className="bg-muted/30 flex items-center justify-between rounded-lg border p-3">
                         <div className="flex items-center gap-3">
                           <FileText className="text-primary h-8 w-8" />
                           <div>
                             <p className="text-sm font-medium">{fileName}</p>
                           </div>
                         </div>
-                        <a
-                          href={fileUrl}
-                          download
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                        <a href={fileUrl} download target="_blank" rel="noopener noreferrer">
                           <Button variant="ghost" size="sm">
                             <Download className="h-4 w-4" />
                           </Button>
@@ -188,14 +140,7 @@ export default function AdminGigDetails() {
                 </div>
                 <div className="bg-foreground/50 rounded-lg p-3 text-center">
                   <Clock className="text-primary mx-auto mb-1 h-5 w-5" />
-                  <div className="font-bold">
-                    {`${
-                      getDaysBetweenDates(
-                        gig?.start_date as string,
-                        gig?.end_date as string
-                      ) || 0
-                    } days`}
-                  </div>
+                  <div className="font-bold">{`${getDaysBetweenDates(gig?.start_date as string, gig?.end_date as string) || 0} days`}</div>
                   <div className="text-muted-foreground text-xs">Duration</div>
                 </div>
               </div>
@@ -206,23 +151,17 @@ export default function AdminGigDetails() {
                 <div className="flex items-center gap-2">
                   <Briefcase className="text-muted-foreground h-4 w-4" />
                   <span className="text-muted-foreground">Tier:</span>
-                  <span className="font-medium">
-                    {formatLabel(gig?.tier as TIER)}
-                  </span>
+                  <span className="font-medium">{formatLabel(gig?.tier as TIER)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="text-muted-foreground h-4 w-4" />
                   <span className="text-muted-foreground">Deadline:</span>
-                  <span className="font-medium">
-                    {formatOnlyDate(gig?.end_date)}
-                  </span>
+                  <span className="font-medium">{formatOnlyDate(gig?.end_date)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="text-muted-foreground h-4 w-4" />
                   <span className="text-muted-foreground">Created:</span>
-                  <span className="font-medium">
-                    {formatOnlyDate(gig?.created_at)}
-                  </span>
+                  <span className="font-medium">{formatOnlyDate(gig?.created_at)}</span>
                 </div>
               </div>
             </CardContent>
@@ -243,9 +182,7 @@ export default function AdminGigDetails() {
                   </Avatar>
                 )}
                 <div>
-                  <p className="font-medium">
-                    {`${gig?.user?.first_name} ${gig?.user?.last_name}`}
-                  </p>
+                  <p className="font-medium">{`${gig?.user?.first_name} ${gig?.user?.last_name}`}</p>
                   <div className="flex items-center space-x-1">
                     <Star className="size-2 fill-amber-400 text-amber-400" />
                     <span className="text-xs text-gray-400">1 (5)</span>
@@ -256,9 +193,7 @@ export default function AdminGigDetails() {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <Mail className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground break-all">
-                    {gig?.user?.email}
-                  </span>
+                  <span className="text-muted-foreground break-all">{gig?.user?.email}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="text-muted-foreground h-4 w-4" />
@@ -268,18 +203,12 @@ export default function AdminGigDetails() {
 
               <div className="grid grid-cols-2 gap-3 border-t pt-3">
                 <div className="text-center">
-                  <div className="text-primary font-bold">
-                    {gig?.user?._count?.gigs || 0}
-                  </div>
+                  <div className="text-primary font-bold">{gig?.user?._count?.gigs || 0}</div>
                   <div className="text-muted-foreground text-xs">Projects</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-primary font-bold">
-                    {formatOnlyDate(gig?.user?.created_at)}
-                  </div>
-                  <div className="text-muted-foreground text-xs">
-                    Member Since
-                  </div>
+                  <div className="text-primary font-bold">{formatOnlyDate(gig?.user?.created_at)}</div>
+                  <div className="text-muted-foreground text-xs">Member Since</div>
                 </div>
               </div>
             </CardContent>

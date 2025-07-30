@@ -13,23 +13,14 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
 
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
-    const pageSize = Math.min(
-      50,
-      Math.max(1, parseInt(searchParams.get('pageSize') || '10'))
-    );
+    const pageSize = Math.min(50, Math.max(1, parseInt(searchParams.get('pageSize') || '10')));
     const search = (searchParams.get('search') || '').trim();
-    const minPrice = searchParams.get('minPrice')
-      ? parseFloat(searchParams.get('minPrice') as string)
-      : undefined;
-    const maxPrice = searchParams.get('maxPrice')
-      ? parseFloat(searchParams.get('maxPrice') as string)
-      : undefined;
+    const minPrice = searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice') as string) : undefined;
+    const maxPrice = searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice') as string) : undefined;
     const tiersParam = searchParams.get('tiers');
     const rating = searchParams.get('rating');
     const status = searchParams.get('status');
-    const tiers = tiersParam
-      ? tiersParam.split(',').map((t) => t.trim().toLowerCase())
-      : [];
+    const tiers = tiersParam ? tiersParam.split(',').map((t) => t.trim().toLowerCase()) : [];
 
     const skip = (page - 1) * pageSize;
 
@@ -171,8 +162,7 @@ export async function GET(request: Request) {
     );
   } catch (error) {
     console.error('Error fetching user gigs:', error);
-    const errorMessage =
-      error instanceof Error ? error.message : 'Failed to fetch your gigs';
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch your gigs';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message: errorMessage,
