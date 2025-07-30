@@ -11,7 +11,11 @@ import type { OnApproveData } from '@paypal/paypal-js';
 import PlanCard from '@/components/PlanCard';
 import { PRIVATE_API_ROUTES, PRIVATE_ROUTE } from '@/constants/app-routes';
 import { ApiResponse } from '@/types/shared/api-response';
-import { ISafeActiveSubscription, ISafePlan, ISafeSubscription } from '@/types/fe/api-responses';
+import {
+  ISafeActiveSubscription,
+  ISafePlan,
+  ISafeSubscription
+} from '@/types/fe/api-responses';
 import { PAYPAL_BUTTON_CONFIG } from '@/constants';
 import { FREE_PLAN_ID } from '@/constants/plans';
 import Loader from '@/components/Loader';
@@ -36,7 +40,10 @@ type SessionUpdatePayload = {
   subscription: string;
 };
 
-const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrapperProps) => {
+const PricingClientWrapper = ({
+  plans,
+  activeSubscription
+}: PricingClientWrapperProps) => {
   const router = useRouter();
   const { update, data: session } = useSession();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -69,7 +76,10 @@ const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrappe
       navigateToDashboard();
     } catch (err) {
       const error = err as AxiosError<ApiResponse<null>>;
-      const apiErrorMessage = error?.response?.data?.error?.message || error?.message || 'Something went wrong.';
+      const apiErrorMessage =
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        'Something went wrong.';
       toast.error(apiErrorMessage);
     } finally {
       setIsLoading(false);
@@ -95,7 +105,10 @@ const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrappe
     }
   };
 
-  const handleSubscriptionCreate = async (_data: Record<string, unknown>, actions: PayPalSubscriptionActions): Promise<string> => {
+  const handleSubscriptionCreate = async (
+    _data: Record<string, unknown>,
+    actions: PayPalSubscriptionActions
+  ): Promise<string> => {
     try {
       if (!selectedPlan) {
         throw new Error('No plan selected for subscription.');
@@ -112,7 +125,9 @@ const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrappe
     }
   };
 
-  const handleSubscriptionApprove = async (data: OnApproveData): Promise<void> => {
+  const handleSubscriptionApprove = async (
+    data: OnApproveData
+  ): Promise<void> => {
     setIsDialogOpen(false);
     if (!data.subscriptionID || !selectedPlan) {
       throw new Error('Something went wrong! Try again later');
@@ -120,7 +135,10 @@ const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrappe
 
     try {
       setIsLoading(true);
-      const response = await createSubscription(data.subscriptionID, selectedPlan.plan_id);
+      const response = await createSubscription(
+        data.subscriptionID,
+        selectedPlan.plan_id
+      );
       await update({
         subscription: response.data?.subscription.type,
         role: response.data?.user.role
@@ -130,7 +148,10 @@ const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrappe
       navigateToDashboard();
     } catch (err) {
       const error = err as AxiosError<ApiResponse<null>>;
-      const apiErrorMessage = error?.response?.data?.error?.message || error?.message || 'Something went wrong.';
+      const apiErrorMessage =
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        'Something went wrong.';
       toast.error(apiErrorMessage);
     } finally {
       setIsLoading(false);
@@ -142,14 +163,19 @@ const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrappe
     setIsDialogOpen(false);
     if (errorMessage.includes('popup close')) return;
 
-    if (errorMessage.includes('INSTRUMENT_DECLINED') || errorMessage.includes('payment_method_error')) {
+    if (
+      errorMessage.includes('INSTRUMENT_DECLINED') ||
+      errorMessage.includes('payment_method_error')
+    ) {
       toast.error('Your payment method was declined. Please try another.');
     } else if (
       errorMessage.includes('unsupported') ||
       errorMessage.includes('currency_not_supported') ||
       errorMessage.includes('country_not_supported')
     ) {
-      toast.error('This payment option is not supported. Please choose a different one.');
+      toast.error(
+        'This payment option is not supported. Please choose a different one.'
+      );
     } else if (
       errorMessage.includes('INVALID_REQUEST') ||
       errorMessage.includes('system_config_error') ||
@@ -174,7 +200,12 @@ const PricingClientWrapper = ({ plans, activeSubscription }: PricingClientWrappe
         />
       ))}
 
-      <CommonModal open={isDialogOpen} onOpenChange={handleCloseDialog} className="py-6" title={`Subscribe to the ${selectedPlan?.name} plan?`}>
+      <CommonModal
+        open={isDialogOpen}
+        onOpenChange={handleCloseDialog}
+        className="py-6"
+        title={`Subscribe to the ${selectedPlan?.name} plan?`}
+      >
         <div className="mt-8">
           {selectedPlan && (
             <div className="flex flex-col gap-3 p-3">

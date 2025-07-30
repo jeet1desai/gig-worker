@@ -17,6 +17,7 @@ import { useFilePicker } from '@/hooks/useFilePicker';
 import { userService } from '@/services/user.services';
 import { toast } from '@/lib/toast';
 import StarRatingBadge from '@/components/StarRatingBadge';
+import UserGigs from './UserGigs';
 
 interface ProfileProps {
   user: UserProfileDetails;
@@ -89,8 +90,8 @@ export default function Profile({ user, isOwnProfile }: ProfileProps) {
 
   return (
     <DashboardLayout>
-      <main className={`h-full w-full overflow-x-hidden bg-[#111111] font-sans text-white ${inter.className}`}>
-        <div className="grid grid-cols-1 gap-6 px-4 py-6 md:px-8 lg:grid-cols-4 lg:px-16">
+      <main className={`h-full w-full overflow-x-hidden bg-[#111111] font-sans text-white`}>
+        <div className="grid h-full grid-cols-1 gap-6 px-4 py-6 md:px-8 lg:grid-cols-4 lg:px-16">
           <div className="rounded-xl bg-gradient-to-br from-[#1f2937] via-[#111827] to-[#0f172a] shadow-lg lg:col-span-1">
             <div className="relative mb-4 h-32 overflow-hidden rounded-lg rounded-b-none shadow-md">
               {profileDetails.profile?.banner_url ? (
@@ -135,7 +136,7 @@ export default function Profile({ user, isOwnProfile }: ProfileProps) {
                 }`}
                 onClick={() => setActiveTab('opportunities')}
               >
-                <BriefcaseIcon className="h-4 w-4" /> Opportunities
+                <BriefcaseIcon className="h-4 w-4" /> Gigs
               </button>
             </div>
 
@@ -170,8 +171,8 @@ export default function Profile({ user, isOwnProfile }: ProfileProps) {
 
           <div className="lg:col-span-3">
             {activeTab === 'profile' && (
-              <Card className="bg-[#111]">
-                <CardContent className="space-y-6 px-6 pt-6 pb-8">
+              <Card className="h-full bg-[#111]">
+                <CardContent className="h-full space-y-6 overflow-y-auto px-6">
                   <div className="rounded-xl bg-black px-4 py-4">
                     <div className="flex items-center justify-between">
                       <h3 className="mb-2 text-sm font-semibold text-gray-300">About</h3>
@@ -295,9 +296,11 @@ export default function Profile({ user, isOwnProfile }: ProfileProps) {
             )}
 
             {activeTab === 'opportunities' && (
-              <div className="flex h-full min-h-[400px] items-center justify-center rounded-md border border-dashed border-gray-700 bg-[#111] text-gray-500">
-                <span className="text-sm">[ Opportunities content placeholder ]</span>
-              </div>
+              <Card className="h-[calc(100vh-130px)] bg-[#111]">
+                <CardContent className="h-full space-y-6 px-6">
+                  <UserGigs userId={profileDetails.id} />
+                </CardContent>
+              </Card>
             )}
           </div>
         </div>

@@ -51,6 +51,7 @@ export enum PUBLIC_API_ROUTES {
   LANDING_PAGE_STEPS_LIST_API = 'working_steps',
   GIGS_API = '/api/gigs',
   GIG_DETAIL_PUBLIC_API = '/api/public/gigs',
+  GIGS_BY_USER_ID_API = '/users/gigs',
   GIG_RATING_API = '/api/ratings'
 }
 

@@ -33,18 +33,26 @@ const PlanCard: FC<Props> = ({ plan, activePlanId, onChoosePlan }) => {
       <div className="mb-10 flex flex-1 flex-col items-start justify-start gap-3 self-stretch">
         <div className="mb-2 flex flex-col items-start justify-start gap-3 self-stretch">
           <div className="mb-2 flex h-[40px] w-[40px] items-center justify-center overflow-hidden rounded-[14px] bg-[#1E1E1E]">
-            {iconSrc && <img src={iconSrc} alt={`${name} icon`} className="h-5 w-5" />}
+            {iconSrc && (
+              <img src={iconSrc} alt={`${name} icon`} className="h-5 w-5" />
+            )}
           </div>
           <div className="flex flex-col items-start justify-start gap-3 self-stretch">
             <div className="flex flex-col items-start justify-start gap-2 self-stretch">
-              <div className="justify-start self-stretch font-['Outfit'] text-4xl font-medium text-[#FFF2E3]">{name}</div>
-              <div className="w-[90%] justify-start self-stretch font-['Outfit'] text-[1rem] leading-normal font-light text-[#D2D7D9]">
+              <div className="justify-start self-stretch text-4xl font-medium text-[#FFF2E3]">
+                {name}
+              </div>
+              <div className="w-[90%] justify-start self-stretch text-[1rem] leading-normal font-light text-[#D2D7D9]">
                 {description}
               </div>
             </div>
             <div className="flex items-baseline gap-3">
-              <div className="justify-start font-['Outfit'] text-[2.5rem] font-medium text-[#FFF2E3]">{formatCurrency(price, currency)}</div>
-              <div className="justify-start font-['Outfit'] text-xl font-light text-[#868C92]">{Number(price) > 0 && intervalMap[interval]}</div>
+              <div className="justify-start text-[2.5rem] font-medium text-[#FFF2E3]">
+                {formatCurrency(price, currency)}
+              </div>
+              <div className="justify-start text-xl font-light text-[#868C92]">
+                {Number(price) > 0 && intervalMap[interval]}
+              </div>
             </div>
           </div>
         </div>
@@ -52,11 +60,20 @@ const PlanCard: FC<Props> = ({ plan, activePlanId, onChoosePlan }) => {
         <div className="mt-3.5 flex flex-col items-start justify-start gap-6 self-stretch">
           {benefits.map((benefit: string) => {
             return (
-              <div key={benefit} className="flex items-center justify-start gap-4 self-stretch">
+              <div
+                key={benefit}
+                className="flex items-center justify-start gap-4 self-stretch"
+              >
                 <div className="h-4 w-4 overflow-hidden rounded-md">
-                  <img src="/icons/custom-check.svg" alt="check" className="h-full w-full" />
+                  <img
+                    src="/icons/custom-check.svg"
+                    alt="check"
+                    className="h-full w-full"
+                  />
                 </div>
-                <div className="flex-1 font-['Outfit'] text-lg leading-4 font-normal text-gray-300">{benefit}</div>
+                <div className="flex-1 text-lg leading-4 font-normal text-gray-300">
+                  {benefit}
+                </div>
               </div>
             );
           })}
@@ -66,7 +83,7 @@ const PlanCard: FC<Props> = ({ plan, activePlanId, onChoosePlan }) => {
         <Button
           variant={isActivePlan ? 'default' : 'secondary'}
           disabled={isActivePlan}
-          className="text-md h-12 w-full cursor-pointer rounded-xl font-['Outfit'] leading-10 font-normal disabled:cursor-default"
+          className="text-md h-12 w-full cursor-pointer rounded-xl leading-10 font-normal disabled:cursor-default"
           onClick={onChoosePlan}
         >
           {isActivePlan ? 'Your current plan' : 'Choose plan'}
