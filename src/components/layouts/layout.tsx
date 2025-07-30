@@ -11,13 +11,14 @@ import { PRIVATE_ROUTE } from '@/constants/app-routes';
 import { ClipboardList, Layers3 } from 'lucide-react';
 import { DASHBOARD_NAVIGATION_MENU } from '@/constants';
 import LandingHeader from '@/components/Header';
+import Loader from '../Loader';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const dispatch = useDispatch();
   const { role } = useSelector((state: RootState) => state.user);
@@ -52,6 +53,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
     return dynamicMenu;
   }, [session?.user.subscriptionType, role]);
+
+  if (status === 'loading') {
+    return <Loader isLoading={true} />;
+  }
 
   return (
     <div className="bg-foreground flex min-h-screen w-full">

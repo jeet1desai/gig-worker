@@ -24,14 +24,15 @@ import { cn } from '@/lib/utils';
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
+import { GigsShimmerCards } from '@/components/ShimmerEffects';
 
-const tierColors: any = {
+const tierColors: Record<string, string> = {
   basic: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
   advanced: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
   expert: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
 };
 
-const tierLabels: any = {
+const tierLabels: Record<string, string> = {
   basic: 'basic',
   advanced: 'advanced',
   expert: 'expert'
@@ -671,26 +672,28 @@ const GigsPage = () => {
               dataLength={ownGigs.length}
               next={loadMore}
               hasMore={pagination.page < pagination.totalPages}
-              loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
+              loader={<GigsShimmerCards />}
               scrollThreshold={0.9}
               className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
             >
-              {ownGigs.map((gig: any, index: any) => (
+              {ownGigs.map((gig, index) => (
                 <GigUserCard key={`${gig.id}-${index}`} role={user?.role} {...gig} openDeleteConfirmation={openDeleteConfirmation} />
               ))}
+              {loading && <GigsShimmerCards />}
             </InfiniteScroll>
           ) : (
             <InfiniteScroll
               dataLength={gigs.length}
               next={loadMore}
               hasMore={pagination.page < pagination.totalPages}
-              loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
+              loader={<GigsShimmerCards />}
               scrollThreshold={0.9}
               className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
             >
-              {gigs.map((gig: any, index: any) => (
+              {gigs.map((gig, index) => (
                 <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />
               ))}
+              {loading && <GigsShimmerCards />}
             </InfiniteScroll>
           )}
 
