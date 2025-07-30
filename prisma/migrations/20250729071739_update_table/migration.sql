@@ -1,12 +1,14 @@
-/*
-  Warnings:
+CREATE TYPE "PROFILE_VIEW" AS ENUM ('USER', 'PROVIDER');
 
-  - A unique constraint covering the columns `[slug]` on the table `Gig` will be added. If there are existing duplicate values, this will fail.
-  - Added the required column `slug` to the `Gig` table without a default value. This is not possible if the table is not empty.
+CREATE TYPE "RatingStatus" AS ENUM ('pending', 'approved', 'rejected');
 
-*/
--- AlterTable
-ALTER TABLE "Gig" ADD COLUMN     "slug" TEXT NOT NULL;
+ALTER TABLE "Gig"
+ADD COLUMN "slug" TEXT NOT NULL;
 
--- CreateIndex
+ALTER TABLE "User"
+ADD COLUMN "profile_view" "PROFILE_VIEW" NOT NULL DEFAULT 'USER';
+
+ALTER TABLE "ReviewRating"
+ADD COLUMN "status" "RatingStatus" NOT NULL DEFAULT 'pending';
+
 CREATE UNIQUE INDEX "Gig_slug_key" ON "Gig"("slug");
