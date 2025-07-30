@@ -225,3 +225,7 @@ input:-webkit-autofill:active {
     -webkit-text-fill-color: transparent;
   }
 }
+
+.radix-calendar select {
+  @apply bg-popover rounded-md border border-gray-700 px-2 py-1 text-white;
+}
