@@ -7,12 +7,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useEffect, useState } from 'react';
 import CommonModal from '@/components/CommonModal';
-import {
-  UserProfileDetails,
-  UpdateEducationPayload,
-  UserProfile,
-  EducationEntry
-} from '@/types/shared/user';
+import { UserProfileDetails, UpdateEducationPayload, UserProfile, EducationEntry } from '@/types/shared/user';
 import { userService } from '@/services/user.services';
 import { toast } from '@/lib/toast';
 
@@ -31,10 +26,7 @@ const validationSchema = Yup.object().shape({
     .of(
       Yup.object().shape({
         title: Yup.string().required('Title is required'),
-        startYear: Yup.number()
-          .typeError('Start year must be a number')
-          .required('Start year is required')
-          .min(1900, 'Invalid start year'),
+        startYear: Yup.number().typeError('Start year must be a number').required('Start year is required').min(1900, 'Invalid start year'),
         endYear: Yup.number()
           .typeError('End year must be a number')
           .required('End year is required')
@@ -45,11 +37,7 @@ const validationSchema = Yup.object().shape({
     .required()
 });
 
-export default function EditEducationModal({
-  user,
-  isOwnProfile,
-  handleUpdateProfileAction
-}: EditEducationModalProps) {
+export default function EditEducationModal({ user, isOwnProfile, handleUpdateProfileAction }: EditEducationModalProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -102,10 +90,7 @@ export default function EditEducationModal({
   }, [open]);
 
   const handleAdd = () => {
-    formik.setFieldValue('educations', [
-      ...formik.values.educations,
-      { title: '', startYear: '', endYear: '' }
-    ]);
+    formik.setFieldValue('educations', [...formik.values.educations, { title: '', startYear: '', endYear: '' }]);
   };
 
   const handleRemove = (index: number) => {
@@ -116,12 +101,7 @@ export default function EditEducationModal({
 
   return (
     <div>
-      {isOwnProfile && (
-        <PencilIcon
-          onClick={() => setOpen(true)}
-          className="h-4 w-4 cursor-pointer text-white hover:text-gray-300"
-        />
-      )}
+      {isOwnProfile && <PencilIcon onClick={() => setOpen(true)} className="h-4 w-4 cursor-pointer text-white hover:text-gray-300" />}
 
       <CommonModal
         open={open}
@@ -143,10 +123,7 @@ export default function EditEducationModal({
                     className="flex-1 border border-[#333] bg-[#1a1a1a] text-white"
                   />
                   {formik.values.educations.length > 1 && (
-                    <Trash2Icon
-                      className="h-4 w-4 cursor-pointer text-red-400 hover:text-red-500"
-                      onClick={() => handleRemove(idx)}
-                    />
+                    <Trash2Icon className="h-4 w-4 cursor-pointer text-red-400 hover:text-red-500" onClick={() => handleRemove(idx)} />
                   )}
                 </div>
                 <div className="flex gap-2">
@@ -167,46 +144,29 @@ export default function EditEducationModal({
                     className="w-full [appearance:textfield] border border-[#333] bg-[#1a1a1a] text-white [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
                 </div>
-                {formik.errors.educations?.[idx] &&
-                  typeof formik.errors.educations[idx] === 'object' && (
-                    <p className="mt-1 text-sm text-red-400">
-                      {(formik.errors.educations[idx] as any).title ||
-                        (formik.errors.educations[idx] as any).startYear ||
-                        (formik.errors.educations[idx] as any).endYear}
-                    </p>
-                  )}
+                {formik.errors.educations?.[idx] && typeof formik.errors.educations[idx] === 'object' && (
+                  <p className="mt-1 text-sm text-red-400">
+                    {(formik.errors.educations[idx] as any).title ||
+                      (formik.errors.educations[idx] as any).startYear ||
+                      (formik.errors.educations[idx] as any).endYear}
+                  </p>
+                )}
               </div>
             ))}
           </div>
 
           <div className="mt-4 flex justify-start">
-            <Button
-              variant="ghost"
-              type="button"
-              onClick={handleAdd}
-              className="border border-[#333] text-white hover:bg-[#1b1b1b]"
-            >
+            <Button variant="ghost" type="button" onClick={handleAdd} className="border border-[#333] text-white hover:bg-[#1b1b1b]">
               <PlusIcon className="mr-2 h-4 w-4" />
               Add Education
             </Button>
           </div>
 
           <div className="mt-6 flex justify-end gap-2 border-t border-[#333] pt-4">
-            <Button
-              variant="ghost"
-              type="button"
-              disabled={isLoading}
-              onClick={() => setOpen(false)}
-              className="cursor-pointer text-white"
-            >
+            <Button variant="ghost" type="button" disabled={isLoading} onClick={() => setOpen(false)} className="cursor-pointer text-white">
               Cancel
             </Button>
-            <Button
-              type="submit"
-              isLoading={isLoading}
-              disabled={isLoading}
-              className="cursor-pointer bg-white text-black hover:bg-gray-200"
-            >
+            <Button type="submit" isLoading={isLoading} disabled={isLoading} className="cursor-pointer bg-white text-black hover:bg-gray-200">
               Save Changes
             </Button>
           </div>

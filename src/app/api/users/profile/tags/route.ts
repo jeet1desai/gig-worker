@@ -29,15 +29,9 @@ export async function PATCH(req: Request) {
     });
 
     const { skills, interests, extracurricular } = validated;
-    const cleanedSkills = skills?.filter(
-      (s): s is string => typeof s === 'string'
-    );
-    const cleanedInterests = interests?.filter(
-      (i): i is string => typeof i === 'string'
-    );
-    const cleanedExtracurricular = extracurricular?.filter(
-      (e): e is string => typeof e === 'string'
-    );
+    const cleanedSkills = skills?.filter((s): s is string => typeof s === 'string');
+    const cleanedInterests = interests?.filter((i): i is string => typeof i === 'string');
+    const cleanedExtracurricular = extracurricular?.filter((e): e is string => typeof e === 'string');
 
     const updatedProfile = await prisma.userProfile.upsert({
       where: { user_id: BigInt(userId) },

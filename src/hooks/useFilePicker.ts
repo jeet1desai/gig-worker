@@ -27,11 +27,7 @@ const FILE_CATEGORY_MIME_MAP: Record<FileCategory, string[]> = {
   all: ['*']
 };
 
-export function useFilePicker({
-  allowedCategories = ['image'],
-  maxSizes = { image: 5 },
-  multiple = false
-}: UseFileUploaderOptions) {
+export function useFilePicker({ allowedCategories = ['image'], maxSizes = { image: 5 }, multiple = false }: UseFileUploaderOptions) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
@@ -56,9 +52,7 @@ export function useFilePicker({
   }, [allowedCategories, multiple]);
 
   const getAcceptedMimeTypes = (categories: FileCategory[]) => {
-    const types = categories.flatMap(
-      (cat) => FILE_CATEGORY_MIME_MAP[cat] || []
-    );
+    const types = categories.flatMap((cat) => FILE_CATEGORY_MIME_MAP[cat] || []);
     return [...new Set(types)];
   };
 
@@ -79,18 +73,13 @@ export function useFilePicker({
       const category = getCategoryFromMimeType(file.type);
       const maxSizeMB = maxSizes[category] ?? Infinity;
 
-      if (
-        !allowedCategories.includes('all') &&
-        !allowedCategories.includes(category)
-      ) {
+      if (!allowedCategories.includes('all') && !allowedCategories.includes(category)) {
         setError(`File type "${file.type}" is not allowed.`);
         return;
       }
 
       if (file.size > maxSizeMB * 1024 * 1024) {
-        setError(
-          `${category.charAt(0).toUpperCase() + category.slice(1)} file must be less than ${maxSizeMB}MB`
-        );
+        setError(`${category.charAt(0).toUpperCase() + category.slice(1)} file must be less than ${maxSizeMB}MB`);
         return;
       }
 
@@ -108,9 +97,7 @@ export function useFilePicker({
   };
 
   const getCategoryFromMimeType = (type: string): FileCategory => {
-    for (const [category, mimeTypes] of Object.entries(
-      FILE_CATEGORY_MIME_MAP
-    )) {
+    for (const [category, mimeTypes] of Object.entries(FILE_CATEGORY_MIME_MAP)) {
       if (mimeTypes.includes(type)) return category as FileCategory;
     }
     return 'all';

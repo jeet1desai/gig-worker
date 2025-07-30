@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     const subscription = await prisma.subscription.findFirst({
       where: {
         user_id: numericUserId,
-        status: SUBSCRIPTION_STATUS.ACTIVE, 
+        status: SUBSCRIPTION_STATUS.ACTIVE,
         type: { in: ['basic', 'pro'] }
       }
     });
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
 
     await prisma.user.update({
       where: { id: numericUserId },
-      data: { 
+      data: {
         profile_view: profile_view.toUpperCase() as any
       }
     });

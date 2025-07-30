@@ -30,8 +30,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     const subscriptionType = session?.user.subscription;
     const dynamicMenu = [...DASHBOARD_NAVIGATION_MENU];
 
-    const hasValidSubscription =
-      subscriptionType === 'basic' || subscriptionType === 'pro';
+    const hasValidSubscription = subscriptionType === 'basic' || subscriptionType === 'pro';
 
     if (hasValidSubscription) {
       if (role === 'user') {
@@ -58,15 +57,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="bg-foreground flex min-h-screen w-full">
       {session ? (
         <>
-          <Sidebar
-            collapsed={sidebarCollapsed}
-            onToggle={(collapsed) => setSidebarCollapsed(collapsed)}
-            navigation_menu={navigationMenu}
-          />
+          <Sidebar collapsed={sidebarCollapsed} onToggle={(collapsed) => setSidebarCollapsed(collapsed)} navigation_menu={navigationMenu} />
 
-          <div
-            className={`w-full flex-1 overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'ml-18' : 'ml-64'}`}
-          >
+          <div className={`w-full flex-1 overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'ml-18' : 'ml-64'}`}>
             <Header
               collapsed={sidebarCollapsed}
               onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -79,9 +72,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </div>
         </>
       ) : (
-        <div
-          className={`w-full flex-1 overflow-hidden transition-all duration-300`}
-        >
+        <div className={`w-full flex-1 overflow-hidden transition-all duration-300`}>
           <LandingHeader />
 
           <div className="">{children}</div>

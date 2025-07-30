@@ -14,21 +14,15 @@ export const profileTagsSchema = yup.object({
 
 export const educationSchema = yup.object({
   title: yup.string().trim().required('Title is required'),
-  startYear: yup
-    .string()
-    .matches(/^\d{4}$/, 'Start year must be a 4-digit year'),
+  startYear: yup.string().matches(/^\d{4}$/, 'Start year must be a 4-digit year'),
   endYear: yup
     .string()
     .matches(/^\d{4}$/, 'End year must be a 4-digit year')
-    .test(
-      'is-after-start',
-      'End year must be greater than or equal to start year',
-      function (endYear) {
-        const { startYear } = this.parent;
-        if (!startYear || !endYear) return true;
-        return parseInt(endYear) >= parseInt(startYear);
-      }
-    )
+    .test('is-after-start', 'End year must be greater than or equal to start year', function (endYear) {
+      const { startYear } = this.parent;
+      if (!startYear || !endYear) return true;
+      return parseInt(endYear) >= parseInt(startYear);
+    })
 });
 
 export const educationListSchema = yup.object({

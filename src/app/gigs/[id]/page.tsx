@@ -33,7 +33,7 @@ import { Label } from '@/components/ui/label';
 import DashboardLayout from '@/components/layouts/layout';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-import { formatDate, formatOnlyDate, getDaysBetweenDates } from '@/lib/date-format';
+import { formatOnlyDate, getDaysBetweenDates } from '@/lib/date-format';
 
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
@@ -120,12 +120,15 @@ export default function GigDetailPage() {
 
   return (
     <DashboardLayout>
-     {(loading || !gig) && (
+      {(loading || !gig) && (
         <div>
           <Loader isLoading={true} />
         </div>
       )}
-      <main className="min-h-screen py-8" style={{ filter: loading || !gig ? 'blur(2px)' : 'none', pointerEvents: loading || !gig ? 'none' : 'auto' }}>
+      <main
+        className="min-h-screen py-8"
+        style={{ filter: loading || !gig ? 'blur(2px)' : 'none', pointerEvents: loading || !gig ? 'none' : 'auto' }}
+      >
         <div className="container mx-auto px-4">
           <div className="mb-6 flex items-center justify-between">
             <Button variant="ghost" size="sm" onClick={() => router.back()} className="text-gray-400 hover:bg-gray-800 hover:text-white">
@@ -169,7 +172,7 @@ export default function GigDetailPage() {
                       </Badge>
                     ))}
 
-                    <span className="ml-auto text-sm text-gray-400">Posted {formatDate(gig?.created_at)}</span>
+                    <span className="ml-auto text-sm text-gray-400">Posted {formatOnlyDate(gig?.created_at)}</span>
                   </div>
 
                   <h1 className="mb-4 text-2xl font-bold text-white">{gig?.title}</h1>
@@ -268,18 +271,18 @@ export default function GigDetailPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4 rounded-lg bg-muted/30 p-4">
-                    <div className="flex justify-between items-center">
+                  <div className="bg-muted/30 grid grid-cols-1 gap-4 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
                       <span className="text-muted-foreground font-medium">Member since:</span>
-                      <span className="font-semibold text-card-foreground">{formatDate(gig?.user?.created_at)}</span>
+                      <span className="text-card-foreground font-semibold">{formatOnlyDate(gig?.user?.created_at)}</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-muted-foreground font-medium">Total posted:</span>
-                      <span className="font-semibold text-card-foreground">{gig?.user?.total_posted} gigs</span>
+                      <span className="text-card-foreground font-semibold">{gig?.user?.total_posted} gigs</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-muted-foreground font-medium">Completion rate:</span>
-                      <span className="font-semibold text-success">{gig?.user?.completion_rate}%</span>
+                      <span className="text-success font-semibold">{gig?.user?.completion_rate}%</span>
                     </div>
                   </div>
                 </CardContent>

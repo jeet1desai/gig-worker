@@ -3,32 +3,17 @@ import { useCallback, useEffect, useState } from 'react';
 import { Filter, Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AdminGigCard } from './AdminGigCard';
 import apiService from '@/services/api';
-import {
-  AdminGigsList,
-  AdminGigsResponse,
-  AdminGigsSingleDataResponse
-} from '@/types/fe';
+import { AdminGigsList, AdminGigsResponse, AdminGigsSingleDataResponse } from '@/types/fe';
 import { PRIVATE_API_ROUTES } from '@/constants/app-routes';
 import { DEFAULT_PAGINATION, tierLabels } from '@/constants';
 import { toast } from '@/lib/toast';
 import { useDebouncedEffect } from '@/hooks/use-debounce';
 import Loader from '@/components/Loader';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
@@ -76,26 +61,11 @@ export default function GigManagement() {
     [pagination.page, searchTerm, activeFilters]
   );
 
-  const buildQueryParams = (
-    query: Record<
-      string,
-      | string
-      | number
-      | boolean
-      | null
-      | undefined
-      | (string | number | boolean)[]
-    >
-  ) => {
+  const buildQueryParams = (query: Record<string, string | number | boolean | null | undefined | (string | number | boolean)[]>) => {
     const params = new URLSearchParams();
 
     Object.entries(query).forEach(([key, value]) => {
-      if (
-        value !== undefined &&
-        value !== null &&
-        value !== '' &&
-        !(Array.isArray(value) && value.length === 0)
-      ) {
+      if (value !== undefined && value !== null && value !== '' && !(Array.isArray(value) && value.length === 0)) {
         if (Array.isArray(value)) {
           params.append(key, value.join(','));
         } else {
@@ -124,29 +94,18 @@ export default function GigManagement() {
         minPrice: activeFilters?.minPrice,
         maxPrice: activeFilters?.maxPrice,
         rating: activeFilters?.rating,
-        status:
-          activeFilters?.status !== 'all' ? activeFilters?.status : undefined,
+        status: activeFilters?.status !== 'all' ? activeFilters?.status : undefined,
         tiers: activeFilters?.tiers
       });
 
-      const response = await apiService.get<AdminGigsResponse>(
-        `${PRIVATE_API_ROUTES.ADMIN_GIGS_LIST_API}?${queryParams}`,
-        { withAuth: true }
-      );
+      const response = await apiService.get<AdminGigsResponse>(`${PRIVATE_API_ROUTES.ADMIN_GIGS_LIST_API}?${queryParams}`, { withAuth: true });
 
-      if (
-        response.data.success &&
-        response.data.data.gigs &&
-        response.data.data.pagination
-      ) {
+      if (response.data.success && response.data.data.gigs && response.data.data.pagination) {
         setAdminGigsList((prev) => [...prev, ...response.data.data.gigs]);
         setPagination(response.data.data.pagination);
       }
     } catch (error: any) {
-      const message =
-        error?.response?.data?.error?.message ||
-        error?.message ||
-        'Failed to fetch gigs';
+      const message = error?.response?.data?.error?.message || error?.message || 'Failed to fetch gigs';
       toast.error(message);
     } finally {
       setLoading(false);
@@ -156,30 +115,18 @@ export default function GigManagement() {
   const handleConfirmDeleteGig = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await apiService.delete<AdminGigsSingleDataResponse>(
-        `${PRIVATE_API_ROUTES.ADMIN_GIGS_LIST_API}/${selectedGigId}`,
-        {
-          withAuth: true
-        }
-      );
+      const response = await apiService.delete<AdminGigsSingleDataResponse>(`${PRIVATE_API_ROUTES.ADMIN_GIGS_LIST_API}/${selectedGigId}`, {
+        withAuth: true
+      });
 
-      if (
-        response.data.success &&
-        response.data.message &&
-        response.data.data
-      ) {
-        const filtered_gigs = adminGigsList.filter(
-          (gig) => gig.id !== response.data.data.id
-        );
+      if (response.data.success && response.data.message && response.data.data) {
+        const filtered_gigs = adminGigsList.filter((gig) => gig.id !== response.data.data.id);
         setAdminGigsList(filtered_gigs);
         setSelectedGigId('');
         toast.success(response.data.message);
       }
     } catch (error: any) {
-      const message =
-        error?.response?.data?.error?.message ||
-        error?.message ||
-        'Error deleting gig';
+      const message = error?.response?.data?.error?.message || error?.message || 'Error deleting gig';
       toast.error(message);
     } finally {
       setLoading(false);
@@ -197,11 +144,7 @@ export default function GigManagement() {
         }
       );
 
-      if (
-        response.data.success &&
-        response.data.message &&
-        response.data.data
-      ) {
+      if (response.data.success && response.data.message && response.data.data) {
         const updatedGig = response.data.data;
 
         const updatedGigsList = adminGigsList.map((gig) => {
@@ -212,10 +155,7 @@ export default function GigManagement() {
         toast.success(response.data.message);
       }
     } catch (error: any) {
-      const message =
-        error?.response?.data?.error?.message ||
-        error?.message ||
-        'Error updating gig';
+      const message = error?.response?.data?.error?.message || error?.message || 'Error updating gig';
       toast.error(message);
     } finally {
       setLoading(false);
@@ -227,9 +167,7 @@ export default function GigManagement() {
   };
 
   const toggleTier = (tier: string) => {
-    const newTiers = filters.tiers.includes(tier)
-      ? filters.tiers.filter((t) => t !== tier)
-      : [...filters.tiers, tier];
+    const newTiers = filters.tiers.includes(tier) ? filters.tiers.filter((t) => t !== tier) : [...filters.tiers, tier];
     setFilters((prev) => ({ ...prev, tiers: newTiers }));
   };
 
@@ -249,10 +187,7 @@ export default function GigManagement() {
     setFilters((prev) => ({ ...prev, status: value }));
   };
 
-  const removeFilter = (
-    key: string,
-    value: string | number | string[] | undefined
-  ) => {
+  const removeFilter = (key: string, value: string | number | string[] | undefined) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
 
     let filterParams = { ...activeFilters };
@@ -294,14 +229,10 @@ export default function GigManagement() {
   const handleApplyFilters = () => {
     const filterParams = {
       ...(filters.tiers?.length && { tiers: filters.tiers }),
-      ...(filters.minPrice !== undefined &&
-        filters.minPrice !== '' && { minPrice: filters.minPrice }),
-      ...(filters.maxPrice !== undefined &&
-        filters.maxPrice !== '' && { maxPrice: filters.maxPrice }),
-      ...(filters.rating !== undefined &&
-        filters.rating !== 0 && { rating: filters.rating }),
-      ...(filters.status !== undefined &&
-        filters.status !== 'all' && { status: filters.status })
+      ...(filters.minPrice !== undefined && filters.minPrice !== '' && { minPrice: filters.minPrice }),
+      ...(filters.maxPrice !== undefined && filters.maxPrice !== '' && { maxPrice: filters.maxPrice }),
+      ...(filters.rating !== undefined && filters.rating !== 0 && { rating: filters.rating }),
+      ...(filters.status !== undefined && filters.status !== 'all' && { status: filters.status })
     };
 
     setActiveFilters((prev) => ({ ...prev, ...filterParams }));
@@ -320,8 +251,7 @@ export default function GigManagement() {
     setActiveFilters({});
   };
 
-  const formatLabel = (status: string) =>
-    status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const formatLabel = (status: string) => status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
   const onAdminGigDelete = (id: string) => {
     setIsDeleteOpen(true);
@@ -332,12 +262,8 @@ export default function GigManagement() {
       <Loader isLoading={loading} />
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="mb-2 text-lg font-bold text-white sm:text-xl md:text-2xl lg:text-3xl">
-            Gigs Management
-          </h1>
-          <p className="text-xs text-slate-400 sm:text-sm md:text-base lg:text-lg">
-            Manage your gigs and track thier progress
-          </p>
+          <h1 className="mb-2 text-lg font-bold text-white sm:text-xl md:text-2xl lg:text-3xl">Gigs Management</h1>
+          <p className="text-xs text-slate-400 sm:text-sm md:text-base lg:text-lg">Manage your gigs and track thier progress</p>
         </div>
       </div>
 
@@ -384,61 +310,44 @@ export default function GigManagement() {
               <X
                 className="size-4 cursor-pointer"
                 onClick={() => {
-                  const newTiers =
-                    activeFilters.tiers?.filter((t: string) => t !== tier) ||
-                    [];
+                  const newTiers = activeFilters.tiers?.filter((t: string) => t !== tier) || [];
                   removeFilter('tiers', newTiers);
                 }}
               />
             </div>
           ))}
 
-          {activeFilters?.minPrice !== undefined &&
-            activeFilters?.minPrice !== '' && (
-              <div className="inline-flex">
-                <div className="flex items-center gap-1 rounded-md border border-green-500/30 bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-400 hover:bg-green-500/20">
-                  Min Price: ${activeFilters?.minPrice}
-                  <X
-                    className="size-3 cursor-pointer"
-                    onClick={() => removeFilter('minPrice', '')}
-                  />
-                </div>
+          {activeFilters?.minPrice !== undefined && activeFilters?.minPrice !== '' && (
+            <div className="inline-flex">
+              <div className="flex items-center gap-1 rounded-md border border-green-500/30 bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-400 hover:bg-green-500/20">
+                Min Price: ${activeFilters?.minPrice}
+                <X className="size-3 cursor-pointer" onClick={() => removeFilter('minPrice', '')} />
               </div>
-            )}
+            </div>
+          )}
 
-          {activeFilters?.maxPrice !== undefined &&
-            activeFilters?.maxPrice !== '' && (
-              <div className="inline-flex">
-                <div className="flex items-center gap-1 rounded-md border border-green-500/30 bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-400 hover:bg-green-500/20">
-                  Max Price: ${activeFilters?.maxPrice}
-                  <X
-                    className="size-3 cursor-pointer"
-                    onClick={() => removeFilter('maxPrice', '')}
-                  />
-                </div>
+          {activeFilters?.maxPrice !== undefined && activeFilters?.maxPrice !== '' && (
+            <div className="inline-flex">
+              <div className="flex items-center gap-1 rounded-md border border-green-500/30 bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-400 hover:bg-green-500/20">
+                Max Price: ${activeFilters?.maxPrice}
+                <X className="size-3 cursor-pointer" onClick={() => removeFilter('maxPrice', '')} />
               </div>
-            )}
+            </div>
+          )}
 
           {activeFilters?.rating !== undefined && activeFilters?.rating > 0 && (
             <div className="flex items-center gap-1 rounded-md border border-yellow-500/30 bg-yellow-500/10 px-2 py-0.5 text-xs font-medium text-yellow-400 hover:bg-yellow-500/20">
               {activeFilters.rating}+ Rating
-              <X
-                className="h-3 w-3 cursor-pointer"
-                onClick={() => removeFilter('rating', 0)}
-              />
+              <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('rating', 0)} />
             </div>
           )}
 
-          {activeFilters.status !== undefined &&
-            activeFilters.status !== '' && (
-              <div className="flex items-center gap-1 rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-400 hover:bg-purple-500/20">
-                {formatLabel(activeFilters.status)} status
-                <X
-                  className="h-3 w-3 cursor-pointer"
-                  onClick={() => removeFilter('status', '')}
-                />
-              </div>
-            )}
+          {activeFilters.status !== undefined && activeFilters.status !== '' && (
+            <div className="flex items-center gap-1 rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-400 hover:bg-purple-500/20">
+              {formatLabel(activeFilters.status)} status
+              <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('status', '')} />
+            </div>
+          )}
 
           <Button
             variant="ghost"
@@ -460,12 +369,7 @@ export default function GigManagement() {
         className="grid grid-cols-1 gap-6 lg:grid-cols-2"
       >
         {adminGigsList.map((gig) => (
-          <AdminGigCard
-            key={gig.id}
-            gig_details={gig}
-            onDelete={onAdminGigDelete}
-            onUpdate={handleUpdateGigStatus}
-          />
+          <AdminGigCard key={gig.id} gig_details={gig} onDelete={onAdminGigDelete} onUpdate={handleUpdateGigStatus} />
         ))}
       </InfiniteScroll>
 
@@ -474,21 +378,12 @@ export default function GigManagement() {
           <div className="mb-4 rounded-full bg-gray-800 p-4">
             <Search className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="mb-2 text-xl font-semibold text-white">
-            No gigs found
-          </h3>
-          <p className="max-w-md text-gray-400">
-            We couldn't find any gigs matching your search. Try adjusting your
-            filters or check back later.
-          </p>
+          <h3 className="mb-2 text-xl font-semibold text-white">No gigs found</h3>
+          <p className="max-w-md text-gray-400">We couldn't find any gigs matching your search. Try adjusting your filters or check back later.</p>
         </div>
       )}
 
-      <Dialog
-        open={isFilterDialogOpen}
-        onOpenChange={setIsFilterDialogOpen}
-        modal
-      >
+      <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen} modal>
         <DialogContent className="max-h-[90vh] overflow-auto border-[#374151] bg-[#1F2937] text-white sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle className="text-white">Filter Gigs</DialogTitle>
@@ -501,14 +396,10 @@ export default function GigManagement() {
                   {Object.values(tierLabels).map((tier) => (
                     <Badge
                       key={tier}
-                      variant={
-                        filters.tiers.includes(tier) ? 'default' : 'outline'
-                      }
+                      variant={filters.tiers.includes(tier) ? 'default' : 'outline'}
                       className={cn(
                         'w-24 cursor-pointer p-2 capitalize',
-                        filters.tiers.includes(tier)
-                          ? 'bg-blue-600 text-gray-300 hover:bg-blue-700'
-                          : 'text-gray-300'
+                        filters.tiers.includes(tier) ? 'bg-blue-600 text-gray-300 hover:bg-blue-700' : 'text-gray-300'
                       )}
                       onClick={() => toggleTier(tier)}
                     >
@@ -528,20 +419,8 @@ export default function GigManagement() {
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <Input
-                    type="number"
-                    value={filters.minPrice}
-                    onChange={handleMinPriceChange}
-                    name="minPrice"
-                    placeholder="Min"
-                  />
-                  <Input
-                    type="number"
-                    value={filters.maxPrice}
-                    onChange={handleMaxPriceChange}
-                    name="maxPrice"
-                    placeholder="Max"
-                  />
+                  <Input type="number" value={filters.minPrice} onChange={handleMinPriceChange} name="minPrice" placeholder="Min" />
+                  <Input type="number" value={filters.maxPrice} onChange={handleMaxPriceChange} name="maxPrice" placeholder="Max" />
                 </div>
               </div>
 
@@ -550,14 +429,7 @@ export default function GigManagement() {
                   <h3 className="text-sm font-medium">Minimum Rating</h3>
                   <div className="text-sm text-gray-400">{filters.rating}+</div>
                 </div>
-                <Slider
-                  value={[filters.rating]}
-                  onValueChange={handleRatingChange}
-                  min={0}
-                  max={5}
-                  step={0.5}
-                  className="mb-2"
-                />
+                <Slider value={[filters.rating]} onValueChange={handleRatingChange} min={0} max={5} step={0.5} className="mb-2" />
                 <div className="flex justify-between text-sm text-gray-400">
                   <span>0</span>
                   <span>1</span>
@@ -569,16 +441,10 @@ export default function GigManagement() {
               </div>
 
               <div>
-                <Label
-                  htmlFor="min-status"
-                  className="mb-2 block text-sm font-medium"
-                >
+                <Label htmlFor="min-status" className="mb-2 block text-sm font-medium">
                   Status
                 </Label>
-                <Select
-                  value={filters.status}
-                  onValueChange={handleStatusChange}
-                >
+                <Select value={filters.status} onValueChange={handleStatusChange}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Filter by status" />
                   </SelectTrigger>
@@ -594,10 +460,7 @@ export default function GigManagement() {
               </div>
 
               <div className="flex justify-between pt-4">
-                <Button
-                  className="border bg-inherit text-gray-400 hover:bg-transparent hover:text-gray-300"
-                  onClick={handleResetFilters}
-                >
+                <Button className="border bg-inherit text-gray-400 hover:bg-transparent hover:text-gray-300" onClick={handleResetFilters}>
                   Reset Filters
                 </Button>
                 <Button onClick={handleApplyFilters}>Apply Filters</Button>

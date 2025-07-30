@@ -5,13 +5,9 @@ interface StarRatingBadgeProps {
   max?: number;
 }
 
-export default function StarRatingBadge({
-  rating,
-  max = 5
-}: StarRatingBadgeProps) {
+export default function StarRatingBadge({ rating, max = 5 }: StarRatingBadgeProps) {
   const filledStars = Math.floor(rating);
-  const hasHalfStar =
-    rating - filledStars >= 0.25 && rating - filledStars < 0.75;
+  const hasHalfStar = rating - filledStars >= 0.25 && rating - filledStars < 0.75;
   const emptyStars = max - filledStars - (hasHalfStar ? 1 : 0);
 
   return (
@@ -24,19 +20,8 @@ export default function StarRatingBadge({
 
         {hasHalfStar && (
           <div className="relative h-[14px] w-[14px]">
-            <Star
-              size={14}
-              fill="white"
-              stroke="none"
-              className="absolute top-0 left-0"
-            />
-            <Star
-              size={14}
-              fill="#FFD700"
-              stroke="none"
-              className="absolute top-0 left-0"
-              style={{ clipPath: 'inset(0 50% 0 0)' }}
-            />
+            <Star size={14} fill="white" stroke="none" className="absolute top-0 left-0" />
+            <Star size={14} fill="#FFD700" stroke="none" className="absolute top-0 left-0" style={{ clipPath: 'inset(0 50% 0 0)' }} />
           </div>
         )}
 

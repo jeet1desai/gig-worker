@@ -8,16 +8,11 @@ export async function GET(req: Request) {
   try {
     const getAllPages = await cmsPagesServices.getAllPagesList(req);
 
-    return paginatedResponse(
-      getAllPages.pages,
-      getAllPages.page as number,
-      getAllPages.pageSize as number,
-      getAllPages.total,
-      { status: HttpStatusCode.OK }
-    );
+    return paginatedResponse(getAllPages.pages, getAllPages.page as number, getAllPages.pageSize as number, getAllPages.total, {
+      status: HttpStatusCode.OK
+    });
   } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : 'Failed to fetch pages';
+    const message = err instanceof Error ? err.message : 'Failed to fetch pages';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,
@@ -30,8 +25,7 @@ export async function POST(request: Request) {
   try {
     const body: CMSPage = await request.json();
 
-    const create_page: { success: boolean; message: string } =
-      await cmsPagesServices.createCMSPage(body);
+    const create_page: { success: boolean; message: string } = await cmsPagesServices.createCMSPage(body);
 
     if (create_page.success && create_page.message) {
       return successResponse({
@@ -40,8 +34,7 @@ export async function POST(request: Request) {
       });
     }
   } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : 'Failed to create page';
+    const message = err instanceof Error ? err.message : 'Failed to create page';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,
