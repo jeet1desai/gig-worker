@@ -18,7 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 
 import { cn } from '@/lib/utils';
-import { formatDateInternational, formatOnlyDate } from '@/lib/date-format';
+import { formatDate, formatDateInternational } from '@/lib/date-format';
 
 import { useDispatch } from '@/store/store';
 import { gigService } from '@/services/gig.services';
@@ -326,7 +326,7 @@ const NewGigPage = () => {
                                 errors.start_date && touched.start_date && 'border-red-500'
                               )}
                             >
-                              {values.start_date ? formatOnlyDate(values.start_date) : <span>Pick a date</span>}
+                              {values.start_date ? formatDate(values.start_date) : <span>Pick a date</span>}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </PopoverTrigger>
@@ -373,7 +373,7 @@ const NewGigPage = () => {
                                 errors.end_date && touched.end_date && 'border-red-500'
                               )}
                             >
-                              {values.end_date ? formatOnlyDate(values.end_date) : <span>Pick a date</span>}
+                              {values.end_date ? formatDate(values.end_date) : <span>Pick a date</span>}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </PopoverTrigger>
