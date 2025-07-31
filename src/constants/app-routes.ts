@@ -65,7 +65,7 @@ export enum PRIVATE_API_ROUTES {
   USER_BANNER_IMAGE_UPDATE_API = '/users/profile/banner-image',
   USER_ROLE_CHANGE_API = '/userRole',
   ADMIN_GIGS_LIST_API = '/admin/gigs',
-  DASHBOARD_GIGS_LIST_API = '/dashboard/gigs'
+  DASHBOARD_RECENT_GIGS_API = '/dashboard/gigs'
 }
 
 export const excludedPublicRoutes = [

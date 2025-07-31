@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 
     const gigs = await prisma.gig.findMany({
       where: { user_id: BigInt(session.user.id), is_removed: false },
-      take: 3,
+      take: 5,
       orderBy: { created_at: 'desc' },
       select: {
         id: true,

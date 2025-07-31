@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils';
 import React from 'react';
 import { Skeleton } from './ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { TableCell, TableRow } from './ui/table';
 
 export function GigsShimmerCards() {
   return (
@@ -192,4 +193,27 @@ export function ShimmerSkeletonGigDetail() {
       </div>
     </div>
   );
+}
+
+export function DashboardGigShimmerEffect() {
+  const SkeletonCell = ({ width = 'w-full' }) => <div className={`bg-shimmer animate-shimmer h-4 rounded-md bg-[length:400%_100%] ${width}`}></div>;
+
+  return [...Array(5)].map((_, index) => (
+    <TableRow key={index} className="border-b border-slate-700/50">
+      <TableCell className="space-y-2 py-3">
+        <SkeletonCell width="w-24" />
+        <SkeletonCell width="w-40" />
+        <SkeletonCell width="w-16" />
+      </TableCell>
+      <TableCell className="py-3">
+        <SkeletonCell width="w-10" />
+      </TableCell>
+      <TableCell className="py-3">
+        <SkeletonCell width="w-20" />
+      </TableCell>
+      <TableCell className="py-3">
+        <div className="bg-shimmer animate-shimmer inline-block h-5 w-20 rounded-full bg-[length:400%_100%]"></div>
+      </TableCell>
+    </TableRow>
+  ));
 }
