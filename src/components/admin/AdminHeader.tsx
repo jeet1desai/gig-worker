@@ -11,6 +11,7 @@ import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { clearStorage } from '@/lib/local-storage';
 import { useRouter } from 'next/navigation';
 import CommonDeleteDialog from '../CommonDeleteDialog';
+import Loader from '../Loader';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -44,6 +45,10 @@ export function AdminHeader({ collapsed, onToggle }: SidebarProps) {
   useEffect(() => {
     getAdminProfileDetails();
   }, []);
+
+  if (isLoading) {
+    return <Loader isLoading={true} />;
+  }
 
   return (
     <header className="border-b border-slate-700/50 p-4 pl-6 shadow-sm">

@@ -20,6 +20,7 @@ interface DashboardLayoutProps {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { data: session, status } = useSession();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const dispatch = useDispatch();
   const { role } = useSelector((state: RootState) => state.user);
 
@@ -54,7 +55,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     return dynamicMenu;
   }, [session?.user.subscriptionType, role]);
 
-  if (status === 'loading') {
+  if (status === 'loading' || isLoggingOut) {
     return <Loader isLoading={true} />;
   }
 
@@ -62,7 +63,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="bg-foreground flex min-h-screen w-full">
       {session ? (
         <>
-          <Sidebar collapsed={sidebarCollapsed} onToggle={(collapsed) => setSidebarCollapsed(collapsed)} navigation_menu={navigationMenu} />
+          <Sidebar
+            collapsed={sidebarCollapsed}
+            onToggle={(collapsed) => setSidebarCollapsed(collapsed)}
+            navigation_menu={navigationMenu}
+            onStartLogout={() => setIsLoggingOut(true)}
+          />
 
           <div
             className={`flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden transition-all duration-300 ${sidebarCollapsed ? 'ml-18' : 'ml-64'}`}
@@ -73,6 +79,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               role={role}
               onRoleChange={handleRoleChange}
               subscriptionType={session?.user.subscriptionType}
+              onStartLogout={() => setIsLoggingOut(true)}
             />
 
             <div className="mt-18 flex-1">{children}</div>
