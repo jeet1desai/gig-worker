@@ -335,6 +335,7 @@ const NewGigPage = () => {
                               mode="single"
                               captionLayout="dropdown"
                               className='radix-calendar'
+                              hidden={{ before: new Date() }}
                               selected={values.start_date ? new Date(values.start_date) : undefined}
                               onSelect={(date: Date | undefined) => {
                                 if (date) {

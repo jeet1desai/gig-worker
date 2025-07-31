@@ -25,9 +25,10 @@ interface SidebarProps {
   role: 'user' | 'provider' | 'admin';
   subscriptionType: 'free' | 'basic' | 'pro';
   onRoleChange: (role: 'user' | 'provider') => void;
+  onStartLogout: () => void;
 }
 
-export function Header({ collapsed, onToggle, role, onRoleChange, subscriptionType }: SidebarProps) {
+export function Header({ collapsed, onToggle, role, onRoleChange, onStartLogout }: SidebarProps) {
   const isMobile = useIsMobile();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -36,6 +37,7 @@ export function Header({ collapsed, onToggle, role, onRoleChange, subscriptionTy
   const { data: session } = useSession();
 
   const handleLogout = useCallback(async () => {
+    onStartLogout();
     setIsLoading(true);
     await signOut({ redirect: false });
     setIsLoggingOut(false);
