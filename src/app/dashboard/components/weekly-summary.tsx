@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
 import Loader from '@/components/Loader';
 import { cn } from '@/lib/utils';
+import SortIndicator from '@/components/ui/SortIndicator';
 
 export function WeeklySummary() {
   const dispatch = useDispatch();
@@ -85,33 +86,25 @@ export function WeeklySummary() {
               <TableRow className="border-b !border-slate-700/50">
                 <TableHead onClick={() => handleSort('title')} className="text-md cursor-pointer font-semibold text-white">
                   Gig Details
-                  <div className="ml-1">
-                    {sortKey === 'title' && (sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />)}
-                  </div>
+                  <SortIndicator currentKey="title" sortKey={sortKey} sortOrder={sortOrder} className="ml-1" />
                 </TableHead>
                 <TableHead onClick={() => handleSort('duration_in_days')} className="text-md cursor-pointer font-semibold text-white">
                   Days
-                  <div className="ml-1">
-                    {sortKey === 'duration_in_days' && (sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />)}
-                  </div>
+                  <SortIndicator currentKey="duration_in_days" sortKey={sortKey} sortOrder={sortOrder} className="ml-1" />
                 </TableHead>
                 <TableHead onClick={() => handleSort('total_earnings')} className="text-md cursor-pointer font-semibold text-white">
                   Earnings
-                  <div className="ml-1">
-                    {sortKey === 'total_earnings' && (sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />)}
-                  </div>
+                  <SortIndicator currentKey="total_earnings" sortKey={sortKey} sortOrder={sortOrder} className="ml-1" />
                 </TableHead>
                 <TableHead onClick={() => handleSort('status')} className="text-md cursor-pointer font-semibold text-white">
                   Status
-                  <div className="ml-1">
-                    {sortKey === 'status' && (sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />)}
-                  </div>
+                  <SortIndicator currentKey="status" sortKey={sortKey} sortOrder={sortOrder} className="ml-1" />
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedData.map((item, index) => (
-                <TableRow key={index} className="border-b border-slate-700/50 hover:bg-slate-700/10">
+              {sortedData.map((item) => (
+                <TableRow key={item.id} className="border-b border-slate-700/50 hover:bg-slate-700/10">
                   <TableCell className="py-3">
                     <div className="mb-1 text-sm text-slate-400">{moment(item.start_date).format('ddd, MMM DD YYYY')}</div>
                     <div className="cursor-pointer text-sm font-medium text-white" onClick={() => router.push(`${PRIVATE_ROUTE.GIGS}/${item.id}`)}>
