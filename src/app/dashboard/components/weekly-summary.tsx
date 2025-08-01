@@ -20,10 +20,10 @@ export function WeeklySummary() {
     dispatch(dashboardService.getRecentGigs() as any);
   }, [dispatch]);
 
-  const [sortKey, setSortKey] = useState<'title' | 'days' | 'total_earnings' | 'status' | null>(null);
+  const [sortKey, setSortKey] = useState<'title' | 'duration_in_days' | 'total_earnings' | 'status' | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  const handleSort = (key: 'title' | 'days' | 'total_earnings' | 'status') => {
+  const handleSort = (key: 'title' | 'duration_in_days' | 'total_earnings' | 'status') => {
     if (key === sortKey) {
       setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
     } else {
@@ -38,8 +38,8 @@ export function WeeklySummary() {
     let valB: string | number = '';
 
     if (sortKey === 'status') {
-      valA = a.pipeline.status;
-      valB = b.pipeline.status;
+      valA = a.pipeline_status;
+      valB = b.pipeline_status;
     } else {
       valA = a[sortKey];
       valB = b[sortKey];
@@ -89,10 +89,10 @@ export function WeeklySummary() {
                     {sortKey === 'title' && (sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />)}
                   </div>
                 </TableHead>
-                <TableHead onClick={() => handleSort('days')} className="text-md cursor-pointer font-semibold text-white">
+                <TableHead onClick={() => handleSort('duration_in_days')} className="text-md cursor-pointer font-semibold text-white">
                   Days
                   <div className="ml-1">
-                    {sortKey === 'days' && (sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />)}
+                    {sortKey === 'duration_in_days' && (sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />)}
                   </div>
                 </TableHead>
                 <TableHead onClick={() => handleSort('total_earnings')} className="text-md cursor-pointer font-semibold text-white">
@@ -119,11 +119,11 @@ export function WeeklySummary() {
                     </div>
                     <div className={cn('text-xs text-blue-400 capitalize', tierColors[item.tier])}>{item.tier} Tier</div>
                   </TableCell>
-                  <TableCell className="py-3 text-sm text-slate-400">{item.days}</TableCell>
+                  <TableCell className="py-3 text-sm text-slate-400">{item.duration_in_days}</TableCell>
                   <TableCell className="py-3 text-sm font-semibold text-white">{item.total_earnings}</TableCell>
                   <TableCell className="py-3">
-                    <span className={cn('inline-block rounded-full px-2 py-1 text-xs font-medium capitalize', statusColors[item.pipeline.status])}>
-                      {item.pipeline.status.replace('_', ' ')}
+                    <span className={cn('inline-block rounded-full px-2 py-1 text-xs font-medium capitalize', statusColors[item.pipeline_status])}>
+                      {item.pipeline_status.replace('_', ' ')}
                     </span>
                   </TableCell>
                 </TableRow>
