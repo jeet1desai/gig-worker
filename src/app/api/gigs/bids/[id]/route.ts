@@ -3,11 +3,12 @@ import { z } from 'zod';
 
 import prisma from '@/lib/prisma';
 import { authOptions } from '../../../auth/[...nextauth]/route';
-import { ROLE, BID_STATUS, NOTIFICATION_TYPE, GIG_STATUS } from '@prisma/client';
+import { ROLE, BID_STATUS, GIG_STATUS, SUBSCRIPTION_STATUS } from '@prisma/client';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { errorResponse } from '@/lib/api-response';
 import { safeJsonResponse } from '@/utils/apiResponse';
 import { getSocketServer } from '@/app/api/socket/route';
+import { endOfMonth } from 'date-fns';
 
 const io = getSocketServer();
 
@@ -189,6 +190,42 @@ export async function POST(request: Request, { params }: { params: { id: string 
     }
     if (user.is_banned) {
       return errorResponse({ code: 'ACCOUNT_BANNED', message: 'Your account is banned from placing bids', statusCode: HttpStatusCode.FORBIDDEN });
+    }
+
+    const activeSubscription = await prisma.subscription.findFirst({
+      where: {
+        user_id: user.id,
+        status: SUBSCRIPTION_STATUS.active,
+        subscription_expires_at: { gt: new Date() }
+      },
+      orderBy: { created_at: 'desc' },
+      include: { plan: true }
+    });
+
+    if (!activeSubscription) {
+      return errorResponse({ code: 'NO_SUBSCRIPTION', message: 'Active subscription not found', statusCode: HttpStatusCode.FORBIDDEN });
+    }
+
+    const { created_at: startDate, plan } = activeSubscription;
+    const cycleStart = new Date(startDate);
+    const cycleEnd = endOfMonth(cycleStart);
+
+    const bidsThisCycle = await prisma.bid.count({
+      where: {
+        provider_id: user.id,
+        created_at: {
+          gte: cycleStart,
+          lte: cycleEnd
+        }
+      }
+    });
+
+    if (plan.maxBids !== -1 && bidsThisCycle >= plan.maxBids) {
+      return errorResponse({
+        code: 'BID_LIMIT_REACHED',
+        message: `You have reached your bid limit (${plan.maxBids}) for this month.`,
+        statusCode: HttpStatusCode.FORBIDDEN
+      });
     }
 
     const body = await request.json();

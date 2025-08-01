@@ -38,7 +38,7 @@ import { NOTIFICATION_TYPE } from '@prisma/client';
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
-import { ShimmerSkeletonGigDetail } from '@/components/ShimmerEffects';
+import GigDetailsShimmer from '@/components/shimmer/GigDetailsShimmer';
 
 export default function GigDetailPage() {
   const router = useRouter();
@@ -136,7 +136,7 @@ export default function GigDetailPage() {
   if (loading || !gig) {
     return (
       <DashboardLayout>
-        <ShimmerSkeletonGigDetail />
+        <GigDetailsShimmer />
       </DashboardLayout>
     );
   }

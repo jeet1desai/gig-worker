@@ -1,12 +1,4 @@
-import {
-  setGigs,
-  setLoading,
-  clearGigs,
-  setOwnGigs,
-  removeGig,
-  setBids,
-  updateBid
-} from '@/store/slices/gigs';
+import { setGigs, setLoading, clearGigs, setOwnGigs, removeGig, setBids, updateBid } from '@/store/slices/gigs';
 import { AppDispatch } from '@/store/store';
 
 import apiService from './api';
@@ -67,24 +59,16 @@ export const gigService = {
 
         if (search) params.append('search', search);
         if (limit) params.append('limit', limit.toString());
-        if (minPrice !== undefined && minPrice !== '')
-          params.append('minPrice', minPrice.toString());
-        if (maxPrice !== undefined && maxPrice !== '')
-          params.append('maxPrice', maxPrice.toString());
-        if (deliveryTime !== undefined)
-          params.append('deliveryTime', deliveryTime.toString());
+        if (minPrice !== undefined && minPrice !== '') params.append('minPrice', minPrice.toString());
+        if (maxPrice !== undefined && maxPrice !== '') params.append('maxPrice', maxPrice.toString());
+        if (deliveryTime !== undefined) params.append('deliveryTime', deliveryTime.toString());
         if (tiers?.length) params.append('tiers', tiers.join(','));
-        if (rating !== undefined && rating !== 0)
-          params.append('rating', rating.toString());
-        if (reviews !== undefined && reviews !== '')
-          params.append('reviews', reviews.toString());
+        if (rating !== undefined && rating !== 0) params.append('rating', rating.toString());
+        if (reviews !== undefined && reviews !== '') params.append('reviews', reviews.toString());
 
-        const response: any = await apiService.get(
-          `/gigs?${params.toString()}`,
-          {
-            withAuth: true
-          }
-        );
+        const response: any = await apiService.get(`/gigs?${params.toString()}`, {
+          withAuth: true
+        });
         if (response.status === 200 && response.data) {
           dispatch(
             setGigs({
@@ -119,9 +103,7 @@ export const gigService = {
           return response.data;
         }
       } catch (error: any) {
-        toast.error(
-          error.response?.data?.error?.message || 'Failed to fetch gig details'
-        );
+        toast.error(error.response?.data?.error?.message || 'Failed to fetch gig details');
         throw error;
       } finally {
         dispatch(setLoading({ loading: false }));
@@ -140,9 +122,7 @@ export const gigService = {
           return response.data;
         }
       } catch (error: any) {
-        toast.error(
-          error.response?.data?.error?.message || 'Failed to fetch gig details'
-        );
+        toast.error(error.response?.data?.error?.message || 'Failed to fetch gig details');
         throw error;
       } finally {
         dispatch(setLoading({ loading: false }));
@@ -179,24 +159,16 @@ export const gigService = {
 
         if (search) params.append('search', search);
         if (limit) params.append('limit', limit.toString());
-        if (minPrice !== undefined && minPrice !== '')
-          params.append('minPrice', minPrice.toString());
-        if (maxPrice !== undefined && maxPrice !== '')
-          params.append('maxPrice', maxPrice.toString());
+        if (minPrice !== undefined && minPrice !== '') params.append('minPrice', minPrice.toString());
+        if (maxPrice !== undefined && maxPrice !== '') params.append('maxPrice', maxPrice.toString());
         if (tiers?.length) params.append('tiers', tiers.join(','));
-        if (rating !== undefined && rating !== 0)
-          params.append('rating', rating.toString());
-        if (startDate !== undefined && startDate !== '')
-          params.append('startDate', startDate.toString());
-        if (endDate !== undefined && endDate !== '')
-          params.append('endDate', endDate.toString());
+        if (rating !== undefined && rating !== 0) params.append('rating', rating.toString());
+        if (startDate !== undefined && startDate !== '') params.append('startDate', startDate.toString());
+        if (endDate !== undefined && endDate !== '') params.append('endDate', endDate.toString());
 
-        const response: any = await apiService.get(
-          `/gigs/me?${params.toString()}`,
-          {
-            withAuth: true
-          }
-        );
+        const response: any = await apiService.get(`/gigs/me?${params.toString()}`, {
+          withAuth: true
+        });
         if (response.status === 200 && response.data) {
           dispatch(
             setOwnGigs({
@@ -227,9 +199,7 @@ export const gigService = {
           return response.data;
         }
       } catch (error: any) {
-        toast.error(
-          error.response?.data?.error?.message || 'Failed to delete gig'
-        );
+        toast.error(error.response?.data?.error?.message || 'Failed to delete gig');
         throw error;
       } finally {
         dispatch(setLoading({ loading: false }));
@@ -249,9 +219,7 @@ export const gigService = {
           return response.data;
         }
       } catch (error: any) {
-        toast.error(
-          error.response?.data?.error?.message || 'Failed to place bid'
-        );
+        toast.error(error.response?.data?.error?.message || 'Failed to place bid');
         throw error;
       } finally {
         dispatch(setLoading({ loading: false }));
@@ -272,9 +240,7 @@ export const gigService = {
           return response.data;
         }
       } catch (error: any) {
-        toast.error(
-          error.response?.data?.error?.message || 'Failed to update bid status'
-        );
+        toast.error(error.response?.data?.error?.message || 'Failed to update bid status');
         throw error;
       } finally {
         dispatch(setLoading({ loading: false }));
@@ -286,10 +252,7 @@ export const gigService = {
     return async (dispatch: AppDispatch) => {
       try {
         dispatch(setLoading({ loading: true }));
-        const response: any = await apiService.get(
-          `/gigs/bids/${gigId}?page=${page}&limit=${limit}`,
-          { withAuth: true }
-        );
+        const response: any = await apiService.get(`/gigs/bids/${gigId}?page=${page}&limit=${limit}`, { withAuth: true });
         if (response && response.status === 200) {
           dispatch(
             setBids({
@@ -300,9 +263,7 @@ export const gigService = {
           return response.data;
         }
       } catch (error: any) {
-        toast.error(
-          error.response?.data?.error?.message || 'Failed to fetch bids'
-        );
+        toast.error(error.response?.data?.error?.message || 'Failed to fetch bids');
         throw error;
       } finally {
         dispatch(setLoading({ loading: false }));
@@ -311,12 +272,9 @@ export const gigService = {
   },
 
   getUserGigsByiId: async (userId: string, page: number) => {
-    const response = await apiService.get<ApiResponse<any>>(
-      `${PUBLIC_API_ROUTES.GIGS_BY_USER_ID_API}/${userId}?page=${page}&limit=4`,
-      {
-        withAuth: false
-      }
-    );
+    const response = await apiService.get<ApiResponse<any>>(`${PUBLIC_API_ROUTES.GIGS_BY_USER_ID_API}/${userId}?page=${page}&limit=4`, {
+      withAuth: false
+    });
     return response.data;
   }
 };

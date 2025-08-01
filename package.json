@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "prisma generate && prisma migrate deploy && tsx watch src/server.ts",
+    "dev": "prisma generate && tsx watch src/server.ts",
     "build": "prisma generate && next build",
     "start": "prisma migrate deploy && NODE_ENV=production tsx src/server.ts",
     "type-check": "tsc",

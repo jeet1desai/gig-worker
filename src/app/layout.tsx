@@ -18,8 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Gig Worker',
-  description:
-    'A platform that connects gig workers with flexible, on-demand job opportunities.'
+  description: 'A platform that connects gig workers with flexible, on-demand job opportunities.'
 };
 
 export default function RootLayout({
@@ -34,9 +33,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="robots" content="noindex, nofollow" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
           {children}
           <ClientSocketWrapper />

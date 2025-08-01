@@ -78,26 +78,17 @@ const UserGigs = ({ userId }: UserGigsProps) => {
 
   return (
     <div className="rounded-x flex h-full flex-col space-y-4">
-      <h3 className="mb-5 px-2 text-2xl font-semibold text-gray-300">
-        Posted Gigs
-      </h3>
+      <h3 className="mb-5 px-2 text-2xl font-semibold text-gray-300">Posted Gigs</h3>
 
       {gigs.length === 0 && !loading ? (
         <div className="flex h-full items-center justify-center">
           <p className="text-md text-center text-gray-400">No gigs found</p>
         </div>
       ) : (
-        <div
-          ref={containerRef}
-          className="custom-scrollbar min-h-0 flex-1 space-y-4 overflow-y-auto px-2"
-        >
+        <div ref={containerRef} className="custom-scrollbar min-h-0 flex-1 space-y-4 overflow-y-auto px-2">
           {gigs.map((gig) => (
             <div key={gig.id}>
-              <GigCard
-                {...gig}
-                isActive={true}
-                activeStatus={gig.pipeline.status}
-              />
+              <GigCard {...gig} isActive={true} activeStatus={gig.pipeline.status} />
             </div>
           ))}
           {loading && (
