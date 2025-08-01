@@ -24,7 +24,7 @@ import { cn } from '@/lib/utils';
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
-import { GigsShimmerCards } from '@/components/ShimmerEffects';
+import GigsShimmerCards from '@/components/shimmer/GigsShimmerCards';
 
 const tierColors: Record<string, string> = {
   basic: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
@@ -697,7 +697,7 @@ const GigsPage = () => {
             </InfiniteScroll>
           )}
 
-          {gigs.length === 0 && ownGigs.length === 0 && (
+          {gigs.length === 0 && ownGigs.length === 0 && !loading && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="mb-4 rounded-full bg-gray-800 p-4">
                 <Search className="h-8 w-8 text-gray-400" />
