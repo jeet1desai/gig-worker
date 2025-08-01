@@ -13,3 +13,10 @@ export const formatCurrency = (amount: number | string, currency: string, locale
     maximumFractionDigits: 0
   }).format(Number(amount));
 };
+
+export function capitalizeWords(text: string): string {
+  return text
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}

@@ -2,11 +2,12 @@ import { getServerSession } from 'next-auth';
 
 import prisma from '@/lib/prisma';
 import { authOptions } from '../auth/[...nextauth]/route';
-import { ROLE, GIG_STATUS, TIER } from '@prisma/client';
+import { GIG_STATUS, SUBSCRIPTION_STATUS, TIER } from '@prisma/client';
 import { uploadFile } from '@/lib/utils/file-upload';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { errorResponse } from '@/lib/api-response';
 import { safeJsonResponse } from '@/utils/apiResponse';
+import { generateUniqueSlug } from '@/lib/utils/gig-slug-generator';
 
 // POST /api/gigs - Create a new gig
 export async function POST(request: Request) {
@@ -25,9 +26,41 @@ export async function POST(request: Request) {
       return errorResponse({ code: 'USER_NOT_FOUND', message: 'User not found', statusCode: HttpStatusCode.NOT_FOUND });
     }
 
-    if (user?.role !== ROLE.user) {
-      return errorResponse({ code: 'FORBIDDEN', message: 'Only users can create gigs', statusCode: HttpStatusCode.FORBIDDEN });
+    const activeSubscription = await prisma.subscription.findFirst({
+      where: {
+        user_id: session.user.id,
+        status: SUBSCRIPTION_STATUS.active,
+        subscription_expires_at: { gt: new Date() }
+      },
+      orderBy: { created_at: 'desc' },
+      include: { plan: true }
+    });
+
+    if (!activeSubscription) {
+      return errorResponse({
+        code: 'NO_SUBSCRIPTION',
+        message: 'Active subscription not found',
+        statusCode: HttpStatusCode.FORBIDDEN
+      });
     }
+
+    const { plan } = activeSubscription;
+
+    const totalGigs = await prisma.gig.count({
+      where: {
+        user_id: session.user.id,
+        is_removed: false
+      }
+    });
+
+    if (plan.maxGigs !== -1 && totalGigs >= plan.maxGigs) {
+      return errorResponse({
+        code: 'GIG_LIMIT_REACHED',
+        message: `You have reached your gig creation limit (${plan.maxGigs}) for this month.`,
+        statusCode: HttpStatusCode.FORBIDDEN
+      });
+    }
+
 
     const formData = await request.formData();
 
@@ -38,6 +71,7 @@ export async function POST(request: Request) {
     const price_min = formData.get('price_min')?.toString();
     const price_max = formData.get('price_max')?.toString();
     const location = formData.get('location')?.toString();
+    const slug = await generateUniqueSlug(title as string);
 
     const keywords = formData.get('keywords')
       ? formData
@@ -103,6 +137,7 @@ export async function POST(request: Request) {
     const gig = await prisma.gig.create({
       data: {
         title,
+        slug,
         description: description || null,
         price_range: {
           min: parseFloat(price_min),
@@ -156,6 +191,8 @@ export async function GET(request: Request) {
     const minPrice = searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice') as string) : undefined;
     const maxPrice = searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice') as string) : undefined;
     const deliveryTime = searchParams.get('deliveryTime') ? parseInt(searchParams.get('deliveryTime') as string) : undefined;
+    const tiersParam = searchParams.get('tiers');
+    const tiers = tiersParam ? tiersParam.split(',').map((t) => t.trim().toLowerCase()) : [];
 
     const baseWhere: any = {
       AND: []
@@ -227,6 +264,11 @@ export async function GET(request: Request) {
 
     const whereClause = {
       ...baseWhere,
+      ...(tiers.length > 0 && {
+        tier: {
+          in: tiers as TIER[]
+        }
+      }),
       pipeline: {
         is: {
           status: GIG_STATUS.open
@@ -247,25 +289,10 @@ export async function GET(request: Request) {
         where: whereClause,
         include: {
           user: {
-            select: {
-              id: true,
-              first_name: true,
-              last_name: true,
-              email: true,
-              profile_url: true,
-              created_at: true,
-              updated_at: true,
-              role: true
-            }
+            select: { id: true, first_name: true, last_name: true, email: true, profile_url: true, created_at: true, updated_at: true, role: true }
           },
-          pipeline: {
-            select: {
-              id: true,
-              status: true,
-              created_at: true,
-              updated_at: true
-            }
-          }
+          pipeline: { select: { id: true, status: true, created_at: true, updated_at: true } },
+          _count: { select: { bids: true } }
         },
         orderBy: {
           created_at: 'desc'
@@ -283,15 +310,7 @@ export async function GET(request: Request) {
     const responseData = {
       success: true,
       message: 'Gigs fetched successfully',
-      data: {
-        gigs,
-        pagination: {
-          total,
-          page: currentPage,
-          totalPages,
-          limit
-        }
-      }
+      data: { gigs, pagination: { total, page: currentPage, totalPages, limit } }
     };
 
     return safeJsonResponse(responseData, { status: HttpStatusCode.OK });

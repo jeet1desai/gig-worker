@@ -1,22 +1,41 @@
 import { errorResponse, successResponse } from '@/lib/api-response';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
-import { contentService } from '@/lib/server/contentService';
-import { ContentItem } from '@/types/fe';
+import { cmsPagesServices } from '@/lib/server/cmsPagesServices';
+import { CMSPage } from '@/types/fe';
+
+export async function GET(_req: Request, { params }: { params: { content_id: string } }) {
+  const { content_id } = await params;
+  try {
+    const getPageDetailById = await cmsPagesServices.getPageDetailById(content_id);
+
+    return successResponse({
+      data: getPageDetailById,
+      message: 'Page details fetched successfully'
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to fetch page';
+    return errorResponse({
+      code: 'INTERNAL_SERVER_ERROR',
+      message,
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
+    });
+  }
+}
 
 export async function DELETE(_request: Request, { params }: { params: { content_id: string } }) {
   const { content_id } = await params;
 
   try {
-    const delete_content = await contentService.deleteContent(content_id);
+    const delete_page = await cmsPagesServices.deleteCMSPage(content_id);
 
-    if (delete_content.success && delete_content.message) {
+    if (delete_page.success && delete_page.message) {
       return successResponse({
         data: [],
-        message: 'Content data deleted successfully'
+        message: delete_page.message
       });
     }
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Failed to delete content';
+    const message = err instanceof Error ? err.message : 'Failed to delete page';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,
@@ -27,19 +46,19 @@ export async function DELETE(_request: Request, { params }: { params: { content_
 
 export async function PATCH(request: Request, { params }: { params: { content_id: string } }) {
   const { content_id } = await params;
-  const body: Partial<ContentItem> = await request.json();
+  const body: Partial<CMSPage> = await request.json();
 
   try {
-    const update_content = await contentService.updateContent(content_id, body);
+    const update_page = await cmsPagesServices.updatePageDetails(content_id, body);
 
-    if (update_content.success && update_content.message) {
+    if (update_page.success && update_page.message) {
       return successResponse({
         data: [],
-        message: 'Content data updated successfully'
+        message: 'Page details updated successfully'
       });
     }
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Failed to update content';
+    const message = err instanceof Error ? err.message : 'Failed to update page';
     return errorResponse({
       code: 'INTERNAL_SERVER_ERROR',
       message,

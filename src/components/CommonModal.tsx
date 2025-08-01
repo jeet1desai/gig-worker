@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 
 type CommonModalProps = {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
   title?: string;
   subtitle?: string;
   children: React.ReactNode;
@@ -14,6 +13,8 @@ type CommonModalProps = {
   className?: string;
   classTitle?: string;
   classSubTitle?: string;
+  isCloseDisabled?: boolean;
+  onOpenChange: (open: boolean) => void;
 };
 
 const CommonModal: React.FC<CommonModalProps> = ({

@@ -1,27 +1,24 @@
 'use client';
+import FAQAccordion from '@/components/FAQAccordtion';
 import Loader from '@/components/Loader';
+import { static_faqs } from '@/constants';
 import { PUBLIC_API_ROUTES } from '@/constants/app-routes';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { toast } from '@/lib/toast';
 import apiService from '@/services/api';
-import { CMSModuleResponse, ContentItem } from '@/types/fe';
+import { FAQItem, FAQsHomeResponse } from '@/types/fe';
 import { useCallback, useEffect, useState } from 'react';
 
 function FAQs() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [faqsList, setFaqsList] = useState<ContentItem[]>([]);
+  const [faqsList, setFaqsList] = useState<FAQItem[]>(static_faqs as FAQItem[]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const toggle = (index: number) => {
-    setOpenIndex((prev) => (prev === index ? -1 : index));
-  };
 
   const getAllFAQsList = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await apiService.get<CMSModuleResponse>(PUBLIC_API_ROUTES.LANDING_PAGE_FAQS_LIST_API, { withAuth: false });
+      const response = await apiService.get<FAQsHomeResponse>(PUBLIC_API_ROUTES.LANDING_PAGE_FAQS_LIST_API, { withAuth: false });
 
-      if (response.data.data && response.status === HttpStatusCode.OK && response.data.message) {
+      if (response.data.data && response.data.data.length > 0 && response.status === HttpStatusCode.OK && response.data.message) {
         setFaqsList(response.data.data);
       }
     } catch (error: unknown) {
@@ -45,28 +42,7 @@ function FAQs() {
           Find answers to commonly asked questions about our Platform and Services
         </div>
         <div className="mx-auto max-w-full space-y-4 px-4 sm:max-w-[50%] sm:px-0 md:max-w-[50%] md:px-0">
-          {faqsList.map((faq, index) => (
-            <div key={faq.id}>
-              <button
-                onClick={() => toggle(index)}
-                className={`w-full text-left transition-colors duration-300 ${
-                  openIndex === index ? 'bg-clip-text text-transparent' : 'text-[#FFFFFF]'
-                }`}
-                style={{
-                  backgroundImage:
-                    openIndex === index
-                      ? 'linear-gradient(271.26deg, #A8E5EC -32.48%, #1CBAE0 -6.29%, #6C98EE 19.89%, #AB9EF5 55.1%, #CF8CCC 88.51%, #FFB9C7 111.09%, #FFC29F 140.88%)'
-                      : ''
-                }}
-              >
-                <div className="flex items-center justify-between border-b border-gray-700 py-4 text-lg font-semibold">
-                  {faq.title}
-                  <span>{openIndex === index ? '-' : '+'}</span>
-                </div>
-              </button>
-              {openIndex === index && <div className="mt-2 text-sm text-[#FFFFFF]">{faq.content}</div>}
-            </div>
-          ))}
+          <FAQAccordion data={faqsList} />
         </div>
 
         <div className="mt-10 text-center">

@@ -1,3 +1,5 @@
+import { GIG_STATUS, TIER } from '@prisma/client';
+
 export interface SubscriptionPlan {
   id: number | string;
   plan_id: string;
@@ -33,6 +35,9 @@ export interface SubscriptionPlanResponse {
 
 export interface ApiResponse {
   message?: string;
+  data?: {
+    [key: string]: any;
+  };
   error?: {
     message?: string;
     fieldErrors?: {
@@ -50,24 +55,116 @@ export interface SubscriptionPlanPayload {
   maxBids: number;
   subscriptionType: string;
 }
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+  isVisible: boolean;
+}
 
-export interface CMSModuleResponse {
+export interface StepItem {
+  id: string;
+  title: string;
+  description: string;
+  color: string;
+  order: number;
+}
+
+export interface HeroSectionData {
+  title: string;
+  description: string;
+}
+
+export interface CMSPage {
+  id: string;
+  title: string;
+  slug: string;
+  type: 'landing' | 'informative' | 'faqs' | '';
+  isPublished: boolean;
+  heroSection?: HeroSectionData;
+  faqs?: FAQItem[];
+  steps?: StepItem[];
+  richContent?: string;
+}
+
+export interface CMSPageResponse {
   success: boolean;
-  data: ContentItem[];
+  data: CMSPage[];
   message: string;
   [key: string]: any;
 }
 
-export interface ContentItem {
-  id: string;
-  type: 'faq' | 'step' | 'contact' | 'terms' | 'privacy';
-  title: string;
-  description?: string;
-  content: string;
-  order?: number;
-  isVisible: boolean;
-  color?: string;
+export interface FAQsHomeResponse {
+  success: boolean;
+  data: FAQItem[];
+  message: string;
   [key: string]: any;
 }
 
-export type WorkingStepDirectionType = 'up' | 'down';
+export interface StepsHomeResponse {
+  success: boolean;
+  data: StepItem[];
+  message: string;
+  [key: string]: any;
+}
+export interface AdminGigsResponse {
+  success: boolean;
+  data: {
+    gigs: AdminGigsList[];
+    pagination: {
+      page: number;
+      pageSize: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+  message: string;
+  [key: string]: any;
+}
+
+export interface AdminGigsSingleDataResponse {
+  success: boolean;
+  data: AdminGigsList;
+  message: string;
+  [key: string]: any;
+}
+
+export interface AdminGigsList {
+  attachments: string[];
+  completed_at: string | null;
+  created_at: string;
+  description: string;
+  slug: string;
+  end_date: string;
+  id: string;
+  is_removed: boolean;
+  keywords: string[];
+  location: string;
+  pipeline: {
+    id: string;
+    status: GIG_STATUS;
+    created_at: string;
+    [key: string]: any;
+  };
+  price_range: {
+    max: number;
+    min: number;
+    [key: string]: any;
+  };
+  start_date: string;
+  thumbnail: string;
+  tier: TIER;
+  title: string;
+  updated_at: string;
+  user: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    profile_url: string | null;
+    _count: { gigs: number };
+    [key: string]: any;
+  };
+  user_id: string;
+  [key: string]: any;
+}

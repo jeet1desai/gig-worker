@@ -1,4 +1,4 @@
-import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelRight } from 'lucide-react';
+import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelLeft, Globe, FileText, List } from 'lucide-react';
 import { PayPalButtonStyle } from '@paypal/paypal-js';
 import { PRIVATE_ROUTE } from './app-routes';
 import { publicEnv } from '@/lib/config/publicEnv';
@@ -55,9 +55,9 @@ export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
     href: PRIVATE_ROUTE.ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH
   },
   {
-    name: 'CMS Module',
-    icon: PanelRight,
-    href: PRIVATE_ROUTE.ADMIN_CMS_PATH
+    name: 'CMS Pages',
+    icon: PanelLeft,
+    href: PRIVATE_ROUTE.ADMIN_CMS_PAGES_PATH
   }
 ];
 
@@ -241,7 +241,9 @@ export const VERIFICATION_CODES = {
   SOMETHING_WENT_WRONG: 'SOMETHING_WENT_WRONG',
   INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
   USER_ALREADY_EXISTS: 'USER_ALREADY_EXISTS',
-  VALIDATION_ERROR: 'VALIDATION_ERROR'
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  GIG_NOT_FOUND: 'GIG_NOT_FOUND'
 };
 
 export const VERIFICATION_MESSAGES = {
@@ -255,7 +257,7 @@ export const VERIFICATION_MESSAGES = {
 
 export const COMMON_ERROR_MESSAGES = {
   INTERNAL_SERVER_ERROR_MESSAGE: 'Internal server error. Please try again later.',
-  USER_NOT_FOUND_MESSAGE: 'User not found. Please check the provided information.',
+  USER_NOT_FOUND_MESSAGE: 'User not found.',
   SOMETHING_WENT_WRONG_MESSAGE: 'Something went wrong. Please try again later.',
   INVALID_REQUEST: 'Invalid request. Please check your input and try again.',
   UNAUTHORIZED: 'Unauthorized access. Please log in and try again.',
@@ -264,21 +266,116 @@ export const COMMON_ERROR_MESSAGES = {
   VALIDATION_ERROR: 'Validation error occurred. Please check your input.'
 };
 
+export const USER_ROLE = {
+  success: 'User role updated successfully.',
+  failure: 'Failed to update user role.',
+  invalidRole: 'Invalid user role.',
+  subscriptionRequired: 'User must have a Basic or Pro subscription to change profile view.'
+};
+
+export const GIGS_RATING_MESSAGES = {
+  success: 'Rating submitted successfully.',
+  failure: 'Failed to submit rating. Please try again.',
+  GIG_NOT_FOUND: 'Gig not found. Please check the gig ID.',
+  INVALID_RATING: 'Invalid rating. Rating must be between 1 and 5.',
+  INVALID_COMMENT: 'Comment is too long. Maximum length is 500 characters.',
+  RATING_UPDATED: 'Rating updated successfully.',
+  RATING_CREATED: 'Rating created successfully.',
+  DELETE_RATING: 'Rating deleted successfully.',
+  RATING_FETCHED: 'Ratings fetched successfully.'
+};
+
 export const SUBSCRIPTION_PLAN_TYPES = ['free', 'basic', 'pro'];
 
 export const ADMIN_ROLE = 'admin';
 
-export const WORKING_STEPS_MOVE_DIRECTION = {
-  up: 'up',
-  down: 'down'
+export const pageTypes = {
+  landing: { label: 'Landing Page', icon: Globe, color: 'bg-blue-500' },
+  informative: {
+    label: 'Informative Page',
+    icon: FileText,
+    color: 'bg-green-500'
+  },
+  faqs: { label: 'FAQs', icon: List, color: 'bg-purple-500' }
 };
 
-export const contentTypes = {
-  faq: 'FAQ',
-  step: 'Steps',
-  contact: 'Contact Us',
-  terms: 'Terms & Conditions',
-  privacy: 'Privacy Policy'
+export const publish_type = [
+  { label: 'Published', value: true },
+  { label: 'Draft', value: false }
+];
+
+export const working_steps = [
+  {
+    title: 'Create a Gig',
+    description: "Payment is released to the freelancer once you're pleased and approve the work you get.",
+    color: '#7B41FF'
+  },
+  {
+    title: 'Deliver Great',
+    description: "Find any service within minutes and know exactly what you'll pay. No hourly rates, just a fixed price.",
+    color: '#0C9BFF'
+  },
+  {
+    title: "We're Here For You 24/7",
+    description: 'We here for you, anything from answering any questions to resolving any issues, at any time.',
+    color: '#DF3699'
+  },
+  {
+    title: 'Stay Updated',
+    description: 'We are consisting of both creative thinkers and tech geniuses. We have the curiosity to explore new ideas',
+    color: '#3CB66F'
+  }
+];
+
+export const static_faqs = [
+  {
+    id: 'faq-1',
+    question: 'How does it work?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-2',
+    question: 'How can designers effectively seek out new opportunities?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-3',
+    question: 'How do I Send Proposals?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-4',
+    question: 'How can Clients find Designers?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-5',
+    question: 'How Can I Join?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  },
+  {
+    id: 'faq-6',
+    question: 'What if I have more questions?',
+    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+  }
+];
+
+export const tierColors: Record<string, string> = {
+  basic: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  advanced: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  expert: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
 };
 
-export const singleEntryTypes = ['contact', 'terms', 'privacy'];
+export const tierLabels: Record<string, string> = {
+  basic: 'basic',
+  advanced: 'advanced',
+  expert: 'expert'
+};
+
+export const statusColors: Record<string, string> = {
+  open: 'bg-primary/10 text-primary border-primary/20',
+  requested: 'bg-amber-100 text-amber-600 border-amber-300',
+  in_progress: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+  completed: 'border-green-300 bg-green-100 text-green-600',
+  rejected: 'bg-destructive/10 text-destructive border-destructive/20'
+};

@@ -8,20 +8,21 @@ datasource db {
 }
 
 model User {
-  id               BigInt   @id @default(autoincrement())
+  id               BigInt       @id @default(autoincrement())
   first_name       String?
   last_name        String?
   profile_url      String?
-  email            String   @unique
+  email            String       @unique
   password         String
-  role             ROLE     @default(user)
-  is_verified      Boolean  @default(false)
-  is_banned        Boolean  @default(false)
-  is_deleted       Boolean  @default(false)
+  role             ROLE         @default(user)
+  is_verified      Boolean      @default(false)
+  is_banned        Boolean      @default(false)
+  is_deleted       Boolean      @default(false)
   sign_up_type     String?
-  reset_token_used Boolean  @default(false)
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
+  reset_token_used Boolean      @default(false)
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @updatedAt
+  profile_view     PROFILE_VIEW @default(USER)
 
   // Relations
   provider_bids           Bid[]             @relation("ProviderBid")
@@ -98,15 +99,17 @@ model Admin {
 }
 
 model CMS {
-  id         BigInt   @id @default(autoincrement())
-  type       String // e.g. 'faq' | 'step' | 'contact' | 'terms' | 'privacy'
-  title      String
-  content    String
-  order      Int
-  isVisible  Boolean  @default(true)
-  color      String? // Optional (e.g. hex color codes)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id          BigInt   @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  type        PageType
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  heroSection Json?
+  faqs        Json?
+  steps       Json?
+  richContent Json?
 }
 
 model Plan {
@@ -174,6 +177,7 @@ model Gig {
   id           BigInt    @id @default(autoincrement())
   user_id      BigInt
   title        String
+  slug         String    @unique
   description  String?
   start_date   DateTime?
   end_date     DateTime?
@@ -184,6 +188,7 @@ model Gig {
   thumbnail    String?
   attachments  Json?
   location     String?
+  is_removed   Boolean   @default(false)
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
 
@@ -206,7 +211,9 @@ model GigPipeline {
   status     GIG_STATUS @default(open)
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
-  gig        Gig        @relation(fields: [gig_id], references: [id])
+
+  // Relations
+  gig Gig @relation(fields: [gig_id], references: [id])
 }
 
 model Bid {
@@ -227,16 +234,17 @@ model Bid {
 }
 
 model ReviewRating {
-  id              BigInt   @id @default(autoincrement())
-  gig_id          BigInt   @unique
+  id              BigInt       @id @default(autoincrement())
+  gig_id          BigInt       @unique
   provider_id     BigInt
   user_id         BigInt
-  rating          Int      @default(0)
+  rating          Int          @default(0)
   rating_feedback String?
-  up_vote         Int      @default(0)
-  down_vote       Int      @default(0)
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  up_vote         Int          @default(0)
+  down_vote       Int          @default(0)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+  status          RatingStatus @default(pending)
 
   // Relations
   complaint Complaint?
@@ -358,9 +366,20 @@ enum TIER {
   expert
 }
 
+enum PROFILE_VIEW {
+  USER
+  PROVIDER
+}
+
 enum BID_STATUS {
   pending
   accepted
+  rejected
+}
+
+enum RatingStatus {
+  pending
+  approved
   rejected
 }
 
@@ -412,4 +431,10 @@ enum NOTIFICATION_TYPE {
   warning
   error
   info
+}
+
+enum PageType {
+  landing
+  informative
+  faqs
 }

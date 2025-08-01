@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, DollarSign, Filter, MapPin, Plus, Search, Star, Trash2, X } from 'lucide-react';
+import { CalendarIcon, Clock, DollarSign, Filter, Loader2, MapPin, Plus, Search, Star, Trash2, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Link from 'next/link';
@@ -15,23 +15,24 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
+import { formatOnlyDate, getDaysBetweenDates } from '@/lib/date-format';
 import { useDebouncedEffect } from '@/hooks/use-debounce';
-
 import { cn } from '@/lib/utils';
-import { formatDate } from '@/lib/date-format';
-
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
+import { PRIVATE_ROUTE } from '@/constants/app-routes';
+import GigsShimmerCards from '@/components/shimmer/GigsShimmerCards';
 
-const tierColors: any = {
+const tierColors: Record<string, string> = {
   basic: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
   advanced: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
   expert: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
 };
 
-const tierLabels: any = {
+const tierLabels: Record<string, string> = {
   basic: 'basic',
   advanced: 'advanced',
   expert: 'expert'
@@ -43,7 +44,7 @@ const tierOptions = [
   { value: 'expert', label: 'Expert' }
 ];
 
-export const GigCard = ({ id, title, description, tier, price_range, start_date, end_date, thumbnail, role, user }: any) => {
+export const GigCard = ({ id, slug, title, description, tier, price_range, start_date, end_date, thumbnail, _count, user }: any) => {
   const router = useRouter();
 
   return (
@@ -64,7 +65,7 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-3 flex items-start justify-between">
           <div className="flex-1">
-            <Link href={`/gigs/${id}`} className="group-hover:text-blue-400">
+            <Link href={`${PRIVATE_ROUTE.GIGS}/${slug}`} className="group-hover:text-blue-400">
               <h3 className="text-md mb-1 line-clamp-2 font-bold text-white capitalize transition-colors">{title}</h3>
             </Link>
             <p className="text-sm text-gray-400">
@@ -75,14 +76,14 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
 
         <p className="mb-4 line-clamp-3 text-sm text-gray-300">{description}</p>
 
-        <div className={cn('mt-auto grid gap-2 border-t border-gray-700/50 pt-4', role === 'user' ? 'grid-cols-2' : 'grid-cols-3')}>
+        <div className={cn('mt-auto grid gap-2 border-t border-gray-700/50 pt-4', 'grid-cols-3')}>
           <div className="flex items-center space-x-2">
             <div className="flex size-8 items-center justify-center rounded-full bg-blue-900/30">
               <Clock className="size-4 text-blue-400" />
             </div>
             <div>
               <p className="text-xs text-gray-400">Delivery</p>
-              <p className="text-xs text-white">{formatDate(end_date)}</p>
+              <p className="text-xs text-white">{formatOnlyDate(end_date)}</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -91,7 +92,16 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
             </div>
             <div>
               <p className="text-xs text-gray-400">Bids</p>
-              <p className="text-xs text-white">1</p>
+              <p className="text-xs text-white">{_count.bids}</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="flex size-8 items-center justify-center rounded-full bg-blue-900/30">
+              <CalendarIcon className="size-4 text-blue-400" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-400">Timeline</p>
+              <p className="text-xs text-white">{getDaysBetweenDates(start_date, end_date)} days</p>
             </div>
           </div>
         </div>
@@ -112,7 +122,7 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
             </div>
           </div>
           <Button
-            onClick={() => router.push(`/gigs/${id}`)}
+            onClick={() => router.push(`${PRIVATE_ROUTE.GIGS}/${slug}`)}
             className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500"
           >
             Place Bid
@@ -125,14 +135,14 @@ export const GigCard = ({ id, title, description, tier, price_range, start_date,
 
 export const GigUserCard = ({
   id,
+  slug,
   title,
   description,
   tier,
   price_range,
-  start_date,
   end_date,
   role,
-  user,
+  _count,
   isActive,
   activeStatus,
   openDeleteConfirmation
@@ -184,7 +194,7 @@ export const GigUserCard = ({
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-3 flex items-start justify-between">
           <div className="flex-1">
-            <Link href={`/gigs/${id}`} className="group-hover:text-blue-400">
+            <Link href={`${PRIVATE_ROUTE.GIGS}/${slug}`} className="group-hover:text-blue-400">
               <h3 className="text-md mb-1 line-clamp-2 font-bold text-white transition-colors">{title}</h3>
             </Link>
             <p className="text-sm text-gray-400">
@@ -209,7 +219,7 @@ export const GigUserCard = ({
             </div>
             <div>
               <p className="text-xs text-gray-400">Delivery</p>
-              <p className="text-xs text-white">{formatDate(end_date)}</p>
+              <p className="text-xs text-white">{formatOnlyDate(end_date)}</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -218,7 +228,7 @@ export const GigUserCard = ({
             </div>
             <div>
               <p className="text-xs text-gray-400">Bids</p>
-              <p className="text-xs text-white">0</p>
+              <p className="text-xs text-white">{_count.bids}</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -264,22 +274,37 @@ const GigsPage = () => {
   const [search, setSearch] = useState('');
 
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
-  const [filters, setFilters] = useState<{ tiers: string[]; minPrice: string; maxPrice: string; rating: number; reviews: string }>({
+  const [filters, setFilters] = useState<{
+    tiers: string[];
+    minPrice: string;
+    maxPrice: string;
+    rating: number;
+    startDate: string;
+    endDate: string;
+  }>({
     tiers: [],
     minPrice: '',
     maxPrice: '',
     rating: 0,
-    reviews: ''
+    startDate: '',
+    endDate: ''
   });
   const [activeFilters, setActiveFilters] = useState<
-    Partial<{ tiers: string[]; minPrice: string; maxPrice: string; rating: number; reviews: string }>
+    Partial<{
+      tiers: string[];
+      minPrice: string;
+      maxPrice: string;
+      rating: number;
+      startDate: string;
+      endDate: string;
+    }>
   >({});
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedGigId, setSelectedGigId] = useState('');
 
   const user = useSelector((state: RootState) => state.user);
-  const { gigs, pagination, ownGigs } = useSelector((state: RootState) => state.gigs);
+  const { loading, gigs, pagination, ownGigs } = useSelector((state: RootState) => state.gigs);
 
   useEffect(() => {
     dispatch(gigService.clearGigs() as any);
@@ -292,16 +317,38 @@ const GigsPage = () => {
     if (pagination.page < pagination.totalPages) {
       const filterParams = {
         ...(activeFilters.tiers?.length && { tiers: activeFilters.tiers }),
-        ...(activeFilters.minPrice !== undefined && activeFilters.minPrice !== '' && { minPrice: activeFilters.minPrice }),
-        ...(activeFilters.maxPrice !== undefined && activeFilters.maxPrice !== '' && { maxPrice: activeFilters.maxPrice }),
+        ...(activeFilters.minPrice !== undefined &&
+          activeFilters.minPrice !== '' && {
+            minPrice: activeFilters.minPrice
+          }),
+        ...(activeFilters.maxPrice !== undefined &&
+          activeFilters.maxPrice !== '' && {
+            maxPrice: activeFilters.maxPrice
+          }),
         ...(activeFilters.rating !== undefined && activeFilters.rating !== 0 && { rating: activeFilters.rating }),
-        ...(activeFilters.reviews !== undefined && activeFilters.reviews !== '' && { reviews: activeFilters.reviews })
+        ...(activeFilters.startDate !== undefined &&
+          activeFilters.startDate !== '' && {
+            startDate: activeFilters.startDate
+          }),
+        ...(activeFilters.endDate !== undefined && activeFilters.endDate !== '' && { endDate: activeFilters.endDate })
       };
 
       if (session?.user.role === 'user' || user?.role === 'user') {
-        dispatch(gigService.getOwnersGig({ page: pagination.page + 1, search, ...filterParams }) as any);
+        dispatch(
+          gigService.getOwnersGig({
+            page: pagination.page + 1,
+            search,
+            ...filterParams
+          }) as any
+        );
       } else {
-        dispatch(gigService.getGigs({ page: pagination.page + 1, search, ...filterParams }) as any);
+        dispatch(
+          gigService.getGigs({
+            page: pagination.page + 1,
+            search,
+            ...filterParams
+          }) as any
+        );
       }
     }
   }, [pagination.page, pagination.totalPages, search, activeFilters]);
@@ -311,7 +358,14 @@ const GigsPage = () => {
       dispatch(gigService.clearGigs() as any);
       setSearch('');
       setActiveFilters({});
-      setFilters({ tiers: [], minPrice: '', maxPrice: '', rating: 0, reviews: '' });
+      setFilters({
+        tiers: [],
+        minPrice: '',
+        maxPrice: '',
+        rating: 0,
+        startDate: '',
+        endDate: ''
+      });
 
       if (session?.user.role === 'user' || user?.role === 'user') {
         dispatch(gigService.getOwnersGig({ page: 1, search: '' }) as any);
@@ -329,7 +383,11 @@ const GigsPage = () => {
       ...(activeFilters.minPrice !== undefined && activeFilters.minPrice !== '' && { minPrice: activeFilters.minPrice }),
       ...(activeFilters.maxPrice !== undefined && activeFilters.maxPrice !== '' && { maxPrice: activeFilters.maxPrice }),
       ...(activeFilters.rating !== undefined && activeFilters.rating !== 0 && { rating: activeFilters.rating }),
-      ...(activeFilters.reviews !== undefined && activeFilters.reviews !== '' && { reviews: activeFilters.reviews })
+      ...(activeFilters.startDate !== undefined &&
+        activeFilters.startDate !== '' && {
+          startDate: activeFilters.startDate
+        }),
+      ...(activeFilters.endDate !== undefined && activeFilters.endDate !== '' && { endDate: activeFilters.endDate })
     };
 
     if (session?.user.role === 'user' || user?.role === 'user') {
@@ -345,7 +403,8 @@ const GigsPage = () => {
       ...(filters.minPrice !== undefined && filters.minPrice !== '' && { minPrice: filters.minPrice }),
       ...(filters.maxPrice !== undefined && filters.maxPrice !== '' && { maxPrice: filters.maxPrice }),
       ...(filters.rating !== undefined && filters.rating !== 0 && { rating: filters.rating }),
-      ...(filters.reviews !== undefined && filters.reviews !== '' && { reviews: filters.reviews })
+      ...(filters.startDate !== undefined && filters.startDate !== '' && { startDate: filters.startDate }),
+      ...(filters.endDate !== undefined && filters.endDate !== '' && { endDate: filters.endDate })
     };
 
     setActiveFilters((prev) => ({ ...prev, ...filterParams }));
@@ -364,7 +423,8 @@ const GigsPage = () => {
       minPrice: '',
       maxPrice: '',
       rating: 0,
-      reviews: ''
+      startDate: '',
+      endDate: ''
     };
     setFilters(() => defaultFilters);
     setActiveFilters({});
@@ -393,8 +453,12 @@ const GigsPage = () => {
     setFilters((prev) => ({ ...prev, rating: value[0] }));
   };
 
-  const handleReviewsChange = (value: string) => {
-    setFilters((prev) => ({ ...prev, reviews: value }));
+  const handleStartDateChange = (value: string) => {
+    setFilters((prev) => ({ ...prev, startDate: value }));
+  };
+
+  const handleEndDateChange = (value: string) => {
+    setFilters((prev) => ({ ...prev, endDate: value }));
   };
 
   const removeFilter = (key: string, value: any) => {
@@ -429,10 +493,16 @@ const GigsPage = () => {
       delete filterParams.rating;
     }
 
-    if (key === 'reviews') {
-      const { reviews, ...rest } = activeFilters;
+    if (key === 'startDate') {
+      const { startDate, ...rest } = activeFilters;
       setActiveFilters(rest);
-      delete filterParams.reviews;
+      delete filterParams.startDate;
+    }
+
+    if (key === 'endDate') {
+      const { endDate, ...rest } = activeFilters;
+      setActiveFilters(rest);
+      delete filterParams.endDate;
     }
 
     if (session?.user.role === 'user' || user?.role === 'user') {
@@ -448,7 +518,11 @@ const GigsPage = () => {
   };
 
   const handleDeleteConfirm = async () => {
-    setIsDeleteOpen(false);
+    const response = await dispatch(gigService.deleteGig(selectedGigId) as any);
+    if (response && response.data) {
+      setIsDeleteOpen(false);
+      setSelectedGigId('');
+    }
   };
 
   return (
@@ -472,9 +546,8 @@ const GigsPage = () => {
             </div>
           )}
 
-          {/* Search and Filter Bar */}
           <div className="mb-8 rounded-xl bg-gray-800/50 p-4 backdrop-blur-sm sm:p-6">
-            <div className="flex flex-col gap-4 md:flex-row">
+            <div className="flex flex-col gap-4 lg:flex-row">
               <div className="relative w-full">
                 <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400 sm:left-4 sm:h-5 sm:w-5" />
                 <Input
@@ -486,16 +559,16 @@ const GigsPage = () => {
                 />
               </div>
 
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4">
-                <Button
-                  size="lg"
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-4 text-sm font-medium text-white hover:from-blue-500 hover:to-purple-500 sm:w-auto sm:px-6 sm:py-6 sm:text-base"
-                  onClick={handleSearch}
-                >
-                  <Search className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  Search
-                </Button>
+              <Button
+                size="lg"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-4 text-sm font-medium text-white hover:from-blue-500 hover:to-purple-500 sm:w-auto sm:px-6 sm:py-6 sm:text-base"
+                onClick={handleSearch}
+              >
+                <Search className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                Search
+              </Button>
 
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-4">
                 <Button
                   size="lg"
                   variant={Object.keys(activeFilters).length > 0 ? 'default' : 'outline'}
@@ -569,10 +642,17 @@ const GigsPage = () => {
                 </div>
               )}
 
-              {activeFilters.reviews !== undefined && activeFilters.reviews !== '' && (
+              {activeFilters.startDate !== undefined && activeFilters.startDate !== '' && (
                 <div className="flex items-center gap-1 rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-400 hover:bg-purple-500/20">
-                  {activeFilters.reviews}+ Reviews
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('reviews', '')} />
+                  {activeFilters.startDate}+ Start Date
+                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('startDate', '')} />
+                </div>
+              )}
+
+              {activeFilters.endDate !== undefined && activeFilters.endDate !== '' && (
+                <div className="flex items-center gap-1 rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-400 hover:bg-purple-500/20">
+                  {activeFilters.endDate}+ End Date
+                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('endDate', '')} />
                 </div>
               )}
 
@@ -587,37 +667,37 @@ const GigsPage = () => {
             </div>
           )}
 
-          {/* Gig List */}
           {session?.user.role === 'user' || user?.role === 'user' ? (
             <InfiniteScroll
               dataLength={ownGigs.length}
               next={loadMore}
               hasMore={pagination.page < pagination.totalPages}
-              loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
+              loader={<GigsShimmerCards />}
               scrollThreshold={0.9}
-              className="grid grid-cols-1 gap-6 lg:grid-cols-2"
+              className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
             >
               {ownGigs.map((gig, index) => (
                 <GigUserCard key={`${gig.id}-${index}`} role={user?.role} {...gig} openDeleteConfirmation={openDeleteConfirmation} />
               ))}
+              {loading && <GigsShimmerCards />}
             </InfiniteScroll>
           ) : (
             <InfiniteScroll
               dataLength={gigs.length}
               next={loadMore}
               hasMore={pagination.page < pagination.totalPages}
-              loader={<div className="col-span-2 py-4 text-center text-sm text-gray-400">Loading more gigs...</div>}
+              loader={<GigsShimmerCards />}
               scrollThreshold={0.9}
-              className="grid grid-cols-1 gap-6 lg:grid-cols-2"
+              className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
             >
               {gigs.map((gig, index) => (
                 <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />
               ))}
+              {loading && <GigsShimmerCards />}
             </InfiniteScroll>
           )}
 
-          {/* Empty State */}
-          {gigs.length === 0 && ownGigs.length === 0 && (
+          {gigs.length === 0 && ownGigs.length === 0 && !loading && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="mb-4 rounded-full bg-gray-800 p-4">
                 <Search className="h-8 w-8 text-gray-400" />
@@ -695,21 +775,62 @@ const GigsPage = () => {
               </div>
 
               <div>
-                <Label htmlFor="min-reviews" className="mb-2 block text-sm font-medium">
-                  Minimum Reviews
-                </Label>
-                <Select value={filters.reviews} onValueChange={handleReviewsChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select minimum reviews" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">0 - 10</SelectItem>
-                    <SelectItem value="25">11 - 25</SelectItem>
-                    <SelectItem value="50">26 - 50</SelectItem>
-                    <SelectItem value="100">51 - 100</SelectItem>
-                    <SelectItem value="1000000">101+</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="start_date">Start Date </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-full rounded-lg border-gray-700/50 bg-inherit px-4 py-2 text-left font-normal text-white hover:bg-inherit hover:text-white',
+                            !filters.startDate && 'text-muted-foreground hover:text-muted-foreground'
+                          )}
+                        >
+                          {filters.startDate ? formatOnlyDate(filters.startDate) : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          captionLayout="dropdown"
+                          selected={filters.startDate ? new Date(filters.startDate) : undefined}
+                          onSelect={(date: Date | undefined) => {
+                            if (date) handleStartDateChange(date.toISOString());
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="end_date">End Date </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-full rounded-lg border-gray-700/50 bg-inherit px-4 py-2 text-left font-normal text-white hover:bg-inherit hover:text-white',
+                            !filters.endDate && 'text-muted-foreground hover:text-muted-foreground'
+                          )}
+                        >
+                          {filters.endDate ? formatOnlyDate(filters.endDate) : <span>Pick a date</span>}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          captionLayout="dropdown"
+                          selected={filters.endDate ? new Date(filters.endDate) : undefined}
+                          onSelect={(date: Date | undefined) => {
+                            if (date) handleEndDateChange(date.toISOString());
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
               </div>
 
               <div className="flex justify-between pt-4">
@@ -735,11 +856,9 @@ const GigsPage = () => {
                 Cancel
               </Button>
             </DialogClose>
-            <DialogClose asChild>
-              <Button type="button" variant="destructive" className="cursor-pointer bg-[#5750F1] text-white" onClick={handleDeleteConfirm}>
-                Delete
-              </Button>
-            </DialogClose>
+            <Button type="button" variant="destructive" className="cursor-pointer bg-[#5750F1] text-white" onClick={handleDeleteConfirm}>
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Delete'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -1,7 +1,6 @@
 import prisma from '@/lib/prisma';
 import { errorResponse, safeJsonResponse } from '@/utils/apiResponse';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
-import { TIER } from '@prisma/client';
 
 export async function GET(
   request: Request,

@@ -6,19 +6,8 @@ type IOServer = InstanceType<typeof Server>;
 type UserSockets = Map<string, Set<string>>;
 export const users: UserSockets = new Map();
 
-export function emitToUser(io: IOServer, userId: string, event: string, data: unknown) {
-  const userSockets = users.get(userId);
-  if (userSockets) {
-    userSockets.forEach((socketId) => {
-      io.to(socketId).emit(event, data);
-    });
-  }
-}
-
 export function initializeSocket(io: IOServer) {
   io.on('connection', (socket: Socket) => {
-    let userId: string | null = null;
-
     socket.on('register', async (userId: string) => {
       if (!users.has(userId)) {
         users.set(userId, new Set());
@@ -31,7 +20,6 @@ export function initializeSocket(io: IOServer) {
         socket.emit('notification:unread_count', { count: unreadCount });
         socket.emit('notification:list', recentNotifications);
       }
-      userId = userId;
     });
 
     socket.on('notification:get_unread_count', async (userId: string) => {
@@ -62,8 +50,13 @@ export function initializeSocket(io: IOServer) {
       socket.emit('notification:list', result);
     });
 
-    socket.on('disconnect', () => {
-      if (userId && users.has(userId)) {
+    socket.on('notification:send', async ({ userId, notificationData }: { userId: string; notificationData: any }) => {
+      sendNotification(io, userId, notificationData);
+    });
+
+    socket.on('disconnect', (userId: string) => {
+      console.log('User disconnected:', userId);
+      if (users.has(userId)) {
         const userSockets = users.get(userId);
         if (userSockets) {
           userSockets.delete(socket.id);
@@ -74,6 +67,15 @@ export function initializeSocket(io: IOServer) {
       }
     });
   });
+}
+
+export function emitToUser(io: IOServer, userId: string, event: string, data: unknown) {
+  const userSockets = users.get(userId);
+  if (userSockets) {
+    userSockets.forEach((socketId) => {
+      io.to(socketId).emit(event, data);
+    });
+  }
 }
 
 export async function sendNotification(io: IOServer, userId: string, notificationData: any) {

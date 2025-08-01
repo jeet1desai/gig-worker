@@ -18,6 +18,7 @@ import { Session } from 'next-auth';
 interface SidebarProps {
   collapsed: boolean;
   onToggle: (collapsed: boolean) => void;
+  onStartLogout: () => void;
   navigation_menu: Array<{
     name: string;
     icon: ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>;
@@ -25,7 +26,7 @@ interface SidebarProps {
   }>;
 }
 
-export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) {
+export function Sidebar({ collapsed, onToggle, navigation_menu, onStartLogout }: SidebarProps) {
   const isMobile = useIsMobile();
   const pathname = usePathname();
   const router = useRouter();
@@ -34,6 +35,7 @@ export function Sidebar({ collapsed, onToggle, navigation_menu }: SidebarProps) 
   const [userDetails, setUserDetails] = useState<Session | null>(null);
 
   const handleLogout = useCallback(async () => {
+    onStartLogout();
     setIsLoading(true);
     await signOut({ redirect: false });
     setIsLoggingOut(false);
