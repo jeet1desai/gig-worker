@@ -39,17 +39,7 @@ const tierLabels: Record<string, string> = {
   expert: 'expert'
 };
 
-const GigCard = ({
-  id,
-  title,
-  description,
-  tier,
-  price_range,
-  end_date,
-  bids,
-  isActive,
-  activeStatus
-}: GigCardProps) => {
+const GigCard = ({ id, title, description, tier, price_range, end_date, bids, isActive, activeStatus }: GigCardProps) => {
   const getAverageBidsPrice = () => {
     if (bids.length === 0) return 0;
     const total = bids.reduce((sum, bid) => sum + bid.bid_price, 0);
@@ -58,9 +48,7 @@ const GigCard = ({
 
   const formatDeliveryDate = (dateStr: string) => {
     const date = parseISO(dateStr);
-    const dateFormat = isThisYear(date)
-      ? 'MMM d · h:mm a'
-      : 'MMM d, yyyy · h:mm a';
+    const dateFormat = isThisYear(date) ? 'MMM d · h:mm a' : 'MMM d, yyyy · h:mm a';
     return format(date, dateFormat);
   };
 
@@ -73,13 +61,7 @@ const GigCard = ({
     >
       <div className="m-3 flex items-center justify-between gap-2 bg-gray-800/50 p-2 backdrop-blur-sm">
         <div>
-          <Badge
-            variant="outline"
-            className={cn(
-              'px-3 py-1 text-xs font-medium',
-              statusColors[activeStatus]
-            )}
-          >
+          <Badge variant="outline" className={cn('px-3 py-1 text-xs font-medium', statusColors[activeStatus])}>
             {capitalizeWords(activeStatus)}
           </Badge>
         </div>
@@ -94,13 +76,7 @@ const GigCard = ({
           </div>
         )}
         <div>
-          <Badge
-            variant="outline"
-            className={cn(
-              'border-2 font-medium capitalize backdrop-blur-sm',
-              tierColors[tier]
-            )}
-          >
+          <Badge variant="outline" className={cn('border-2 font-medium capitalize backdrop-blur-sm', tierColors[tier])}>
             {tierLabels[tier]} Tier
           </Badge>
         </div>
@@ -110,9 +86,7 @@ const GigCard = ({
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <Link href={`/gigs/${id}`} className="group-hover:text-blue-400">
-              <h3 className="line-clamp-2 text-lg font-bold text-white transition-colors">
-                {title}
-              </h3>
+              <h3 className="line-clamp-2 text-lg font-bold text-white transition-colors">{title}</h3>
             </Link>
             <p className="text-sm text-gray-400">
               ${price_range.min} - ${price_range.max}
@@ -131,9 +105,7 @@ const GigCard = ({
             </div>
             <div>
               <p className="text-xs text-gray-400">Delivery</p>
-              <p className="text-sm text-white">
-                {formatDeliveryDate(end_date)}
-              </p>
+              <p className="text-sm text-white">{formatDeliveryDate(end_date)}</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -159,10 +131,7 @@ const GigCard = ({
 
       {isActive && activeStatus === 'running' && (
         <div className="flex items-center justify-end gap-2 border-t border-gray-700/50 p-4">
-          <Button
-            variant="outline"
-            className="border-green-500 text-green-500 hover:bg-green-900/20 hover:text-green-400"
-          >
+          <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-900/20 hover:text-green-400">
             Complete
           </Button>
         </div>
