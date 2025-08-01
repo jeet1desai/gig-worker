@@ -9,6 +9,7 @@ import moment from 'moment';
 import { useRouter } from 'next/navigation';
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
 import Loader from '@/components/Loader';
+import { cn } from '@/lib/utils';
 
 export function WeeklySummary() {
   const dispatch = useDispatch();
@@ -55,28 +56,18 @@ export function WeeklySummary() {
     return 0;
   });
 
-  const getTierLabel = (tier: string) => {
-    if (tier.includes('basic')) return 'Tier 1: Basic';
-    if (tier.includes('advanced')) return 'Tier 2: Advanced';
-    if (tier.includes('expert')) return 'Tier 3: Expert';
-    return tier;
+  const tierColors: Record<string, string> = {
+    basic: 'text-blue-400',
+    advanced: 'text-purple-400',
+    expert: 'text-amber-400'
   };
 
-  const getStatusClasses = (status: string) => {
-    switch (status) {
-      case 'open':
-        return 'border border-blue-700/50 bg-blue-900/50 text-blue-400';
-      case 'requested':
-        return 'border border-indigo-700/50 bg-indigo-900/50 text-indigo-400';
-      case 'in_progress':
-        return 'border border-yellow-700/50 bg-yellow-900/50 text-yellow-400';
-      case 'completed':
-        return 'border border-green-700/50 bg-green-900/50 text-green-400';
-      case 'rejected':
-        return 'border border-red-700/50 bg-red-900/50 text-red-400';
-      default:
-        return '';
-    }
+  const statusColors: Record<string, string> = {
+    open: 'border border-blue-700/50 bg-blue-900/50 text-blue-400',
+    requested: 'border border-indigo-700/50 bg-indigo-900/50 text-indigo-400',
+    in_progress: 'border border-yellow-700/50 bg-yellow-900/50 text-yellow-400',
+    completed: 'border border-green-700/50 bg-green-900/50 text-green-400',
+    rejected: 'border border-red-700/50 bg-red-900/50 text-red-400'
   };
 
   return (
@@ -126,12 +117,12 @@ export function WeeklySummary() {
                     <div className="cursor-pointer text-sm font-medium text-white" onClick={() => router.push(`${PRIVATE_ROUTE.GIGS}/${item.id}`)}>
                       {item.title}
                     </div>
-                    <div className="text-xs text-blue-400">{getTierLabel(item.tier)}</div>
+                    <div className={cn('text-xs text-blue-400 capitalize', tierColors[item.tier])}>{item.tier} Tier</div>
                   </TableCell>
                   <TableCell className="py-3 text-sm text-slate-400">{item.days}</TableCell>
                   <TableCell className="py-3 text-sm font-semibold text-white">{item.total_earnings}</TableCell>
                   <TableCell className="py-3">
-                    <span className={`inline-block rounded-full px-2 py-1 text-xs font-medium capitalize ${getStatusClasses(item.pipeline.status)}`}>
+                    <span className={cn('inline-block rounded-full px-2 py-1 text-xs font-medium capitalize', statusColors[item.pipeline.status])}>
                       {item.pipeline.status.replace('_', ' ')}
                     </span>
                   </TableCell>
