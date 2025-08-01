@@ -11,6 +11,7 @@ import { PRIVATE_ROUTE } from '@/constants/app-routes';
 import Loader from '@/components/Loader';
 import { cn } from '@/lib/utils';
 import SortIndicator from '@/components/ui/SortIndicator';
+import { slugify } from '@/lib/utils/gig-slug-generator';
 
 export function WeeklySummary() {
   const dispatch = useDispatch();
@@ -71,6 +72,11 @@ export function WeeklySummary() {
     rejected: 'border border-red-700/50 bg-red-900/50 text-red-400'
   };
 
+  const handleGigClick = async (title: string) => {
+    const slug = slugify(title);
+    router.push(`${PRIVATE_ROUTE.GIGS}/${slug}`);
+  };
+
   return (
     <div className="rounded-2xl border border-slate-700/50 p-6 shadow-none backdrop-blur-xl">
       <div className="mb-6 flex items-center justify-between">
@@ -107,9 +113,9 @@ export function WeeklySummary() {
                 <TableRow key={item.id} className="border-b border-slate-700/50 hover:bg-slate-700/10">
                   <TableCell className="py-3">
                     <div className="mb-1 text-sm text-slate-400">{moment(item.start_date).format('ddd, MMM DD YYYY')}</div>
-                    <div className="cursor-pointer text-sm font-medium text-white" onClick={() => router.push(`${PRIVATE_ROUTE.GIGS}/${item.id}`)}>
+                    <button className="cursor-pointer text-sm font-medium text-white" onClick={() => handleGigClick(item.title)}>
                       {item.title}
-                    </div>
+                    </button>
                     <div className={cn('text-xs text-blue-400 capitalize', tierColors[item.tier])}>{item.tier} Tier</div>
                   </TableCell>
                   <TableCell className="py-3 text-sm text-slate-400">{item.duration_in_days}</TableCell>
