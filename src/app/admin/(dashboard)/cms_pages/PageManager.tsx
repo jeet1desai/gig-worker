@@ -3,27 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import {
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  EyeOff,
-  Globe,
-  FileText,
-  ChevronLeft,
-  ChevronRight,
-  Search
-} from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Globe, FileText, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { toast } from '@/lib/toast';
 import { useRouter } from 'next/navigation';
 import { PRIVATE_ROUTE, PUBLIC_API_ROUTES } from '@/constants/app-routes';
@@ -66,10 +48,7 @@ export default function PageManager() {
         setPagination(response.data.meta);
       }
     } catch (error: any) {
-      const message =
-        error?.response?.data?.error?.message ||
-        error?.message ||
-        'Failed to create page';
+      const message = error?.response?.data?.error?.message || error?.message || 'Failed to create page';
       toast.error(message);
     } finally {
       setLoading(false);
@@ -79,22 +58,16 @@ export default function PageManager() {
   const deleteCMSPage = async () => {
     setLoading(true);
     try {
-      const response = await apiService.delete<CMSPageResponse>(
-        `${PUBLIC_API_ROUTES.CMS_CONTENT_ID_API}/${deletePageId}`,
-        {
-          withAuth: true
-        }
-      );
+      const response = await apiService.delete<CMSPageResponse>(`${PUBLIC_API_ROUTES.CMS_CONTENT_ID_API}/${deletePageId}`, {
+        withAuth: true
+      });
       if (response.data.data && response.data.message) {
         setDeletePageId('');
         toast.success(response.data.message);
         getAllPagesList();
       }
     } catch (error: any) {
-      const message =
-        error?.response?.data?.error?.message ||
-        error?.message ||
-        'Failed to create page';
+      const message = error?.response?.data?.error?.message || error?.message || 'Failed to create page';
       toast.error(message);
     } finally {
       setLoading(false);
@@ -108,22 +81,15 @@ export default function PageManager() {
         ...page_data,
         isPublished: !page_data.isPublished
       };
-      const response = await apiService.patch<CMSPageResponse>(
-        `${PUBLIC_API_ROUTES.CMS_CONTENT_ID_API}/${page_data.id}`,
-        data,
-        {
-          withAuth: true
-        }
-      );
+      const response = await apiService.patch<CMSPageResponse>(`${PUBLIC_API_ROUTES.CMS_CONTENT_ID_API}/${page_data.id}`, data, {
+        withAuth: true
+      });
       if (response.data.data && response.data.message) {
         toast.success(response.data.message);
         getAllPagesList();
       }
     } catch (error: any) {
-      const message =
-        error?.response?.data?.error?.message ||
-        error?.message ||
-        'Failed to create page';
+      const message = error?.response?.data?.error?.message || error?.message || 'Failed to create page';
       toast.error(message);
     } finally {
       setLoading(false);
@@ -169,9 +135,7 @@ export default function PageManager() {
                   placeholder="Search pages..."
                   className="h-9 w-full rounded-lg border border-[#374151] bg-[#1F2A37] pr-4 pl-10 text-white placeholder-gray-400 focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/50 focus:ring-offset-0 focus:ring-offset-transparent sm:w-64"
                   value={search}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    handleSearchChange(e.target.value)
-                  }
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearchChange(e.target.value)}
                 />
               </div>
               <Button
@@ -188,17 +152,11 @@ export default function PageManager() {
             <Table className="text-white">
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="font-medium text-white">
-                    Title
-                  </TableHead>
+                  <TableHead className="font-medium text-white">Title</TableHead>
                   <TableHead className="font-medium text-white">Type</TableHead>
                   <TableHead className="font-medium text-white">Slug</TableHead>
-                  <TableHead className="font-medium text-white">
-                    Status
-                  </TableHead>
-                  <TableHead className="text-right font-medium text-white">
-                    Actions
-                  </TableHead>
+                  <TableHead className="font-medium text-white">Status</TableHead>
+                  <TableHead className="text-right font-medium text-white">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -206,39 +164,25 @@ export default function PageManager() {
                   pages.map((page) => {
                     const PageIcon = pageTypes[page.type as PageType].icon;
                     return (
-                      <TableRow
-                        key={page.id}
-                        className="border-[#374151] hover:bg-[#1F2A37]"
-                      >
+                      <TableRow key={page.id} className="border-[#374151] hover:bg-[#1F2A37]">
                         <TableCell className="font-medium text-[#D9D9D9]">
                           <div className="flex items-center gap-2">
-                            <div
-                              className={`rounded p-1 ${pageTypes[page.type as PageType].color} text-white`}
-                            >
+                            <div className={`rounded p-1 ${pageTypes[page.type as PageType].color} text-white`}>
                               <PageIcon className="h-3 w-3" />
                             </div>
                             {page.title}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary">
-                            {pageTypes[page.type as PageType].label}
-                          </Badge>
+                          <Badge variant="secondary">{pageTypes[page.type as PageType].label}</Badge>
                         </TableCell>
-                        <TableCell className="font-mono text-sm text-[#D9D9D9]">
-                          /{page.slug}
-                        </TableCell>
+                        <TableCell className="font-mono text-sm text-[#D9D9D9]">/{page.slug}</TableCell>
                         <TableCell>
-                          <button
-                            onClick={() => handleUpdateStatus(page)}
-                            className="flex items-center gap-1"
-                          >
+                          <button onClick={() => handleUpdateStatus(page)} className="flex items-center gap-1">
                             {page.isPublished ? (
                               <>
                                 <Eye className="h-4 w-4 text-green-500" />
-                                <Badge className="bg-green-500/10 text-green-500">
-                                  Published
-                                </Badge>
+                                <Badge className="bg-green-500/10 text-green-500">Published</Badge>
                               </>
                             ) : (
                               <>
@@ -275,10 +219,7 @@ export default function PageManager() {
                   })
                 ) : (
                   <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="h-24 text-center text-gray-400"
-                    >
+                    <TableCell colSpan={6} className="h-24 text-center text-gray-400">
                       No pages found.
                     </TableCell>
                   </TableRow>

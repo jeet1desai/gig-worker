@@ -334,15 +334,12 @@ const NewGigPage = () => {
                             <Calendar
                               mode="single"
                               captionLayout="dropdown"
-                              className='radix-calendar'
+                              className="radix-calendar"
                               hidden={{ before: new Date() }}
                               selected={values.start_date ? new Date(values.start_date) : undefined}
                               onSelect={(date: Date | undefined) => {
                                 if (date) {
-                                  setFieldValue(
-                                    'start_date',
-                                    formatDateInternational(date)
-                                  );
+                                  setFieldValue('start_date', formatDateInternational(date));
                                 }
                               }}
                             />
@@ -350,12 +347,7 @@ const NewGigPage = () => {
                               <Label htmlFor="start_time">Start Time *</Label>
                               <TimePicker
                                 value={new Date(values.start_date)}
-                                onChange={(newTime) =>
-                                  setFieldValue(
-                                    'start_date',
-                                    formatDateInternational(newTime)
-                                  )
-                                }
+                                onChange={(newTime) => setFieldValue('start_date', formatDateInternational(newTime))}
                               />
                             </div>
                           </PopoverContent>
@@ -383,14 +375,11 @@ const NewGigPage = () => {
                               mode="single"
                               captionLayout="dropdown"
                               selected={values.end_date ? new Date(values.end_date) : undefined}
-                              className='radix-calendar'
+                              className="radix-calendar"
                               hidden={{ before: new Date(values.start_date) }}
                               onSelect={(date: Date | undefined) => {
                                 if (date) {
-                                  setFieldValue(
-                                    'end_date',
-                                    formatDateInternational(date)
-                                  );
+                                  setFieldValue('end_date', formatDateInternational(date));
                                 }
                               }}
                             />
@@ -398,12 +387,7 @@ const NewGigPage = () => {
                               <Label htmlFor="start_time">End Time *</Label>
                               <TimePicker
                                 value={new Date(values.end_date)}
-                                onChange={(newTime) =>
-                                  setFieldValue(
-                                    'end_date',
-                                    formatDateInternational(newTime)
-                                  )
-                                }
+                                onChange={(newTime) => setFieldValue('end_date', formatDateInternational(newTime))}
                               />
                             </div>
                           </PopoverContent>

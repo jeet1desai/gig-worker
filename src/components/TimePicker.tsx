@@ -1,11 +1,5 @@
 import * as React from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface TimePickerProps {
   value: Date;
@@ -22,11 +16,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
   const minuteStr = minute.toString().padStart(2, '0');
   const ampm = isPM ? 'PM' : 'AM';
 
-  const updateTime = (
-    newHour12: number,
-    newMinute: number,
-    newIsPM: boolean
-  ) => {
+  const updateTime = (newHour12: number, newMinute: number, newIsPM: boolean) => {
     let hr24 = newHour12 % 12;
     if (newIsPM) hr24 += 12;
 
@@ -39,11 +29,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
 
   return (
     <div className="flex w-full items-center justify-evenly">
-      <Select
-        value={hour12.toString()}
-        onValueChange={(val) => updateTime(parseInt(val), minute, isPM)}
-        disabled={!isDateSelected}
-      >
+      <Select value={hour12.toString()} onValueChange={(val) => updateTime(parseInt(val), minute, isPM)} disabled={!isDateSelected}>
         <SelectTrigger className="w-max">
           <SelectValue />
         </SelectTrigger>
@@ -59,11 +45,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
         </SelectContent>
       </Select>
 
-      <Select
-        value={minuteStr}
-        onValueChange={(val) => updateTime(hour12, parseInt(val), isPM)}
-        disabled={!isDateSelected}
-      >
+      <Select value={minuteStr} onValueChange={(val) => updateTime(hour12, parseInt(val), isPM)} disabled={!isDateSelected}>
         <SelectTrigger className="w-max">
           <SelectValue />
         </SelectTrigger>
@@ -79,11 +61,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
         </SelectContent>
       </Select>
 
-      <Select
-        value={ampm}
-        onValueChange={(val) => updateTime(hour12, minute, val === 'PM')}
-        disabled={!isDateSelected}
-      >
+      <Select value={ampm} onValueChange={(val) => updateTime(hour12, minute, val === 'PM')} disabled={!isDateSelected}>
         <SelectTrigger className="w-max">
           <SelectValue />
         </SelectTrigger>

@@ -4,10 +4,7 @@ import { errorResponse, successResponse } from '@/lib/api-response';
 import prisma from '@/lib/prisma';
 import { safeJson } from '@/lib/utils/safeJson';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { userId: string } }
-) {
+export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
   const userId = params.userId;
 
   if (!userId) {
