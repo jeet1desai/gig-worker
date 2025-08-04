@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+import { generateUniqueUsernameFromEmail } from '@/lib/server/auth';
 import bcrypt from 'bcryptjs';
 
 async function main() {
@@ -23,6 +24,35 @@ async function main() {
       }
     });
   }
+
+  await backfillUserUsernames();
+}
+
+async function backfillUserUsernames() {
+  const users = await prisma.user.findMany({
+    where: { username: null },
+    select: { id: true, email: true }
+  });
+
+  if (users.length === 0) {
+    console.log('All users already have usernames');
+    return;
+  }
+
+  for (const user of users) {
+    try {
+      const username = await generateUniqueUsernameFromEmail(user.email);
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { username }
+      });
+      console.log(`Username "${username}" assigned to ${user.email}`);
+    } catch (error) {
+      console.error(`Failed to assign username to ${user.email}`, error);
+    }
+  }
+
+  console.log('Username backfill complete');
 }
 
 main()

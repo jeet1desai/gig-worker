@@ -9,11 +9,11 @@ import { UserProfileDetails } from '@/types/shared/user';
 
 export default async function UserProfilePage() {
   const session = await getServerSession(authOptions);
-  const loggedInUserId = session?.user?.id;
+  const loggedInUserName = session?.user?.username;
 
-  if (!loggedInUserId) return redirect(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH);
+  if (!loggedInUserName) return redirect(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH);
 
-  const user = await getUserDetails(loggedInUserId);
+  const user = await getUserDetails(loggedInUserName);
   if (!user) return notFound();
 
   return <Profile user={user as UserProfileDetails} isOwnProfile={true} />;
