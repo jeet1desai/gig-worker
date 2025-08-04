@@ -5,6 +5,7 @@ import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PRIVATE_ROUTE, PUBLIC_ROUTE } from '@/constants/app-routes';
+import { generateUniqueUsernameFromEmail } from '@/lib/server/auth';
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -52,6 +53,7 @@ export const authOptions: NextAuthOptions = {
           first_name: user.first_name || '',
           last_name: user.last_name || '',
           profile_url: user.profile_url || '',
+          username: user.username || '',
           role: user.role,
           sign_up_type: user.sign_up_type || 'email',
           is_verified: user.is_verified ?? false,
@@ -87,6 +89,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: String(admin.id),
           email: admin.email,
+          username: admin.email,
           name: `${admin.first_name} ${admin.last_name}`,
           first_name: admin.first_name || '',
           last_name: admin.last_name || '',
@@ -108,6 +111,7 @@ export const authOptions: NextAuthOptions = {
           email: profile.email,
           first_name: firstName,
           last_name: lastName,
+          username: '',
           profile_url: profile.picture,
           role: 'user',
           is_verified: true,
@@ -125,6 +129,7 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role || 'user';
         token.first_name = user.first_name || '';
         token.last_name = user.last_name || '';
+        token.username = user.username || '';
         token.subscription = user.subscription || null;
 
         const payload = {
@@ -154,8 +159,10 @@ export const authOptions: NextAuthOptions = {
             }
           });
           if (!existingUser) {
+            const username = await generateUniqueUsernameFromEmail(user.email);
             const newUser: any = await prisma.user.create({
               data: {
+                username,
                 email: user.email,
                 first_name: user.first_name,
                 last_name: user.last_name,
@@ -177,6 +184,7 @@ export const authOptions: NextAuthOptions = {
             token.id = String(existingUser.id);
             token.email = user.email;
             token.role = existingUser.role;
+            token.username = existingUser.username;
             token.first_name = existingUser.first_name || '';
             token.last_name = existingUser.last_name || '';
             token.subscription = existingUser.subscriptions?.[0]?.type || null;
@@ -198,6 +206,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id;
         session.user.name = token.first_name + ' ' + token.last_name;
         session.user.role = token.role;
+        session.user.username = token.username;
         session.accessToken = token.customAccessToken;
         session.user.subscription = token.subscription || null;
         session.expires = new Date(token.exp * 1000).toISOString();

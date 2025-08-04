@@ -6,8 +6,16 @@ import { MetricsCards } from './components/matrics-card';
 import { AnalyticsChart } from './components/analytics-chart';
 import { UserProfile } from './components/user-profile';
 import { WeeklySummary } from './components/weekly-summary';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../api/auth/[...nextauth]/route';
+import { getUserDetails } from '@/lib/server/user';
 
-const Dashboard = () => {
+const Dashboard = async () => {
+  const session = await getServerSession(authOptions);
+
+  const loggedInUserName = session?.user?.username;
+  const subscriptionType = session?.user?.subscription;
+  const user = await getUserDetails(loggedInUserName);
   return (
     <>
       <DashboardLayout>
