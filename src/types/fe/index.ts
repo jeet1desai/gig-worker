@@ -1,4 +1,5 @@
 import { GIG_STATUS, TIER } from '@prisma/client';
+import { string } from 'yup';
 
 export interface SubscriptionPlan {
   id: number | string;
@@ -167,4 +168,42 @@ export interface AdminGigsList {
   };
   user_id: string;
   [key: string]: any;
+}
+
+export interface PaymentPostAPIResponse {
+  data: {
+    amount: string;
+    transactionId: any;
+    providerName: string;
+    gigTitle: string;
+  };
+  message?: string;
+  statusCode?: number;
+}
+
+export interface CreateProvidersReviewAPIResponse {
+  success: boolean;
+  data: {
+    review?: {
+      id: string;
+      gig_id: string;
+      provider_id: string;
+      user_id: string;
+      rating: number;
+      rating_feedback: string | null;
+      status: string;
+      created_at: string;
+    };
+    requiresPayment?: boolean;
+    paymentOrder?: {
+      orderId: string;
+      amount: string;
+    } | null;
+    [key: string]: any;
+  };
+  message?: string;
+  error?: {
+    message?: string;
+    fieldErrors?: { [key: string]: string };
+  };
 }

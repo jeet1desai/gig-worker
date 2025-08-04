@@ -1,4 +1,4 @@
-import { ROLE, SUBSCRIPTION_STATUS, Subscription } from '@prisma/client';
+import { BID_STATUS, EARN_STATUS, PAYMENT_REQUEST_STATUS, PAYMENT_STATUS, ROLE, SUBSCRIPTION_STATUS, Subscription } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 
 import prisma from '@/lib/prisma';
@@ -20,6 +20,73 @@ export async function POST(req: Request) {
       });
 
     const { event_type, resource } = body;
+
+    if (event_type === 'PAYMENT.CAPTURE.COMPLETED') {
+      const gigId = resource.custom_id;
+      const paymentId = resource.reference_id;
+
+      if (gigId && paymentId) {
+        await prisma.payment.update({
+          where: { id: BigInt(paymentId) },
+          data: {
+            status: PAYMENT_STATUS.completed,
+            request_status: PAYMENT_REQUEST_STATUS.accepted
+          }
+        });
+
+        const payment = await prisma.payment.findUnique({
+          where: { id: BigInt(paymentId) },
+          include: {
+            gig: {
+              include: {
+                bids: {
+                  where: { status: BID_STATUS.accepted },
+                  include: { provider: true }
+                }
+              }
+            }
+          }
+        });
+
+        if (payment && payment.gig.bids.length > 0) {
+          const acceptedBid = payment.gig.bids[0];
+          await prisma.providerEarning.create({
+            data: {
+              user_id: payment.gig.user_id,
+              provider_id: acceptedBid.provider_id,
+              gig_id: payment.gig_id,
+              amount: acceptedBid.bid_price,
+              status: EARN_STATUS.completed
+            }
+          });
+        }
+
+        return successResponse({
+          message: 'Gig payment processed successfully',
+          data: null
+        });
+      }
+    }
+
+    if (event_type === 'PAYMENT.CAPTURE.DENIED' || event_type === 'PAYMENT.CAPTURE.FAILED') {
+      const gigId = resource.custom_id;
+      const paymentId = resource.reference_id;
+
+      if (gigId && paymentId) {
+        await prisma.payment.update({
+          where: { id: BigInt(paymentId) },
+          data: {
+            status: PAYMENT_STATUS.failed,
+            request_status: PAYMENT_REQUEST_STATUS.rejected
+          }
+        });
+        return successResponse({
+          message: 'Gig payment failed or denied',
+          data: null
+        });
+      }
+    }
+
     if (!event_type.startsWith('BILLING.SUBSCRIPTION.'))
       return successResponse({
         message: 'Ignored non-subscription event',

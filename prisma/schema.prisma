@@ -387,6 +387,7 @@ enum PAYMENT_STATUS {
   held
   completed
   refunded
+  failed
 }
 
 enum PAYMENT_REQUEST_STATUS {

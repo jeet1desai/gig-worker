@@ -34,11 +34,16 @@ import DashboardLayout from '@/components/layouts/layout';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatOnlyDate, getDaysBetweenDates } from '@/lib/date-format';
 import notificationHelper from '@/lib/utils/notifications';
-import { NOTIFICATION_TYPE } from '@prisma/client';
+import { GIG_STATUS, NOTIFICATION_TYPE, ROLE } from '@prisma/client';
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
-import { PRIVATE_ROUTE } from '@/constants/app-routes';
+import { PRIVATE_API_ROUTES, PRIVATE_ROUTE } from '@/constants/app-routes';
 import GigDetailsShimmer from '@/components/shimmer/GigDetailsShimmer';
+import GigReviewModal from '@/components/gigs/GigReviewModal';
+import { setLoading } from '@/store/slices/gigs';
+import apiService from '@/services/api';
+import { CreateProvidersReviewAPIResponse } from '@/types/fe';
+import { toast } from '@/lib/toast';
 
 export default function GigDetailPage() {
   const router = useRouter();
@@ -48,14 +53,16 @@ export default function GigDetailPage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { loading, bids, pagination } = useSelector((state: RootState) => state.gigs);
   const [gig, setGig] = useState<any>(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [selectedGigForReview, setSelectedGigForReview] = useState<any>(null);
 
   useEffect(() => {
     if (id) {
-      handleFetchGigDetails(id);
+      handleFetchGigDetails(id as string);
     }
   }, [id]);
 
-  const handleFetchGigDetails = async (id: any) => {
+  const handleFetchGigDetails = async (id: string) => {
     try {
       const response = await dispatch(gigService.getGigById(id) as any);
       if (response && response.data) {
@@ -133,6 +140,41 @@ export default function GigDetailPage() {
     }
   };
 
+  const handleCompleteGig = async (gigId: string) => {
+    dispatch(setLoading({ loading: true }));
+    try {
+      const response = await apiService.post<CreateProvidersReviewAPIResponse>(
+        `${PRIVATE_API_ROUTES.GIG_MARK_COMPLETE_PROVIDER_API}/${gigId}`,
+        {},
+        {
+          withAuth: true
+        }
+      );
+
+      if (response.data.message) {
+        const response = await dispatch(gigService.getGigById(id as string));
+        if (response && response.data) {
+          setGig(response.data);
+        }
+      }
+    } catch (error: any) {
+      const message = error?.response?.data?.error?.message || error?.message || 'Error while marking gig as completed';
+      toast.error(message);
+    } finally {
+      dispatch(setLoading({ loading: false }));
+    }
+  };
+
+  const handleReviewGig = (gigId: string, gigTitle: string, accepted_bid: { [key: string]: any }) => {
+    setSelectedGigForReview({
+      id: gigId,
+      title: gigTitle,
+      bidAmount: accepted_bid?.bid_price,
+      providerName: `${accepted_bid?.provider?.first_name} ${accepted_bid?.provider?.last_name}`
+    });
+    setIsReviewModalOpen(true);
+  };
+
   if (loading || !gig) {
     return (
       <DashboardLayout>
@@ -154,18 +196,30 @@ export default function GigDetailPage() {
               Back to Gigs
             </Button>
             <div className="flex items-center space-x-2">
+              {gig?.pipeline?.status === GIG_STATUS.completed && session?.user.role === ROLE.user && (
+                <Button
+                  onClick={() => handleReviewGig(gig?.id, gig?.title, gig?.accepted_bid)}
+                  variant="outline"
+                  className="border-blue-500 bg-transparent text-blue-500 hover:bg-blue-900/20 hover:text-blue-400"
+                >
+                  <Star className="mr-2 h-4 w-4" />
+                  Review & Pay
+                </Button>
+              )}
+              {gig?.pipeline?.status === GIG_STATUS.in_progress && session?.user.role === ROLE.provider && (
+                <Button
+                  onClick={() => handleCompleteGig(gig.id)}
+                  variant="outline"
+                  className="border-green-500 bg-transparent text-green-500 hover:bg-green-900/20 hover:text-green-400"
+                >
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Complete
+                </Button>
+              )}
               <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
                 <Share2 className="mr-2 h-4 w-4" />
                 Share
               </Button>
-              {/* <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
-                <Flag className="h-4 w-4" />
-                Report
-              </Button>
-              <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
-                <Bookmark className="h-4 w-4" />
-                Save
-              </Button> */}
             </div>
           </div>
 
@@ -592,6 +646,19 @@ export default function GigDetailPage() {
             </Card>
           </div>
         </div>
+        {selectedGigForReview && (
+          <GigReviewModal
+            isOpen={isReviewModalOpen}
+            onClose={() => {
+              setIsReviewModalOpen(false);
+              setSelectedGigForReview(null);
+            }}
+            gigId={selectedGigForReview.id}
+            gigTitle={selectedGigForReview.title}
+            bidAmount={selectedGigForReview.bidAmount}
+            providerName={selectedGigForReview.providerName}
+          />
+        )}
       </main>
     </DashboardLayout>
   );
