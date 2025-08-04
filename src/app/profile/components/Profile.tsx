@@ -163,6 +163,14 @@ export default function Profile({ user, isOwnProfile }: ProfileProps) {
               >
                 <BriefcaseIcon className="h-4 w-4" /> Gigs
               </button>
+              <button
+                className={`text-md flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 py-2 text-left font-medium transition ${
+                  activeTab === 'completed' ? 'bg-gray-700 text-white' : 'bg-gray-900 text-gray-400 hover:bg-gray-800'
+                }`}
+                onClick={() => setActiveTab('completed')}
+              >
+                <BriefcaseIcon className="h-4 w-4" /> Completed Gigs
+              </button>
             </div>
 
             <Card className="mx-4 mt-6 mb-4 border-none bg-[#1f2937] pt-3.5 pb-4.5">
@@ -324,6 +332,14 @@ export default function Profile({ user, isOwnProfile }: ProfileProps) {
               <Card className="h-[calc(100vh-130px)] bg-[#111]">
                 <CardContent className="h-full space-y-6 px-6">
                   <UserGigs userId={profileDetails.id} />
+                </CardContent>
+              </Card>
+            )}
+
+            {activeTab === 'completed' && (
+              <Card className="h-[calc(100vh-130px)] bg-[#111]">
+                <CardContent className="h-full space-y-6 px-6">
+                  <UserGigs userId={profileDetails.id} isCompleted={true} />
                 </CardContent>
               </Card>
             )}

@@ -7,11 +7,12 @@ import GigCard from './GigCard';
 
 interface UserGigsProps {
   userId: string;
+  isCompleted?: boolean;
 }
 
 const SCROLL_THRESHOLD = 200;
 
-const UserGigs = ({ userId }: UserGigsProps) => {
+const UserGigs = ({ userId, isCompleted }: UserGigsProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const fetchedPages = useRef(new Set<number>());
 
@@ -27,7 +28,13 @@ const UserGigs = ({ userId }: UserGigsProps) => {
     fetchedPages.current.add(pageToFetch);
 
     try {
-      const res = await gigService.getUserGigsByiId(userId, pageToFetch);
+      let res;
+
+      if (isCompleted) {
+        res = await gigService.getUserCompletedGigsById(userId, pageToFetch);
+      } else {
+        res = await gigService.getUserGigsByiId(userId, pageToFetch);
+      }
       const newGigs = res.data.gigs ?? [];
 
       setGigs((prev) => {
@@ -78,7 +85,7 @@ const UserGigs = ({ userId }: UserGigsProps) => {
 
   return (
     <div className="rounded-x flex h-full flex-col space-y-4">
-      <h3 className="mb-5 px-2 text-2xl font-semibold text-gray-300">Posted Gigs</h3>
+      <h3 className="mb-5 px-2 text-2xl font-semibold text-gray-300"> {isCompleted ? `Completed Gigs` : `Posted Gigs`}</h3>
 
       {gigs.length === 0 && !loading ? (
         <div className="flex h-full items-center justify-center">

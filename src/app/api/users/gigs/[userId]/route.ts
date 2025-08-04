@@ -3,6 +3,7 @@ import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { errorResponse, successResponse } from '@/lib/api-response';
 import prisma from '@/lib/prisma';
 import { safeJson } from '@/lib/utils/safeJson';
+import { BID_STATUS, GIG_STATUS } from '@prisma/client';
 
 export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
   const userId = params.userId;
@@ -19,25 +20,69 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
     const searchParams = req.nextUrl.searchParams;
     const page = Number(searchParams.get('page') || 1);
     const limit = Number(searchParams.get('limit') || 10);
+    const gigStatus = searchParams.get('gigStatus') || '';
+    const gigCompleted = searchParams.get('gigCompleted') || false;
     const skip = (page - 1) * limit;
+    let gigs;
 
-    const gigs = await prisma.gig.findMany({
-      where: { user_id: BigInt(userId), is_removed: false },
-      skip,
-      take: limit,
-      orderBy: { created_at: 'desc' },
-      include: {
-        _count: {
-          select: { bids: true }
+    const whereCondition: any = {
+      user_id: BigInt(userId),
+      is_removed: false
+    };
+
+    if (gigStatus !== '') {
+      whereCondition.pipeline = {
+        status: gigStatus as GIG_STATUS
+      };
+    }
+
+    if (gigCompleted) {
+      gigs = await prisma.gig.findMany({
+        where: {
+          is_removed: false,
+          pipeline: {
+            status: GIG_STATUS.completed
+          },
+          bids: {
+            some: {
+              provider_id: BigInt(userId),
+              status: BID_STATUS.accepted
+            }
+          }
         },
-        bids: {
-          select: { bid_price: true }
-        },
-        pipeline: {
-          select: { status: true }
+        include: {
+          _count: {
+            select: { bids: true }
+          },
+          bids: {
+            where: {
+              provider_id: BigInt(userId),
+              status: BID_STATUS.accepted
+            },
+            select: { bid_price: true }
+          },
+          pipeline: true
         }
-      }
-    });
+      });
+    } else {
+      gigs = await prisma.gig.findMany({
+        where: whereCondition,
+        skip,
+        take: limit,
+        orderBy: { created_at: 'desc' },
+        include: {
+          _count: {
+            select: { bids: true }
+          },
+          bids: {
+            select: { bid_price: true }
+          },
+          pipeline: {
+            select: { status: true }
+          }
+        }
+      });
+    }
 
     const total = await prisma.gig.count({
       where: { user_id: BigInt(userId) }
