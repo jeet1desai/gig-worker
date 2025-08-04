@@ -7,18 +7,17 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { PUBLIC_ROUTE } from '@/constants/app-routes';
 import { UserProfileDetails } from '@/types/shared/user';
 
-export default async function UserProfilePage({ params }: { params: Promise<{ userId?: string }> }) {
+export default async function UserProfilePage({ params }: { params: Promise<{ username?: string }> }) {
   const session = await getServerSession(authOptions);
   const loggedInUserId = session?.user?.id;
 
-  const userIdFromUrl = (await params)?.userId;
+  const userNameFromUrl = (await params)?.username;
 
-  const userId = userIdFromUrl ?? loggedInUserId;
-  if (!userId) return redirect(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH);
+  if (!userNameFromUrl) return redirect(PUBLIC_ROUTE.USER_LOGIN_PAGE_PATH);
 
-  const user = await getUserDetails(userId);
+  const user = await getUserDetails(userNameFromUrl);
   if (!user) return notFound();
 
-  const isOwnProfile = userId === loggedInUserId;
+  const isOwnProfile = user.id === loggedInUserId;
   return <Profile user={user as UserProfileDetails} isOwnProfile={isOwnProfile} />;
 }
