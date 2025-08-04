@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 
-function slugify(text: string): string {
+export function slugify(text: string): string {
   return text
     .toLowerCase()
     .trim()

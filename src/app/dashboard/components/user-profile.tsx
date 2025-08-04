@@ -1,20 +1,37 @@
 'use client';
 
+import { getInitials } from '@/app/profile/components/EditProfilePhotoModal';
 import { Button } from '@/components/ui/button';
+import { UserProfileDetails } from '@/types/shared/user';
+import Image from 'next/image';
 import { Link } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { PRIVATE_ROUTE } from '@/constants/app-routes';
 
-export function UserProfile() {
+type UserProfileProps = {
+  user: UserProfileDetails;
+  scubscriptionType?: string;
+};
+
+export function UserProfile({ user, scubscriptionType }: UserProfileProps) {
+  const initials = getInitials(user.first_name!, user.last_name!);
+  const isImageAvailable = !!user.profile_url;
+  const router = useRouter();
   return (
     <div className="h-full rounded-2xl border border-slate-700/50 p-6 shadow-none backdrop-blur-xl">
       <div className="mb-4 flex items-center space-x-4">
-        <img
-          className="h-12 w-12 rounded-full ring-2 ring-blue-500/20"
-          src="https://images.unsplash.com/profile-1704991443592-a7f79d25ffb1image?w=150&dpr=2&crop=faces&bg=%23fff&h=150&auto=format&fit=crop&q=60&ixlib=rb-4.1.0"
-          alt="Sarah Johnson"
-        />
+        {isImageAvailable ? (
+          <div className="h-12 w-12 overflow-hidden rounded-full shadow ring-2 ring-blue-500/20">
+            <Image src={user.profile_url || '/images/avatar.jpg'} alt="Profile" width={48} height={48} className="h-full w-full object-cover" />
+          </div>
+        ) : (
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500 text-2xl font-semibold text-black shadow ring-2 ring-blue-500/20">
+            {initials}
+          </div>
+        )}
         <div>
-          <h3 className="font-semibold text-white">Sarah Johnson</h3>
-          <p className="text-sm text-slate-400">Pro Account • Computer Science</p>
+          <h3 className="font-semibold text-white">{`${user.first_name} ${user.last_name}`}</h3>
+          <p className="text-sm text-slate-400 capitalize">{scubscriptionType} Account</p>
         </div>
       </div>
 
@@ -44,6 +61,7 @@ export function UserProfile() {
         variant="outline"
         size="lg"
         className="bg-foreground hover:bg-background/10 text-background mt-8 w-full cursor-pointer border-slate-700/50"
+        onClick={() => router.push(`${PRIVATE_ROUTE.USER_PROFILE}/${user.id}`)}
       >
         <Link className="h-4 w-4" />
         View Public Profile

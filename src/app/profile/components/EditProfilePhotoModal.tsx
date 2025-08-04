@@ -18,7 +18,7 @@ type EditProfilePhotoModalProps = {
   handleUpdateProfileAction: (updateUserDetails: UserProfileDetails) => void;
 };
 
-function getInitials(first_name: string = '', last_name: string = '') {
+export function getInitials(first_name: string = '', last_name: string = '') {
   return `${first_name.charAt(0)}${last_name.charAt(0)}`.toUpperCase();
 }
 

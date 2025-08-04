@@ -1,5 +1,3 @@
-'use client';
-
 import DashboardLayout from '@/components/layouts/layout';
 
 import { MetricsCards } from './components/matrics-card';
@@ -9,13 +7,13 @@ import { WeeklySummary } from './components/weekly-summary';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]/route';
 import { getUserDetails } from '@/lib/server/user';
+import { UserProfileDetails } from '@/types/shared/user';
 
 const Dashboard = async () => {
   const session = await getServerSession(authOptions);
-
-  const loggedInUserName = session?.user?.username;
+  const loggedInUserId = session?.user?.id;
   const subscriptionType = session?.user?.subscription;
-  const user = await getUserDetails(loggedInUserName);
+  const user = await getUserDetails(loggedInUserId);
   return (
     <>
       <DashboardLayout>
@@ -30,7 +28,7 @@ const Dashboard = async () => {
             </div>
             <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
               <div className="space-y-3 sm:space-y-4">
-                <UserProfile />
+                <UserProfile user={user as UserProfileDetails} scubscriptionType={subscriptionType} />
               </div>
             </div>
           </div>

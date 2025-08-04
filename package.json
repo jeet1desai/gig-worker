@@ -62,6 +62,7 @@
     "juice": "^11.0.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.525.0",
+    "moment": "^2.30.1",
     "next": "15.3.3",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
@@ -77,9 +78,9 @@
     "sonner": "^2.0.6",
     "spinners-react": "^1.0.11",
     "superjson": "^2.2.2",
-    "tailwindcss": "^4.1.10",
     "tailwind-merge": "^3.3.1",
     "tailwind-scrollbar": "^4.0.2",
+    "tailwindcss": "^4.1.10",
     "tailwindcss-animate": "^1.0.7",
     "yup": "^1.6.1",
     "zod": "^3.25.75"

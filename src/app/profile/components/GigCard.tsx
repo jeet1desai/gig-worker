@@ -23,8 +23,10 @@ interface GigCardProps {
 
 const statusColors: Record<string, string> = {
   open: 'text-blue-400 border-blue-500/20',
-  running: 'border-yellow-500/50 text-yellow-400',
-  accepted: 'border-green-500/50 text-green-400'
+  requested: 'text-indigo-400 border-indigo-500/20',
+  in_progress: 'text-yellow-400 border-yellow-500/20',
+  completed: 'text-green-400 border-green-500/20',
+  rejected: 'text-red-400 border-red-500/20'
 };
 
 const tierColors: Record<string, string> = {
