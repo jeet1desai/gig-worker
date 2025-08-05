@@ -98,7 +98,7 @@ const NewGigPage = () => {
   };
 
   const redirectToPreviousPage = () => {
-    router.push(PRIVATE_ROUTE.GIGS);
+    router.back();
   };
 
   return (
