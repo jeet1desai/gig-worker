@@ -61,7 +61,15 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
             },
             select: { bid_price: true }
           },
-          pipeline: true
+          pipeline: true,
+          user: {
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true,
+              profile_url: true
+            }
+          }
         }
       });
     } else {
