@@ -248,12 +248,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       return errorResponse({ code: 'FORBIDDEN', message: 'Forbidden', statusCode: HttpStatusCode.FORBIDDEN });
     }
 
-    await prisma.gigPipeline.deleteMany({
-      where: { gig_id: BigInt(gigId) }
-    });
-    await prisma.gig.delete({
-      where: { id: BigInt(gigId) }
-    });
+    await prisma.gig.update({ where: { id: BigInt(gigId) }, data: { is_removed: true } });
 
     return safeJsonResponse(
       {

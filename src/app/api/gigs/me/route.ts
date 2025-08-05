@@ -105,7 +105,8 @@ export async function GET(request: Request) {
           in: tiers
         }
       }),
-      user_id: session.user.id
+      user_id: session.user.id,
+      is_removed: false
     };
 
     const [total, gigs] = await Promise.all([
