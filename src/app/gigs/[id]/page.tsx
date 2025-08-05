@@ -481,7 +481,7 @@ export default function GigDetailPage() {
 
                                     <div className="mt-4 border-t border-gray-700/50 pt-4">
                                       <h5 className="mb-2 text-sm font-medium text-gray-300">Proposal:</h5>
-                                      <p className="text-gray-300">{bid.proposal}</p>
+                                      <p className="break-all text-gray-300">{bid.proposal}</p>
                                       <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
                                         <span className="flex items-center">
                                           <Clock className="mr-1 h-3.5 w-3.5" />
