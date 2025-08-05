@@ -3,16 +3,17 @@
 import { useState } from 'react';
 import { Star, DollarSign, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PRIVATE_API_ROUTES } from '@/constants/app-routes';
 import apiService from '@/services/api';
 import { toast } from '@/lib/toast';
-import { CreateProvidersReviewAPIResponse } from '@/types/fe';
+import { CreateProvidersReviewAPIResponse, ReviewDataTypeFromAPI } from '@/types/fe';
 import CommonModal from '../CommonModal';
 import { ratingLabels } from '@/constants';
+import { formatCurrency } from '@/lib/utils';
 
 interface GigReviewModalProps {
   isOpen: boolean;
@@ -27,7 +28,7 @@ const GigReviewModal = ({ isOpen, onClose, gigId, gigTitle, bidAmount, providerN
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [reviewResult, setReviewResult] = useState<any>(null);
+  const [reviewResult, setReviewResult] = useState<ReviewDataTypeFromAPI | null>(null);
   const [errors, setErrors] = useState<{ rating?: string; feedback?: string }>({});
 
   const handleRatingClick = (selectedRating: number) => {
@@ -80,7 +81,7 @@ const GigReviewModal = ({ isOpen, onClose, gigId, gigTitle, bidAmount, providerN
 
   const handlePayment = () => {
     if (reviewResult?.paymentOrder?.links) {
-      const approveLink = reviewResult.paymentOrder.links.find((link: any) => link.rel === 'approve');
+      const approveLink = reviewResult.paymentOrder.links.find((link) => link.rel === 'approve');
       if (approveLink) {
         window.location.href = approveLink.href;
       }
@@ -114,8 +115,7 @@ const GigReviewModal = ({ isOpen, onClose, gigId, gigTitle, bidAmount, providerN
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-1">
-                  <DollarSign className="h-4 w-4 text-green-400" />
-                  <span className="font-semibold text-green-400">{bidAmount}</span>
+                  <span className="font-semibold text-green-400">{formatCurrency(bidAmount, 'USD')}</span>
                 </div>
               </CardContent>
             </Card>
@@ -174,7 +174,9 @@ const GigReviewModal = ({ isOpen, onClose, gigId, gigTitle, bidAmount, providerN
                 <CheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-400" />
                 <div>
                   <p className="font-medium text-blue-400">Payment Required</p>
-                  <p className="mt-1 text-sm text-blue-300">You will be redirected to PayPal to complete the payment of ${bidAmount}.</p>
+                  <p className="mt-1 text-sm text-blue-300">
+                    You will be redirected to PayPal to complete the payment of {formatCurrency(bidAmount, 'USD')}.
+                  </p>
                 </div>
               </div>
             )}
@@ -222,7 +224,7 @@ const GigReviewModal = ({ isOpen, onClose, gigId, gigTitle, bidAmount, providerN
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">Amount:</span>
-                    <span className="font-semibold text-white">${bidAmount}</span>
+                    <span className="font-semibold text-white">{formatCurrency(bidAmount, 'USD')}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">Provider:</span>

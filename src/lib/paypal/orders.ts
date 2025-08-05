@@ -2,6 +2,7 @@ import { paypalV2Client } from './paypalClient';
 import { getPayPalAccessToken } from './index';
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
 import { endpoints } from '../config/endpoints';
+import { publicEnv } from '../config/publicEnv';
 
 interface CreateOrderParams {
   amount: string;
@@ -14,7 +15,7 @@ export async function createPayPalOrder({ amount, gigId, paymentId, description 
   try {
     const accessToken = await getPayPalAccessToken();
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const baseUrl = publicEnv.NEXT_PUBLIC_BASE_URL;
 
     const orderData = {
       intent: 'CAPTURE',

@@ -13,6 +13,7 @@ import { PaymentPostAPIResponse } from '@/types/fe';
 import { toast } from '@/lib/toast';
 import Loader from '@/components/Loader';
 import { downloadInvoice } from '@/utils/payment-utils';
+import { formatCurrency } from '@/lib/utils';
 
 const PaymentSuccessPage = () => {
   const router = useRouter();
@@ -110,7 +111,7 @@ const PaymentSuccessPage = () => {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <p className="text-sm text-gray-400">Amount Paid</p>
-                    <p className="text-xl font-semibold text-white">${paymentDetails.amount}</p>
+                    <p className="text-xl font-semibold text-white">{formatCurrency(paymentDetails.amount, 'USD')}</p>
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm text-gray-400">Payment Method</p>

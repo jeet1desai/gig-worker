@@ -44,6 +44,7 @@ import { setLoading } from '@/store/slices/gigs';
 import apiService from '@/services/api';
 import { CreateProvidersReviewAPIResponse } from '@/types/fe';
 import { toast } from '@/lib/toast';
+import Loader from '@/components/Loader';
 
 export default function GigDetailPage() {
   const router = useRouter();
@@ -152,10 +153,11 @@ export default function GigDetailPage() {
       );
 
       if (response.data.message) {
-        const response = await dispatch(gigService.getGigById(id as string));
-        if (response && response.data) {
-          setGig(response.data);
+        const response_data = await dispatch(gigService.getGigById(id as string));
+        if (response_data && response_data.data) {
+          setGig(response_data.data);
         }
+        toast.success(response.data.message);
       }
     } catch (error: any) {
       const message = error?.response?.data?.error?.message || error?.message || 'Error while marking gig as completed';
@@ -175,7 +177,7 @@ export default function GigDetailPage() {
     setIsReviewModalOpen(true);
   };
 
-  if (loading || !gig) {
+  if (!gig) {
     return (
       <DashboardLayout>
         <GigDetailsShimmer />
@@ -185,6 +187,7 @@ export default function GigDetailPage() {
 
   return (
     <DashboardLayout>
+      <Loader isLoading={loading} />
       <main
         className="min-h-screen py-8"
         style={{ filter: loading || !gig ? 'blur(2px)' : 'none', pointerEvents: loading || !gig ? 'none' : 'auto' }}
