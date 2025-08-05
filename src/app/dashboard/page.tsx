@@ -11,7 +11,7 @@ import { UserProfileDetails } from '@/types/shared/user';
 
 const Dashboard = async () => {
   const session = await getServerSession(authOptions);
-  const loggedInUserId = session?.user?.id;
+  const loggedInUserId = session?.user?.username;
   const subscriptionType = session?.user?.subscription;
   const user = await getUserDetails(loggedInUserId);
   return (

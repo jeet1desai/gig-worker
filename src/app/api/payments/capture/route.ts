@@ -97,7 +97,8 @@ export async function POST(request: NextRequest) {
       amount: payment.amount.toString(),
       transactionId: captureResult.purchase_units[0]?.payments?.captures[0]?.id || 'N/A',
       providerName: acceptedBid?.provider.first_name + ' ' + acceptedBid?.provider.last_name,
-      gigTitle: payment.gig.title
+      gigTitle: payment.gig.title,
+      paymentId: payment.id.toString()
     };
 
     return successResponse({

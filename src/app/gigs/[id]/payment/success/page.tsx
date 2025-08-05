@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { CheckCircle, DollarSign, User, Calendar } from 'lucide-react';
+import { CheckCircle, DollarSign, User, Calendar, Download } from 'lucide-react';
 import DashboardLayout from '@/components/layouts/layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,19 +12,23 @@ import { PRIVATE_API_ROUTES, PRIVATE_ROUTE } from '@/constants/app-routes';
 import { PaymentPostAPIResponse } from '@/types/fe';
 import { toast } from '@/lib/toast';
 import Loader from '@/components/Loader';
+import { downloadInvoice } from '@/utils/payment-utils';
 
 const PaymentSuccessPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [paymentDetails, setPaymentDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [downloadingInvoice, setDownloadingInvoice] = useState(false);
 
   const token = searchParams.get('token');
+  const payerId = searchParams.get('PayerID');
 
   useEffect(() => {
     const capturePayment = async () => {
       if (!token) {
         setLoading(false);
+        toast.error('Payment token not found. Please try again.');
         return;
       }
 
@@ -40,10 +44,11 @@ const PaymentSuccessPage = () => {
         );
 
         if (response.data.message) {
-          setPaymentDetails(response.data.data);
+          const paymentData = response.data.data;
+          setPaymentDetails(paymentData);
         }
       } catch (error: any) {
-        const message = error?.response?.data?.error?.message || error?.message || 'Error in paymenyt processing';
+        const message = error?.response?.data?.error?.message || error?.message || 'Error in payment processing';
         toast.error(message);
       } finally {
         setLoading(false);
@@ -51,10 +56,26 @@ const PaymentSuccessPage = () => {
     };
 
     capturePayment();
-  }, [token]);
+  }, [token, payerId]);
 
   const handleNavigation = (path: string) => {
     router.push(path);
+  };
+
+  const handleDownloadInvoice = async () => {
+    if (!paymentDetails?.paymentId) {
+      toast.error('Payment ID not found');
+      return;
+    }
+
+    setDownloadingInvoice(true);
+    try {
+      await downloadInvoice(paymentDetails.paymentId);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDownloadingInvoice(false);
+    }
   };
 
   if (loading) {
@@ -127,6 +148,14 @@ const PaymentSuccessPage = () => {
           )}
 
           <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+            <Button
+              onClick={handleDownloadInvoice}
+              disabled={downloadingInvoice}
+              className="bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-500 hover:to-emerald-500"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              {downloadingInvoice ? 'Downloading...' : 'Download Invoice'}
+            </Button>
             <Button
               onClick={() => handleNavigation(PRIVATE_ROUTE.GIGS)}
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500"

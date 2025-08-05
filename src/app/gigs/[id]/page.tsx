@@ -407,7 +407,7 @@ export default function GigDetailPage() {
             </div>
 
             <div className="lg:col-span-1">
-              {session?.user?.id === gig?.user_id && Object.keys(gig?.accepted_bid).length <= 0 && (
+              {session?.user?.id === gig?.user_id && Object.keys(gig?.accepted_bid || {}).length <= 0 && (
                 <Card className="rounded-lg border-gray-700/50 bg-inherit p-0">
                   <CardContent className="p-4">
                     <CardTitle className="text-white">Bids ({bids.length || 0})</CardTitle>
@@ -538,7 +538,7 @@ export default function GigDetailPage() {
                   </CardContent>
                 </Card>
               )}
-              {session?.user?.id === gig?.user_id && Object.keys(gig?.accepted_bid).length > 0 && (
+              {session?.user?.id === gig?.user_id && Object.keys(gig?.accepted_bid || {}).length > 0 && (
                 <Card className="rounded-lg border-gray-700/50 bg-inherit p-0">
                   <CardContent className="p-4">
                     <CardTitle className="text-white">Accepted Bid</CardTitle>
