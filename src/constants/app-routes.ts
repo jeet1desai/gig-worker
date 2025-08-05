@@ -37,7 +37,8 @@ export enum PRIVATE_ROUTE {
   ADMIN_ADD_CMS_PAGES_PATH = '/admin/cms_pages/add',
   ADMIN_EDIT_CMS_PAGES_PATH = '/admin/cms_pages/edit',
   GIG_PAYEMNT_SUCCESS_PATH = '/payment/success',
-  GIG_PAYEMNT_CANCLE_PATH = '/payment/cancel'
+  GIG_PAYEMNT_CANCLE_PATH = '/payment/cancel',
+  GIG_PIPELINE_PATH = '/pipeline'
 }
 
 export enum PUBLIC_API_ROUTES {

@@ -1,4 +1,4 @@
-import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelLeft, Globe, FileText, List } from 'lucide-react';
+import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelLeft, Globe, FileText, List, Share2 } from 'lucide-react';
 import { PayPalButtonStyle } from '@paypal/paypal-js';
 import { PRIVATE_ROUTE } from './app-routes';
 import { publicEnv } from '@/lib/config/publicEnv';
@@ -30,7 +30,8 @@ export const DASHBOARD_NAVIGATION_MENU = [
     icon: BarChart3,
     href: PRIVATE_ROUTE.DASHBOARD
   },
-  { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.GIGS }
+  { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.GIGS },
+  { name: 'Pipeline', icon: Share2, href: PRIVATE_ROUTE.GIG_PIPELINE_PATH }
 ];
 
 export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
