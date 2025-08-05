@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock, DollarSign, MapPin, MessageSquare, Star, View } from 'lucide-react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +15,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 
-import { RootState, useSelector } from '@/store/store';
+import { RootState, useDispatch, useSelector } from '@/store/store';
+import { clearPipeline } from '@/store/slices/gigs';
+import { pipelineService } from '@/services/pipeline.services';
+
+import { formatDate } from '@/lib/date-format';
 
 const userGigs = {
   open: [
@@ -29,7 +34,10 @@ const userGigs = {
       deadline: '2023-12-15',
       provider: { id: 1, name: 'John Doe', rating: 4.8, completedGigs: 24, avatar: '/placeholder-avatar.jpg' },
       startedOn: '2023-11-01',
-      progress: 65
+      progress: 65,
+      budget: '$1000 - $2000',
+      location: 'New York',
+      posted: '1 week ago'
     },
     {
       id: 3,
@@ -38,7 +46,10 @@ const userGigs = {
       deadline: '2023-12-15',
       provider: { id: 1, name: 'John Doe', rating: 4.8, completedGigs: 24, avatar: '/placeholder-avatar.jpg' },
       startedOn: '2023-11-01',
-      progress: 65
+      progress: 65,
+      budget: '$1000 - $2000',
+      location: 'New York',
+      posted: '1 week ago'
     }
   ],
   completed: [
@@ -63,13 +74,26 @@ const providerBids = {
 const UserPipelinePage = ({
   activeUserTab,
   setActiveUserTab,
-  setIsReviewDialogOpen
+  setIsReviewDialogOpen,
+  pipeline,
+  pagination,
+  counts
 }: {
   activeUserTab: string;
   setActiveUserTab: (tab: string) => void;
   setIsReviewDialogOpen: (open: boolean) => void;
+  pipeline: any;
+  pagination: any;
+  counts: any;
 }) => {
+  const dispatch = useDispatch();
   const router = useRouter();
+
+  const loadUserMore = useCallback(() => {
+    if (pagination.page < pagination.totalPages) {
+      dispatch(pipelineService.getUserPipeline({ page: pagination.page + 1, status: activeUserTab, limit: 10 }) as any);
+    }
+  }, [pagination.page, pagination.totalPages]);
 
   return (
     <div className="space-y-6">
@@ -83,177 +107,235 @@ const UserPipelinePage = ({
       <Tabs value={activeUserTab} onValueChange={setActiveUserTab}>
         <TabsList className="mb-4 grid w-full grid-cols-3 bg-gray-800 p-1">
           <TabsTrigger value="open" className="text-gray-100 data-[state=active]:text-black">
-            Open ({userGigs.open.length})
+            Open ({counts.open})
           </TabsTrigger>
           <TabsTrigger value="in_progress" className="text-gray-100 data-[state=active]:text-black">
-            In Progress ({userGigs.inProgress.length})
+            In Progress ({counts.inProgress})
           </TabsTrigger>
           <TabsTrigger value="completed" className="text-gray-100 data-[state=active]:text-black">
-            Completed ({userGigs.completed.length})
+            Completed ({counts.completed})
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="open" className="space-y-4">
-          {userGigs.open.map((gig) => (
-            <Card key={gig.id} className="gap-2 bg-inherit">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <CardTitle onClick={() => router.push(`/gigs/${gig.id}`)} className="text-xl font-medium">
-                  {gig.title}
-                </CardTitle>
-                <Badge variant="outline" className="bg-green-600 text-white">
-                  Open
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="text-muted-foreground flex items-center space-x-4 text-sm">
-                  <div className="flex items-center">
-                    <DollarSign className="mr-1 h-4 w-4" /> {gig.budget}
-                  </div>
-                  <div className="flex items-center">
-                    <MapPin className="mr-1 h-4 w-4" /> {gig.location}
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="mr-1 h-4 w-4" /> {gig.posted}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <TabsContent value="open">
+          <InfiniteScroll
+            dataLength={pipeline.open.length}
+            next={loadUserMore}
+            hasMore={pagination.page < pagination.totalPages}
+            loader={<>Loading...</>}
+            scrollThreshold={0.9}
+            className="space-y-4"
+          >
+            {pipeline.open.map((gig: any) => {
+              return (
+                <Card key={gig.id} className="cursor-pointer gap-2 bg-inherit" onClick={() => router.push(`/gigs/${gig.slug}`)}>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                    <CardTitle className="text-xl font-medium">{gig.title}</CardTitle>
+                    <Badge variant="outline" className="bg-green-600 text-white">
+                      Open
+                    </Badge>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-muted-foreground flex items-center space-x-4 text-sm">
+                      <div className="flex items-center">
+                        <DollarSign className="mr-1 h-4 w-4" /> {gig?.price_range?.min} - {gig?.price_range?.max}
+                      </div>
+                      <div className="flex items-center">
+                        <MapPin className="mr-1 h-4 w-4" /> {gig?.location}
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="mr-1 h-4 w-4" /> {formatDate(gig?.start_date)}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </InfiniteScroll>
         </TabsContent>
 
-        <TabsContent value="in_progress" className="space-y-4">
-          {userGigs.inProgress.map((gig) => (
-            <Card key={gig.id} className="gap-2 overflow-hidden bg-inherit">
-              <CardHeader className="flex flex-row items-start justify-between space-y-0">
-                <CardTitle onClick={() => router.push(`/gigs/${gig.id}`)} className="text-xl font-medium">
-                  {gig.title}
-                </CardTitle>
-                <div className="text-right">
-                  <Badge variant="secondary" className="mt-2">
-                    {gig.status}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <Separator className="my-4" />
-
-              <CardContent>
-                <div>
-                  <h4 className="mb-2 text-sm font-medium">Provider Working On This</h4>
-                  <div className="bg-muted/30 flex items-center justify-between rounded-lg p-2">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full">
-                        {/* <img src={gig.provider.avatar} alt={gig.provider.name} className="h-full w-full object-cover" /> */}
-                        <Avatar className="h-9 w-9">
-                          <AvatarImage src={gig.provider.avatar || ''} />
-                          <AvatarFallback className="bg-primary/10 text-primary font-semibold">{`${gig.provider.name[0]}`}</AvatarFallback>
-                        </Avatar>
-                      </div>
-                      <div>
-                        <p className="font-medium">{gig.provider.name}</p>
-                        <div className="text-muted-foreground flex items-center space-x-1 text-sm">
-                          <span>⭐ {gig.provider.rating}</span>
-                          <span>•</span>
-                          <span>{gig.provider.completedGigs} gigs</span>
-                        </div>
+        <TabsContent value="in_progress">
+          <InfiniteScroll
+            dataLength={pipeline.inProgress.length}
+            next={loadUserMore}
+            hasMore={pagination.page < pagination.totalPages}
+            loader={<>Loading...</>}
+            scrollThreshold={0.9}
+            className="space-y-4"
+          >
+            {pipeline.inProgress.map((gig: any) => {
+              return (
+                <Card key={gig.id} className="gap-2 overflow-hidden bg-inherit">
+                  <CardHeader className="flex flex-col items-start space-y-0">
+                    <div className="flex w-full flex-row items-start justify-between space-y-0">
+                      <CardTitle className="text-xl font-medium">{gig.title}</CardTitle>
+                      <div className="text-right">
+                        <Badge variant="secondary" className="mt-2">
+                          In Progress
+                        </Badge>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Button className="bg-inherit" variant="outline" size="sm" onClick={() => router.push(`/messages/${gig.provider.id}`)}>
-                        <View className="h-4 w-4" />
-                      </Button>
-                      <Button className="bg-inherit" variant="outline" size="sm" onClick={() => router.push(`/messages/${gig.provider.id}`)}>
-                        <MessageSquare className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
 
-                <div className="mt-6 flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <p className="text-muted-foreground text-sm">Started on {gig.startedOn}</p>
-                    <p className="text-muted-foreground text-sm">Deadline: {gig.deadline}</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Button className="bg-inherit" variant="outline" size="sm" onClick={() => router.push(`/gigs/${gig.id}`)}>
-                      View Details
-                    </Button>
-                    <Button onClick={() => setIsReviewDialogOpen(true)} className="bg-inherit" variant="outline" size="sm">
-                      Mark As Completed
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                    <div className="text-muted-foreground flex items-center space-x-4 text-sm">
+                      <div className="flex items-center">
+                        <DollarSign className="mr-1 h-4 w-4" /> {gig?.acceptedBid?.reduce((acc: number, bid: any) => acc + Number(bid.bid_price), 0)}
+                      </div>
+                      <div className="flex items-center">
+                        <MapPin className="mr-1 h-4 w-4" /> {gig.location}
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="mr-1 h-4 w-4" /> {formatDate(gig?.start_date)}
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <Separator className="my-4" />
+                  <CardContent>
+                    <div>
+                      <h4 className="mb-2 text-sm font-medium">Provider Working On This</h4>
+                      <div className="space-y-2">
+                        {gig?.acceptedBid?.map((bid: any) => {
+                          return (
+                            <div className="bg-muted/30 flex items-center justify-between rounded-lg p-2">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full">
+                                  <Avatar className="h-9 w-9">
+                                    <AvatarImage src={bid.provider.profile_url || ''} />
+                                    <AvatarFallback className="bg-primary/10 text-primary font-semibold">{`${bid.provider.first_name[0]}`}</AvatarFallback>
+                                  </Avatar>
+                                </div>
+                                <div>
+                                  <p className="font-medium">
+                                    {bid.provider.first_name} {bid.provider.last_name}
+                                  </p>
+                                  <div className="text-muted-foreground flex items-center space-x-1 text-sm">
+                                    <span>⭐ 2000</span>
+                                    <span>•</span>
+                                    <span>200 gigs</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Button className="bg-inherit" variant="outline" size="sm">
+                                  <View className="h-4 w-4" />
+                                </Button>
+                                <Button className="bg-inherit" variant="outline" size="sm">
+                                  <MessageSquare className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="mt-6 flex items-center justify-between">
+                      <div className="flex flex-col items-center">
+                        <p className="text-muted-foreground text-sm">Started on: {formatDate(gig.start_date)}</p>
+                        <p className="text-muted-foreground text-sm">Deadline: {formatDate(gig.end_date)}</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button className="bg-inherit" variant="outline" size="sm" onClick={() => router.push(`/gigs/${gig.slug}`)}>
+                          View Details
+                        </Button>
+                        <Button onClick={() => setIsReviewDialogOpen(true)} className="bg-inherit" variant="outline" size="sm">
+                          Mark As Completed
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </InfiniteScroll>
         </TabsContent>
 
         <TabsContent value="completed" className="space-y-4">
-          {userGigs.completed.map((gig) => (
-            <Card key={gig.id} className="gap-2 overflow-hidden bg-inherit">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <div>
-                  <h3 className="text-lg font-semibold">{gig.title}</h3>
-                  <div className="mt-2 flex items-center">
-                    <Badge variant="outline" className="bg-green-50 text-green-700">
-                      Completed
-                    </Badge>
-                    <div className="ml-2 flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <svg
-                          key={i}
-                          className={`h-4 w-4 ${i < Math.floor(gig.rating) ? 'text-yellow-400' : 'text-gray-300'}`}
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      ))}
-                      <span className="text-muted-foreground ml-1 text-sm">{gig.rating}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-muted-foreground text-sm">Completed on {gig.completedOn}</p>
-                  <p className="text-sm font-medium">Total: {gig.totalEarned}</p>
-                </div>
-              </CardHeader>
-
-              <Separator className="my-4" />
-
-              <CardContent>
-                <div>
-                  <h4 className="mb-2 text-sm font-medium">Provider</h4>
-                  <div className="bg-muted/30 flex items-center justify-between rounded-lg p-2">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full">
-                        {/* <img src={gig.provider.avatar} alt={gig.provider.name} className="h-full w-full object-cover" /> */}
-                        <Avatar className="h-9 w-9">
-                          <AvatarImage src={gig.provider.avatar || ''} />
-                          <AvatarFallback className="bg-primary/10 text-primary font-semibold">{`${gig.provider.name[0]}`}</AvatarFallback>
-                        </Avatar>
-                      </div>
-                      <div>
-                        <p className="font-medium">{gig.provider.name}</p>
-                        <div className="text-muted-foreground flex items-center space-x-1 text-sm">
-                          <span>⭐ {gig.provider.rating}</span>
-                          <span>•</span>
-                          <span>{gig.provider.completedGigs} gigs</span>
+          <InfiniteScroll
+            dataLength={pipeline.completed.length}
+            next={loadUserMore}
+            hasMore={pagination.page < pagination.totalPages}
+            loader={<>Loading...</>}
+            scrollThreshold={0.9}
+            className="space-y-4"
+          >
+            {pipeline.completed.map((gig: any) => {
+              return (
+                <Card key={gig.id} className="gap-2 overflow-hidden bg-inherit">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                    <div>
+                      <h3 className="text-lg font-semibold">{gig.title}</h3>
+                      <div className="mt-2 flex items-center">
+                        <Badge variant="outline" className="bg-green-50 text-green-700">
+                          Completed
+                        </Badge>
+                        <div className="ml-2 flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <svg
+                              key={i}
+                              className={`h-4 w-4 ${i < Math.floor(gig.rating) ? 'text-yellow-400' : 'text-gray-300'}`}
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}
+                          <span className="text-muted-foreground ml-1 text-sm">{gig.rating}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Button className="bg-inherit" variant="outline" size="sm" onClick={() => router.push(`/messages/${gig.provider.id}`)}>
-                        <View className="h-4 w-4" />
-                      </Button>
-                      <Button className="bg-inherit" variant="outline" size="sm" onClick={() => router.push(`/messages/${gig.provider.id}`)}>
-                        <MessageSquare className="h-4 w-4" />
-                      </Button>
+                    <div className="text-right">
+                      <p className="text-muted-foreground text-sm">Completed on {formatDate(gig.completed_at)}</p>
+                      <p className="text-sm font-medium">
+                        Total: {gig?.acceptedBid?.reduce((acc: number, bid: any) => acc + Number(bid.bid_price), 0)}
+                      </p>
                     </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  </CardHeader>
+
+                  <Separator className="my-4" />
+
+                  <CardContent>
+                    <div>
+                      <h4 className="mb-2 text-sm font-medium">Provider</h4>
+                      <div className="space-y-2">
+                        {gig?.acceptedBid?.map((bid: any) => {
+                          return (
+                            <div className="bg-muted/30 flex items-center justify-between rounded-lg p-2">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full">
+                                  <Avatar className="h-9 w-9">
+                                    <AvatarImage src={bid.provider.profile_url || ''} />
+                                    <AvatarFallback className="bg-primary/10 text-primary font-semibold">{`${bid.provider.first_name[0]}`}</AvatarFallback>
+                                  </Avatar>
+                                </div>
+                                <div>
+                                  <p className="font-medium">
+                                    {bid.provider.first_name} {bid.provider.last_name}
+                                  </p>
+                                  <div className="text-muted-foreground flex items-center space-x-1 text-sm">
+                                    <span>⭐ 2000</span>
+                                    <span>•</span>
+                                    <span>200 gigs</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Button className="bg-inherit" variant="outline" size="sm">
+                                  <View className="h-4 w-4" />
+                                </Button>
+                                <Button className="bg-inherit" variant="outline" size="sm">
+                                  <MessageSquare className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </InfiniteScroll>
         </TabsContent>
       </Tabs>
     </div>
@@ -356,7 +438,10 @@ const ProviderPipelinePage = ({
 };
 
 const PipelinePage = () => {
+  const dispatch = useDispatch();
+
   const { role } = useSelector((state: RootState) => state.user);
+  const { userPipelineCounts, providerPipelineCounts, pagination, userPipeline, providerPipeline } = useSelector((state: RootState) => state.gigs);
 
   const [activeUserTab, setActiveUserTab] = useState('open');
   const [activeProviderTab, setActiveProviderTab] = useState('pending');
@@ -365,6 +450,10 @@ const PipelinePage = () => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
 
+  useEffect(() => {
+    dispatch(pipelineService.getUserPipeline({ page: 1, status: activeUserTab, limit: 10 }) as any);
+  }, [activeUserTab]);
+
   const handleSubmit = async () => {};
 
   return (
@@ -372,7 +461,14 @@ const PipelinePage = () => {
       <div className="min-h-screen py-8">
         <div className="container mx-auto px-6">
           {role === 'user' ? (
-            <UserPipelinePage activeUserTab={activeUserTab} setActiveUserTab={setActiveUserTab} setIsReviewDialogOpen={setIsReviewDialogOpen} />
+            <UserPipelinePage
+              activeUserTab={activeUserTab}
+              setActiveUserTab={setActiveUserTab}
+              setIsReviewDialogOpen={setIsReviewDialogOpen}
+              pipeline={userPipeline}
+              pagination={pagination}
+              counts={userPipelineCounts}
+            />
           ) : (
             <ProviderPipelinePage activeProviderTab={activeProviderTab} setActiveProviderTab={setActiveProviderTab} />
           )}

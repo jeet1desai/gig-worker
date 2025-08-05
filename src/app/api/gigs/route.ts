@@ -278,7 +278,8 @@ export async function GET(request: Request) {
         user_id: {
           not: session.user.id
         }
-      })
+      }),
+      is_removed: false
     };
 
     const [total, gigs] = await Promise.all([

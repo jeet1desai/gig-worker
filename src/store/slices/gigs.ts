@@ -7,7 +7,20 @@ interface GigState {
   gigs: any[];
   ownGigs: any[];
   bids: any[];
+  userPipeline: {
+    open: any[];
+    inProgress: any[];
+    completed: any[];
+  };
+  providerPipeline: any[];
   pagination: any;
+
+  userPipelineCounts: {
+    open: number;
+    inProgress: number;
+    completed: number;
+  };
+  providerPipelineCounts: any;
 }
 
 const initialState: GigState = {
@@ -16,7 +29,20 @@ const initialState: GigState = {
   gigs: [],
   ownGigs: [],
   bids: [],
-  pagination: DEFAULT_PAGINATION
+  userPipeline: {
+    open: [],
+    inProgress: [],
+    completed: []
+  },
+  providerPipeline: [],
+  pagination: DEFAULT_PAGINATION,
+
+  userPipelineCounts: {
+    open: 0,
+    inProgress: 0,
+    completed: 0
+  },
+  providerPipelineCounts: null
 };
 
 const gigsSlice = createSlice({
@@ -58,6 +84,47 @@ const gigsSlice = createSlice({
       const { id, status } = action.payload;
       state.bids = state.bids.map((bid) => (bid.id === id ? { ...bid, status: status === 'reject' ? 'rejected' : 'accepted' } : bid));
     },
+    setUserPipeline: (state, action: PayloadAction<{ gigs: any[]; pagination: any; counts: any; status: string }>) => {
+      const { gigs, pagination, counts, status } = action.payload;
+      if (pagination.page === 1) {
+        if (status === 'open') {
+          state.userPipeline.open = gigs;
+        } else if (status === 'in_progress') {
+          state.userPipeline.inProgress = gigs;
+        } else if (status === 'completed') {
+          state.userPipeline.completed = gigs;
+        }
+      } else {
+        if (status === 'open') {
+          state.userPipeline.open = [...state.userPipeline.open, ...gigs];
+        } else if (status === 'in_progress') {
+          state.userPipeline.inProgress = [...state.userPipeline.inProgress, ...gigs];
+        } else if (status === 'completed') {
+          state.userPipeline.completed = [...state.userPipeline.completed, ...gigs];
+        }
+      }
+      state.userPipelineCounts = counts;
+      state.pagination = pagination;
+    },
+    setProviderPipeline: (state, action: PayloadAction<{ gigs: any[]; pagination: any; counts: any }>) => {
+      const { gigs, pagination, counts } = action.payload;
+      if (pagination.page === 1) {
+        state.providerPipeline = gigs;
+      } else {
+        state.providerPipeline = [...state.providerPipeline, ...gigs];
+      }
+      // state.providerPipelineCounts = counts;
+      state.pagination = pagination;
+    },
+    clearPipeline: (state) => {
+      state.userPipeline = {
+        open: [],
+        inProgress: [],
+        completed: []
+      };
+      state.providerPipeline = [];
+      state.pagination = DEFAULT_PAGINATION;
+    },
     clearBids: (state) => {
       state.bids = [];
       state.pagination = DEFAULT_PAGINATION;
@@ -74,6 +141,18 @@ const gigsSlice = createSlice({
   }
 });
 
-export const { setLoading, setGigs, setOwnGigs, setBids, clearBids, clearGigs, removeGig, updateBid } = gigsSlice.actions;
+export const {
+  setLoading,
+  setGigs,
+  setOwnGigs,
+  setBids,
+  clearBids,
+  clearGigs,
+  removeGig,
+  updateBid,
+  setUserPipeline,
+  setProviderPipeline,
+  clearPipeline
+} = gigsSlice.actions;
 
 export default gigsSlice.reducer;
