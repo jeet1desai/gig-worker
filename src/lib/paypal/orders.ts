@@ -8,10 +8,11 @@ interface CreateOrderParams {
   amount: string;
   gigId: string;
   paymentId: string;
+  slug: string
   description: string;
 }
 
-export async function createPayPalOrder({ amount, gigId, paymentId, description }: CreateOrderParams) {
+export async function createPayPalOrder({ amount, gigId, paymentId, description, slug }: CreateOrderParams) {
   try {
     const accessToken = await getPayPalAccessToken();
 
@@ -31,8 +32,8 @@ export async function createPayPalOrder({ amount, gigId, paymentId, description 
         }
       ],
       application_context: {
-        return_url: `${baseUrl}${PRIVATE_ROUTE.GIGS}/${gigId}${PRIVATE_ROUTE.GIG_PAYEMNT_SUCCESS_PATH}`,
-        cancel_url: `${baseUrl}${PRIVATE_ROUTE.GIGS}/${gigId}${PRIVATE_ROUTE.GIG_PAYEMNT_CANCLE_PATH}`
+        return_url: `${baseUrl}${PRIVATE_ROUTE.GIGS}/${slug}${PRIVATE_ROUTE.GIG_PAYEMNT_SUCCESS_PATH}`,
+        cancel_url: `${baseUrl}${PRIVATE_ROUTE.GIGS}/${slug}${PRIVATE_ROUTE.GIG_PAYEMNT_CANCLE_PATH}`
       }
     };
 

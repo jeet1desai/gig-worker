@@ -19,12 +19,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const { orderId } = await request.json();
+    const { orderId, slug } = await request.json();
 
-    if (!orderId) {
+    if (!orderId || !slug) {
       return errorResponse({
         code: 'BAD_REQUEST',
-        message: 'Missing order ID',
+        message: 'Missing order ID or slug',
         statusCode: HttpStatusCode.BAD_REQUEST
       });
     }
@@ -39,10 +39,14 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    const gig_details = await prisma.gig.findUnique({
+      where: { slug: slug }
+    });
+
     const payment = await prisma.payment.findFirst({
       where: {
         payment_method: 'paypal',
-        status: PAYMENT_STATUS.held
+        gig_id: gig_details?.id
       },
       include: {
         gig: {
@@ -67,16 +71,20 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    await prisma.payment.update({
-      where: { id: payment.id },
-      data: {
-        status: PAYMENT_STATUS.completed,
-        request_status: PAYMENT_REQUEST_STATUS.accepted
-      }
-    });
+    if (payment.status === PAYMENT_STATUS.held || payment.request_status === PAYMENT_REQUEST_STATUS.pending) {
+      await prisma.payment.update({
+        where: { id: payment.id },
+        data: {
+          status: PAYMENT_STATUS.completed,
+          request_status: PAYMENT_REQUEST_STATUS.accepted
+        }
+      });
+    }
+
+    const earning_details = await prisma.providerEarning.findFirst({ where: { gig_id: payment.gig_id, status: EARN_STATUS.completed } });
 
     const acceptedBid = payment.gig.bids[0];
-    if (acceptedBid) {
+    if (acceptedBid && !earning_details) {
       await prisma.providerEarning.create({
         data: {
           user_id: payment.gig.user_id,

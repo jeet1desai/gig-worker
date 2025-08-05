@@ -173,9 +173,10 @@ export interface AdminGigsList {
 export interface PaymentPostAPIResponse {
   data: {
     amount: string;
-    transactionId: any;
+    transactionId: string;
     providerName: string;
     gigTitle: string;
+    paymentId: string;
   };
   message?: string;
   statusCode?: number;

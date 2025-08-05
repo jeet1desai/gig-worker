@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle, DollarSign, User, Calendar, Download } from 'lucide-react';
 import DashboardLayout from '@/components/layouts/layout';
 import { Button } from '@/components/ui/button';
@@ -17,13 +17,19 @@ import { formatCurrency } from '@/lib/utils';
 
 const PaymentSuccessPage = () => {
   const router = useRouter();
+  const { id: slug } = useParams();
   const searchParams = useSearchParams();
-  const [paymentDetails, setPaymentDetails] = useState<any>(null);
+  const [paymentDetails, setPaymentDetails] = useState<{
+    amount: string;
+    transactionId: string;
+    providerName: string;
+    gigTitle: string;
+    paymentId: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloadingInvoice, setDownloadingInvoice] = useState(false);
 
   const token = searchParams.get('token');
-  const payerId = searchParams.get('PayerID');
 
   useEffect(() => {
     const capturePayment = async () => {
@@ -37,7 +43,8 @@ const PaymentSuccessPage = () => {
         const response = await apiService.post<PaymentPostAPIResponse>(
           `${PRIVATE_API_ROUTES.PAYMENT_CAPTURE_API}`,
           {
-            orderId: token
+            orderId: token,
+            slug: slug
           },
           {
             withAuth: true
@@ -57,7 +64,7 @@ const PaymentSuccessPage = () => {
     };
 
     capturePayment();
-  }, [token, payerId]);
+  }, [token]);
 
   const handleNavigation = (path: string) => {
     router.push(path);

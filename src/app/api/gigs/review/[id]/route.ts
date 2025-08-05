@@ -64,6 +64,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           amount: payment.amount.toString(),
           gigId: gigId,
           paymentId: payment.id.toString(),
+          slug: gig.slug,
           description: `Payment for gig: ${gig.title}`
         });
 
@@ -120,6 +121,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           amount: acceptedBid.bid_price.toString(),
           gigId: gigId,
           paymentId: payment.id.toString(),
+          slug: gig.slug,
           description: `Payment for gig: ${gig.title}`
         });
 
