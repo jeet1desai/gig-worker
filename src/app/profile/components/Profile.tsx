@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Dot, StarIcon, PencilIcon, UserIcon, BriefcaseIcon } from 'lucide-react';
+import { Dot, StarIcon, PencilIcon, UserIcon, BriefcaseIcon, Loader2, SquareCheckBig } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -169,7 +168,7 @@ export default function Profile({ user, isOwnProfile }: ProfileProps) {
                 }`}
                 onClick={() => setActiveTab('completed')}
               >
-                <BriefcaseIcon className="h-4 w-4" /> Completed Gigs
+                <SquareCheckBig className="h-4 w-4" /> Completed Gigs
               </button>
             </div>
 
