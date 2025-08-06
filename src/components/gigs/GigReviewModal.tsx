@@ -45,27 +45,29 @@ const GigReviewModal = ({
 
   useEffect(() => {
     if (showPaymentOnly && gigId) {
-      setIsLoading(true);
-      (async () => {
-        try {
-          const response = await apiService.post<CreateProvidersReviewAPIResponse>(
-            `${PRIVATE_API_ROUTES.CREATE_PROVIDER_REVIEW_API}/${gigId}`,
-            {},
-            { withAuth: true }
-          );
-          if (response.data?.data) {
-            setReviewResult(response.data.data);
-          } else {
-            toast.error(response.data?.message || 'Unable to fetch payment order.');
-          }
-        } catch (error: any) {
-          toast.error(error?.response?.data?.error?.message || error?.message || 'Unable to fetch payment order.');
-        } finally {
-          setIsLoading(false);
-        }
-      })();
+      fetchAlreadyReviewedPaymentDetails();
     }
   }, [showPaymentOnly, gigId]);
+
+  const fetchAlreadyReviewedPaymentDetails = async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiService.post<CreateProvidersReviewAPIResponse>(
+        `${PRIVATE_API_ROUTES.CREATE_PROVIDER_REVIEW_API}/${gigId}`,
+        {},
+        { withAuth: true }
+      );
+      if (response.data?.data) {
+        setReviewResult(response.data.data);
+      } else {
+        toast.error(response.data?.message || 'Unable to fetch payment order.');
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error?.message || error?.message || 'Unable to fetch payment order.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleRatingClick = (selectedRating: number) => {
     setRating(selectedRating);

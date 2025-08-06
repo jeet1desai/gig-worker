@@ -65,17 +65,19 @@ export default function GigDetailPage() {
 
   useEffect(() => {
     if (id) {
-      handleFetchGigDetails(id as string);
+      handleFetchGigDetails(id as string, true);
     }
   }, [id]);
 
-  const handleFetchGigDetails = async (id: string) => {
+  const handleFetchGigDetails = async (id: string, call_detail_api: boolean) => {
     try {
-      const response = await dispatch(gigService.getGigById(id) as any);
+      const response = await dispatch(gigService.getGigById(id));
       if (response && response.data) {
         setGig(response.data);
 
-        await dispatch(gigService.getBidsByGigId(id, 1, 5) as any);
+        if (call_detail_api) {
+          await dispatch(gigService.getBidsByGigId(id, 1, 5));
+        }
       }
     } catch (error) {
       console.error('Error fetching gig details:', error);
@@ -747,12 +749,7 @@ export default function GigDetailPage() {
               setIsReviewModalOpen(false);
               setSelectedGigForReview(null);
             }}
-            fetchGigDetails={async () => {
-              const response = await dispatch(gigService.getGigById(id as string));
-              if (response && response.data) {
-                setGig(response.data);
-              }
-            }}
+            fetchGigDetails={() => handleFetchGigDetails(id as string, false)}
             gigId={selectedGigForReview.id}
             gigTitle={selectedGigForReview.title}
             bidAmount={selectedGigForReview.bidAmount}
