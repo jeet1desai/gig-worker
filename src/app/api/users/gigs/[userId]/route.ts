@@ -69,6 +69,12 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
               last_name: true,
               profile_url: true
             }
+          },
+          review_rating: {
+            select: {
+              rating: true,
+              rating_feedback: true
+            }
           }
         }
       });
