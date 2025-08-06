@@ -9,9 +9,9 @@ import { PayPalButtons, FUNDING } from '@paypal/react-paypal-js';
 
 import type { OnApproveData } from '@paypal/paypal-js';
 import PlanCard from '@/components/PlanCard';
-import { PRIVATE_API_ROUTES, PRIVATE_ROUTE } from '@/constants/app-routes';
+import { PRIVATE_ROUTE } from '@/constants/app-routes';
 import { ApiResponse } from '@/types/shared/api-response';
-import { ISafeActiveSubscription, ISafePlan, ISafeSubscription } from '@/types/fe/api-responses';
+import { ISafeActiveSubscription, ISafePlan } from '@/types/fe/api-responses';
 import { PAYPAL_BUTTON_CONFIG } from '@/constants';
 import { FREE_PLAN_ID } from '@/constants/plans';
 import Loader from '@/components/Loader';

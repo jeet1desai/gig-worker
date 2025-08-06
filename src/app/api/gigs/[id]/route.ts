@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
 
 import prisma from '@/lib/prisma';
-import { TIER } from '@prisma/client';
+import { BID_STATUS, GIG_STATUS, PAYMENT_STATUS, TIER } from '@prisma/client';
 import { uploadFile } from '@/lib/utils/file-upload';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { authOptions } from '../../auth/[...nextauth]/route';
@@ -186,7 +186,16 @@ export async function GET(request: Request, { params }: { params: { id: string }
             created_at: true,
             is_verified: true
           }
-        }
+        },
+        pipeline: true,
+        bids: {
+          where: { status: BID_STATUS.accepted },
+          include: {
+            provider: true
+          }
+        },
+        payment: true,
+        review_rating: true
       }
     });
 
@@ -198,6 +207,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       });
     }
 
+    const paymentStatus = gig.payment.length > 0 ? gig.payment[0].status : PAYMENT_STATUS.held;
     const userBid = await prisma.bid.findFirst({
       where: {
         gig_id: gig.id,
@@ -206,13 +216,47 @@ export async function GET(request: Request, { params }: { params: { id: string }
       select: { id: true }
     });
 
+    let accepted_bid = null;
+    if (gig.pipeline?.status === GIG_STATUS.completed || gig.pipeline?.status === GIG_STATUS.in_progress) {
+      accepted_bid = await prisma.bid.findFirst({
+        where: {
+          gig_id: gig.id,
+          status: BID_STATUS.accepted
+        },
+        include: {
+          provider: {
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true,
+              profile_url: true,
+              email: true
+            }
+          }
+        }
+      });
+    }
+
     return safeJsonResponse(
-      { success: true, message: 'Gig fetched successfully', data: { ...gig, hasBid: !!userBid } },
+      {
+        success: true,
+        message: 'Gig fetched successfully',
+        data: {
+          ...gig,
+          hasBid: !!userBid,
+          accepted_bid,
+          paymentStatus
+        }
+      },
       { status: HttpStatusCode.OK }
     );
   } catch (error) {
     console.error('Error fetching gig:', error);
-    return errorResponse({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to fetch gig', statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR });
+    return errorResponse({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to fetch gig',
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
+    });
   }
 }
 
@@ -248,12 +292,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       return errorResponse({ code: 'FORBIDDEN', message: 'Forbidden', statusCode: HttpStatusCode.FORBIDDEN });
     }
 
-    await prisma.gigPipeline.deleteMany({
-      where: { gig_id: BigInt(gigId) }
-    });
-    await prisma.gig.delete({
-      where: { id: BigInt(gigId) }
-    });
+    await prisma.gig.update({ where: { id: BigInt(gigId) }, data: { is_removed: true } });
 
     return safeJsonResponse(
       {

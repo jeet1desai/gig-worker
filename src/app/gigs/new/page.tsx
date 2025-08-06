@@ -23,7 +23,6 @@ import { formatDate, formatDateInternational } from '@/lib/date-format';
 import { useDispatch } from '@/store/store';
 import { gigService } from '@/services/gig.services';
 import { TimePicker } from '@/components/TimePicker';
-import { PRIVATE_ROUTE } from '@/constants/app-routes';
 
 const TIER_OPTIONS = [
   { value: 'basic', label: 'Basic' },
@@ -98,7 +97,7 @@ const NewGigPage = () => {
   };
 
   const redirectToPreviousPage = () => {
-    router.push(PRIVATE_ROUTE.GIGS);
+    router.back();
   };
 
   return (
