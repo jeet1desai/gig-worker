@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Star, DollarSign, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DialogFooter } from '@/components/ui/dialog';
@@ -18,18 +18,54 @@ import { formatCurrency } from '@/lib/utils';
 interface GigReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
+  fetchGigDetails: () => void;
   gigId: string;
   gigTitle: string;
   bidAmount: number;
   providerName: string;
+  showPaymentOnly: boolean;
 }
 
-const GigReviewModal = ({ isOpen, onClose, gigId, gigTitle, bidAmount, providerName }: GigReviewModalProps) => {
+const GigReviewModal = ({
+  isOpen,
+  onClose,
+  fetchGigDetails,
+  gigId,
+  gigTitle,
+  bidAmount,
+  providerName,
+  showPaymentOnly = false
+}: GigReviewModalProps) => {
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reviewResult, setReviewResult] = useState<ReviewDataTypeFromAPI | null>(null);
   const [errors, setErrors] = useState<{ rating?: string; feedback?: string }>({});
+  const [isLoading, setIsLoading] = useState(showPaymentOnly);
+
+  useEffect(() => {
+    if (showPaymentOnly && gigId) {
+      setIsLoading(true);
+      (async () => {
+        try {
+          const response = await apiService.post<CreateProvidersReviewAPIResponse>(
+            `${PRIVATE_API_ROUTES.CREATE_PROVIDER_REVIEW_API}/${gigId}`,
+            {},
+            { withAuth: true }
+          );
+          if (response.data?.data) {
+            setReviewResult(response.data.data);
+          } else {
+            toast.error(response.data?.message || 'Unable to fetch payment order.');
+          }
+        } catch (error: any) {
+          toast.error(error?.response?.data?.error?.message || error?.message || 'Unable to fetch payment order.');
+        } finally {
+          setIsLoading(false);
+        }
+      })();
+    }
+  }, [showPaymentOnly, gigId]);
 
   const handleRatingClick = (selectedRating: number) => {
     setRating(selectedRating);
@@ -70,9 +106,12 @@ const GigReviewModal = ({ isOpen, onClose, gigId, gigTitle, bidAmount, providerN
 
       if (response.data.message) {
         setReviewResult(response.data.data);
+        if (response.data.data.requiresPayment) {
+          await fetchGigDetails();
+        }
       }
     } catch (error: any) {
-      const message = error?.response?.data?.error?.message || error?.message || 'Error deleting subscription plan';
+      const message = error?.response?.data?.error?.message || error?.message || 'Error submitting review';
       toast.error(message);
     } finally {
       setIsSubmitting(false);
@@ -105,7 +144,12 @@ const GigReviewModal = ({ isOpen, onClose, gigId, gigTitle, bidAmount, providerN
       classSubTitle="text-gray-400"
       className="no-scrollbar max-w-2xl border-gray-700 bg-gray-800 text-white"
     >
-      {!reviewResult ? (
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20">
+          <Loader2 className="mb-4 h-10 w-10 animate-spin text-white" />
+          <p className="text-gray-300">Loading Payment Details</p>
+        </div>
+      ) : !reviewResult ? (
         <>
           <div className="space-y-6">
             <Card className="border-gray-600 bg-gray-700/50">
@@ -208,9 +252,9 @@ const GigReviewModal = ({ isOpen, onClose, gigId, gigTitle, bidAmount, providerN
             <>
               <div className="text-center">
                 <CheckCircle className="mx-auto mb-4 h-16 w-16 text-green-400" />
-                <h3 className="mb-2 text-xl font-semibold text-white">Review Submitted!</h3>
+                <h3 className="mb-2 text-xl font-semibold text-white">{`Review${showPaymentOnly ? ' Already' : ''} Submitted!`}</h3>
                 <p className="mb-6 text-gray-400">
-                  Your review has been submitted successfully. Please complete the payment to finalize the transaction.
+                  {`Your review has been${showPaymentOnly ? ' already' : ''} submitted successfully. Please complete the payment to finalize the transaction.`}
                 </p>
               </div>
 

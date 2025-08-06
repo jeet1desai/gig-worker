@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
 
 import prisma from '@/lib/prisma';
-import { BID_STATUS, GIG_STATUS, TIER } from '@prisma/client';
+import { BID_STATUS, GIG_STATUS, PAYMENT_STATUS, TIER } from '@prisma/client';
 import { uploadFile } from '@/lib/utils/file-upload';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { authOptions } from '../../auth/[...nextauth]/route';
@@ -187,7 +187,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
             is_verified: true
           }
         },
-        pipeline: true
+        pipeline: true,
+        bids: {
+          where: { status: BID_STATUS.accepted },
+          include: {
+            provider: true
+          }
+        },
+        payment: true,
+        review_rating: true
       }
     });
 
@@ -199,6 +207,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       });
     }
 
+    const paymentStatus = gig.payment.length > 0 ? gig.payment[0].status : PAYMENT_STATUS.held;
     const userBid = await prisma.bid.findFirst({
       where: {
         gig_id: gig.id,
@@ -235,7 +244,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
         data: {
           ...gig,
           hasBid: !!userBid,
-          accepted_bid
+          accepted_bid,
+          paymentStatus
         }
       },
       { status: HttpStatusCode.OK }

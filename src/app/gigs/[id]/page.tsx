@@ -34,7 +34,7 @@ import DashboardLayout from '@/components/layouts/layout';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatOnlyDate, getDaysBetweenDates } from '@/lib/date-format';
 import notificationHelper from '@/lib/utils/notifications';
-import { GIG_STATUS, NOTIFICATION_TYPE, ROLE } from '@prisma/client';
+import { GIG_STATUS, NOTIFICATION_TYPE, PAYMENT_STATUS, ROLE } from '@prisma/client';
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
 import { PRIVATE_API_ROUTES, PRIVATE_ROUTE } from '@/constants/app-routes';
@@ -55,7 +55,13 @@ export default function GigDetailPage() {
   const { loading, bids, pagination } = useSelector((state: RootState) => state.gigs);
   const [gig, setGig] = useState<any>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [selectedGigForReview, setSelectedGigForReview] = useState<any>(null);
+  const [selectedGigForReview, setSelectedGigForReview] = useState<{
+    id: string;
+    title: string;
+    bidAmount: number;
+    providerName: string;
+  } | null>(null);
+  const [showPaymentOnly, setShowPaymentOnly] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -168,6 +174,11 @@ export default function GigDetailPage() {
   };
 
   const handleReviewGig = (gigId: string, gigTitle: string, accepted_bid: { [key: string]: any }) => {
+    if (gig?.review_rating && gig?.paymentStatus === PAYMENT_STATUS.held) {
+      setShowPaymentOnly(true);
+    } else {
+      setShowPaymentOnly(false);
+    }
     setSelectedGigForReview({
       id: gigId,
       title: gigTitle,
@@ -199,24 +210,25 @@ export default function GigDetailPage() {
               Back to Gigs
             </Button>
             <div className="flex items-center space-x-2">
-              {gig?.pipeline?.status === GIG_STATUS.completed && session?.user.role === ROLE.user && (
+              {gig?.pipeline?.status === GIG_STATUS.completed && session?.user.id === gig?.user_id && (
                 <Button
                   onClick={() => handleReviewGig(gig?.id, gig?.title, gig?.accepted_bid)}
                   variant="outline"
                   className="border-blue-500 bg-transparent text-blue-500 hover:bg-blue-900/20 hover:text-blue-400"
+                  disabled={gig?.review_rating && gig?.paymentStatus === PAYMENT_STATUS.completed}
                 >
                   <Star className="mr-2 h-4 w-4" />
                   Review & Pay
                 </Button>
               )}
-              {gig?.pipeline?.status === GIG_STATUS.in_progress && session?.user.role === ROLE.provider && (
+              {gig?.pipeline?.status === GIG_STATUS.in_progress && session?.user.id === gig?.accepted_bid?.provider_id && (
                 <Button
                   onClick={() => handleCompleteGig(gig.id)}
                   variant="outline"
                   className="border-green-500 bg-transparent text-green-500 hover:bg-green-900/20 hover:text-green-400"
                 >
                   <CheckCircle className="mr-2 h-4 w-4" />
-                  Complete
+                  Mark as Completed
                 </Button>
               )}
               <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
@@ -735,10 +747,17 @@ export default function GigDetailPage() {
               setIsReviewModalOpen(false);
               setSelectedGigForReview(null);
             }}
+            fetchGigDetails={async () => {
+              const response = await dispatch(gigService.getGigById(id as string));
+              if (response && response.data) {
+                setGig(response.data);
+              }
+            }}
             gigId={selectedGigForReview.id}
             gigTitle={selectedGigForReview.title}
             bidAmount={selectedGigForReview.bidAmount}
             providerName={selectedGigForReview.providerName}
+            showPaymentOnly={showPaymentOnly}
           />
         )}
       </main>
