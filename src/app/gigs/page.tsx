@@ -679,7 +679,7 @@ const GigsPage = () => {
               {ownGigs.map((gig, index) => (
                 <GigUserCard key={`${gig.id}-${index}`} role={user?.role} {...gig} openDeleteConfirmation={openDeleteConfirmation} />
               ))}
-              {loading && <GigsShimmerCards />}
+              {loading && !isDeleteOpen && <GigsShimmerCards />}
             </InfiniteScroll>
           ) : (
             <InfiniteScroll
@@ -693,7 +693,7 @@ const GigsPage = () => {
               {gigs.map((gig, index) => (
                 <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />
               ))}
-              {loading && <GigsShimmerCards />}
+              {loading && !isDeleteOpen && <GigsShimmerCards />}
             </InfiniteScroll>
           )}
 

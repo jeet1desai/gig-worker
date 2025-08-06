@@ -380,3 +380,11 @@ export const statusColors: Record<string, string> = {
   completed: 'border-green-300 bg-green-100 text-green-600',
   rejected: 'bg-destructive/10 text-destructive border-destructive/20'
 };
+
+export const ratingLabels: Record<string, string> = {
+  '1': 'Poor',
+  '2': 'Fair',
+  '3': 'Good',
+  '4': 'Very Good',
+  '5': 'Excellent'
+};

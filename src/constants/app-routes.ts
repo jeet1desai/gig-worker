@@ -36,6 +36,8 @@ export enum PRIVATE_ROUTE {
   ADMIN_CMS_PAGES_PATH = '/admin/cms_pages',
   ADMIN_ADD_CMS_PAGES_PATH = '/admin/cms_pages/add',
   ADMIN_EDIT_CMS_PAGES_PATH = '/admin/cms_pages/edit',
+  GIG_PAYEMNT_SUCCESS_PATH = '/payment/success',
+  GIG_PAYEMNT_CANCLE_PATH = '/payment/cancel',
   GIG_PIPELINE_PATH = '/pipeline'
 }
 
@@ -66,7 +68,10 @@ export enum PRIVATE_API_ROUTES {
   USER_BANNER_IMAGE_UPDATE_API = '/users/profile/banner-image',
   USER_ROLE_CHANGE_API = '/userRole',
   ADMIN_GIGS_LIST_API = '/admin/gigs',
-  DASHBOARD_RECENT_GIGS_API = '/dashboard/gigs'
+  DASHBOARD_RECENT_GIGS_API = '/dashboard/gigs',
+  PAYMENT_CAPTURE_API = '/payments/capture',
+  CREATE_PROVIDER_REVIEW_API = '/gigs/review',
+  GIG_MARK_COMPLETE_PROVIDER_API = '/gigs/complete'
 }
 
 export const excludedPublicRoutes = [

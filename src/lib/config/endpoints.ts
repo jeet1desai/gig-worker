@@ -3,5 +3,6 @@ export const endpoints = {
   payPalPlans: '/billing/plans',
   payPalSubscriptions: '/billing/subscriptions',
   payPalProductList: '/catalogs/products',
-  payPalWebhook: '/notifications/verify-webhook-signature'
+  payPalWebhook: '/notifications/verify-webhook-signature',
+  payPalOrders: '/checkout/orders'
 };
