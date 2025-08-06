@@ -131,13 +131,6 @@ const GigCompletedCard = ({
       </p>
       <p className="mb-4 text-sm text-gray-300">{description}</p>
 
-      {/* <div className="mb-4 flex flex-wrap gap-2">
-        {(Array.isArray(keywords) ? keywords : []).map((tag, i) => (
-          <span key={i} className="rounded bg-slate-800 px-2 py-1 text-xs text-gray-300">
-            #{tag}
-          </span>
-        ))}
-      </div> */}
       <TagList keywords={keywords} />
 
       <div className="grid grid-cols-2 gap-4 border-t border-gray-700 pt-4 text-sm text-gray-400">
