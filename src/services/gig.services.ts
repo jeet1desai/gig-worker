@@ -271,10 +271,23 @@ export const gigService = {
     };
   },
 
-  getUserGigsByiId: async (userId: string, page: number) => {
-    const response = await apiService.get<ApiResponse<any>>(`${PUBLIC_API_ROUTES.GIGS_BY_USER_ID_API}/${userId}?page=${page}&limit=4`, {
-      withAuth: false
-    });
+  getUserGigsByiId: async (userId: string, page: number, gigStatus: string = '') => {
+    const response = await apiService.get<ApiResponse<any>>(
+      `${PUBLIC_API_ROUTES.GIGS_BY_USER_ID_API}/${userId}?page=${page}&limit=4&gigStatus=${gigStatus}`,
+      {
+        withAuth: false
+      }
+    );
+    return response.data;
+  },
+
+  getUserCompletedGigsById: async (userId: string, page: number, gigStatus: string = '') => {
+    const response = await apiService.get<ApiResponse<any>>(
+      `${PUBLIC_API_ROUTES.GIGS_BY_USER_ID_API}/${userId}?page=${page}&limit=4&gigStatus=${gigStatus}&gigCompleted=true`,
+      {
+        withAuth: false
+      }
+    );
     return response.data;
   }
 };
