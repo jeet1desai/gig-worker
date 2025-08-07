@@ -197,12 +197,20 @@ export const NOTIFICATION_MESSAGES = {
   USER_CREATED: 'User created successfully.'
 };
 
+export const GIG_NOTIFICATION_MODULES = {
+  GIG_COMPLETED_TITLE: 'Gig Completed',
+  LOW_RATING_TITLE: 'Low Rating Received',
+  REVIEW_SUBMITTED_TITLE: 'Review Submitted',
+  PAYMENT_SUCCESS_TITLE: 'Payment Successful'
+};
+
 export const NOTIFICATION_MODULES = {
   SYSTEM: 'system'
 };
 
 export const NOTIFICATION_TYPES = {
-  SUCCESS: 'success'
+  SUCCESS: 'success',
+  WARNING: 'warning'
 };
 
 export const BCRYPT_SALT_ROUNDS = 10;

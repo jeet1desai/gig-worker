@@ -8,6 +8,11 @@ import { Decimal } from '@prisma/client/runtime/library';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { BID_STATUS, GIG_STATUS, PAYMENT_REQUEST_STATUS, PAYMENT_STATUS, RatingStatus } from '@prisma/client';
 import { safeJsonResponse } from '@/utils/apiResponse';
+import { sendNotification } from '@/lib/socket/socket-server';
+import { getSocketServer } from '@/app/api/socket/route';
+import { GIG_NOTIFICATION_MODULES, NOTIFICATION_MODULES, NOTIFICATION_TYPES } from '@/constants';
+
+const io = getSocketServer();
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -128,6 +133,13 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         responseData.requiresPayment = true;
         responseData.paymentOrder = paypalOrder;
         responseData.payment = payment;
+
+        await sendNotification(io, acceptedBid.provider_id.toString(), {
+          title: GIG_NOTIFICATION_MODULES.REVIEW_SUBMITTED_TITLE,
+          message: `Gig "${gig.title}" has been rated (${rating}/5) by the user.`,
+          module: NOTIFICATION_MODULES.SYSTEM,
+          type: NOTIFICATION_TYPES.SUCCESS
+        });
       } catch (error) {
         console.error('Error creating PayPal order:', error);
         return errorResponse({ code: 'PAYMENT_ERROR', message: 'Failed to create payment order', statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR });
@@ -142,6 +154,13 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           issue_text: `Low rating (${rating}/5) submitted for this gig. Payment withheld due to unsatisfactory service.`,
           suggested_improvement: rating_feedback || 'Service quality needs improvement'
         }
+      });
+
+      await sendNotification(io, acceptedBid.provider_id.toString(), {
+        title: GIG_NOTIFICATION_MODULES.LOW_RATING_TITLE,
+        message: `Gig "${gig.title}" has been rated low (${rating}/5) by the user. A complaint has been filed. Payment withheld due to unsatisfactory service.`,
+        module: NOTIFICATION_MODULES.SYSTEM,
+        type: NOTIFICATION_TYPES.WARNING
       });
     }
 

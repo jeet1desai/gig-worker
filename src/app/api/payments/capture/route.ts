@@ -7,6 +7,11 @@ import { capturePayPalOrder } from '@/lib/paypal/orders';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import { BID_STATUS, EARN_STATUS, PAYMENT_REQUEST_STATUS, PAYMENT_STATUS } from '@prisma/client';
 import { REVIEW_RATING_STATUS } from '@/enums/be/user';
+import { sendNotification } from '@/lib/socket/socket-server';
+import { getSocketServer } from '@/app/api/socket/route';
+import { GIG_NOTIFICATION_MODULES, NOTIFICATION_MODULES, NOTIFICATION_TYPES } from '@/constants';
+
+const io = getSocketServer();
 
 export async function POST(request: NextRequest) {
   try {
@@ -78,6 +83,13 @@ export async function POST(request: NextRequest) {
           status: PAYMENT_STATUS.completed,
           request_status: PAYMENT_REQUEST_STATUS.accepted
         }
+      });
+
+      await sendNotification(io, payment.provider_id.toString(), {
+        title: GIG_NOTIFICATION_MODULES.PAYMENT_SUCCESS_TITLE,
+        message: `Payment for gig "${payment.gig.title}" has been successfully done.`,
+        module: NOTIFICATION_MODULES.SYSTEM,
+        type: NOTIFICATION_TYPES.SUCCESS
       });
     }
 

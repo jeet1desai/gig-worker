@@ -24,7 +24,7 @@ import Loader from '@/components/Loader';
 import { BID_STATUS, GIG_STATUS, PAYMENT_STATUS } from '@prisma/client';
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
 
-const getPaymentStatusLabel = (gig: Partial<Gig>) => {
+export const getPaymentStatusLabel = (gig: Partial<Gig>) => {
   const payment = gig?.payment?.[0];
   if (payment && payment?.status === PAYMENT_STATUS.completed) {
     return (
@@ -34,11 +34,11 @@ const getPaymentStatusLabel = (gig: Partial<Gig>) => {
       </span>
     );
   }
-  if (payment && payment?.status === PAYMENT_STATUS.held) {
+  if (gig?.review_rating?.rating !== undefined && gig.review_rating.rating > 2 && payment && payment?.status === PAYMENT_STATUS.held) {
     return (
       <span className="inline-flex items-center gap-2 rounded bg-yellow-700 px-3 py-1 text-sm text-white">
         <AlertCircle className="h-4 w-4" />
-        Payment Held
+        Review Submitted. Payment Pending
       </span>
     );
   }
@@ -373,6 +373,8 @@ const ProviderPipelinePage = ({
     router.push(path);
   };
 
+  const formatLabel = (status: string) => status && status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-white">My Bids</h2>
@@ -432,7 +434,7 @@ const ProviderPipelinePage = ({
               <Card key={bid.id} className="gap-2 overflow-hidden bg-inherit">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xl font-medium">{bid.title}</CardTitle>
-                  <Badge variant="secondary">{bid.gigStatus}</Badge>
+                  <Badge variant="secondary">{formatLabel(bid.gigStatus)}</Badge>
                 </CardHeader>
                 <CardContent className="flex flex-row items-center justify-between">
                   <div className="text-muted-foreground text-sm">
@@ -453,7 +455,9 @@ const ProviderPipelinePage = ({
                     </Button>
                   </div>
                 </CardContent>
-                <CardFooter>{bid.status === BID_STATUS.accepted && <div>{getPaymentStatusLabel(bid.gig)}</div>}</CardFooter>
+                <CardFooter>
+                  {bid.status === BID_STATUS.accepted && bid.gigStatus === GIG_STATUS.completed && <div>{getPaymentStatusLabel(bid.gig)}</div>}
+                </CardFooter>
               </Card>
             ))}
           </InfiniteScroll>

@@ -168,7 +168,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return errorResponse({ code: 'UNAUTHORIZED', message: 'You must be logged in to place a bid', statusCode: HttpStatusCode.UNAUTHORIZED });
     }
 
-    const gigId = await params.id;
+    const { id: gigId } = await params;
     if (!gigId) {
       return errorResponse({ code: 'BAD_REQUEST', message: 'Gig ID is required', statusCode: HttpStatusCode.BAD_REQUEST });
     }

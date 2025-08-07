@@ -45,6 +45,7 @@ import apiService from '@/services/api';
 import { CreateProvidersReviewAPIResponse } from '@/types/fe';
 import { toast } from '@/lib/toast';
 import Loader from '@/components/Loader';
+import { getPaymentStatusLabel } from '@/app/pipeline/page';
 
 export default function GigDetailPage() {
   const router = useRouter();
@@ -217,7 +218,7 @@ export default function GigDetailPage() {
                   onClick={() => handleReviewGig(gig?.id, gig?.title, gig?.accepted_bid)}
                   variant="outline"
                   className="border-blue-500 bg-transparent text-blue-500 hover:bg-blue-900/20 hover:text-blue-400"
-                  disabled={gig?.review_rating && gig?.paymentStatus === PAYMENT_STATUS.completed}
+                  disabled={gig?.review_rating && gig?.paymentStatus === PAYMENT_STATUS.completed || gig?.review_rating?.rating < 3}
                 >
                   <Star className="mr-2 h-4 w-4" />
                   Review & Pay
@@ -233,12 +234,17 @@ export default function GigDetailPage() {
                   Mark as Completed
                 </Button>
               )}
+              {gig?.pipeline?.status === GIG_STATUS.completed && session?.user.id === gig?.accepted_bid?.provider_id && getPaymentStatusLabel(gig)}
               <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
                 <Share2 className="mr-2 h-4 w-4" />
                 Share
               </Button>
             </div>
           </div>
+
+          {gig?.pipeline?.status === GIG_STATUS.completed && session?.user.id === gig?.user_id && (
+            <div className="mb-6">{getPaymentStatusLabel(gig)}</div>
+          )}
 
           <div className="grid gap-4 lg:grid-cols-3">
             <div className="space-y-4 lg:col-span-2">

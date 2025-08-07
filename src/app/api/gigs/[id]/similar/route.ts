@@ -4,9 +4,9 @@ import { errorResponse } from '@/lib/api-response';
 import { safeJsonResponse } from '@/utils/apiResponse';
 
 // GET /api/gigs/[id]/similar - Get similar gigs
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(_request: Request, { params }: { params: { id: string } }) {
   try {
-    const gigId = params.id;
+    const { id: gigId } = await params;
 
     if (!gigId) {
       return errorResponse({ code: 'BAD_REQUEST', message: 'Gig ID is required', statusCode: HttpStatusCode.BAD_REQUEST });
