@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Dot, StarIcon, PencilIcon, UserIcon, BriefcaseIcon } from 'lucide-react';
+import { Dot, StarIcon, PencilIcon, UserIcon, BriefcaseIcon, Loader2, SquareCheckBig } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -162,6 +161,14 @@ export default function Profile({ user, isOwnProfile }: ProfileProps) {
                 onClick={() => setActiveTab('opportunities')}
               >
                 <BriefcaseIcon className="h-4 w-4" /> Gigs
+              </button>
+              <button
+                className={`text-md flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 py-2 text-left font-medium transition ${
+                  activeTab === 'completed' ? 'bg-gray-700 text-white' : 'bg-gray-900 text-gray-400 hover:bg-gray-800'
+                }`}
+                onClick={() => setActiveTab('completed')}
+              >
+                <SquareCheckBig className="h-4 w-4" /> Completed Gigs
               </button>
             </div>
 
@@ -324,6 +331,14 @@ export default function Profile({ user, isOwnProfile }: ProfileProps) {
               <Card className="h-[calc(100vh-130px)] bg-[#111]">
                 <CardContent className="h-full space-y-6 px-6">
                   <UserGigs userId={profileDetails.id} />
+                </CardContent>
+              </Card>
+            )}
+
+            {activeTab === 'completed' && (
+              <Card className="h-[calc(100vh-130px)] bg-[#111]">
+                <CardContent className="h-full space-y-6 px-6">
+                  <UserGigs userId={profileDetails.id} isCompleted={true} />
                 </CardContent>
               </Card>
             )}
