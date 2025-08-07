@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { format, isThisYear, parseISO } from 'date-fns';
-import { Clock, DollarSign, MapPin } from 'lucide-react';
+import { Clock, DollarSign, MapPin, Star } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -152,12 +152,12 @@ const GigCompletedCard = ({
         </div>
       </div>
 
-      <div className="mt-4 border-t border-gray-700 pt-4 text-sm">
-        <p className="flex items-center gap-2 text-yellow-400">
-          <i className="fa fa-star" />
+      <div className="mt-4 rounded-xl bg-emerald-900/20 p-4 text-sm">
+        <div className="inline-flex items-center gap-1 rounded-full bg-green-600 px-3 py-1 text-sm font-medium text-white shadow-sm">
           {review_rating?.rating ?? 0}/5
-        </p>
-        <p className="mt-2 text-gray-300 italic">{review_rating?.rating_feedback ? `"${review_rating.rating_feedback}"` : `-`}</p>
+          <Star className="h-4 w-4 fill-white stroke-white" />
+        </div>
+        <p className="mt-2 text-gray-100 italic">{review_rating?.rating_feedback ? `"${review_rating?.rating_feedback}"` : `-`}</p>
       </div>
 
       <div className="mt-6 flex items-center gap-3 border-t border-gray-700 pt-4 text-sm">
