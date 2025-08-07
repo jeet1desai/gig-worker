@@ -58,7 +58,9 @@ export async function GET(request: Request) {
               select: { id: true, first_name: true, last_name: true, email: true, profile_url: true, is_verified: true, is_banned: true }
             }
           }
-        }
+        },
+        payment: true,
+        review_rating: true
       },
       orderBy: { created_at: 'desc' },
       skip,

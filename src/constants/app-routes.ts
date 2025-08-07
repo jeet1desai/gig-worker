@@ -25,6 +25,7 @@ export enum PRIVATE_ROUTE {
   AUTH_CALLBACK_HANDLER = '/auth/callback-handler',
   DASHBOARD = '/dashboard',
   GIGS = '/gigs',
+  ADD_GIG = '/gigs/new',
   USER_PROFILE = '/profile',
   USER_GIGS = '/manage-gigs',
   PROVIDER_BIDS = '/provider-bids',
@@ -71,7 +72,9 @@ export enum PRIVATE_API_ROUTES {
   DASHBOARD_RECENT_GIGS_API = '/dashboard/gigs',
   PAYMENT_CAPTURE_API = '/payments/capture',
   CREATE_PROVIDER_REVIEW_API = '/gigs/review',
-  GIG_MARK_COMPLETE_PROVIDER_API = '/gigs/complete'
+  GIG_MARK_COMPLETE_PROVIDER_API = '/gigs/complete',
+  USER_PIPELINE_API = '/gigs/pipeline',
+  PROVIDER_PIPELINE_API = '/gigs/provider-pipeline'
 }
 
 export const excludedPublicRoutes = [
