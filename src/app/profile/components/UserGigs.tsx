@@ -87,11 +87,6 @@ const UserGigs = ({ userId, isCompleted }: UserGigsProps) => {
   return (
     <div className="rounded-x flex h-full flex-col space-y-4">
       <h3 className="mb-5 px-2 text-2xl font-semibold text-gray-300"> {isCompleted ? `Completed Gigs` : `Posted Gigs`}</h3>
-      {loading && (
-        <div className="flex justify-center py-4">
-          <Loader2 className="h-5 w-5 animate-spin text-white" />
-        </div>
-      )}
       {gigs.length === 0 && !loading ? (
         <div className="flex h-full items-center justify-center">
           <p className="text-md text-center text-gray-400">No gigs found</p>
@@ -99,13 +94,18 @@ const UserGigs = ({ userId, isCompleted }: UserGigsProps) => {
       ) : (
         <div
           ref={containerRef}
-          className={`custom-scrollbar min-h-0 overflow-y-auto px-2 ${isCompleted ? 'grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2' : 'flex-1 space-y-4'}`}
+          className={`custom-scrollbar min-h-0 overflow-y-auto px-2 ${isCompleted ? 'grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2' : 'space-y-4'}`}
         >
           {gigs.map((gig) => (
             <div key={gig.id}>
               {isCompleted ? <GigCompletedCard {...gig} /> : <GigCard {...gig} isActive={true} activeStatus={gig.pipeline.status} />}
             </div>
           ))}
+        </div>
+      )}
+      {loading && (
+        <div className="flex justify-center py-4">
+          <Loader2 className="h-5 w-5 animate-spin text-white" />
         </div>
       )}
     </div>
