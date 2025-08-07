@@ -94,18 +94,18 @@ const UserGigs = ({ userId, isCompleted }: UserGigsProps) => {
       ) : (
         <div
           ref={containerRef}
-          className={`custom-scrollbar min-h-0 overflow-y-auto px-2 ${isCompleted ? 'grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2' : 'space-y-4'}`}
+          className={`custom-scrollbar min-h-0 overflow-y-auto px-2 ${isCompleted ? 'grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2' : 'flex-1 space-y-4'}`}
         >
           {gigs.map((gig) => (
             <div key={gig.id}>
               {isCompleted ? <GigCompletedCard {...gig} /> : <GigCard {...gig} isActive={true} activeStatus={gig.pipeline.status} />}
             </div>
           ))}
-        </div>
-      )}
-      {loading && (
-        <div className="flex justify-center py-4">
-          <Loader2 className="h-5 w-5 animate-spin text-white" />
+          {loading && (
+            <div className={`flex justify-center py-4 ${isCompleted ? 'col-span-full' : ''}`}>
+              <Loader2 className="h-5 w-5 animate-spin text-white" />
+            </div>
+          )}
         </div>
       )}
     </div>
