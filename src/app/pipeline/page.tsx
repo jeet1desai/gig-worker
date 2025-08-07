@@ -54,7 +54,7 @@ export const getPaymentStatusLabel = (gig: Partial<Gig>) => {
     return (
       <span className="inline-flex items-center gap-2 rounded bg-yellow-700 px-3 py-1 text-sm text-white">
         <AlertCircle className="h-4 w-4" />
-        Rating And Payment Is Pending
+        Rating & Payment Pending
       </span>
     );
   }
