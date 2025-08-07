@@ -1,10 +1,11 @@
 import { getServerSession } from 'next-auth';
-import { BID_STATUS } from '@prisma/client';
+import { BID_STATUS, GIG_STATUS } from '@prisma/client';
 import { HttpStatusCode } from '@/enums/shared/http-status-code';
 import { errorResponse } from '@/lib/api-response';
 import { safeJsonResponse } from '@/utils/apiResponse';
 import prisma from '@/lib/prisma';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import moment from 'moment';
 
 export async function GET(request: Request) {
   try {
@@ -101,14 +102,20 @@ export async function GET(request: Request) {
 
     const transformedBids = bids.map((bid) => {
       const { gig, ...rest } = bid;
+      const gigUser = gig.user;
+      const endDate = gig.end_date ? moment(gig.end_date) : null;
+      const today = moment();
+
+      const daysLeft = endDate ? endDate.diff(today, 'days') : null;
+
       return {
         ...rest,
-        gig: gig,
+        gig,
         title: gig.title,
-        client: `${gig.user.first_name} ${gig.user.last_name}`,
-        clientProfile: gig.user,
-        gigStatus: gig.pipeline?.status || 'open',
-        daysLeft: gig.end_date ? Math.ceil((new Date(gig.end_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null
+        client: `${gigUser.first_name} ${gigUser.last_name}`,
+        clientProfile: gigUser,
+        gigStatus: gig.pipeline?.status || GIG_STATUS.open,
+        daysLeft
       };
     });
 
