@@ -2,11 +2,11 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, DollarSign, MapPin, MessageSquare, Star, View } from 'lucide-react';
+import { Clock, DollarSign, MapPin, MessageSquare, Star, View, CheckCircle, AlertCircle } from 'lucide-react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/components/layouts/layout';
@@ -16,59 +16,49 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Textarea } from '@/components/ui/textarea';
 
 import { RootState, useDispatch, useSelector } from '@/store/store';
-import { clearPipeline } from '@/store/slices/gigs';
 import { pipelineService } from '@/services/pipeline.services';
+import { Gig, ProviderBid, Pagination, UserPipelineCounts, ProviderPipelineCounts } from '@/types/pipeline';
 
 import { formatDate } from '@/lib/date-format';
+import Loader from '@/components/Loader';
+import { BID_STATUS, GIG_STATUS, PAYMENT_STATUS } from '@prisma/client';
+import { PRIVATE_ROUTE } from '@/constants/app-routes';
 
-const userGigs = {
-  open: [
-    { id: 1, title: 'Website Development', budget: '$500 - $1000', location: 'Remote', posted: '2 days ago' },
-    { id: 2, title: 'Mobile App Design', budget: '$1000 - $2000', location: 'New York', posted: '1 week ago' }
-  ],
-  inProgress: [
-    {
-      id: 3,
-      title: 'Logo Design',
-      status: 'In Progress',
-      deadline: '2023-12-15',
-      provider: { id: 1, name: 'John Doe', rating: 4.8, completedGigs: 24, avatar: '/placeholder-avatar.jpg' },
-      startedOn: '2023-11-01',
-      progress: 65,
-      budget: '$1000 - $2000',
-      location: 'New York',
-      posted: '1 week ago'
-    },
-    {
-      id: 3,
-      title: 'Logo Design',
-      status: 'In Progress',
-      deadline: '2023-12-15',
-      provider: { id: 1, name: 'John Doe', rating: 4.8, completedGigs: 24, avatar: '/placeholder-avatar.jpg' },
-      startedOn: '2023-11-01',
-      progress: 65,
-      budget: '$1000 - $2000',
-      location: 'New York',
-      posted: '1 week ago'
-    }
-  ],
-  completed: [
-    {
-      id: 4,
-      title: 'Content Writing',
-      completedOn: '2023-11-20',
-      rating: 4.5,
-      provider: { id: 2, name: 'Jane Smith', rating: 4.9, completedGigs: 42, avatar: '/placeholder-avatar2.jpg' },
-      workedOn: '2023-11-15 to 2023-11-20',
-      totalEarned: '$450'
-    }
-  ]
-};
-
-const providerBids = {
-  pending: [{ id: 1, title: 'E-commerce Website', budget: '$1200', client: 'Jane Smith', daysLeft: 3 }],
-  accepted: [{ id: 2, title: 'Mobile App Development', budget: '$2500', client: 'Acme Inc', status: 'In Progress' }],
-  rejected: [{ id: 3, title: 'SEO Services', budget: '$800', client: 'Local Business', reason: 'Budget too low' }]
+export const getPaymentStatusLabel = (gig: Partial<Gig>) => {
+  const payment = gig?.payment?.[0];
+  if (payment && payment?.status === PAYMENT_STATUS.completed) {
+    return (
+      <span className="inline-flex items-center gap-2 rounded bg-green-700 px-3 py-1 text-sm text-white">
+        <CheckCircle className="h-4 w-4" />
+        Payment Completed
+      </span>
+    );
+  }
+  if (gig?.review_rating?.rating !== undefined && gig.review_rating.rating > 2 && payment && payment?.status === PAYMENT_STATUS.held) {
+    return (
+      <span className="inline-flex items-center gap-2 rounded bg-yellow-700 px-3 py-1 text-sm text-white">
+        <AlertCircle className="h-4 w-4" />
+        Review Submitted. Payment Pending
+      </span>
+    );
+  }
+  if (gig?.review_rating?.rating !== undefined && gig.review_rating.rating < 3) {
+    return (
+      <span className="inline-flex items-center gap-2 rounded bg-red-700 px-3 py-1 text-sm text-white">
+        <AlertCircle className="h-4 w-4" />
+        Low rating: Complaint raised
+      </span>
+    );
+  }
+  if (Object.keys(gig?.review_rating || {}).length === 0 && !payment) {
+    return (
+      <span className="inline-flex items-center gap-2 rounded bg-yellow-700 px-3 py-1 text-sm text-white">
+        <AlertCircle className="h-4 w-4" />
+        Rating & Payment Pending
+      </span>
+    );
+  }
+  return null;
 };
 
 const UserPipelinePage = ({
@@ -82,9 +72,13 @@ const UserPipelinePage = ({
   activeUserTab: string;
   setActiveUserTab: (tab: string) => void;
   setIsReviewDialogOpen: (open: boolean) => void;
-  pipeline: any;
-  pagination: any;
-  counts: any;
+  pipeline: {
+    open: Gig[];
+    inProgress: Gig[];
+    completed: Gig[];
+  };
+  pagination: Pagination;
+  counts: UserPipelineCounts;
 }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -95,11 +89,18 @@ const UserPipelinePage = ({
     }
   }, [pagination.page, pagination.totalPages]);
 
+  const handleNagivation = (path: string) => {
+    router.push(path);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-white">My Gigs</h2>
-        <Button className="border-blue-500 bg-gradient-to-r from-blue-600 to-purple-600 text-white" onClick={() => router.push('/gigs/new')}>
+        <Button
+          className="border-blue-500 bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+          onClick={() => handleNagivation(PRIVATE_ROUTE.ADD_GIG)}
+        >
           + Create New Gig
         </Button>
       </div>
@@ -122,13 +123,13 @@ const UserPipelinePage = ({
             dataLength={pipeline.open.length}
             next={loadUserMore}
             hasMore={pagination.page < pagination.totalPages}
-            loader={<>Loading...</>}
+            loader={<Loader isLoading={true} />}
             scrollThreshold={0.9}
             className="space-y-4"
           >
-            {pipeline.open.map((gig: any) => {
+            {pipeline.open.map((gig: Gig) => {
               return (
-                <Card key={gig.id} className="cursor-pointer gap-2 bg-inherit" onClick={() => router.push(`/gigs/${gig.slug}`)}>
+                <Card key={gig.id} className="cursor-pointer gap-2 bg-inherit" onClick={() => handleNagivation(`${PRIVATE_ROUTE.GIGS}/${gig.slug}`)}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-xl font-medium">{gig.title}</CardTitle>
                     <Badge variant="outline" className="bg-green-600 text-white">
@@ -159,11 +160,11 @@ const UserPipelinePage = ({
             dataLength={pipeline.inProgress.length}
             next={loadUserMore}
             hasMore={pagination.page < pagination.totalPages}
-            loader={<>Loading...</>}
+            loader={<Loader isLoading={true} />}
             scrollThreshold={0.9}
             className="space-y-4"
           >
-            {pipeline.inProgress.map((gig: any) => {
+            {pipeline.inProgress.map((gig: Gig) => {
               return (
                 <Card key={gig.id} className="gap-2 overflow-hidden bg-inherit">
                   <CardHeader className="flex flex-col items-start space-y-0">
@@ -193,9 +194,9 @@ const UserPipelinePage = ({
                     <div>
                       <h4 className="mb-2 text-sm font-medium">Provider Working On This</h4>
                       <div className="space-y-2">
-                        {gig?.acceptedBid?.map((bid: any) => {
+                        {gig?.acceptedBid?.map((bid) => {
                           return (
-                            <div className="bg-muted/30 flex items-center justify-between rounded-lg p-2">
+                            <div key={bid.id} className="bg-muted/30 flex items-center justify-between rounded-lg p-2">
                               <div className="flex items-center space-x-3">
                                 <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full">
                                   <Avatar className="h-9 w-9">
@@ -234,7 +235,12 @@ const UserPipelinePage = ({
                         <p className="text-muted-foreground text-sm">Deadline: {formatDate(gig.end_date)}</p>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Button className="bg-inherit" variant="outline" size="sm" onClick={() => router.push(`/gigs/${gig.slug}`)}>
+                        <Button
+                          className="bg-inherit"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleNagivation(`${PRIVATE_ROUTE.GIGS}/${gig.slug}`)}
+                        >
                           View Details
                         </Button>
                         <Button onClick={() => setIsReviewDialogOpen(true)} className="bg-inherit" variant="outline" size="sm">
@@ -254,11 +260,11 @@ const UserPipelinePage = ({
             dataLength={pipeline.completed.length}
             next={loadUserMore}
             hasMore={pagination.page < pagination.totalPages}
-            loader={<>Loading...</>}
+            loader={<Loader isLoading={true} />}
             scrollThreshold={0.9}
             className="space-y-4"
           >
-            {pipeline.completed.map((gig: any) => {
+            {pipeline.completed.map((gig: Gig) => {
               return (
                 <Card key={gig.id} className="gap-2 overflow-hidden bg-inherit">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -272,22 +278,21 @@ const UserPipelinePage = ({
                           {[...Array(5)].map((_, i) => (
                             <svg
                               key={i}
-                              className={`h-4 w-4 ${i < Math.floor(gig.rating) ? 'text-yellow-400' : 'text-gray-300'}`}
+                              className={`h-4 w-4 ${i < Math.floor(gig.rating ?? 0) ? 'text-yellow-400' : 'text-gray-300'}`}
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
                           ))}
-                          <span className="text-muted-foreground ml-1 text-sm">{gig.rating}</span>
+                          <span className="text-muted-foreground ml-1 text-sm">{gig.rating || 0}</span>
                         </div>
+                        {gig.status === GIG_STATUS.completed && <div className="ml-4">{getPaymentStatusLabel(gig)}</div>}
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-muted-foreground text-sm">Completed on {formatDate(gig.completed_at)}</p>
-                      <p className="text-sm font-medium">
-                        Total: {gig?.acceptedBid?.reduce((acc: number, bid: any) => acc + Number(bid.bid_price), 0)}
-                      </p>
+                      <p className="text-sm font-medium">Total: {gig?.acceptedBid?.reduce((acc: number, bid) => acc + Number(bid.bid_price), 0)}</p>
                     </div>
                   </CardHeader>
 
@@ -297,9 +302,9 @@ const UserPipelinePage = ({
                     <div>
                       <h4 className="mb-2 text-sm font-medium">Provider</h4>
                       <div className="space-y-2">
-                        {gig?.acceptedBid?.map((bid: any) => {
+                        {gig?.acceptedBid?.map((bid) => {
                           return (
-                            <div className="bg-muted/30 flex items-center justify-between rounded-lg p-2">
+                            <div key={bid.id} className="bg-muted/30 flex items-center justify-between rounded-lg p-2">
                               <div className="flex items-center space-x-3">
                                 <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full">
                                   <Avatar className="h-9 w-9">
@@ -344,11 +349,32 @@ const UserPipelinePage = ({
 
 const ProviderPipelinePage = ({
   activeProviderTab,
-  setActiveProviderTab
+  setActiveProviderTab,
+  providerPipeline,
+  pagination,
+  counts
 }: {
   activeProviderTab: string;
   setActiveProviderTab: (tab: string) => void;
+  providerPipeline: ProviderBid[];
+  pagination: Pagination;
+  counts: ProviderPipelineCounts | null;
 }) => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const loadProviderMore = useCallback(() => {
+    if (pagination.page < pagination.totalPages) {
+      dispatch(pipelineService.getProviderPipeline({ page: pagination.page + 1, status: activeProviderTab, limit: 10 }));
+    }
+  }, [pagination.page, pagination.totalPages, activeProviderTab, dispatch]);
+
+  const handleNagivation = (path: string) => {
+    router.push(path);
+  };
+
+  const formatLabel = (status: string) => status && status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-white">My Bids</h2>
@@ -356,81 +382,121 @@ const ProviderPipelinePage = ({
       <Tabs value={activeProviderTab} onValueChange={setActiveProviderTab}>
         <TabsList className="mb-4 grid w-full grid-cols-3 bg-gray-800 p-1">
           <TabsTrigger value="pending" className="text-gray-100 data-[state=active]:text-black">
-            Pending ({providerBids.pending.length})
+            Pending ({counts?.pending || 0})
           </TabsTrigger>
           <TabsTrigger value="accepted" className="text-gray-100 data-[state=active]:text-black">
-            Accepted ({providerBids.accepted.length})
+            Accepted ({counts?.accepted || 0})
           </TabsTrigger>
           <TabsTrigger value="rejected" className="text-gray-100 data-[state=active]:text-black">
-            Rejected ({providerBids.rejected.length})
+            Rejected ({counts?.rejected || 0})
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="pending" className="space-y-4">
-          {providerBids.pending.map((bid) => (
-            <Card key={bid.id} className="gap-2 overflow-hidden bg-inherit">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl font-medium">{bid.title}</CardTitle>
-                <Badge variant="outline" className="bg-amber-50 text-amber-600">
-                  Pending
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="text-muted-foreground text-sm">
-                  <p>Client: {bid.client}</p>
-                  <p>Budget: {bid.budget}</p>
-                  <p>Days left to respond: {bid.daysLeft}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          <InfiniteScroll
+            dataLength={providerPipeline.length}
+            next={loadProviderMore}
+            hasMore={pagination.page < pagination.totalPages}
+            loader={<Loader isLoading={true} />}
+            scrollThreshold={0.9}
+            className="space-y-4"
+          >
+            {providerPipeline.map((bid) => (
+              <Card key={bid.id} className="gap-2 overflow-hidden bg-inherit">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-xl font-medium">{bid.title}</CardTitle>
+                  <Badge variant="outline" className="bg-amber-50 text-amber-600">
+                    Pending
+                  </Badge>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-muted-foreground text-sm">
+                    <p>Client: {bid.client}</p>
+                    <p>Budget: ${bid.bid_price}</p>
+                    {bid.daysLeft && <p>Days left to respond: {bid.daysLeft}</p>}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </InfiniteScroll>
         </TabsContent>
 
         <TabsContent value="accepted" className="space-y-4">
-          {providerBids.accepted.map((bid) => (
-            <Card key={bid.id} className="gap-2 overflow-hidden bg-inherit">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl font-medium">{bid.title}</CardTitle>
-                <Badge variant="secondary">{bid.status}</Badge>
-              </CardHeader>
-              <CardContent className="flex flex-row items-center justify-between">
-                <div className="text-muted-foreground text-sm">
-                  <p>Client: {bid.client}</p>
-                  <p>Budget: {bid.budget}</p>
-                </div>
-                <div className="flex space-x-2">
-                  <Button className="bg-inherit" variant="outline" size="sm">
-                    View Details
-                  </Button>
-                  <Button className="bg-inherit" variant="outline" size="sm">
-                    Message Client
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          <InfiniteScroll
+            dataLength={providerPipeline.length}
+            next={loadProviderMore}
+            hasMore={pagination.page < pagination.totalPages}
+            loader={<Loader isLoading={true} />}
+            scrollThreshold={0.9}
+            className="space-y-4"
+          >
+            {providerPipeline.map((bid) => (
+              <Card key={bid.id} className="gap-2 overflow-hidden bg-inherit">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-xl font-medium">{bid.title}</CardTitle>
+                  <Badge variant="secondary">{formatLabel(bid.gigStatus)}</Badge>
+                </CardHeader>
+                <CardContent className="flex flex-row items-center justify-between">
+                  <div className="text-muted-foreground text-sm">
+                    <p>Client: {bid.client}</p>
+                    <p>Budget: ${bid.bid_price}</p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button
+                      className="bg-inherit"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleNagivation(`${PRIVATE_ROUTE.GIGS}/${bid.gig.slug}`)}
+                    >
+                      View Details
+                    </Button>
+                    <Button className="bg-inherit" variant="outline" size="sm">
+                      <MessageSquare className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  {bid.status === BID_STATUS.accepted && bid.gigStatus === GIG_STATUS.completed && <div>{getPaymentStatusLabel(bid.gig)}</div>}
+                </CardFooter>
+              </Card>
+            ))}
+          </InfiniteScroll>
         </TabsContent>
 
         <TabsContent value="rejected" className="space-y-4">
-          {providerBids.rejected.map((bid) => (
-            <Card key={bid.id} className="gap-2 overflow-hidden bg-inherit">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl font-medium">{bid.title}</CardTitle>
-                <Badge variant="destructive">Rejected</Badge>
-              </CardHeader>
-              <CardContent className="flex flex-row items-center justify-between">
-                <div className="text-muted-foreground text-sm">
-                  <p>Client: {bid.client}</p>
-                  <p>Budget: {bid.budget}</p>
-                </div>
-                <div className="flex space-x-2">
-                  <Button className="bg-inherit" variant="outline" size="sm">
-                    View Details
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          <InfiniteScroll
+            dataLength={providerPipeline.length}
+            next={loadProviderMore}
+            hasMore={pagination.page < pagination.totalPages}
+            loader={<Loader isLoading={true} />}
+            scrollThreshold={0.9}
+            className="space-y-4"
+          >
+            {providerPipeline.map((bid) => (
+              <Card key={bid.id} className="gap-2 overflow-hidden bg-inherit">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-xl font-medium">{bid.title}</CardTitle>
+                  <Badge variant="destructive">Rejected</Badge>
+                </CardHeader>
+                <CardContent className="flex flex-row items-center justify-between">
+                  <div className="text-muted-foreground text-sm">
+                    <p>Client: {bid.client}</p>
+                    <p>Budget: ${bid.bid_price}</p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button
+                      className="bg-inherit"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleNagivation(`${PRIVATE_ROUTE.GIGS}/${bid.gig.slug}`)}
+                    >
+                      View Details
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </InfiniteScroll>
         </TabsContent>
       </Tabs>
     </div>
@@ -441,7 +507,9 @@ const PipelinePage = () => {
   const dispatch = useDispatch();
 
   const { role } = useSelector((state: RootState) => state.user);
-  const { userPipelineCounts, providerPipelineCounts, pagination, userPipeline, providerPipeline } = useSelector((state: RootState) => state.gigs);
+  const { loading, userPipelineCounts, providerPipelineCounts, pagination, userPipeline, providerPipeline } = useSelector(
+    (state: RootState) => state.gigs
+  );
 
   const [activeUserTab, setActiveUserTab] = useState('open');
   const [activeProviderTab, setActiveProviderTab] = useState('pending');
@@ -451,13 +519,18 @@ const PipelinePage = () => {
   const [comment, setComment] = useState('');
 
   useEffect(() => {
-    dispatch(pipelineService.getUserPipeline({ page: 1, status: activeUserTab, limit: 10 }) as any);
-  }, [activeUserTab]);
+    if (role === 'user') {
+      dispatch(pipelineService.getUserPipeline({ page: 1, status: activeUserTab, limit: 10 }));
+    } else {
+      dispatch(pipelineService.getProviderPipeline({ page: 1, status: activeProviderTab, limit: 10 }));
+    }
+  }, [activeUserTab, activeProviderTab, role, dispatch]);
 
   const handleSubmit = async () => {};
 
   return (
     <DashboardLayout>
+      <Loader isLoading={loading} />
       <div className="min-h-screen py-8">
         <div className="container mx-auto px-6">
           {role === 'user' ? (
@@ -470,7 +543,13 @@ const PipelinePage = () => {
               counts={userPipelineCounts}
             />
           ) : (
-            <ProviderPipelinePage activeProviderTab={activeProviderTab} setActiveProviderTab={setActiveProviderTab} />
+            <ProviderPipelinePage
+              activeProviderTab={activeProviderTab}
+              setActiveProviderTab={setActiveProviderTab}
+              providerPipeline={providerPipeline}
+              pagination={pagination}
+              counts={providerPipelineCounts || { pending: 0, accepted: 0, rejected: 0 }}
+            />
           )}
         </div>
       </div>

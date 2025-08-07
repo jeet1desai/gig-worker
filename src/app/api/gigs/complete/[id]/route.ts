@@ -6,6 +6,11 @@ import { BID_STATUS, GIG_STATUS } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { safeJsonResponse } from '@/utils/apiResponse';
+import { sendNotification } from '@/lib/socket/socket-server';
+import { getSocketServer } from '@/app/api/socket/route';
+import { GIG_NOTIFICATION_MODULES, NOTIFICATION_MODULES, NOTIFICATION_TYPES } from '@/constants';
+
+const io = getSocketServer();
 
 export async function POST(_request: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -73,6 +78,13 @@ export async function POST(_request: NextRequest, { params }: { params: { id: st
     await prisma.gig.update({
       where: { id: BigInt(gigId) },
       data: { completed_at: new Date() }
+    });
+
+    await sendNotification(io, gig.user_id.toString(), {
+      title: GIG_NOTIFICATION_MODULES.GIG_COMPLETED_TITLE,
+      message: `Gig "${gig.title}" has been marked as completed by the provider.`,
+      module: NOTIFICATION_MODULES.SYSTEM,
+      type: NOTIFICATION_TYPES.SUCCESS
     });
 
     return safeJsonResponse(

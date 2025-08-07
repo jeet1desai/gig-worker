@@ -108,7 +108,7 @@ const GigReviewModal = ({
 
       if (response.data.message) {
         setReviewResult(response.data.data);
-        if (response.data.data.requiresPayment) {
+        if (response.data.data.requiresPayment || (response.data.data.review && response.data.data.review?.rating < 3)) {
           await fetchGigDetails();
         }
       }
