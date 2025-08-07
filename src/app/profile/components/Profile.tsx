@@ -127,13 +127,17 @@ export default function Profile({ user, isOwnProfile }: ProfileProps) {
                 <p className="text-sm text-gray-400">
                   Plan: <span className="text-sm text-white">{currentPlan.plan.name}</span>
                 </p>
-                <Dot />
-                <button
-                  className="inline-block min-w-[52px] cursor-pointer text-sm text-blue-400 transition-all duration-200 hover:font-medium"
-                  onClick={planPageRedirection}
-                >
-                  Change
-                </button>
+                {isOwnProfile && (
+                  <>
+                    <Dot />
+                    <button
+                      className="inline-block min-w-[52px] cursor-pointer text-sm text-blue-400 transition-all duration-200 hover:font-medium"
+                      onClick={planPageRedirection}
+                    >
+                      Change
+                    </button>
+                  </>
+                )}
               </div>
 
               <div className="mt-2 flex gap-4">
