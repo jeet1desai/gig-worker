@@ -23,6 +23,7 @@ import { formatDate } from '@/lib/date-format';
 import Loader from '@/components/Loader';
 import { BID_STATUS, GIG_STATUS, PAYMENT_STATUS } from '@prisma/client';
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
+import { formatCurrency } from '@/lib/utils';
 
 export const getPaymentStatusLabel = (gig: Partial<Gig>) => {
   const payment = gig?.payment?.[0];
@@ -38,7 +39,7 @@ export const getPaymentStatusLabel = (gig: Partial<Gig>) => {
     return (
       <span className="inline-flex items-center gap-2 rounded bg-yellow-700 px-3 py-1 text-sm text-white">
         <AlertCircle className="h-4 w-4" />
-        Review Submitted. Payment Pending
+        Payment Pending
       </span>
     );
   }
@@ -46,7 +47,7 @@ export const getPaymentStatusLabel = (gig: Partial<Gig>) => {
     return (
       <span className="inline-flex items-center gap-2 rounded bg-red-700 px-3 py-1 text-sm text-white">
         <AlertCircle className="h-4 w-4" />
-        Low rating: Complaint raised
+        Complaint: Low rating
       </span>
     );
   }
@@ -230,7 +231,7 @@ const UserPipelinePage = ({
                     </div>
 
                     <div className="mt-6 flex items-center justify-between">
-                      <div className="flex flex-col items-center">
+                      <div className="flex flex-col">
                         <p className="text-muted-foreground text-sm">Started on: {formatDate(gig.start_date)}</p>
                         <p className="text-muted-foreground text-sm">Deadline: {formatDate(gig.end_date)}</p>
                       </div>
@@ -265,8 +266,13 @@ const UserPipelinePage = ({
             className="space-y-4"
           >
             {pipeline.completed.map((gig: Gig) => {
+              const gig_bid_price = gig?.acceptedBid?.reduce((acc: number, bid) => acc + Number(bid.bid_price), 0);
               return (
-                <Card key={gig.id} className="gap-2 overflow-hidden bg-inherit">
+                <Card
+                  key={gig.id}
+                  className="cursor-pointer gap-2 overflow-hidden bg-inherit"
+                  onClick={() => handleNagivation(`${PRIVATE_ROUTE.GIGS}/${gig.slug}`)}
+                >
                   <CardHeader className="flex flex-row items-center justify-between space-y-0">
                     <div>
                       <h3 className="text-lg font-semibold">{gig.title}</h3>
@@ -278,21 +284,21 @@ const UserPipelinePage = ({
                           {[...Array(5)].map((_, i) => (
                             <svg
                               key={i}
-                              className={`h-4 w-4 ${i < Math.floor(gig.rating ?? 0) ? 'text-yellow-400' : 'text-gray-300'}`}
+                              className={`h-4 w-4 ${i < Math.floor(gig?.review_rating?.rating ?? 0) ? 'text-yellow-400' : 'text-gray-300'}`}
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
                           ))}
-                          <span className="text-muted-foreground ml-1 text-sm">{gig.rating || 0}</span>
+                          <span className="text-muted-foreground ml-1 text-sm">{gig?.review_rating?.rating || 0}</span>
                         </div>
                         {gig.status === GIG_STATUS.completed && <div className="ml-4">{getPaymentStatusLabel(gig)}</div>}
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-muted-foreground text-sm">Completed on {formatDate(gig.completed_at)}</p>
-                      <p className="text-sm font-medium">Total: {gig?.acceptedBid?.reduce((acc: number, bid) => acc + Number(bid.bid_price), 0)}</p>
+                      <p className="text-sm font-medium">Total: {formatCurrency(gig_bid_price?.toFixed(2) as string, 'USD')}</p>
                     </div>
                   </CardHeader>
 
@@ -409,11 +415,24 @@ const ProviderPipelinePage = ({
                     Pending
                   </Badge>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex flex-row items-center justify-between">
                   <div className="text-muted-foreground text-sm">
                     <p>Client: {bid.client}</p>
-                    <p>Budget: ${bid.bid_price}</p>
+                    <p>Budget: {formatCurrency(bid.bid_price, 'USD')}</p>
                     {bid.daysLeft && <p>Days left to respond: {bid.daysLeft}</p>}
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button
+                      className="bg-inherit"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleNagivation(`${PRIVATE_ROUTE.GIGS}/${bid.gig.slug}`)}
+                    >
+                      View Details
+                    </Button>
+                    <Button className="bg-inherit" variant="outline" size="sm">
+                      <MessageSquare className="h-4 w-4" />
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -434,12 +453,14 @@ const ProviderPipelinePage = ({
               <Card key={bid.id} className="gap-2 overflow-hidden bg-inherit">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-xl font-medium">{bid.title}</CardTitle>
-                  <Badge variant="secondary">{formatLabel(bid.gigStatus)}</Badge>
+                  <Badge variant="outline" className="bg-amber-50 text-green-600">
+                    {formatLabel(bid.gigStatus)}
+                  </Badge>
                 </CardHeader>
                 <CardContent className="flex flex-row items-center justify-between">
                   <div className="text-muted-foreground text-sm">
                     <p>Client: {bid.client}</p>
-                    <p>Budget: ${bid.bid_price}</p>
+                    <p>Budget: {formatCurrency(bid.bid_price, 'USD')}</p>
                   </div>
                   <div className="flex space-x-2">
                     <Button
@@ -481,7 +502,7 @@ const ProviderPipelinePage = ({
                 <CardContent className="flex flex-row items-center justify-between">
                   <div className="text-muted-foreground text-sm">
                     <p>Client: {bid.client}</p>
-                    <p>Budget: ${bid.bid_price}</p>
+                    <p>Budget: {formatCurrency(bid.bid_price, 'USD')}</p>
                   </div>
                   <div className="flex space-x-2">
                     <Button

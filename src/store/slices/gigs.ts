@@ -15,6 +15,9 @@ interface GigState {
 
   userPipelineCounts: UserPipelineCounts;
   providerPipelineCounts: ProviderPipelineCounts | null;
+
+  completedProviderGigs: Gig[];
+  completedUserGigs: Gig[];
 }
 
 const initialState: GigState = {
@@ -36,7 +39,9 @@ const initialState: GigState = {
     inProgress: 0,
     completed: 0
   },
-  providerPipelineCounts: null
+  providerPipelineCounts: null,
+  completedProviderGigs: [],
+  completedUserGigs: []
 };
 
 const gigsSlice = createSlice({
@@ -53,6 +58,24 @@ const gigsSlice = createSlice({
         state.gigs = gigs;
       } else {
         state.gigs = [...state.gigs, ...gigs];
+      }
+      state.pagination = pagination;
+    },
+    setCompletedProviderGigs: (state, action: PayloadAction<{ gigs: Gig[]; pagination: Pagination }>) => {
+      const { gigs, pagination } = action.payload;
+      if (pagination.page === 1) {
+        state.completedProviderGigs = gigs;
+      } else {
+        state.completedProviderGigs = [...state.completedProviderGigs, ...gigs];
+      }
+      state.pagination = pagination;
+    },
+    setCompletedUserGigs: (state, action: PayloadAction<{ gigs: Gig[]; pagination: Pagination }>) => {
+      const { gigs, pagination } = action.payload;
+      if (pagination.page === 1) {
+        state.completedUserGigs = gigs;
+      } else {
+        state.completedUserGigs = [...state.completedUserGigs, ...gigs];
       }
       state.pagination = pagination;
     },
@@ -126,6 +149,8 @@ const gigsSlice = createSlice({
     clearGigs: (state) => {
       state.gigs = [];
       state.ownGigs = [];
+      state.completedProviderGigs = [];
+      state.completedUserGigs = [];
       state.pagination = DEFAULT_PAGINATION;
     },
     removeGig: (state, action: PayloadAction<{ id: string }>) => {
@@ -146,7 +171,9 @@ export const {
   updateBid,
   setUserPipeline,
   setProviderPipeline,
-  clearPipeline
+  clearPipeline,
+  setCompletedUserGigs,
+  setCompletedProviderGigs
 } = gigsSlice.actions;
 
 export default gigsSlice.reducer;
