@@ -15,13 +15,13 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status')?.toLowerCase() || 'pending';
+    const status = searchParams.get('status')?.toLowerCase() || BID_STATUS.pending;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
     const skip = (page - 1) * limit;
 
-    const validStatuses = ['pending', 'accepted', 'rejected'];
-    if (!validStatuses.includes(status)) {
+    const validStatuses = [BID_STATUS.pending, BID_STATUS.accepted, BID_STATUS.rejected];
+    if (!validStatuses.includes(status as BID_STATUS)) {
       return errorResponse({
         code: 'BAD_REQUEST',
         message: 'Invalid status. Must be one of: ' + validStatuses.join(', '),

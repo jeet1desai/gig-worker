@@ -45,7 +45,11 @@ export async function GET(request: Request) {
     });
 
     const gigs = await prisma.gig.findMany({
-      where: { user_id: BigInt(session.user.id), pipeline: { status: status as GIG_STATUS }, is_removed: false },
+      where: {
+        user_id: BigInt(session.user.id),
+        pipeline: { status: status as GIG_STATUS },
+        is_removed: false
+      },
       include: {
         user: {
           select: { id: true, first_name: true, last_name: true, email: true, profile_url: true, is_verified: true, is_banned: true }
@@ -55,7 +59,15 @@ export async function GET(request: Request) {
           where: { status: BID_STATUS.accepted },
           include: {
             provider: {
-              select: { id: true, first_name: true, last_name: true, email: true, profile_url: true, is_verified: true, is_banned: true }
+              select: {
+                id: true,
+                first_name: true,
+                last_name: true,
+                email: true,
+                profile_url: true,
+                is_verified: true,
+                is_banned: true
+              }
             }
           }
         },
@@ -67,15 +79,46 @@ export async function GET(request: Request) {
       take: limit
     });
 
-    const transformedGigs = gigs.map((gig) => {
-      const { pipeline, bids, ...rest } = gig;
-      return {
-        ...rest,
-        status: pipeline?.status || GIG_STATUS.open,
-        acceptedBid: bids || [],
-        counts: { open, inProgress, completed }
-      };
-    });
+    const transformedGigs = await Promise.all(
+      gigs.map(async (gig) => {
+        const { pipeline, bids, ...rest } = gig;
+        let providerStats = null;
+
+        if (bids?.[0]?.provider?.id) {
+          const providerId = bids[0].provider.id;
+
+          const avgRatingData = await prisma.reviewRating.aggregate({
+            where: { provider_id: providerId },
+            _avg: { rating: true }
+          });
+
+          const completedCount = await prisma.gig.count({
+            where: {
+              pipeline: { status: GIG_STATUS.completed },
+              bids: {
+                some: {
+                  provider_id: providerId,
+                  status: BID_STATUS.accepted
+                }
+              }
+            }
+          });
+
+          providerStats = {
+            avgRating: avgRatingData._avg.rating || 0,
+            totalCompletedGigs: completedCount
+          };
+        }
+
+        return {
+          ...rest,
+          status: pipeline?.status || GIG_STATUS.open,
+          acceptedBid: bids || [],
+          providerStats,
+          counts: { open, inProgress, completed }
+        };
+      })
+    );
 
     const totalPages = Math.ceil(total / limit);
 

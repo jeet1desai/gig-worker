@@ -210,9 +210,9 @@ const UserPipelinePage = ({
                                     {bid.provider.first_name} {bid.provider.last_name}
                                   </p>
                                   <div className="text-muted-foreground flex items-center space-x-1 text-sm">
-                                    <span>⭐ 2000</span>
+                                    <span>⭐ {gig?.providerStats?.avgRating || 0}</span>
                                     <span>•</span>
-                                    <span>200 gigs</span>
+                                    <span>{gig?.providerStats?.totalCompletedGigs || 0} gigs</span>
                                   </div>
                                 </div>
                               </div>
@@ -323,9 +323,9 @@ const UserPipelinePage = ({
                                     {bid.provider.first_name} {bid.provider.last_name}
                                   </p>
                                   <div className="text-muted-foreground flex items-center space-x-1 text-sm">
-                                    <span>⭐ 2000</span>
+                                    <span>⭐ {gig?.providerStats?.avgRating || 0}</span>
                                     <span>•</span>
-                                    <span>200 gigs</span>
+                                    <span>{gig?.providerStats?.totalCompletedGigs || 0} gigs</span>
                                   </div>
                                 </div>
                               </div>
