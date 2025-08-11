@@ -1,4 +1,16 @@
-import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelLeft, Globe, FileText, List, Workflow } from 'lucide-react';
+import {
+  BarChart3,
+  Briefcase,
+  PackagePlusIcon,
+  Users2Icon,
+  LayoutDashboard,
+  PanelLeft,
+  Globe,
+  FileText,
+  List,
+  Workflow,
+  ClipboardCheck
+} from 'lucide-react';
 import { PayPalButtonStyle } from '@paypal/paypal-js';
 import { PRIVATE_ROUTE } from './app-routes';
 import { publicEnv } from '@/lib/config/publicEnv';
@@ -28,37 +40,53 @@ export const DASHBOARD_NAVIGATION_MENU = [
   {
     name: 'Dashboard',
     icon: BarChart3,
-    href: PRIVATE_ROUTE.DASHBOARD
+    href: PRIVATE_ROUTE.DASHBOARD,
+    sub_navigation: []
   },
-  { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.GIGS },
-  { name: 'Pipeline', icon: Workflow, href: PRIVATE_ROUTE.GIG_PIPELINE_PATH }
+  {
+    name: 'Gigs',
+    icon: Briefcase,
+    href: PRIVATE_ROUTE.GIGS,
+    sub_navigation: [{ name: 'Completed Gigs', icon: ClipboardCheck, href: PRIVATE_ROUTE.COMPLETED_GIGS }]
+  },
+  {
+    name: 'Pipeline',
+    icon: Workflow,
+    href: PRIVATE_ROUTE.GIG_PIPELINE_PATH,
+    sub_navigation: []
+  }
 ];
 
 export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
   {
     name: 'Tier System',
     icon: LayoutDashboard,
-    href: PRIVATE_ROUTE.ADMIN_TIER_SYSTEM_DASHBOARD_PATH
+    href: PRIVATE_ROUTE.ADMIN_TIER_SYSTEM_DASHBOARD_PATH,
+    sub_navigation: []
   },
   {
     name: 'Users',
     icon: Users2Icon,
-    href: PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH
+    href: PRIVATE_ROUTE.ADMIN_USERS_DASHBOARD_PATH,
+    sub_navigation: []
   },
   {
     name: 'Gigs',
     icon: Briefcase,
-    href: PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH
+    href: PRIVATE_ROUTE.ADMIN_GIGS_DASHBOARD_PATH,
+    sub_navigation: []
   },
   {
     name: 'Subscription Plans',
     icon: PackagePlusIcon,
-    href: PRIVATE_ROUTE.ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH
+    href: PRIVATE_ROUTE.ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH,
+    sub_navigation: []
   },
   {
     name: 'CMS Pages',
     icon: PanelLeft,
-    href: PRIVATE_ROUTE.ADMIN_CMS_PAGES_PATH
+    href: PRIVATE_ROUTE.ADMIN_CMS_PAGES_PATH,
+    sub_navigation: []
   }
 ];
 

@@ -1,10 +1,22 @@
-import { setGigs, setLoading, clearGigs, setOwnGigs, removeGig, setBids, updateBid } from '@/store/slices/gigs';
+import {
+  setGigs,
+  setLoading,
+  clearGigs,
+  setOwnGigs,
+  removeGig,
+  setBids,
+  updateBid,
+  setCompletedProviderGigs,
+  setCompletedUserGigs
+} from '@/store/slices/gigs';
 import { AppDispatch } from '@/store/store';
 
 import apiService from './api';
 import { ApiResponse } from '@/types/shared/api-response';
 import { toast } from '@/lib/toast';
-import { PUBLIC_API_ROUTES } from '@/constants/app-routes';
+import { PRIVATE_API_ROUTES, PUBLIC_API_ROUTES } from '@/constants/app-routes';
+import { HttpStatusCode } from '@/enums/shared/http-status-code';
+import { UserPipelineResponse } from '@/types/pipeline';
 
 export const gigService = {
   createGig({ body }: { body: FormData }) {
@@ -72,6 +84,68 @@ export const gigService = {
         if (response.status === 200 && response.data) {
           dispatch(
             setGigs({
+              gigs: response.data.data.gigs,
+              pagination: response.data.data.pagination
+            })
+          );
+          return response.data;
+        }
+      } catch (error: any) {
+        toast.error(error.response?.data?.error?.message);
+      } finally {
+        dispatch(setLoading({ loading: false }));
+      }
+    };
+  },
+
+  getCompletedProviderGigs({ page, limit = 10, search }: { page: number; limit?: number; search?: string }) {
+    return async (dispatch: AppDispatch) => {
+      try {
+        dispatch(setLoading({ loading: true }));
+
+        const params = new URLSearchParams();
+        params.append('page', page.toString());
+
+        if (search) params.append('search', search);
+        if (limit) params.append('limit', limit.toString());
+
+        const response = await apiService.get<UserPipelineResponse>(`${PRIVATE_API_ROUTES.COMPLETED_PROVIDER_GIGS}?${params.toString()}`, {
+          withAuth: true
+        });
+        if (response.status === HttpStatusCode.OK && response.data) {
+          dispatch(
+            setCompletedProviderGigs({
+              gigs: response.data.data.gigs,
+              pagination: response.data.data.pagination
+            })
+          );
+          return response.data;
+        }
+      } catch (error: any) {
+        toast.error(error.response?.data?.error?.message);
+      } finally {
+        dispatch(setLoading({ loading: false }));
+      }
+    };
+  },
+
+  getCompletedUserGigs({ page, limit = 10, search }: { page: number; limit?: number; search?: string }) {
+    return async (dispatch: AppDispatch) => {
+      try {
+        dispatch(setLoading({ loading: true }));
+
+        const params = new URLSearchParams();
+        params.append('page', page.toString());
+
+        if (search) params.append('search', search);
+        if (limit) params.append('limit', limit.toString());
+
+        const response = await apiService.get<UserPipelineResponse>(`${PRIVATE_API_ROUTES.COMPLETED_USER_GIGS}?${params.toString()}`, {
+          withAuth: true
+        });
+        if (response.status === HttpStatusCode.OK && response.data) {
+          dispatch(
+            setCompletedUserGigs({
               gigs: response.data.data.gigs,
               pagination: response.data.data.pagination
             })

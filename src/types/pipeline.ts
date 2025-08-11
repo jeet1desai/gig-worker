@@ -8,6 +8,7 @@ export interface UserProfile {
   profile_url?: string;
   is_verified: boolean;
   is_banned: boolean;
+  username?: string;
 }
 
 export interface GigPipeline {
@@ -37,8 +38,8 @@ export interface Gig {
   title: string;
   slug: string;
   description?: string;
-  start_date?: string;
-  end_date?: string;
+  start_date: string;
+  end_date: string;
   tier: TIER;
   price_range: {
     min: number;
@@ -68,6 +69,7 @@ export interface Gig {
     status: PAYMENT_STATUS;
     [key: string]: any;
   }[];
+  [key: string]: any;
 }
 
 export interface ProviderBid {
