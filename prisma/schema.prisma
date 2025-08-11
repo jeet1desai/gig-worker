@@ -13,6 +13,7 @@ model User {
   last_name        String?
   profile_url      String?
   email            String       @unique
+  username         String?      @unique
   password         String
   role             ROLE         @default(user)
   is_verified      Boolean      @default(false)
@@ -387,6 +388,7 @@ enum PAYMENT_STATUS {
   held
   completed
   refunded
+  failed
 }
 
 enum PAYMENT_REQUEST_STATUS {

@@ -5,11 +5,13 @@ import { useDispatch as useAppDispatch, useSelector as useAppSelector, type Type
 import userReducer from './slices/user';
 import adminUserReducer from './slices/admin-user';
 import gigsReducer from './slices/gigs';
+import dashboardReducer from './slices/dashboard';
 
 const rootReducer = combineReducers({
   user: userReducer,
   adminUser: adminUserReducer,
-  gigs: gigsReducer
+  gigs: gigsReducer,
+  dashboard: dashboardReducer
 });
 
 export const store = configureStore({

@@ -1,10 +1,11 @@
 import prisma from '@/lib/prisma';
 import { safeJson } from '../utils/safeJson';
+import { SUBSCRIPTION_STATUS } from '@prisma/client';
 
-export async function getUserDetails(userId: number) {
+export async function getUserDetails(username: string) {
   const user = await prisma.user.findUnique({
     where: {
-      id: userId,
+      username,
       is_deleted: false,
       is_verified: true,
       is_banned: false
@@ -37,14 +38,31 @@ export async function getUserDetails(userId: number) {
 
   if (!user) return null;
 
+  const currentPlan = await prisma.subscription.findFirst({
+    where: {
+      user_id: user.id,
+      status: SUBSCRIPTION_STATUS.active
+    },
+    orderBy: { created_at: 'desc' },
+    select: {
+      id: true,
+      status: true,
+      plan: {
+        select: {
+          name: true
+        }
+      }
+    }
+  });
+
   const reviewStats = await prisma.reviewRating.aggregate({
-    where: { provider_id: userId },
+    where: { provider_id: user.id },
     _avg: { rating: true },
     _count: { rating: true }
   });
 
   const totalGigs = await prisma.gig.count({
-    where: { user_id: userId }
+    where: { user_id: user.id }
   });
 
   return safeJson({
@@ -54,6 +72,7 @@ export async function getUserDetails(userId: number) {
       avgRating: reviewStats._avg.rating ?? 0,
       totalReviews: reviewStats._count.rating ?? 0,
       latestReviews: user?.provider_rating ?? []
-    }
+    },
+    currentPlan
   });
 }

@@ -23,6 +23,7 @@ import {
   SIGNUP_MESSAGES,
   VERIFICATION_CODES
 } from '@/constants';
+import { generateUniqueUsernameFromEmail } from '@/lib/server/auth';
 const io = getSocketServer();
 
 export async function POST(req: Request) {
@@ -50,18 +51,21 @@ export async function POST(req: Request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
+    const username = await generateUniqueUsernameFromEmail(formattedEmail);
 
     const user = await prisma.user.create({
       data: {
         email: formattedEmail,
         first_name,
         last_name,
+        username,
         password: hashedPassword,
         sign_up_type: USER_SIGNUP_TYPE.EMAIL
       },
       select: {
         id: true,
         email: true,
+        username: true,
         first_name: true,
         last_name: true
       }

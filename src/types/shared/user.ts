@@ -1,4 +1,4 @@
-import { ROLE } from '@prisma/client';
+import { ROLE, SUBSCRIPTION_STATUS } from '@prisma/client';
 
 export type UserProfile = {
   id: string;
@@ -34,6 +34,14 @@ export type UserProfileDetails = {
     };
     created_at: string;
   }[];
+
+  currentPlan: {
+    id: string;
+    status: SUBSCRIPTION_STATUS;
+    plan: {
+      name: string;
+    };
+  };
 
   totalGigsPosted: number;
 

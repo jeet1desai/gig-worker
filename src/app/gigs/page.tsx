@@ -644,14 +644,14 @@ const GigsPage = () => {
 
               {activeFilters.startDate !== undefined && activeFilters.startDate !== '' && (
                 <div className="flex items-center gap-1 rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-400 hover:bg-purple-500/20">
-                  {activeFilters.startDate}+ Start Date
+                  Start Date: {formatOnlyDate(activeFilters.startDate)}
                   <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('startDate', '')} />
                 </div>
               )}
 
               {activeFilters.endDate !== undefined && activeFilters.endDate !== '' && (
                 <div className="flex items-center gap-1 rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-400 hover:bg-purple-500/20">
-                  {activeFilters.endDate}+ End Date
+                  End Date: {formatOnlyDate(activeFilters.endDate)}
                   <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('endDate', '')} />
                 </div>
               )}
@@ -659,7 +659,7 @@ const GigsPage = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 text-xs text-blue-400 hover:bg-transparent hover:text-blue-300"
+                className="h-6 cursor-pointer text-xs text-blue-400 hover:bg-transparent hover:text-blue-300"
                 onClick={handleResetFilters}
               >
                 Clear all
@@ -679,7 +679,7 @@ const GigsPage = () => {
               {ownGigs.map((gig, index) => (
                 <GigUserCard key={`${gig.id}-${index}`} role={user?.role} {...gig} openDeleteConfirmation={openDeleteConfirmation} />
               ))}
-              {loading && <GigsShimmerCards />}
+              {loading && !isDeleteOpen && <GigsShimmerCards />}
             </InfiniteScroll>
           ) : (
             <InfiniteScroll
@@ -693,7 +693,7 @@ const GigsPage = () => {
               {gigs.map((gig, index) => (
                 <GigCard key={`${gig.id}-${index}`} role={user?.role} {...gig} />
               ))}
-              {loading && <GigsShimmerCards />}
+              {loading && !isDeleteOpen && <GigsShimmerCards />}
             </InfiniteScroll>
           )}
 

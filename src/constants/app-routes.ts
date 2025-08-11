@@ -25,6 +25,7 @@ export enum PRIVATE_ROUTE {
   AUTH_CALLBACK_HANDLER = '/auth/callback-handler',
   DASHBOARD = '/dashboard',
   GIGS = '/gigs',
+  ADD_GIG = '/gigs/new',
   USER_PROFILE = '/profile',
   USER_GIGS = '/manage-gigs',
   PROVIDER_BIDS = '/provider-bids',
@@ -35,7 +36,10 @@ export enum PRIVATE_ROUTE {
   ADMIN_SUBSCRIPTION_PLANS_DASHBOARD_PATH = '/admin/subscriptions',
   ADMIN_CMS_PAGES_PATH = '/admin/cms_pages',
   ADMIN_ADD_CMS_PAGES_PATH = '/admin/cms_pages/add',
-  ADMIN_EDIT_CMS_PAGES_PATH = '/admin/cms_pages/edit'
+  ADMIN_EDIT_CMS_PAGES_PATH = '/admin/cms_pages/edit',
+  GIG_PAYEMNT_SUCCESS_PATH = '/payment/success',
+  GIG_PAYEMNT_CANCLE_PATH = '/payment/cancel',
+  GIG_PIPELINE_PATH = '/pipeline'
 }
 
 export enum PUBLIC_API_ROUTES {
@@ -64,7 +68,13 @@ export enum PRIVATE_API_ROUTES {
   USER_PROFILE_PICTURE_UPDATE_API = '/users/profile/profile-picture',
   USER_BANNER_IMAGE_UPDATE_API = '/users/profile/banner-image',
   USER_ROLE_CHANGE_API = '/userRole',
-  ADMIN_GIGS_LIST_API = '/admin/gigs'
+  ADMIN_GIGS_LIST_API = '/admin/gigs',
+  DASHBOARD_RECENT_GIGS_API = '/dashboard/gigs',
+  PAYMENT_CAPTURE_API = '/payments/capture',
+  CREATE_PROVIDER_REVIEW_API = '/gigs/review',
+  GIG_MARK_COMPLETE_PROVIDER_API = '/gigs/complete',
+  USER_PIPELINE_API = '/gigs/pipeline',
+  PROVIDER_PIPELINE_API = '/gigs/provider-pipeline'
 }
 
 export const excludedPublicRoutes = [

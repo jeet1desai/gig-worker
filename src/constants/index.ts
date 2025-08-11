@@ -1,4 +1,4 @@
-import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelLeft, Globe, FileText, List } from 'lucide-react';
+import { BarChart3, Briefcase, PackagePlusIcon, Users2Icon, LayoutDashboard, PanelLeft, Globe, FileText, List, Workflow } from 'lucide-react';
 import { PayPalButtonStyle } from '@paypal/paypal-js';
 import { PRIVATE_ROUTE } from './app-routes';
 import { publicEnv } from '@/lib/config/publicEnv';
@@ -30,7 +30,8 @@ export const DASHBOARD_NAVIGATION_MENU = [
     icon: BarChart3,
     href: PRIVATE_ROUTE.DASHBOARD
   },
-  { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.GIGS }
+  { name: 'Gigs', icon: Briefcase, href: PRIVATE_ROUTE.GIGS },
+  { name: 'Pipeline', icon: Workflow, href: PRIVATE_ROUTE.GIG_PIPELINE_PATH }
 ];
 
 export const ADMIN_DASHBOARD_NAVIGATION_MENU = [
@@ -196,12 +197,20 @@ export const NOTIFICATION_MESSAGES = {
   USER_CREATED: 'User created successfully.'
 };
 
+export const GIG_NOTIFICATION_MODULES = {
+  GIG_COMPLETED_TITLE: 'Gig Completed',
+  LOW_RATING_TITLE: 'Low Rating Received',
+  REVIEW_SUBMITTED_TITLE: 'Review Submitted',
+  PAYMENT_SUCCESS_TITLE: 'Payment Successful'
+};
+
 export const NOTIFICATION_MODULES = {
   SYSTEM: 'system'
 };
 
 export const NOTIFICATION_TYPES = {
-  SUCCESS: 'success'
+  SUCCESS: 'success',
+  WARNING: 'warning'
 };
 
 export const BCRYPT_SALT_ROUNDS = 10;
@@ -378,4 +387,12 @@ export const statusColors: Record<string, string> = {
   in_progress: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
   completed: 'border-green-300 bg-green-100 text-green-600',
   rejected: 'bg-destructive/10 text-destructive border-destructive/20'
+};
+
+export const ratingLabels: Record<string, string> = {
+  '1': 'Poor',
+  '2': 'Fair',
+  '3': 'Good',
+  '4': 'Very Good',
+  '5': 'Excellent'
 };

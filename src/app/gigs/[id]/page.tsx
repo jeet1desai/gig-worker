@@ -34,11 +34,18 @@ import DashboardLayout from '@/components/layouts/layout';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatOnlyDate, getDaysBetweenDates } from '@/lib/date-format';
 import notificationHelper from '@/lib/utils/notifications';
-import { NOTIFICATION_TYPE } from '@prisma/client';
+import { GIG_STATUS, NOTIFICATION_TYPE, PAYMENT_STATUS, ROLE } from '@prisma/client';
 import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
-import { PRIVATE_ROUTE } from '@/constants/app-routes';
+import { PRIVATE_API_ROUTES, PRIVATE_ROUTE } from '@/constants/app-routes';
 import GigDetailsShimmer from '@/components/shimmer/GigDetailsShimmer';
+import GigReviewModal from '@/components/gigs/GigReviewModal';
+import { setLoading } from '@/store/slices/gigs';
+import apiService from '@/services/api';
+import { CreateProvidersReviewAPIResponse } from '@/types/fe';
+import { toast } from '@/lib/toast';
+import Loader from '@/components/Loader';
+import { getPaymentStatusLabel } from '@/app/pipeline/page';
 
 export default function GigDetailPage() {
   const router = useRouter();
@@ -48,20 +55,30 @@ export default function GigDetailPage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { loading, bids, pagination } = useSelector((state: RootState) => state.gigs);
   const [gig, setGig] = useState<any>(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [selectedGigForReview, setSelectedGigForReview] = useState<{
+    id: string;
+    title: string;
+    bidAmount: number;
+    providerName: string;
+  } | null>(null);
+  const [showPaymentOnly, setShowPaymentOnly] = useState(false);
 
   useEffect(() => {
     if (id) {
-      handleFetchGigDetails(id);
+      handleFetchGigDetails(id as string, true);
     }
   }, [id]);
 
-  const handleFetchGigDetails = async (id: any) => {
+  const handleFetchGigDetails = async (id: string, call_detail_api: boolean) => {
     try {
-      const response = await dispatch(gigService.getGigById(id) as any);
+      const response = await dispatch(gigService.getGigById(id));
       if (response && response.data) {
         setGig(response.data);
 
-        await dispatch(gigService.getBidsByGigId(id, 1, 5) as any);
+        if (call_detail_api) {
+          await dispatch(gigService.getBidsByGigId(id, 1, 5));
+        }
       }
     } catch (error) {
       console.error('Error fetching gig details:', error);
@@ -133,7 +150,48 @@ export default function GigDetailPage() {
     }
   };
 
-  if (loading || !gig) {
+  const handleCompleteGig = async (gigId: string) => {
+    dispatch(setLoading({ loading: true }));
+    try {
+      const response = await apiService.post<CreateProvidersReviewAPIResponse>(
+        `${PRIVATE_API_ROUTES.GIG_MARK_COMPLETE_PROVIDER_API}/${gigId}`,
+        {},
+        {
+          withAuth: true
+        }
+      );
+
+      if (response.data.message) {
+        const response_data = await dispatch(gigService.getGigById(id as string));
+        if (response_data && response_data.data) {
+          setGig(response_data.data);
+        }
+        toast.success(response.data.message);
+      }
+    } catch (error: any) {
+      const message = error?.response?.data?.error?.message || error?.message || 'Error while marking gig as completed';
+      toast.error(message);
+    } finally {
+      dispatch(setLoading({ loading: false }));
+    }
+  };
+
+  const handleReviewGig = (gigId: string, gigTitle: string, accepted_bid: { [key: string]: any }) => {
+    if (gig?.review_rating && gig?.paymentStatus === PAYMENT_STATUS.held) {
+      setShowPaymentOnly(true);
+    } else {
+      setShowPaymentOnly(false);
+    }
+    setSelectedGigForReview({
+      id: gigId,
+      title: gigTitle,
+      bidAmount: accepted_bid?.bid_price,
+      providerName: `${accepted_bid?.provider?.first_name} ${accepted_bid?.provider?.last_name}`
+    });
+    setIsReviewModalOpen(true);
+  };
+
+  if (!gig) {
     return (
       <DashboardLayout>
         <GigDetailsShimmer />
@@ -143,6 +201,7 @@ export default function GigDetailPage() {
 
   return (
     <DashboardLayout>
+      <Loader isLoading={loading} />
       <main
         className="min-h-screen py-8"
         style={{ filter: loading || !gig ? 'blur(2px)' : 'none', pointerEvents: loading || !gig ? 'none' : 'auto' }}
@@ -154,20 +213,38 @@ export default function GigDetailPage() {
               Back to Gigs
             </Button>
             <div className="flex items-center space-x-2">
+              {gig?.pipeline?.status === GIG_STATUS.completed && session?.user.id === gig?.user_id && (
+                <Button
+                  onClick={() => handleReviewGig(gig?.id, gig?.title, gig?.accepted_bid)}
+                  variant="outline"
+                  className="border-blue-500 bg-transparent text-blue-500 hover:bg-blue-900/20 hover:text-blue-400"
+                  disabled={gig?.review_rating && gig?.paymentStatus === PAYMENT_STATUS.completed || gig?.review_rating?.rating < 3}
+                >
+                  <Star className="mr-2 h-4 w-4" />
+                  Review & Pay
+                </Button>
+              )}
+              {gig?.pipeline?.status === GIG_STATUS.in_progress && session?.user.id === gig?.accepted_bid?.provider_id && (
+                <Button
+                  onClick={() => handleCompleteGig(gig.id)}
+                  variant="outline"
+                  className="border-green-500 bg-transparent text-green-500 hover:bg-green-900/20 hover:text-green-400"
+                >
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Mark as Completed
+                </Button>
+              )}
+              {gig?.pipeline?.status === GIG_STATUS.completed && session?.user.id === gig?.accepted_bid?.provider_id && getPaymentStatusLabel(gig)}
               <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
                 <Share2 className="mr-2 h-4 w-4" />
                 Share
               </Button>
-              {/* <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
-                <Flag className="h-4 w-4" />
-                Report
-              </Button>
-              <Button variant="outline" size="sm" className="bg-gray-800 text-gray-400 hover:bg-gray-800">
-                <Bookmark className="h-4 w-4" />
-                Save
-              </Button> */}
             </div>
           </div>
+
+          {gig?.pipeline?.status === GIG_STATUS.completed && session?.user.id === gig?.user_id && (
+            <div className="mb-6">{getPaymentStatusLabel(gig)}</div>
+          )}
 
           <div className="grid gap-4 lg:grid-cols-3">
             <div className="space-y-4 lg:col-span-2">
@@ -353,7 +430,7 @@ export default function GigDetailPage() {
             </div>
 
             <div className="lg:col-span-1">
-              {session?.user?.id === gig?.user_id && (
+              {session?.user?.id === gig?.user_id && Object.keys(gig?.accepted_bid || {}).length <= 0 && (
                 <Card className="rounded-lg border-gray-700/50 bg-inherit p-0">
                   <CardContent className="p-4">
                     <CardTitle className="text-white">Bids ({bids.length || 0})</CardTitle>
@@ -424,7 +501,7 @@ export default function GigDetailPage() {
 
                                     <div className="mt-4 border-t border-gray-700/50 pt-4">
                                       <h5 className="mb-2 text-sm font-medium text-gray-300">Proposal:</h5>
-                                      <p className="text-gray-300">{bid.proposal}</p>
+                                      <p className="break-all text-gray-300">{bid.proposal}</p>
                                       <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
                                         <span className="flex items-center">
                                           <Clock className="mr-1 h-3.5 w-3.5" />
@@ -484,6 +561,83 @@ export default function GigDetailPage() {
                   </CardContent>
                 </Card>
               )}
+              {session?.user?.id === gig?.user_id && Object.keys(gig?.accepted_bid || {}).length > 0 && (
+                <Card className="rounded-lg border-gray-700/50 bg-inherit p-0">
+                  <CardContent className="p-4">
+                    <CardTitle className="text-white">Accepted Bid</CardTitle>
+
+                    <div className="mt-4 overflow-auto lg:h-[calc(100vh-16rem)]" id="bids-scroll-container" ref={scrollContainerRef}>
+                      <Card
+                        key={gig?.accepted_bid.id}
+                        className={`relative overflow-hidden border border-gray-700/50 bg-gray-800/30 p-0 transition-all hover:border-gray-600/50 ${gig?.accepted_bid.featured ? 'ring-2 ring-blue-500/30' : ''}`}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
+                            <div className="flex items-start space-x-4">
+                              <Avatar className="h-14 w-14 border-2 border-blue-500/30">
+                                <AvatarImage src={gig?.accepted_bid.provider.profile_url} alt={gig?.accepted_bid.provider.first_name} />
+                                <AvatarFallback className="bg-gray-700">
+                                  {gig?.accepted_bid.provider.first_name
+                                    .split(' ')
+                                    .map((n: string) => n[0])
+                                    .join('')}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="flex items-center space-x-2">
+                                  <h4 className="text-lg font-semibold text-white">
+                                    {gig?.accepted_bid.provider.first_name} {gig?.accepted_bid.provider.last_name}
+                                  </h4>
+                                  {gig?.accepted_bid.provider.is_verified && <CheckCircle className="h-4 w-4 text-blue-400" />}
+                                </div>
+                                <div className="mt-1 flex items-center space-x-2">
+                                  <div className="flex items-center">
+                                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                    <span className="ml-1 text-sm font-medium text-white">{4}</span>
+                                    <span className="mx-1 text-gray-500">•</span>
+                                    <span className="text-sm text-gray-400">{4} reviews</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col items-end space-y-2 sm:items-end">
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-white">${gig?.accepted_bid?.bid_price}</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="mt-4 border-t border-gray-700/50 pt-4">
+                            <h5 className="mb-2 text-sm font-medium text-gray-300">Proposal:</h5>
+                            <p className="text-gray-300">{gig?.accepted_bid?.proposal}</p>
+                            <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
+                              <span className="flex items-center">
+                                <Clock className="mr-1 h-3.5 w-3.5" />
+                                Posted {formatOnlyDate(gig?.accepted_bid?.created_at)}
+                              </span>
+                              <div className="flex space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-blue-500/30 text-blue-400 hover:bg-blue-900/20 hover:text-blue-300"
+                                >
+                                  <MessageCircle className="h-4 w-4" />
+                                </Button>
+                                {gig?.accepted_bid?.status === 'accepted' && (
+                                  <Button variant="default" size="sm" className="bg-green-600 text-white hover:bg-green-700">
+                                    Accepted
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
               {session?.user?.id !== gig?.user_id && (
                 <Card className="rounded-lg border-gray-700/50 bg-inherit">
                   <CardHeader>
@@ -500,81 +654,83 @@ export default function GigDetailPage() {
                       </div>
                     </CardContent>
                   ) : (
-                    <CardContent className="space-y-4 text-white">
-                      <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
-                        <AlertCircle className="mr-2 inline h-4 w-4" />
-                        This gig expires in {new Date(gig?.end_date).toLocaleDateString()}. Act fast!
-                      </div>
+                    (gig?.pipeline?.status === GIG_STATUS.open || gig?.pipeline?.status === GIG_STATUS.requested) && (
+                      <CardContent className="space-y-4 text-white">
+                        <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
+                          <AlertCircle className="mr-2 inline h-4 w-4" />
+                          This gig expires in {new Date(gig?.end_date).toLocaleDateString()}. Act fast!
+                        </div>
 
-                      <Formik
-                        initialValues={{ proposal: '', bidPrice: '' }}
-                        enableReinitialize
-                        validationSchema={Yup.object().shape({
-                          proposal: Yup.string().required('Required').min(100, 'Too Short!'),
-                          bidPrice: Yup.number().required('Required')
-                        })}
-                        onSubmit={handlePostBidSubmit}
-                      >
-                        {({ isSubmitting, errors, touched, handleSubmit, getFieldProps }) => {
-                          return (
-                            <Form noValidate onSubmit={handleSubmit}>
-                              <div className="space-y-4">
-                                <div>
-                                  <Label htmlFor="bidPrice" className="mb-2 block text-sm font-medium">
-                                    Your Bid Amount
-                                  </Label>
-                                  <div className="relative">
-                                    <DollarSign className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-                                    <Input
-                                      id="bidPrice"
-                                      type="number"
-                                      step="0.1"
-                                      placeholder={`Enter your bid (${gig?.price_range?.min || 0}-${gig?.price_range?.max || 'N/A'})`}
-                                      className="h-10 w-full rounded-lg border-gray-600 bg-inherit py-2 pr-4 pl-10"
-                                      {...getFieldProps('bidPrice')}
+                        <Formik
+                          initialValues={{ proposal: '', bidPrice: '' }}
+                          enableReinitialize
+                          validationSchema={Yup.object().shape({
+                            proposal: Yup.string().required('Required').min(100, 'Too Short!'),
+                            bidPrice: Yup.number().required('Required')
+                          })}
+                          onSubmit={handlePostBidSubmit}
+                        >
+                          {({ isSubmitting, errors, touched, handleSubmit, getFieldProps }) => {
+                            return (
+                              <Form noValidate onSubmit={handleSubmit}>
+                                <div className="space-y-4">
+                                  <div>
+                                    <Label htmlFor="bidPrice" className="mb-2 block text-sm font-medium">
+                                      Your Bid Amount
+                                    </Label>
+                                    <div className="relative">
+                                      <DollarSign className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+                                      <Input
+                                        id="bidPrice"
+                                        type="number"
+                                        step="0.1"
+                                        placeholder={`Enter your bid (${gig?.price_range?.min || 0}-${gig?.price_range?.max || 'N/A'})`}
+                                        className="h-10 w-full rounded-lg border-gray-600 bg-inherit py-2 pr-4 pl-10"
+                                        {...getFieldProps('bidPrice')}
+                                      />
+                                    </div>
+                                    <p className="mt-1 text-xs text-gray-500">
+                                      Budget range: ${gig?.price_range?.min || 0} - ${gig?.price_range?.max || 'N/A'}
+                                    </p>
+                                    {errors.bidPrice && touched.bidPrice && <div className="text-sm text-red-500">{errors.bidPrice}</div>}
+                                  </div>
+
+                                  <div>
+                                    <Label htmlFor="proposal" className="mb-2 block text-sm font-medium">
+                                      Cover Letter
+                                    </Label>
+                                    <Textarea
+                                      id="proposal"
+                                      rows={4}
+                                      minLength={100}
+                                      placeholder="Explain why you're the perfect fit for this project..."
+                                      className="w-full rounded-lg border-gray-600 bg-inherit px-4 py-2"
+                                      {...getFieldProps('proposal')}
                                     />
+                                    <p className="mt-1 text-xs text-gray-500">Min. 100 characters recommended</p>
+                                    {errors.proposal && touched.proposal && <div className="text-sm text-red-500">{errors.proposal}</div>}
                                   </div>
-                                  <p className="mt-1 text-xs text-gray-500">
-                                    Budget range: ${gig?.price_range?.min || 0} - ${gig?.price_range?.max || 'N/A'}
-                                  </p>
-                                  {errors.bidPrice && touched.bidPrice && <div className="text-sm text-red-500">{errors.bidPrice}</div>}
-                                </div>
 
-                                <div>
-                                  <Label htmlFor="proposal" className="mb-2 block text-sm font-medium">
-                                    Cover Letter
-                                  </Label>
-                                  <Textarea
-                                    id="proposal"
-                                    rows={4}
-                                    minLength={100}
-                                    placeholder="Explain why you're the perfect fit for this project..."
-                                    className="w-full rounded-lg border-gray-600 bg-inherit px-4 py-2"
-                                    {...getFieldProps('proposal')}
-                                  />
-                                  <p className="mt-1 text-xs text-gray-500">Min. 100 characters recommended</p>
-                                  {errors.proposal && touched.proposal && <div className="text-sm text-red-500">{errors.proposal}</div>}
-                                </div>
-
-                                <div className="border-t border-gray-700/50 pt-4">
-                                  <div className="mb-2 flex justify-between text-sm">
-                                    <span>Service fee (5%):</span>
-                                    <span className="text-gray-400">Calculated after bid</span>
+                                  <div className="border-t border-gray-700/50 pt-4">
+                                    <div className="mb-2 flex justify-between text-sm">
+                                      <span>Service fee (5%):</span>
+                                      <span className="text-gray-400">Calculated after bid</span>
+                                    </div>
                                   </div>
-                                </div>
 
-                                <Button
-                                  type="submit"
-                                  className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800"
-                                >
-                                  {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Submit Bid'}
-                                </Button>
-                              </div>
-                            </Form>
-                          );
-                        }}
-                      </Formik>
-                    </CardContent>
+                                  <Button
+                                    type="submit"
+                                    className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800"
+                                  >
+                                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Submit Bid'}
+                                  </Button>
+                                </div>
+                              </Form>
+                            );
+                          }}
+                        </Formik>
+                      </CardContent>
+                    )
                   )}
                 </Card>
               )}
@@ -592,6 +748,21 @@ export default function GigDetailPage() {
             </Card>
           </div>
         </div>
+        {selectedGigForReview && (
+          <GigReviewModal
+            isOpen={isReviewModalOpen}
+            onClose={() => {
+              setIsReviewModalOpen(false);
+              setSelectedGigForReview(null);
+            }}
+            fetchGigDetails={() => handleFetchGigDetails(id as string, false)}
+            gigId={selectedGigForReview.id}
+            gigTitle={selectedGigForReview.title}
+            bidAmount={selectedGigForReview.bidAmount}
+            providerName={selectedGigForReview.providerName}
+            showPaymentOnly={showPaymentOnly}
+          />
+        )}
       </main>
     </DashboardLayout>
   );

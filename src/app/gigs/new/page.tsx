@@ -18,12 +18,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 
 import { cn } from '@/lib/utils';
-import { formatDate, formatDateInternational } from '@/lib/date-format';
+import { formatDateInternational, formatOnlyDate } from '@/lib/date-format';
 
 import { useDispatch } from '@/store/store';
 import { gigService } from '@/services/gig.services';
-import { TimePicker } from '@/components/TimePicker';
-import { PRIVATE_ROUTE } from '@/constants/app-routes';
 
 const TIER_OPTIONS = [
   { value: 'basic', label: 'Basic' },
@@ -98,7 +96,7 @@ const NewGigPage = () => {
   };
 
   const redirectToPreviousPage = () => {
-    router.push(PRIVATE_ROUTE.GIGS);
+    router.back();
   };
 
   return (
@@ -326,7 +324,7 @@ const NewGigPage = () => {
                                 errors.start_date && touched.start_date && 'border-red-500'
                               )}
                             >
-                              {values.start_date ? formatDate(values.start_date) : <span>Pick a date</span>}
+                              {values.start_date ? formatOnlyDate(values.start_date) : <span>Pick a date</span>}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </PopoverTrigger>
@@ -343,13 +341,6 @@ const NewGigPage = () => {
                                 }
                               }}
                             />
-                            <div className="mx-auto mb-2 w-[90%] space-y-2">
-                              <Label htmlFor="start_time">Start Time *</Label>
-                              <TimePicker
-                                value={new Date(values.start_date)}
-                                onChange={(newTime) => setFieldValue('start_date', formatDateInternational(newTime))}
-                              />
-                            </div>
                           </PopoverContent>
                         </Popover>
                         {errors.start_date && touched.start_date && <div className="text-sm text-red-500">{errors.start_date}</div>}
@@ -366,7 +357,7 @@ const NewGigPage = () => {
                                 errors.end_date && touched.end_date && 'border-red-500'
                               )}
                             >
-                              {values.end_date ? formatDate(values.end_date) : <span>Pick a date</span>}
+                              {values.end_date ? formatOnlyDate(values.end_date) : <span>Pick a date</span>}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </PopoverTrigger>
@@ -383,16 +374,8 @@ const NewGigPage = () => {
                                 }
                               }}
                             />
-                            <div className="mx-auto mb-2 w-[90%] space-y-2">
-                              <Label htmlFor="start_time">End Time *</Label>
-                              <TimePicker
-                                value={new Date(values.end_date)}
-                                onChange={(newTime) => setFieldValue('end_date', formatDateInternational(newTime))}
-                              />
-                            </div>
                           </PopoverContent>
                         </Popover>
-                        {errors.end_date && touched.end_date && <div className="text-sm text-red-500">{errors.end_date}</div>}
                       </div>
                     </div>
                   </CardContent>
