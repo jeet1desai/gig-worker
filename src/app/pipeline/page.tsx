@@ -244,9 +244,6 @@ const UserPipelinePage = ({
                         >
                           View Details
                         </Button>
-                        <Button onClick={() => setIsReviewDialogOpen(true)} className="bg-inherit" variant="outline" size="sm">
-                          Mark As Completed
-                        </Button>
                       </div>
                     </div>
                   </CardContent>
