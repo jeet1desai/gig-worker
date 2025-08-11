@@ -65,14 +65,12 @@ export const getPaymentStatusLabel = (gig: Partial<Gig>) => {
 const UserPipelinePage = ({
   activeUserTab,
   setActiveUserTab,
-  setIsReviewDialogOpen,
   pipeline,
   pagination,
   counts
 }: {
   activeUserTab: string;
   setActiveUserTab: (tab: string) => void;
-  setIsReviewDialogOpen: (open: boolean) => void;
   pipeline: {
     open: Gig[];
     inProgress: Gig[];
@@ -545,10 +543,6 @@ const PipelinePage = () => {
   const [activeUserTab, setActiveUserTab] = useState('open');
   const [activeProviderTab, setActiveProviderTab] = useState('pending');
 
-  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
-
   useEffect(() => {
     if (role === 'user') {
       dispatch(pipelineService.getUserPipeline({ page: 1, status: activeUserTab, limit: 10 }));
@@ -556,8 +550,6 @@ const PipelinePage = () => {
       dispatch(pipelineService.getProviderPipeline({ page: 1, status: activeProviderTab, limit: 10 }));
     }
   }, [activeUserTab, activeProviderTab, role, dispatch]);
-
-  const handleSubmit = async () => {};
 
   return (
     <DashboardLayout>
@@ -568,7 +560,6 @@ const PipelinePage = () => {
             <UserPipelinePage
               activeUserTab={activeUserTab}
               setActiveUserTab={setActiveUserTab}
-              setIsReviewDialogOpen={setIsReviewDialogOpen}
               pipeline={userPipeline}
               pagination={pagination}
               counts={userPipelineCounts}
@@ -584,47 +575,6 @@ const PipelinePage = () => {
           )}
         </div>
       </div>
-
-      <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
-        <DialogContent className="border-slate-700 bg-slate-800 text-white sm:max-w-[520px]">
-          <DialogHeader>
-            <DialogTitle>Rate John Doe</DialogTitle>
-            <DialogDescription>Share your experience working with John Doe. Your feedback helps us improve our platform.</DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div className="flex justify-start space-x-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button key={star} type="button" onClick={() => setRating(star)} className="focus:outline-none">
-                  <Star className={`h-8 w-8 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                </button>
-              ))}
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="comment" className="text-sm font-medium">
-                Your Review (optional)
-              </label>
-              <Textarea
-                id="comment"
-                placeholder="Share details about your experience..."
-                className="min-h-[100px] bg-inherit"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end space-x-2">
-            <Button className="bg-inherit" variant="outline" onClick={() => setIsReviewDialogOpen(false)} disabled={false}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit} disabled={rating === 0 || false} className="bg-blue-600 text-white shadow-none hover:bg-blue-700">
-              Submit Review
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </DashboardLayout>
   );
 };
