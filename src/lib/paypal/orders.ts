@@ -8,7 +8,7 @@ interface CreateOrderParams {
   amount: string;
   gigId: string;
   paymentId: string;
-  slug: string
+  slug: string;
   description: string;
 }
 

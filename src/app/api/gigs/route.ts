@@ -198,30 +198,21 @@ export async function GET(request: Request) {
       AND: []
     };
 
-    if (minPrice !== undefined || maxPrice !== undefined) {
-      const priceConditions = [];
-
-      if (minPrice !== undefined) {
-        priceConditions.push({
-          price_range: {
-            path: ['min'],
-            gte: minPrice
-          }
+    if (minPrice !== undefined && maxPrice !== undefined) {
+      baseWhere.AND.push({
+        price_range: { path: ['min'], gte: minPrice }
+      });
+      baseWhere.AND.push({
+        price_range: { path: ['max'], lte: maxPrice }
         });
-      }
-
-      if (maxPrice !== undefined) {
-        priceConditions.push({
-          price_range: {
-            path: ['max'],
-            lte: maxPrice
-          }
+    } else if (minPrice !== undefined) {
+      baseWhere.AND.push({
+        price_range: { path: ['min'], gte: minPrice }
         });
-      }
-
-      if (priceConditions.length > 0) {
-        baseWhere.AND.push({ OR: priceConditions });
-      }
+    } else if (maxPrice !== undefined) {
+      baseWhere.AND.push({
+        price_range: { path: ['max'], lte: maxPrice }
+      });
     }
 
     if (deliveryTime !== undefined) {
