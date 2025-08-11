@@ -15,6 +15,7 @@ import { PRIVATE_ROUTE } from '@/constants/app-routes';
 import GigsShimmerCards from '@/components/shimmer/GigsShimmerCards';
 import { GigCard, GigUserCard } from '../page';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ROLE } from '@prisma/client';
 
 const CompletedGigsPage = () => {
   const router = useRouter();
@@ -29,6 +30,8 @@ const CompletedGigsPage = () => {
   const user = useSelector((state: RootState) => state.user);
   const { loading, completedProviderGigs, pagination, completedUserGigs } = useSelector((state: RootState) => state.gigs);
 
+  const is_user_role = session?.user.role === ROLE.user || user?.role === ROLE.user;
+
   useEffect(() => {
     dispatch(gigService.clearGigs());
     return () => {
@@ -42,7 +45,7 @@ const CompletedGigsPage = () => {
 
   const loadMore = useCallback(() => {
     if (pagination.page < pagination.totalPages) {
-      if (session?.user.role === 'user' || user?.role === 'user') {
+      if (is_user_role) {
         dispatch(
           gigService.getCompletedUserGigs({
             page: pagination.page + 1,
@@ -67,7 +70,7 @@ const CompletedGigsPage = () => {
       setSelectedGigId('');
       setIsDeleteOpen(false);
 
-      if (session?.user.role === 'user' || user?.role === 'user') {
+      if (is_user_role) {
         dispatch(gigService.getCompletedUserGigs({ page: 1, search: '' }));
       } else {
         dispatch(gigService.getCompletedProviderGigs({ page: 1, search: '' }));
@@ -78,7 +81,7 @@ const CompletedGigsPage = () => {
   );
 
   const handleSearch = () => {
-    if (session?.user.role === 'user' || user?.role === 'user') {
+    if (is_user_role) {
       dispatch(gigService.getCompletedUserGigs({ page: 1, search }));
     } else {
       dispatch(gigService.getCompletedProviderGigs({ page: 1, search }));
@@ -149,7 +152,7 @@ const CompletedGigsPage = () => {
             </div>
           </div>
 
-          {session?.user.role === 'user' || user?.role === 'user' ? (
+          {is_user_role ? (
             <InfiniteScroll
               dataLength={completedUserGigs.length}
               next={loadMore}
@@ -192,7 +195,7 @@ const CompletedGigsPage = () => {
               </div>
               <h3 className="mb-2 text-xl font-semibold text-white">No gigs found</h3>
               <p className="max-w-md text-gray-400">We couldn't find any gigs matching your search.</p>
-              {(session?.user.role === 'user' || user?.role === 'user') && (
+              {is_user_role && (
                 <Button
                   className="mt-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                   onClick={() => handleNavigation(PRIVATE_ROUTE.ADD_GIG)}

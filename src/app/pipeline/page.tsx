@@ -92,6 +92,11 @@ const UserPipelinePage = ({
     router.push(path);
   };
 
+  const handleProfileView = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, username: string) => {
+    handleNagivation(`${PRIVATE_ROUTE.USER_PROFILE}/${username}`);
+    event.stopPropagation();
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -334,10 +339,7 @@ const UserPipelinePage = ({
                                   className="bg-inherit"
                                   variant="outline"
                                   size="sm"
-                                  onClick={(event) => {
-                                    handleNagivation(`${PRIVATE_ROUTE.USER_PROFILE}/${bid.provider.username}`);
-                                    event.stopPropagation();
-                                  }}
+                                  onClick={(event) => handleProfileView(event, bid.provider.username as string)}
                                 >
                                   <View className="h-4 w-4" />
                                 </Button>
