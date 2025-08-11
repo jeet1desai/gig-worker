@@ -217,7 +217,12 @@ const UserPipelinePage = ({
                                 </div>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <Button className="bg-inherit" variant="outline" size="sm">
+                                <Button
+                                  className="bg-inherit"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleNagivation(`${PRIVATE_ROUTE.USER_PROFILE}/${bid.provider.username}`)}
+                                >
                                   <View className="h-4 w-4" />
                                 </Button>
                                 <Button className="bg-inherit" variant="outline" size="sm">
@@ -327,7 +332,15 @@ const UserPipelinePage = ({
                                 </div>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <Button className="bg-inherit" variant="outline" size="sm">
+                                <Button
+                                  className="bg-inherit"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={(event) => {
+                                    handleNagivation(`${PRIVATE_ROUTE.USER_PROFILE}/${bid.provider.username}`);
+                                    event.stopPropagation();
+                                  }}
+                                >
                                   <View className="h-4 w-4" />
                                 </Button>
                                 <Button className="bg-inherit" variant="outline" size="sm">

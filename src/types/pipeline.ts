@@ -8,6 +8,7 @@ export interface UserProfile {
   profile_url?: string;
   is_verified: boolean;
   is_banned: boolean;
+  username?: string;
 }
 
 export interface GigPipeline {

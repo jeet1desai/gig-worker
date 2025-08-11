@@ -11,13 +11,18 @@ export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
-      return errorResponse({ code: 'UNAUTHORIZED', message: 'You must be logged in to view gigs', statusCode: HttpStatusCode.UNAUTHORIZED });
+      return errorResponse({
+        code: 'UNAUTHORIZED',
+        message: 'You must be logged in to view gigs',
+        statusCode: HttpStatusCode.UNAUTHORIZED
+      });
     }
 
+    const userId = BigInt(session.user.id);
     const { searchParams } = new URL(request.url);
     const status = (searchParams.get('status')?.toLowerCase() as GIG_STATUS) || GIG_STATUS.open;
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '10', 10);
     const skip = (page - 1) * limit;
 
     if (!Object.values(GIG_STATUS).includes(status)) {
@@ -28,26 +33,17 @@ export async function GET(request: Request) {
       });
     }
 
-    const [open, inProgress, completed] = await prisma.$transaction([
-      prisma.gig.count({
-        where: { user_id: BigInt(session.user.id), pipeline: { status: GIG_STATUS.open }, is_removed: false }
-      }),
-      prisma.gig.count({
-        where: { user_id: BigInt(session.user.id), pipeline: { status: GIG_STATUS.in_progress }, is_removed: false }
-      }),
-      prisma.gig.count({
-        where: { user_id: BigInt(session.user.id), pipeline: { status: GIG_STATUS.completed }, is_removed: false }
-      })
+    const [open, inProgress, completed, total] = await prisma.$transaction([
+      prisma.gig.count({ where: { user_id: userId, pipeline: { status: GIG_STATUS.open }, is_removed: false } }),
+      prisma.gig.count({ where: { user_id: userId, pipeline: { status: GIG_STATUS.in_progress }, is_removed: false } }),
+      prisma.gig.count({ where: { user_id: userId, pipeline: { status: GIG_STATUS.completed }, is_removed: false } }),
+      prisma.gig.count({ where: { user_id: userId, pipeline: { status }, is_removed: false } })
     ]);
-
-    const total = await prisma.gig.count({
-      where: { user_id: BigInt(session.user.id), pipeline: { status: status as GIG_STATUS }, is_removed: false }
-    });
 
     const gigs = await prisma.gig.findMany({
       where: {
-        user_id: BigInt(session.user.id),
-        pipeline: { status: status as GIG_STATUS },
+        user_id: userId,
+        pipeline: { status },
         is_removed: false
       },
       include: {
@@ -57,7 +53,9 @@ export async function GET(request: Request) {
         pipeline: { select: { status: true } },
         bids: {
           where: { status: BID_STATUS.accepted },
-          include: {
+          select: {
+            id: true,
+            provider_id: true,
             provider: {
               select: {
                 id: true,
@@ -66,7 +64,8 @@ export async function GET(request: Request) {
                 email: true,
                 profile_url: true,
                 is_verified: true,
-                is_banned: true
+                is_banned: true,
+                username: true
               }
             }
           }
@@ -79,46 +78,53 @@ export async function GET(request: Request) {
       take: limit
     });
 
-    const transformedGigs = await Promise.all(
-      gigs.map(async (gig) => {
-        const { pipeline, bids, ...rest } = gig;
-        let providerStats = null;
+    const providerIds = [...new Set(gigs.flatMap((gig) => gig.bids.map((b) => b.provider_id).filter(Boolean)))];
 
-        if (bids?.[0]?.provider?.id) {
-          const providerId = bids[0].provider.id;
+    let providerStatsMap: Record<number, { avgRating: number; totalCompletedGigs: number }> = {};
 
-          const avgRatingData = await prisma.reviewRating.aggregate({
-            where: { provider_id: providerId },
-            _avg: { rating: true }
-          });
+    if (providerIds.length > 0) {
+      const avgRatings = await prisma.reviewRating.groupBy({
+        by: ['provider_id'],
+        where: { provider_id: { in: providerIds } },
+        _avg: { rating: true }
+      });
 
-          const completedCount = await prisma.gig.count({
-            where: {
-              pipeline: { status: GIG_STATUS.completed },
-              bids: {
-                some: {
-                  provider_id: providerId,
-                  status: BID_STATUS.accepted
-                }
-              }
-            }
-          });
+      const completedCounts = await prisma.bid.groupBy({
+        by: ['provider_id'],
+        where: {
+          status: BID_STATUS.accepted,
+          gig: {
+            pipeline: { status: GIG_STATUS.completed }
+          }
+        },
+        _count: { provider_id: true }
+      });
 
-          providerStats = {
-            avgRating: avgRatingData._avg.rating || 0,
-            totalCompletedGigs: completedCount
-          };
-        }
-
-        return {
-          ...rest,
-          status: pipeline?.status || GIG_STATUS.open,
-          acceptedBid: bids || [],
-          providerStats,
-          counts: { open, inProgress, completed }
+      avgRatings.forEach((rating) => {
+        providerStatsMap[Number(rating.provider_id)] = {
+          avgRating: rating._avg.rating || 0,
+          totalCompletedGigs: 0
         };
-      })
-    );
+      });
+
+      completedCounts.forEach((count) => {
+        const id = Number(count.provider_id);
+        if (!providerStatsMap[id]) {
+          providerStatsMap[id] = { avgRating: 0, totalCompletedGigs: 0 };
+        }
+        providerStatsMap[id].totalCompletedGigs = count._count.provider_id;
+      });
+    }
+
+    const transformedGigs = gigs.map((gig) => ({
+      ...gig,
+      status: gig.pipeline?.status || GIG_STATUS.open,
+      acceptedBid: gig.bids || [],
+      providerStats: gig.bids[0]?.provider_id
+        ? providerStatsMap[Number(gig.bids[0].provider_id)] || { avgRating: 0, totalCompletedGigs: 0 }
+        : { avgRating: 0, totalCompletedGigs: 0 },
+      counts: { open, inProgress, completed }
+    }));
 
     const totalPages = Math.ceil(total / limit);
 
@@ -126,12 +132,20 @@ export async function GET(request: Request) {
       {
         success: true,
         message: 'Gigs fetched successfully',
-        data: { gigs: transformedGigs, pagination: { total, page, limit, totalPages }, counts: { open, inProgress, completed } }
+        data: {
+          gigs: transformedGigs,
+          pagination: { total, page, limit, totalPages },
+          counts: { open, inProgress, completed }
+        }
       },
       { status: HttpStatusCode.OK }
     );
   } catch (error) {
     console.error('Error fetching gigs:', error);
-    return errorResponse({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to fetch gigs', statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR });
+    return errorResponse({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to fetch gigs',
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR
+    });
   }
 }
