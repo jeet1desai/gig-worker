@@ -25,6 +25,10 @@ import { RootState, useDispatch, useSelector } from '@/store/store';
 import { gigService } from '@/services/gig.services';
 import { PRIVATE_ROUTE } from '@/constants/app-routes';
 import GigsShimmerCards from '@/components/shimmer/GigsShimmerCards';
+import { Images } from '@/lib/images';
+import { Gig } from '@/types/pipeline';
+import { getPaymentStatusLabel } from '../pipeline/page';
+import { GIG_STATUS } from '@prisma/client';
 
 const tierColors: Record<string, string> = {
   basic: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
@@ -44,7 +48,33 @@ const tierOptions = [
   { value: 'expert', label: 'Expert' }
 ];
 
-export const GigCard = ({ id, slug, title, description, tier, price_range, start_date, end_date, thumbnail, _count, user }: any) => {
+interface GigUserCardProps extends Gig {
+  role: 'user' | 'provider';
+  isActive?: boolean;
+  activeStatus?: 'accepted' | 'running' | 'completed';
+  openDeleteConfirmation: (gigId: string) => void;
+}
+
+interface GigCardProps extends Gig {
+  role: 'user' | 'provider';
+}
+
+export const GigCard = ({
+  slug,
+  title,
+  description,
+  tier,
+  price_range,
+  start_date,
+  end_date,
+  thumbnail,
+  _count,
+  user,
+  pipeline,
+  payment,
+  review_rating,
+  is_completed = false
+}: GigCardProps) => {
   const router = useRouter();
 
   return (
@@ -111,7 +141,7 @@ export const GigCard = ({ id, slug, title, description, tier, price_range, start
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-blue-500">
-              <Image src={user.profile_url} alt={user.first_name} width={36} height={36} className="h-full w-full object-cover" />
+              <Image src={user.profile_url || Images.avatar} alt={user.first_name} width={36} height={36} className="h-full w-full object-cover" />
             </div>
             <div>
               <p className="text-sm font-medium text-white">{user.first_name}</p>
@@ -121,12 +151,16 @@ export const GigCard = ({ id, slug, title, description, tier, price_range, start
               </div>
             </div>
           </div>
-          <Button
-            onClick={() => router.push(`${PRIVATE_ROUTE.GIGS}/${slug}`)}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500"
-          >
-            Place Bid
-          </Button>
+          {is_completed && pipeline?.status === GIG_STATUS.completed ? (
+            getPaymentStatusLabel({ payment, review_rating })
+          ) : (
+            <Button
+              onClick={() => router.push(`${PRIVATE_ROUTE.GIGS}/${slug}`)}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500"
+            >
+              Place Bid
+            </Button>
+          )}
         </div>
       </div>
     </div>
@@ -145,8 +179,12 @@ export const GigUserCard = ({
   _count,
   isActive,
   activeStatus,
+  pipeline,
+  payment,
+  review_rating,
+  is_completed = false,
   openDeleteConfirmation
-}: any) => {
+}: GigUserCardProps) => {
   return (
     <div
       className={`group relative flex h-full flex-col overflow-hidden rounded-xl border ${isActive ? 'border-blue-500/50' : 'border-gray-700/50'} ${
@@ -245,7 +283,7 @@ export const GigUserCard = ({
 
       <div className="border-t border-gray-700/50 p-4">
         <div className="flex items-center justify-between">
-          <div></div>
+          <div>{is_completed && pipeline?.status === GIG_STATUS.completed && getPaymentStatusLabel({ payment, review_rating })}</div>
           <div className="flex items-center gap-2">
             {isActive && activeStatus === 'running' && (
               <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-900/20 hover:text-green-400">
@@ -255,7 +293,7 @@ export const GigUserCard = ({
             <Button
               onClick={() => openDeleteConfirmation(id)}
               variant="outline"
-              className="border-red-500 text-red-500 hover:bg-red-900/20 hover:text-red-400"
+              className="border-red-500 bg-transparent text-red-500 hover:bg-red-900/20 hover:text-red-400"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
